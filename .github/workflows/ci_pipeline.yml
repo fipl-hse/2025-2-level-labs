@@ -1,0 +1,136 @@
+name: "Check PR"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.ref }}-public
+  cancel-in-progress: true
+
+env:
+  REPOSITORY_TYPE: admin
+
+jobs:
+  install-dependencies:
+    name: Installing dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup FIPL environment
+        uses: fipl-hse/setup-env-action@v0.11
+      - name: Confirming everything is OK
+        run: |
+          ls -la venv
+
+  pr-name-check:
+    name: PR name check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 4
+    needs: [ install-dependencies ]
+    env:
+      PR_NAME: ${{ github.event.pull_request.title }}
+      PR_AUTHOR: ${{ github.actor }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup FIPL environment
+        uses: fipl-hse/setup-env-action@v0.11
+      - name: PR name check
+        run: |
+          source venv/bin/activate
+          export PYTHONPATH=$(pwd)
+          python config/static_checks/pr_name_check.py --pr-name "$PR_NAME" --pr-author "$PR_AUTHOR"
+
+  code-style:
+    name: Code Style
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    needs: [ install-dependencies ]
+    env:
+      PR_NAME: ${{ github.event.pull_request.title }}
+      PR_AUTHOR: ${{ github.actor }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup FIPL environment
+        uses: fipl-hse/setup-env-action@v0.11
+      - name: Code Style
+        run: |
+          source venv/bin/activate
+          export PYTHONPATH=$(pwd)
+          python config/static_checks/check_lint.py --repository_type "$REPOSITORY_TYPE"
+
+  mypy-checks:
+    name: Mypy checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    needs: [ install-dependencies ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup FIPL environment
+        uses: fipl-hse/setup-env-action@v0.11
+      - name: MyPy check
+        run: |
+          source venv/bin/activate
+          export PYTHONPATH=$(pwd)
+          python config/static_checks/check_mypy.py
+
+  unittests:
+    name: Unittests
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    needs: [ install-dependencies ]
+    env:
+      PR_NAME: ${{ github.event.pull_request.title }}
+      PR_AUTHOR: ${{ github.actor }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup FIPL environment
+        uses: fipl-hse/setup-env-action@v0.11
+      - name: Run tests
+        run: |
+          source venv/bin/activate
+          export PYTHONPATH=$(pwd)
+          python config/run_tests.py --pr-name "$PR_NAME" --pr-author "$PR_AUTHOR"
+
+  start:
+    name: Check start.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    needs: [ install-dependencies ]
+    env:
+      PR_NAME: ${{ github.event.pull_request.title }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup FIPL environment
+        uses: fipl-hse/setup-env-action@v0.11
+      - name: Run start
+        run: |
+          source venv/bin/activate
+          export PYTHONPATH=$(pwd)
+          python config/run_start.py --pr_name "$PR_NAME" --repository_type "$REPOSITORY_TYPE"
+
+  flake8-checks:
+    name: Import style checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    needs: [ install-dependencies ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup FIPL environment
+        uses: fipl-hse/setup-env-action@v0.11
+      - name: Flake8 check
+        run: |
+          source venv/bin/activate
+          export PYTHONPATH=$(pwd)
+          python config/static_checks/check_flake8.py
