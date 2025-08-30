@@ -1,0 +1,29 @@
+{
+    "labs": [
+    ],
+    "addons": [
+        {
+            "name": "admin_utils"
+        },
+        {
+            "name": "config"
+        },
+        {
+            "name": "seminars"
+        }
+    ],
+    "repository": {
+        "admins": [
+            "demid5111",
+            "EIzharikov",
+            "Vasilisa-Blyudova",
+            "sofianurtdinova",
+            "AnPruch",
+            "Niko-Zvar",
+            "QuietHellsPage",
+            "Evgraff2005"
+        ],
+        "pr_name_regex": "Laboratory work #\\d, \\w+ \\w+ - 2\\dFPL\\d",
+        "pr_name_example": "Laboratory work #1, Andrei Kashchikhin - 21FPL2"
+    }
+}

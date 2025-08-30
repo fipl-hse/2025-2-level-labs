@@ -1,0 +1,35 @@
+{
+    "winners": {
+        "forks": [
+            "https://github.com/minabdeyeva/2024-2-level-labs"
+        ],
+        "pathsToKeep":{
+            "fork": [
+            ],
+            "upstream": [
+                "lab_1_classify_by_unigrams/main.py",
+                "lab_1_classify_by_unigrams/start.py",
+                "lab_1_classify_by_unigrams/settings.json"
+            ]
+        }
+    },
+    "losers": {
+        "forks": [
+            "https://github.com/kotelnikovalizo4ka/2024-2-level-labs/"
+        ],
+        "pathsToKeep":{
+            "fork": [
+                "lab_1_classify_by_unigrams/main.py",
+                "lab_1_classify_by_unigrams/start.py",
+                "lab_1_classify_by_unigrams/settings.json"
+            ],
+            "upstream": [
+            ]
+        }
+    },
+    "authentication": {
+        "user": "artyomtugaryov",
+        "token": "davaidavai"
+    },
+    "upstream": "https://github.com/fipl-hse/2024-2-level-labs"
+}

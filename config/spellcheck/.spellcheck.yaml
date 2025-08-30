@@ -1,0 +1,64 @@
+matrix:
+- name: ReST (English docs)
+  aspell:
+    lang: en
+    ignore-case: true
+  dictionary:
+    wordlists:
+    - config/spellcheck/.wordlist.txt
+    - config/spellcheck/.wordlist_en.txt
+    encoding: utf-8
+    output: build/dictionary/dictionary.dic
+  pipeline:
+  - resplendent.filters.restructuredtext:
+  - pyspelling.filters.html:
+      comments: false
+      ignores:
+      - :matches(code, pre)
+  sources:
+  - 'docs/**/*[^(_ru)].rst'
+  default_encoding: utf-8
+
+- name: ReST
+  aspell:
+    lang: ru
+    ignore-case: true
+  dictionary:
+    wordlists:
+    - config/spellcheck/.wordlist.txt
+    - config/spellcheck/.wordlist_en.txt
+    encoding: utf-8
+    output: build/dictionary/dictionary.dic
+  pipeline:
+  - resplendent.filters.restructuredtext:
+  - pyspelling.filters.html:
+      comments: false
+      ignores:
+      - :matches(code, pre)
+  sources:
+  - 'lab*/*.rst'
+  - 'final_project/*.rst'
+  - '*.rst'
+  - 'docs/**/*_ru.rst'
+  default_encoding: utf-8
+
+- name: Docstrings
+  aspell:
+    lang: en
+    ignore-case: true
+  dictionary:
+    wordlists:
+    - config/spellcheck/.wordlist_en.txt
+    encoding: utf-8
+    output: build/dictionary/dictionary.dic
+  pipeline:
+  - pyspelling.filters.python:
+      docstrings: true
+      comments: false
+  sources:
+  - 'lab*/**/*.py'
+  - 'lab*/*.py'
+  - 'reference*/*.py'
+  - 'config/**/*.py'
+  - 'config/*.py'
+  default_encoding: utf-8
