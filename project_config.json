@@ -1,5 +1,9 @@
 {
     "labs": [
+        {
+            "name": "lab_1_keywords_tfidf",
+            "coverage": 99
+        }
     ],
     "addons": [
         {
