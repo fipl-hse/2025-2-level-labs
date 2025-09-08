@@ -29,7 +29,7 @@ print(f"Numbers: {first_num} and {second_num}")
 # third_num = first_num / second_num
 
 # Fix the first exception:
-second_num = 6
+second_num = 1
 third_num = first_num / second_num
 print(f"Numbers: {first_num}, {second_num} and {third_num}")
 
