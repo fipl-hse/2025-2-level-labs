@@ -181,6 +181,8 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(frequencies, str, int):
+        return None
     # if not isinstance(frequencies, dict[str, int | float]):
     #     return None
     
