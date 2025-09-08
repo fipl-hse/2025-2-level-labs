@@ -67,7 +67,7 @@ def check_positive_int(user_input: Any) -> bool:
     """
     if not isinstance(user_input, int) or isinstance(user_input, bool):
         return False
-    if user_input < 0:
+    if user_input <= 0:
         return False
     return True
 
@@ -100,11 +100,13 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
     tokenized_text: list[str] = text.split()
-    forbidden_symbols: str = ":./?,! \"\'-"
+    forbidden_symbols: str = ":./?,! \"\'-№#&*><;%@"
     cleaned_and_tokenized_text: list[str] = []
+    tab = str.maketrans("", "", forbidden_symbols)
     for word in tokenized_text:
-        if word:
-            cleaned_and_tokenized_text.append(word.strip(forbidden_symbols).lower())
+        cleaned_word: str = word.translate(tab).lower()
+        if cleaned_word:
+            cleaned_and_tokenized_text.append(cleaned_word)
     return cleaned_and_tokenized_text
 
 
@@ -162,7 +164,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int, float), True) or not check_positive_int(top):
+    if not check_dict(frequencies, str, (int, float), False) or not check_positive_int(top):
         return None
     top_words: list[str] = []
     for element in sorted(frequencies.items(), key=lambda item: item[1], reverse=True):
