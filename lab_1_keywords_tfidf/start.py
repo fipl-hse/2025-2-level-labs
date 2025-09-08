@@ -18,7 +18,6 @@ def main() -> None:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-
     
     cleaned_tokens = clean_and_tokenize(target_text)
     # print(cleaned_tokens)
@@ -27,7 +26,7 @@ def main() -> None:
     calculated_frequencies = calculate_frequencies(removed_stop_words)
     # print(calculated_frequencies)
     top_words = get_top_n(calculated_frequencies, 5)
-    print(top_words)
+    # print(top_words)
 
     # result = None
     # assert result, "Keywords are not extracted"
