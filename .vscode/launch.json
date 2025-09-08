@@ -16,6 +16,48 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }
+        },
+        {
+            "name": "Launch seminar 1",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/practice_1_run_debug.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "Launch seminar 2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/practice_2_integers.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "Launch LAB 1 start",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "lab_1_keywords_tfidf/start.py",
+            "cwd": "${workspaceFolder}/lab_1_keywords_tfidf",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "Launch LAB 1 main",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "lab_1_keywords_tfidf/main.py",
+            "cwd": "${workspaceFolder}/lab_1_keywords_tfidf",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
         }
     ]
 }
