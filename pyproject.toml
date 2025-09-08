@@ -4,6 +4,7 @@ markers = [
     "mark6: tests for level 6",
     "mark8: tests for level 8",
     "mark10: tests for level 10",
+    "lab_1_keywords_tfidf: tests for lab 1",
 ]
 norecursedirs = [
     "venv*"
@@ -17,7 +18,7 @@ omit = [
 
 [tool.black]
 line-length = 100
-target-version = ['py311']
+target-version = ['py312']
 
 [tool.doc8]
 allow-long-titles = true
@@ -50,7 +51,7 @@ count = true
 
 [tool.isort]
 profile = 'black'
-py_version = '311'
+py_version = '312'
 skip_gitignore = true
 line_length = 100
 order_by_type = true
@@ -60,14 +61,11 @@ force_alphabetical_sort_within_sections = true
 src_paths = [
     "core_utils",
     "config",
-    "lab_1_classify_by_unigrams",
-    "lab_2_retrieval_w_bm25",
-    "lab_3_ann_retriever",
-    "lab_4_retrieval_w_clustering"
+    "lab_1_keywords_tfidf"
 ]
 
 [tool.mypy]
-python_version = '3.11'
+python_version = '3.12'
 exclude = [
     'venv*',
     'test.py'
@@ -221,7 +219,7 @@ persistent = true
 
 # Minimum Python version to use for version dependent checks. Will default to the
 # version used to run pylint.
-py-version = "3.11"
+py-version = "3.12"
 
 # Discover python modules and packages in the file system subtree.
 # recursive =

@@ -147,6 +147,7 @@ attribute
 attributes
 author
 authors
+auto
 autoformat
 autoformatting
 automatically
@@ -255,6 +256,7 @@ change
 changing-code
 chart
 check
+chi
 child
 children
 choice
@@ -267,9 +269,11 @@ class
 classdef
 classes
 classify
+clean
 cleaned
 cleaning
 cleans
+clearly
 cli
 click
 clickcrawler
@@ -397,6 +401,7 @@ ctlr-article-label
 ctlr-faq-label
 ctlr-lectures-label
 ctlr-tests-label
+ctrl
 current
 cutoff
 cvetaeva
@@ -447,6 +452,7 @@ description
 design
 designed
 desired
+desktop
 detailed
 details
 detect
@@ -610,6 +616,7 @@ extended
 extending
 extends
 extension
+extensions
 external
 extra
 extract
@@ -683,6 +690,7 @@ fr
 frac
 framework
 freq
+freqs
 frequencies
 frequency
 friend
@@ -1111,6 +1119,7 @@ morphosyntacticpipeline
 most
 mozilla
 mro
+ms-python
 mse
 much
 multiple
@@ -1181,6 +1190,7 @@ numr
 object
 object-oriented
 objective
+observed
 obtain
 obtained
 obtaining
@@ -1604,9 +1614,11 @@ set
 sets
 setting
 settings
+settingsicon
 setup
 several
 she
+shift
 shifting
 short
 should
@@ -1616,6 +1628,7 @@ showed
 shown
 shutil
 sign
+significant
 silverage
 similar
 similarly
@@ -1718,6 +1731,7 @@ student
 students
 studenttextadvancedpreprocesstest
 studenttextbasicpreprocesstest
+studio
 studying
 subgraph
 subgraphs
@@ -1765,6 +1779,7 @@ techniques
 tells
 temporary
 term
+terminal
 terms
 tests
 text
@@ -1954,6 +1969,7 @@ virtual
 virtualenv
 visit
 visits
+visual
 visualise
 visualization
 visualize
