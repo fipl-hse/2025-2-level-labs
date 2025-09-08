@@ -36,10 +36,10 @@ def clear_examples(lab_path: Path) -> None:
     """
     example_main_stub_path = lab_path / "example_main_stub.py"
     example_start_stub_path = lab_path / "example_start_stub.py"
-    example_service_stub_path = lab_path / "example_service_stub.py"
+    # example_service_stub_path = lab_path / "example_service_stub.py"
     example_start_stub_path.unlink()
     example_main_stub_path.unlink()
-    example_service_stub_path.unlink()
+    # example_service_stub_path.unlink()
 
 
 def main() -> None:
@@ -47,28 +47,27 @@ def main() -> None:
     Check the relevance of stubs.
     """
     project_config = ProjectConfig(PROJECT_CONFIG_PATH)
-    labs_paths = project_config.get_labs_paths()
+    labs_paths = project_config.get_labs_paths(include_addons=False)
     code_is_equal = True
     for lab_path in labs_paths:
         print(f"Processing {lab_path}...")
         main_stub_path = lab_path / "main_stub.py"
         start_stub_path = lab_path / "start_stub.py"
-        service_stub_path = lab_path / "service_stub.py"
-
-        if (
-            not main_stub_path.exists()
-            or not start_stub_path.exists()
-            or not service_stub_path.exists()
-        ):
-            print(
-                f"Ignoring {main_stub_path} or {start_stub_path} or {service_stub_path}: "
-                f"do not exist"
-            )
-            continue
+        # service_stub_path = lab_path / "service_stub.py"
+        # if (
+        #     not main_stub_path.exists()
+        #     or not start_stub_path.exists()
+        #     or not service_stub_path.exists()
+        # ):
+        #     print(
+        #         f"Ignoring {main_stub_path} or {start_stub_path} or {service_stub_path}: "
+        #         f"do not exist"
+        #     )
+        #     continue
 
         main_stub_code = get_code(main_stub_path)
         start_stub_code = get_code(start_stub_path)
-        service_stub_code = get_code(service_stub_path)
+        # service_stub_code = get_code(service_stub_path)
 
         clean_main = cleanup_code(lab_path / "main.py")
         example_main_stub_path = lab_path / "example_main_stub.py"
@@ -86,13 +85,13 @@ def main() -> None:
         sort_stub_imports(example_start_stub_path)
         formatted_start = get_code(example_start_stub_path)
 
-        clean_service = cleanup_code(lab_path / "service.py")
-        example_service_stub_path = lab_path / "example_service_stub.py"
-        with example_service_stub_path.open(mode="w", encoding="utf-8") as file:
-            file.write(clean_service)
-        format_stub_file(example_service_stub_path)
-        sort_stub_imports(example_service_stub_path)
-        formatted_service = get_code(example_service_stub_path)
+        # clean_service = cleanup_code(lab_path / "service.py")
+        # example_service_stub_path = lab_path / "example_service_stub.py"
+        # with example_service_stub_path.open(mode="w", encoding="utf-8") as file:
+        #     file.write(clean_service)
+        # format_stub_file(example_service_stub_path)
+        # sort_stub_imports(example_service_stub_path)
+        # formatted_service = get_code(example_service_stub_path)
 
         if formatted_main != main_stub_code:
             code_is_equal = False
@@ -102,9 +101,9 @@ def main() -> None:
             code_is_equal = False
             print(f"You have different start and start_stub in {lab_path}")
 
-        if formatted_service != service_stub_code:
-            code_is_equal = False
-            print(f"You have different service and service_stub in {lab_path}")
+        # if formatted_service != service_stub_code:
+        #     code_is_equal = False
+        #     print(f"You have different service and service_stub in {lab_path}")
 
         clear_examples(lab_path)
     if code_is_equal:

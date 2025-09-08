@@ -7,7 +7,10 @@
         "**/web_service_test.py",
         "../../venv/**/*.py",
         "**/final_project/*.py",
-        "**/final_project/**/*.py"
+        "**/final_project/**/*.py",
+        "**/Library/**/*.py",
+        "**/.*/**/*.py",
+        "**/site-packages/**/*.py"
     ],
     "fail_on_missing_docstring": true,
     "fail_on_missing_summary": true,
