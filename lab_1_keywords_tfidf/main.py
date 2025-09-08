@@ -22,14 +22,11 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-
     if not user_input and not can_be_empty:
         return False
-
     for element in user_input:
         if  not isinstance(element, elements_type):
             return False
-
     return True
 
 
@@ -48,18 +45,14 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-
     if not user_input and not can_be_empty:
         return False
-
     for key in user_input.keys():
         if not isinstance(key, key_type):
             return False
-
     for value in user_input.values():
         if not isinstance(value, value_type):
             return False
-
     return True
 
 def check_positive_int(user_input: Any) -> bool:
@@ -72,12 +65,10 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if type(user_input) is not int:
+    if not isinstance(user_input, int) or isinstance(user_input, bool):
         return False
-
     if user_input < 0:
         return False
-
     return True
 
 def check_float(user_input: Any) -> bool:
@@ -92,7 +83,6 @@ def check_float(user_input: Any) -> bool:
     """
     if not isinstance(user_input, float):
         return False
-
     return True
 
 
@@ -109,16 +99,12 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-
     tokenized_text: list[str] = text.split()
-
     forbidden_symbols: str = ":./?,! \"\'-"
-
     cleaned_and_tokenized_text: list[str] = []
     for word in tokenized_text:
         if word:
             cleaned_and_tokenized_text.append(word.strip(forbidden_symbols).lower())
-
     return cleaned_and_tokenized_text
 
 
@@ -134,15 +120,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True) and not check_list(stop_words, str, True):
+    if not check_list(tokens, str, True) or not check_list(stop_words, str, True):
         return None
-
     without_stop_words: list[str] = []
     for word in tokens:
         if word not in stop_words:
-            without_stop_words.append(word)
-
+            without_stop_words.append(word) 
     return without_stop_words
+
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
@@ -157,14 +142,12 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     if not check_list(tokens, str, True):
         return None
-
     frequencies: dict[str, int] = {}
     for word in tokens:
         frequencies[word] = frequencies.get(word, 0) + 1
-
     return frequencies
-
-
+        
+        
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
@@ -181,11 +164,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not check_dict(frequencies, str, (int, float), True) or not check_positive_int(top):
         return None
-
     top_words: list[str] = []
     for element in sorted(frequencies.items(), key=lambda item: item[1], reverse=True):
         top_words.append(element[0])
-
     return top_words[:top]
 
 
@@ -202,8 +183,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     # if not isinstance(frequencies, dict[str, int | float]):
     #     return None
-
-
+    
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
