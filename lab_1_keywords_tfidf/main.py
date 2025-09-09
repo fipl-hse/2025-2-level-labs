@@ -23,11 +23,14 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
+
     if not user_input and not can_be_empty:
         return False
+
     for element in user_input:
         if  not isinstance(element, elements_type):
             return False
+
     return True
 
 
