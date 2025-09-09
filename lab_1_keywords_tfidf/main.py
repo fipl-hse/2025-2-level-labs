@@ -6,7 +6,7 @@ Extract keywords based on frequency related metrics
 # pylint:disable=unused-argument
 from typing import Any
 from math import log
-from scipy.stats.distributions import chi2
+# from scipy.stats.distributions import chi2
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -290,14 +290,15 @@ def extract_significant_words(
     if not check_float(alpha) or not (0 < alpha < 1):
         return None
     significant_words: dict[str, float] = {}
-    allowed_alphas = (0.05, 0.01, 0.001)
-    if alpha not in allowed_alphas:
+    calculated_alphas = {
+                            0.05: 3.841458821,
+                            0.01: 6.634896601,
+                            0.001: 10.82756617
+                        }             
+    if not calculated_alphas.get(alpha, None):
         return None
-    try:
-        threshold = chi2.ppf(1-alpha, df=1)
-        if threshold is None or threshold <= 0:
-            return None
-        significant_words = dict(filter(lambda item: item[1] > threshold, chi_values.items()))
-        return significant_words
-    except:
-        return None
+    # threshold = chi2.ppf(1-alpha, df=1)
+    threshold = calculated_alphas.get(alpha)
+    significant_words = dict(filter(lambda item: item[1] > threshold, chi_values.items()))
+    return significant_words
+    
