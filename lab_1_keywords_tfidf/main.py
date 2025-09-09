@@ -214,7 +214,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     for token, count in term_freq.items():
         tfidf[token] = count * idf.get(token, max_idf)
     return tfidf
- 
+
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
@@ -247,6 +247,7 @@ def calculate_expected_frequency(
         expected_frequency[token] = expected
     return expected_frequency
 
+
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
@@ -272,6 +273,7 @@ def calculate_chi_values(
         calculated_chi_values[token] = chi_value
     return calculated_chi_values
 
+
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
 ) -> dict[str, float] | None:
@@ -288,7 +290,7 @@ def extract_significant_words(
     """
     if not check_dict(chi_values, str, float, False):
         return None
-    if not check_float(alpha) or not (0 < alpha < 1):
+    if not check_float(alpha) or not check_float(alpha):
         return None
     significant_words: dict[str, float] = {}
     calculated_alphas = {
