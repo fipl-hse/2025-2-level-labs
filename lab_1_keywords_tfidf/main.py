@@ -240,8 +240,9 @@ def calculate_expected_frequency(
         value_in_corpus = corpus_freqs.get(token, 0)
         expected = (
             (value + value_in_corpus) *
-            (value + (document_word_count - value)) /
-            (value + value_in_corpus + (document_word_count - value) + (corpus_word_count - value_in_corpus))
+            (value + (document_word_count - value))
+            / (value + value_in_corpus + (document_word_count - value) +
+            (corpus_word_count - value_in_corpus))
         )
         expected_frequency[token] = expected
     return expected_frequency
@@ -294,11 +295,10 @@ def extract_significant_words(
                             0.05: 3.841458821,
                             0.01: 6.634896601,
                             0.001: 10.82756617
-                        }             
+                        }
     if not calculated_alphas.get(alpha, None):
         return None
     # threshold = chi2.ppf(1-alpha, df=1)
     threshold = calculated_alphas.get(alpha)
     significant_words = dict(filter(lambda item: item[1] > threshold, chi_values.items()))
     return significant_words
-    
