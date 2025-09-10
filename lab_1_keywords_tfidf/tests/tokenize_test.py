@@ -4,7 +4,8 @@ Checks the first lab text tokenizing function
 
 import unittest
 
-import pytest
+
+import string
 
 from lab_1_keywords_tfidf.main import clean_and_tokenize
 
