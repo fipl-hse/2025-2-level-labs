@@ -10,7 +10,9 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    from main import clean_and_tokenize, remove_stop_words, calculate_frequencies
+    from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n
+
+
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
         tokens = clean_and_tokenize(target_text)
@@ -19,11 +21,14 @@ def main() -> None:
         stop_words = file.read().split("\n")
         cleaned_tokens = remove_stop_words(clean_and_tokenize(target_text), stop_words)
         print(cleaned_tokens)
-    frequences = calculate_frequencies(cleaned_tokens)
-    print(frequences)
+
+    frequencies = calculate_frequencies(cleaned_tokens)
+    print(frequencies)
+    top_n = get_top_n(frequencies, 5)
+    print(top_n)
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    with open("assets/corpus_frequenccies.json", "r", encoding="utf-8") as file:
+    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     result = None
     assert result, "Keywords are not extracted"

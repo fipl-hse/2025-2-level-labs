@@ -72,11 +72,11 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(text, str):
-        return None
+
     cleaned_and_tokenized_text = []
     for word in text.split():
-        cleaned_and_tokenized_text += [''.join(symbol.lower() for symbol in word if symbol.isalpha())]
+        cleaned_and_tokenized_text += [''.join(symbol.lower()
+                                        for symbol in word if symbol.isalpha())]
     return cleaned_and_tokenized_text
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -125,6 +125,17 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
+    word_lst_sorted = []
+    freq_lst = list(frequencies.items())
+    freq_lst_sorted = sorted(freq_lst, key = lambda x: x[-1])
+    if top > len(freq_lst_sorted):
+        top = len(freq_lst_sorted)
+    for item in freq_lst_sorted[:top]:
+        for element in item:
+            if isinstance(element, str):
+                word_lst_sorted.append(element)
+    return word_lst_sorted[:top]
+
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
