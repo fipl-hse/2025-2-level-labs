@@ -25,7 +25,7 @@ def main() -> None:
         idf = load(file)
     with open("assets/corpus_frequenccies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    result = cleaned_tokens
+    result = None
     assert result, "Keywords are not extracted"
 
 
