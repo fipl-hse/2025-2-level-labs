@@ -111,8 +111,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
 
-    FORBIDDEN_SYMBOLS: str = ":./?,! \"\'-№#&*><;%@"
-    tab = str.maketrans("", "", FORBIDDEN_SYMBOLS)
+    forbidden_symbols: str = ":./?,! \"\'-№#&*><;%@"
+    tab = str.maketrans("", "", forbidden_symbols)
 
     tokenized_text: list[str] = text.split()
     cleaned_and_tokenized_text: list[str] = []
