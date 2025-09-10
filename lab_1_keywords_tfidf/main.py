@@ -83,8 +83,9 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     return tokens
 
 
-tokens = clean_and_tokenize("My mom is the coolest!!!")
-print(tokens)
+#tokens = clean_and_tokenize("My mom is the coolest!!!")
+#print(tokens)
+
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
     Exclude stop words from the token sequence.
