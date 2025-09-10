@@ -85,6 +85,7 @@ def average(a: float, b: float, c: float) -> float:
 
 print(average(1, 2, 3))
 
+
 # average(1, 2, 3) → 2.0
 # average(10, 20, 30) → 20.0
 # average(5.5, 6.5, 7.5) → 6.5
