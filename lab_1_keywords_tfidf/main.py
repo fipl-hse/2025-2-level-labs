@@ -60,7 +60,7 @@ def check_float(user_input: Any) -> bool:
         bool: True if valid, False otherwise
     """
 
-
+    
 def clean_and_tokenize(text: str) -> list[str] | None:
     #   with open('Дюймовочка.txt', 'r', encoding='utf-8') as t:
     #   text = t.read()
@@ -78,7 +78,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
 
 
 # tokens_text = clean_and_tokenize('the cat and the dog')
-"""
+    """
     Remove punctuation, convert to lowercase, and split into tokens.
 
     Args:
@@ -110,8 +110,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
 
 # print(remove_stop_words(tokens_text, ['the']))
-
-"""
+    """
     Exclude stop words from the token sequence.
 
     Args:
