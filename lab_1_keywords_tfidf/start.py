@@ -10,7 +10,7 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    from main import clean_and_tokenize, remove_stop_words
+    from main import clean_and_tokenize, remove_stop_words, calculate_frequencies
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
         tokens = clean_and_tokenize(target_text)
@@ -19,6 +19,8 @@ def main() -> None:
         stop_words = file.read().split("\n")
         cleaned_tokens = remove_stop_words(clean_and_tokenize(target_text), stop_words)
         print(cleaned_tokens)
+    frequences = calculate_frequencies(cleaned_tokens)
+    print(frequences)
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
