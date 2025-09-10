@@ -3,6 +3,7 @@ Frequency-driven keyword extraction starter
 """
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
+import os
 from json import load
 from .main import (
     clean_and_tokenize,
@@ -17,17 +18,22 @@ from .main import (
 )
 
 
+BASE_DIR = os.path.dirname(__file__)
+ASSETS_DIR = os.path.join(BASE_DIR, "assets")
+
+print(ASSETS_DIR)
+
 def main() -> None:
     """
     Launches an implementation.
     """
-    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
+    with open(f"{ASSETS_DIR}/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
+    with open(f"{ASSETS_DIR}/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open("assets/IDF.json", "r", encoding="utf-8") as file:
+    with open(f"{ASSETS_DIR}/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+    with open(f"{ASSETS_DIR}/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
 
