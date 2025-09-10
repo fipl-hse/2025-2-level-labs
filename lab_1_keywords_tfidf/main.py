@@ -349,7 +349,7 @@ def extract_significant_words(
                             0.01: 6.634896601,
                             0.001: 10.82756617
                         }
-    if not calculated_alphas.get(alpha, None):
+    if not calculated_alphas.get(alpha):
         return None
 
     # threshold = chi2.ppf(1-alpha, df=1)
