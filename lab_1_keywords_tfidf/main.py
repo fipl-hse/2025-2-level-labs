@@ -111,12 +111,11 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
 
+    FORBIDDEN_SYMBOLS: str = ":./?,! \"\'-№#&*><;%@"
+    tab = str.maketrans("", "", FORBIDDEN_SYMBOLS)
 
     tokenized_text: list[str] = text.split()
     cleaned_and_tokenized_text: list[str] = []
-
-    forbidden_symbols: str = ":./?,! \"\'-№#&*><;%@"
-    tab = str.maketrans("", "", forbidden_symbols)
 
     for word in tokenized_text:
         cleaned_word: str = word.translate(tab).lower()
@@ -141,7 +140,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     """
     if not check_list(tokens, str, True):
         return None
-    if  not check_list(stop_words, str, True):
+    if not check_list(stop_words, str, True):
         return None
 
     without_stop_words: list[str] = []
