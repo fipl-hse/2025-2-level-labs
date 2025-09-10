@@ -22,7 +22,9 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(
+    user_input: Any, key_type: type, value_type: type, can_be_empty: bool
+) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -60,7 +62,7 @@ def check_float(user_input: Any) -> bool:
         bool: True if valid, False otherwise
     """
 
-    
+
 def clean_and_tokenize(text: str) -> list[str] | None:
     #   with open('Дюймовочка.txt', 'r', encoding='utf-8') as t:
     #   text = t.read()
@@ -76,8 +78,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         return None
     return tokens
 
-
-# tokens_text = clean_and_tokenize('the cat and the dog')
+    # tokens_text = clean_and_tokenize('the cat and the dog')
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
@@ -108,8 +109,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
             tokens_list.append(token)
     return tokens_list
 
-
-# print(remove_stop_words(tokens_text, ['the']))
+    # print(remove_stop_words(tokens_text, ['the']))
     """
     Exclude stop words from the token sequence.
 
@@ -164,7 +164,9 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
 
 
-def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
+def calculate_tfidf(
+    term_freq: dict[str, float], idf: dict[str, float]
+) -> dict[str, float] | None:
     """
     Calculate TF-IDF score for tokens.
 
@@ -224,3 +226,4 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    
