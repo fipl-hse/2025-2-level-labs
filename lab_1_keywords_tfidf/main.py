@@ -20,6 +20,13 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     Returns:
         bool: True if valid, False otherwise
     """
+    if not isinstance(user_input, list):
+        return False
+    if not can_be_empty and len(user_input) == 0:
+        return False
+    else:
+        return all(isinstance(item, elements_type) for item in user_input)
+
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -35,6 +42,13 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     Returns:
         bool: True if valid, False otherwise
     """
+    if not isinstance(user_input, list):
+        return False
+    if not can_be_empty and len(user_input) == 0:
+        return False
+    else:
+        return all(isinstance(item, elements_type) for item in user_input)
+
 
 
 def check_positive_int(user_input: Any) -> bool:
@@ -72,6 +86,17 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(text, str):
+        return None
+    else:
+        text = text.lower()
+        cleaned = []
+        for symbol in text:
+            if symbol.isalnum() or symbol.isspace():
+                cleaned.append(symbol)
+        cleaned = "".join(cleaned)
+        tokens = cleaned.split()
+        return tokens
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -86,6 +111,15 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, True) or not check_list(stop_words, str, True):
+        return None
+    else:
+        for stop_word in stop_words:
+            for word in tokens:
+                if word == stop_word:
+                    tokens.remove(stop_word)
+        return tokens
+    
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -99,6 +133,16 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    """if not check_list(tokens, str, True):
+        return None
+    else:
+        dict_frequencies = {}
+        for token in tokens:
+            if token in dict_frequencies:
+                dict_frequencies[token] += 1
+            else:
+                dict_frequencies[token] = 1
+        return dict_frequencies"""
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -114,6 +158,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
+    #sorted_dict_frequencies = sorted(dict_frequencies.items(), key=lambda item: item, reverse=True)
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
