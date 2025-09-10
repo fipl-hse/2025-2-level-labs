@@ -64,7 +64,7 @@ def check_float(user_input: Any) -> bool:
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
-    #   with open('Дюймовочка.txt', 'r', encoding='utf-8') as t:
+    #   with open("Дюймовочка.txt", "r", encoding="utf-8") as t:
     #   text = t.read()
     text = text.lower()
     clean = ""
@@ -78,7 +78,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         return None
     return tokens
 
-    # tokens_text = clean_and_tokenize('the cat and the dog')
+    # tokens_text = clean_and_tokenize("the cat and the dog")
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
@@ -93,7 +93,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     #   tokens = tokens_text
-    #   with open('stop_words.txt', 'r', encoding='utf-8') as sw:
+    #   with open("stop_words.txt", "r", encoding="utf-8") as sw:
     #   stop_words = sw.read()
     if type(tokens) is not list or type(stop_words) is not list:
         return None
@@ -109,7 +109,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
             tokens_list.append(token)
     return tokens_list
 
-    # print(remove_stop_words(tokens_text, ['the']))
+    # print(remove_stop_words(tokens_text, ["the"]))
     """
     Exclude stop words from the token sequence.
 
@@ -226,4 +226,3 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
-    
