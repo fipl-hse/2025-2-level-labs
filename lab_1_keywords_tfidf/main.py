@@ -72,6 +72,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(text, str):
+        return None
     cleaned_and_tokenized_text = []
     for word in text.split():
         cleaned_and_tokenized_text += [''.join(symbol.lower() for symbol in word if symbol.isalpha())]
