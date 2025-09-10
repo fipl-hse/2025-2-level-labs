@@ -59,7 +59,10 @@ def add_numbers(a: int, b: int) -> int:
         int: Sum of a and b
     """
     # student implementation goes here
-
+    return a + b
+a = 10
+b = 24
+print(add_numbers(a, b))
 
 # add_numbers(2, 3) → 5
 # add_numbers(-5, 10) → 5
@@ -81,10 +84,10 @@ def average(a: float, b: float, c: float) -> float:
     """
     # student implementation goes here
 
-
-# average(1, 2, 3) → 2.0
+    return (a + b + c) / 3
+print(average(1, 2, 3))
 # average(10, 20, 30) → 20.0
-# average(5.5, 6.5, 7.5) → 6.5
+print(average(5.5, 6.5, 7.5))
 
 
 # Task 3:
@@ -99,9 +102,9 @@ def is_even(n: int) -> bool:
         bool: True if n is even, False otherwise
     """
     # student implementation goes here
+    return n % 2 == 0
 
-
-# is_even(2) → True
+print(is_even(2))
 # is_even(3) → False
 # is_even(0) → True
 # is_even(-4) → True
@@ -119,11 +122,11 @@ def area_of_circle(radius: float) -> float:
         float: Area of the circle
     """
     # student implementation goes here
+    return 3.14 * radius**2
 
-
-# area_of_circle(1) → 3.14159...
-# area_of_circle(0) → 0
-# area_of_circle(2.5) → ~19.63495
+print(area_of_circle(1))
+print(area_of_circle(0))
+print(area_of_circle(2.5))
 
 
 # Task 5:
@@ -138,11 +141,14 @@ def factorial(n: int) -> int:
         int: Factorial of n
     """
     # student implementation goes here
+    i = 1
+    for i in range(1, n + 1):
+        factorial *= i
+    return factorial
 
-
-# factorial(0) → 1
+print(factorial(0))
 # factorial(1) → 1
-# factorial(5) → 120
+print(factorial(5))
 
 
 # Task 6:
