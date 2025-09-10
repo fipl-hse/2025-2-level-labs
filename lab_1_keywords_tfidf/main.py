@@ -73,6 +73,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         In case of corrupt input arguments, None is returned.
     """
     cleaned_and_tokenized_text = []
+    s = ''
     for word in text.split():
         cleaned_and_tokenized_text += [''.join(symbol.lower() for symbol in word if symbol.isalpha())]
     return cleaned_and_tokenized_text
