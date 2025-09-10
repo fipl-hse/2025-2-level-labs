@@ -72,7 +72,10 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
-
+    cleaned_and_tokenized_text = []
+    for word in text.split():
+        cleaned_and_tokenized_text += [''.join(symbol.lower() for symbol in word if symbol.isalpha())]
+    return cleaned_and_tokenized_text
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
@@ -86,6 +89,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
+    cleaned_tokens = []
+    for token in tokens:
+        if token not in stop_words:
+            cleaned_tokens.append(token)
+    return cleaned_tokens
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:

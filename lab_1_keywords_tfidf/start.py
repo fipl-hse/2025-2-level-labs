@@ -10,15 +10,20 @@ def main() -> None:
     """
     Launches an implementation.
     """
+    from main import clean_and_tokenize, remove_stop_words
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
+        tokens = clean_and_tokenize(target_text)
+        print(tokens)
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
+        cleaned_tokens = remove_stop_words(clean_and_tokenize(target_text), stop_words)
+        print(cleaned_tokens)
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    result = None
+    result = cleaned_tokens
     assert result, "Keywords are not extracted"
 
 
