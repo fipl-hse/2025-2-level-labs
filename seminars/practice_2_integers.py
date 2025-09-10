@@ -80,7 +80,9 @@ def average(a: float, b: float, c: float) -> float:
         float: Average value of the three numbers
     """
     # student implementation goes here
-    return((a+b+c)/3)
+    return (a + b + c) / 3
+
+
 print(average(1, 2, 3))
 
 # average(1, 2, 3) → 2.0
@@ -101,10 +103,11 @@ def is_even(n: int) -> bool:
     """
     # student implementation goes here
     if n % 2 == 0:
-        return(True)
+        return True
     else:
-        return(False)
-    
+        return False
+
+
 print(is_even(4))
 
 
@@ -126,8 +129,7 @@ def area_of_circle(radius: float) -> float:
         float: Area of the circle
     """
     # student implementation goes here
-    pi = 3.14
-    
+
 
 # area_of_circle(1) → 3.14159...
 # area_of_circle(0) → 0
