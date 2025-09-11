@@ -21,6 +21,15 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         bool: True if valid, False otherwise
     """
 
+    if not isinstance(user_input, list):
+        return False
+
+    for element in user_input:
+        if not isinstance(element, elements_type):
+            return False
+        
+    return True
+
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
@@ -72,12 +81,15 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
-
+    if not isinstance(text, str):
+        return None
+    
     cleaned_and_tokenized_text = []
     for word in text.split():
         cleaned_and_tokenized_text += [''.join(symbol.lower()
                                         for symbol in word if symbol.isalpha())]
     return cleaned_and_tokenized_text
+
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
@@ -91,10 +103,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    cleaned_tokens = []
-    for token in tokens:
-        if token not in stop_words:
-            cleaned_tokens.append(token)
+    if not check_list(tokens, str, True):
+        return None
+    cleaned_tokens = [token for token in tokens if token not in stop_words]
     return cleaned_tokens
 
 
@@ -112,6 +123,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     freq_dict = {token: tokens.count(token) for token in tokens}
     return freq_dict
 
+
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
     Extract the most frequent tokens.
@@ -128,12 +140,12 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     word_lst_sorted = []
     freq_lst = list(frequencies.items())
     freq_lst_sorted = sorted(freq_lst, key = lambda x: x[-1])
+
     if top > len(freq_lst_sorted):
         top = len(freq_lst_sorted)
+
     for item in freq_lst_sorted[:top]:
-        for element in item:
-            if isinstance(element, str):
-                word_lst_sorted.append(element)
+        word_lst_sorted.append(item[0])
     return word_lst_sorted[:top]
 
 
