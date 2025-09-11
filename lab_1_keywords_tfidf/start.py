@@ -4,13 +4,12 @@ Frequency-driven keyword extraction starter
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
-
+from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n
 
 def main() -> None:
     """
     Launches an implementation.
     """
-    from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
     tokens = clean_and_tokenize(target_text)

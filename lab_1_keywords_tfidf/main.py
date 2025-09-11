@@ -26,8 +26,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 
     for element in user_input:
         if not isinstance(element, elements_type):
-            return False
-        
+            return False  
     return True
 
 
@@ -83,7 +82,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    
     cleaned_and_tokenized_text = []
     for word in text.split():
         cleaned_and_tokenized_text += [''.join(symbol.lower()
@@ -141,8 +139,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     freq_lst = list(frequencies.items())
     freq_lst_sorted = sorted(freq_lst, key = lambda x: x[-1])
 
-    if top > len(freq_lst_sorted):
-        top = len(freq_lst_sorted)
+    top = min(top, len(freq_lst_sorted))
 
     for item in freq_lst_sorted[:top]:
         word_lst_sorted.append(item[0])
