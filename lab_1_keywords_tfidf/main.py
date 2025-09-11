@@ -74,7 +74,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     cleaned_and_tokenized_text = []
     for word in text.split():
-        cleaned_and_tokenized_text += [''.join(symbol.lower() for symbol in word if symbol.isalpha())]
+        token = ''.join(symbol.lower() for symbol in word if symbol.isalpha())
+        cleaned_and_tokenized_text.append(token)
     return cleaned_and_tokenized_text
 
 
@@ -92,7 +93,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     """
     tokens_without_stopwords = [word for word in tokens if word not in stop_words]
     return tokens_without_stopwords
-    
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -131,9 +131,6 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         top_list.append(top_word)
         tempo_dict.pop(top_word)
     return top_list
-
-
-
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
