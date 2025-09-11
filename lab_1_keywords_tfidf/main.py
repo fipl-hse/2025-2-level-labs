@@ -46,8 +46,8 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     if not isinstance(user_input, dict):
         return False
 
-    for value in user_input:
-        if not isinstance(value, value_type):
+    for key, value in user_input.items():
+        if not isinstance(key, key_type) or not isinstance(value, value_type) :
             return False
     return True
 
@@ -145,7 +145,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, True):
+    if not check_dict(frequencies, str, int | float, True):
         return None
     word_lst_sorted = []
     freq_lst = list(frequencies.items())
