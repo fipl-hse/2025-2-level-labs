@@ -6,7 +6,6 @@ Extract keywords based on frequency related metrics
 # pylint:disable=unused-argument
 from typing import Any
 from math import log
-# from scipy.stats.distributions import chi2
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -53,11 +52,9 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     if not user_input and not can_be_empty:
         return False
 
-    for key in user_input.keys():
+    for key, value in user_input.items():
         if not isinstance(key, key_type):
             return False
-
-    for value in user_input.values():
         if not isinstance(value, value_type):
             return False
 
@@ -91,10 +88,8 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if not isinstance(user_input, float):
-        return False
 
-    return True
+    return isinstance(user_input, float)
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -111,13 +106,12 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
 
-    forbidden_symbols: str = ":./?,! \"\'-№#&*><;%@"
+    forbidden_symbols: str = ":./?,! \"\'-№#&*><;%@()}{[]|=$+-_\\~"
     tab = str.maketrans("", "", forbidden_symbols)
 
-    tokenized_text: list[str] = text.split()
     cleaned_and_tokenized_text: list[str] = []
 
-    for word in tokenized_text:
+    for word in text.split():
         cleaned_word: str = word.translate(tab).lower()
 
         if cleaned_word:
@@ -138,18 +132,12 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True):
+    if not check_list(tokens, str, False):
         return None
     if not check_list(stop_words, str, True):
         return None
 
-    without_stop_words: list[str] = []
-
-    for word in tokens:
-        if word not in stop_words:
-            without_stop_words.append(word)
-
-    return without_stop_words
+    return [word for word in tokens if word not in stop_words]
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -163,15 +151,10 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True):
+    if not check_list(tokens, str, False):
         return None
 
-    frequencies: dict[str, int] = {}
-
-    for word in tokens:
-        frequencies[word] = frequencies.get(word, 0) + 1
-
-    return frequencies
+    return {word: tokens.count(word) for word in set(tokens)}
 
 
 
@@ -216,12 +199,8 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         return None
 
     document_word_count: int = sum(frequencies.values())
-    term_frequency: dict[str, float] = {}
 
-    for token, count in frequencies.items():
-        term_frequency[token] = count / document_word_count
-
-    return term_frequency
+    return {token: count / document_word_count for token, count in frequencies.items()}
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -241,13 +220,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     if not check_dict(idf, str, float, True):
         return None
 
-    tfidf: dict[str, float] = {}
     max_idf = log(47 / 1)
 
-    for token, count in term_freq.items():
-        tfidf[token] = count * idf.get(token, max_idf)
-
-    return tfidf
+    return {token: count * idf.get(token, max_idf) for token, count in term_freq.items()}
 
 
 def calculate_expected_frequency(
@@ -307,17 +282,7 @@ def calculate_chi_values(
     if not check_dict(observed, str, int, False):
         return None
 
-    calculated_chi_values: dict[str, float] = {}
-
-    for token, value in expected.items():
-        chi_value = (
-            (observed[token] - value)**2 /
-            value
-        )
-
-        calculated_chi_values[token] = chi_value
-
-    return calculated_chi_values
+    return {token: (observed[token] - value)**2 / value for token, value in expected.items()}
 
 
 def extract_significant_words(
@@ -339,8 +304,6 @@ def extract_significant_words(
     if not check_float(alpha):
         return None
 
-    significant_words: dict[str, float] = {}
-
     calculated_alphas = {
                             0.05: 3.841458821,
                             0.01: 6.634896601,
@@ -349,9 +312,6 @@ def extract_significant_words(
     if not calculated_alphas.get(alpha):
         return None
 
-    # threshold = chi2.ppf(1-alpha, df=1)
     threshold = calculated_alphas.get(alpha)
 
-    significant_words = dict(filter(lambda item: item[1] > threshold, chi_values.items()))
-
-    return significant_words
+    return dict(filter(lambda item: item[1] > threshold, chi_values.items()))
