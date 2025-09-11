@@ -51,10 +51,10 @@ def main() -> None:
     term_frequency = calculate_tf(calculated_frequencies) #5
     # print(term_frequency)
 
-    tf_tdf = calculate_tfidf(term_frequency, idf) #6
+    tf_idf = calculate_tfidf(term_frequency, idf) #6
     # print(tf_tdf)
 
-    top_words = get_top_n(tf_tdf, 10) #7
+    top_words = get_top_n(tf_idf, 10) #7
     # print(top_words)
 
     expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs) #8

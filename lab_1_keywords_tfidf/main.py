@@ -28,7 +28,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         return False
 
     for element in user_input:
-        if  not isinstance(element, elements_type):
+        if not isinstance(element, elements_type):
             return False
 
     return True
@@ -213,8 +213,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         In case of corrupt input arguments, None is returned.
     """
     if not check_dict(frequencies, str, int, False):
-        return None
-    if not frequencies:
         return None
 
     document_word_count: int = sum(frequencies.values())
