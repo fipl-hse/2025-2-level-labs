@@ -3,6 +3,8 @@ Lab 1
 
 Extract keywords based on frequency related metrics
 """
+# pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
+from json import load
 from typing import Any
 
 
