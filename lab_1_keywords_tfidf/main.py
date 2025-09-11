@@ -84,8 +84,10 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         return None
     cleaned_and_tokenized_text = []
     for word in text.split():
-        cleaned_and_tokenized_text += [''.join(symbol.lower()
-                                        for symbol in word if symbol.isalpha())]
+        cleaned_word = (''.join(symbol.lower()
+                                        for symbol in word if symbol.isalpha()))
+        if cleaned_word:
+            cleaned_and_tokenized_text.append(cleaned_word)
     return cleaned_and_tokenized_text
 
 
@@ -137,7 +139,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     word_lst_sorted = []
     freq_lst = list(frequencies.items())
-    freq_lst_sorted = sorted(freq_lst, key = lambda x: x[-1][0])
+    freq_lst_sorted = sorted(freq_lst, key = lambda x: (x[-1], x[0]))
 
     top = min(top, len(freq_lst_sorted))
 
