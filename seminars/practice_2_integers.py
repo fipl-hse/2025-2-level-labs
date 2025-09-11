@@ -58,9 +58,7 @@ def add_numbers(a: int, b: int) -> int:
     Returns:
         int: Sum of a and b
     """
-    return a + b
     # student implementation goes here
-print(add_numbers(2, 3))
 
 # add_numbers(2, 3) → 5
 # add_numbers(-5, 10) → 5
