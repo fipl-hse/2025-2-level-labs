@@ -3,14 +3,13 @@ Lab 1
 
 Extract keywords based on frequency related metrics
 """
-
 from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
-    if user_input == []:
-        check_result = can_be_empty == True
-    elif type(user_input) == list:
+    if user_input is []:
+        check_result = can_be_empty
+    elif isinstance(user_input, list):
         for element in user_input:
             if type(element) != elements_type:
                 check_result = False
@@ -72,15 +71,15 @@ def check_float(user_input: Any) -> bool:
     """
 
 
-def clean_and_tokenize(text: str) -> list[str] | None:
+def clean_and_tokenize(raw_text: str) -> list[str] | None:
     symbols_to_delete = '0123456789.,?-:;!'
-    text = text.replace('\n', ' ')
-    text = text.lower()
-    for symbol in text:
+    raw_text = raw_text.replace('\n', ' ')
+    raw_text = raw_text.lower()
+    for symbol in raw_text:
         if symbol in symbols_to_delete:
-            text = text.replace(symbol, '')
-    list = text.split()
-    return list
+            raw_text = raw_text.replace(symbol, '')
+    cleaned_tokens = raw_text.split()
+    return cleaned_tokens
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
