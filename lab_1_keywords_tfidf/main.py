@@ -139,7 +139,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     word_lst_sorted = []
     freq_lst = list(frequencies.items())
-    freq_lst_sorted = sorted(freq_lst, key = lambda x: (x[-1], x[0]))
+    freq_lst_sorted = sorted(freq_lst, key = lambda x: (-x[-1], x[0]))
 
     top = min(top, len(freq_lst_sorted))
 
