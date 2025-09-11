@@ -126,7 +126,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     tempo_dict = frequencies
     top_list = []
-    for i in range(0, top):
+    while len(top_list) != top:
         top_word = max(tempo_dict, key=tempo_dict.get)
         top_list.append(top_word)
         tempo_dict.pop(top_word)
