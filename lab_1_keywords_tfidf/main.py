@@ -106,6 +106,9 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    token_dict = {i:tokens.count(i) for i in set(tokens)}
+
+    return token_dict
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -121,6 +124,16 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
+    tempo_dict = frequencies
+    top_list = []
+    for i in range(0, top):
+        top_word = max(tempo_dict, key=tempo_dict.get)
+        top_list.append(top_word)
+        tempo_dict.pop(top_word)
+    return top_list
+
+
+
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
