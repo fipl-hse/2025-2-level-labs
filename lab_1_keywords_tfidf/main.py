@@ -9,7 +9,7 @@ from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
-    if user_input is []:
+    if user_input == []:
         check_result = can_be_empty
     elif isinstance(user_input, list):
         for element in user_input:
