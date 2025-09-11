@@ -8,17 +8,18 @@ from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
-    check_result = True
-    if user_input == [] and can_be_empty == True or user_input != []:
-        if type(user_input) == list:
-            for element in user_input:
-                check_result = type(element) == elements_type
-                if check_result == False:
-                    break
+    if user_input == []:
+        check_result = can_be_empty == True
+    elif type(user_input) == list:
+        for element in user_input:
+            if type(element) != elements_type:
+                check_result = False
+                break
+            else:
+                check_result = True
     else:
         check_result = False
-         
-    return check_result   
+    return check_result 
     """
     Check if the object is a list containing elements of a certain type.
 
@@ -73,7 +74,7 @@ def check_float(user_input: Any) -> bool:
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     symbols_to_delete = '0123456789.,?-:;!'
-    text = text.replace('\n', '')
+    text = text.replace('\n', ' ')
     text = text.lower()
     for symbol in text:
         if symbol in symbols_to_delete:
