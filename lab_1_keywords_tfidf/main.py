@@ -61,6 +61,9 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
+    if isinstance(user_input, int) and user_input > 0:
+        return True
+    return False
 
 
 def check_float(user_input: Any) -> bool:
@@ -145,12 +148,12 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int | float, True):
+    if not check_dict(frequencies, str, int | float, True) or not check_positive_int(top):
         return None
     word_lst_sorted = []
     freq_lst = list(frequencies.items())
     freq_lst_sorted = sorted(freq_lst, key = lambda x: (-x[-1], x[0]))
-
+    
     top = min(top, len(freq_lst_sorted))
 
     for item in freq_lst_sorted[:top]:
