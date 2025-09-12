@@ -3,12 +3,14 @@ Lab 1
 
 Extract keywords based on frequency related metrics
 """
-# pylint:disable=unused-argument
-from typing import Any
+
 from math import log
 
+# pylint:disable=unused-argument
+from typing import Any
 
-def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+
+def check_list(user_input: Any, elements_type: type |  tuple[type, ...], can_be_empty: bool) -> bool:
     """
     Check if the object is a list containing elements of a certain type.
 
@@ -33,7 +35,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     return True
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(user_input: Any, key_type: type, value_type: type | tuple[type, ...], can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -60,6 +62,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
 
     return True
 
+
 def check_positive_int(user_input: Any) -> bool:
     """
     Check if the object is a positive integer (not bool).
@@ -77,6 +80,7 @@ def check_positive_int(user_input: Any) -> bool:
         return False
 
     return True
+
 
 def check_float(user_input: Any) -> bool:
     """
@@ -106,7 +110,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
 
-    forbidden_symbols: str = ":./?,! \"\'-№#&*><;%@()}{[]|=$+-_\\~"
+    forbidden_symbols: str = ":./?,! \"'-№#&*><;%@()}{[]|=$+-_\\~"
     tab = str.maketrans("", "", forbidden_symbols)
 
     cleaned_and_tokenized_text: list[str] = []
@@ -155,7 +159,6 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         return None
 
     return {word: tokens.count(word) for word in set(tokens)}
-
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -252,10 +255,14 @@ def calculate_expected_frequency(
         value_in_corpus = corpus_freqs.get(token, 0)
 
         expected = (
-            (value + value_in_corpus) *
-            (value + (document_word_count - value))
-            / (value + value_in_corpus + (document_word_count - value) +
-            (corpus_word_count - value_in_corpus))
+            (value + value_in_corpus)
+            * (value + (document_word_count - value))
+            / (
+                value
+                + value_in_corpus
+                + (document_word_count - value)
+                + (corpus_word_count - value_in_corpus)
+            )
         )
 
         expected_frequency[token] = expected
@@ -282,7 +289,7 @@ def calculate_chi_values(
     if not check_dict(observed, str, int, False):
         return None
 
-    return {token: (observed[token] - value)**2 / value for token, value in expected.items()}
+    return {token: (observed[token] - value) ** 2 / value for token, value in expected.items()}
 
 
 def extract_significant_words(
@@ -304,14 +311,10 @@ def extract_significant_words(
     if not check_float(alpha):
         return None
 
-    calculated_alphas = {
-                            0.05: 3.841458821,
-                            0.01: 6.634896601,
-                            0.001: 10.82756617
-                        }
+    calculated_alphas = {0.05: 3.841458821, 0.01: 6.634896601, 0.001: 10.82756617}
     if not calculated_alphas.get(alpha):
         return None
 
     threshold = calculated_alphas.get(alpha)
 
-    return dict(filter(lambda item: item[1] > threshold, chi_values.items()))
+    return {token: value for token, value in chi_values.items() if value > threshold}
