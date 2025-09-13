@@ -140,11 +140,11 @@ def _run_console_tool(exe: str, /, args: list[str], **kwargs: Any) -> tuple[str,
 
     env = kwargs.get("env")
     if env:
-        result = subprocess.run(options, capture_output=True, env=env)
+        result = subprocess.run(options, capture_output=True, env=env, check=True)
     elif kwargs.get("cwd"):
-        result = subprocess.run(options, capture_output=True, cwd=kwargs.get("cwd"))
+        result = subprocess.run(options, capture_output=True, cwd=kwargs.get("cwd"), check=True)
     else:
-        result = subprocess.run(options, capture_output=True)
+        result = subprocess.run(options, capture_output=True, check=True)
     return (
         convert_raw_output_to_str(result.stdout),
         convert_raw_output_to_str(result.stderr),
