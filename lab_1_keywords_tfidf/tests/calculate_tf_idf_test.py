@@ -3,6 +3,7 @@ Checks the first lab calculate tf-idf function
 """
 
 import math
+
 import unittest
 
 import pytest

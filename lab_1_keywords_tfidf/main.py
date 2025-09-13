@@ -38,6 +38,12 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
 
 
 def check_positive_int(user_input: Any) -> bool:
+    if not isinstance (user_input, int) or isinstance(user_input, bool):
+        return False
+    if user_input <= 0:
+        return False
+    return True
+   
     """
     Check if the object is a positive integer (not bool).
 
@@ -50,6 +56,9 @@ def check_positive_int(user_input: Any) -> bool:
 
 
 def check_float(user_input: Any) -> bool:
+    if not isinstance(user_input, float) or isinstance(user_input, bool):
+        return False
+    return True
     """
     Check if the object is a float.
 
@@ -86,6 +95,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
+
     """
     Exclude stop words from the token sequence.
 
