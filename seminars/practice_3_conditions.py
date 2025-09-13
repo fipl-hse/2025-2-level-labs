@@ -75,18 +75,12 @@ age = 25
 country = "USA"
 has_permission = True
 
-if age > 18 and country == "USA" and \
-   has_permission and age < 30:
+if age > 18 and country == "USA" and has_permission and age < 30:
     print("Access granted (with backslash)")
 
 # 2. Using parentheses () for implicit line continuation
 #    This is more Pythonic and recommended.
-if (
-    age > 18
-    and country == "USA"
-    and has_permission
-    and age < 30
-):
+if age > 18 and country == "USA" and has_permission and age < 30:
     print("Access granted (with parentheses)")
 
 # Note:
