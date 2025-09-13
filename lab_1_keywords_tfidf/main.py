@@ -9,18 +9,15 @@ from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
-    if user_input == []:
-        check_result = can_be_empty
+    if user_input is []:
+        return can_be_empty
     elif isinstance(user_input, list):
         for element in user_input:
-            if type(element) != elements_type:
-                check_result = False
-                break
-            else:
-                check_result = True
+            if not isinstance(element, elements_type):
+                return False
+        return True
     else:
-        check_result = False
-    return check_result 
+        return False 
     """
     Check if the object is a list containing elements of a certain type.
 
@@ -35,6 +32,15 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    if user_input is {}:
+        return can_be_empty
+    elif isinstance(user_input, dict):
+        for key, value in user_input.items():
+            if not isinstance(key, key_type) or not isinstance(value, value_type):
+                return False
+        return True
+    else:
+        return False
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -128,6 +134,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
+    if check_list(tokens, str, True):
+        frequencies = {token: tokens.count(token) for token in tokens}
+        return frequencies
+    else:
+        return None
     """
     Create a frequency dictionary from the token sequence.
 
@@ -141,6 +152,10 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
+    if check_dict(frequencies, str, int or float, True):
+        sorted(frequencies, key=frequencies.values, reverse=True)[0:top]
+    else:
+        return None
     """
     Extract the most frequent tokens.
 
