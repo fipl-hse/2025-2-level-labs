@@ -29,19 +29,38 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
-    result = None
-    if cleaned_tokens := clean_and_tokenize(target_text):
-        if removed_stop_words := remove_stop_words(cleaned_tokens, stop_words):
-            if calculated_frequencies := calculate_frequencies(removed_stop_words):
-                if calculated_expected_frequency := calculate_expected_frequency(calculated_frequencies, corpus_freqs):
-                    if chi_values := calculate_chi_values(calculated_expected_frequency, calculated_frequencies):
-                        if significant_words := extract_significant_words(chi_values, alpha=0.05):
-                            if top_n := get_top_n(significant_words, 10):
-                                result = top_n
 
-    if result is None:
-        return None
-    
+
+    print(clean_and_tokenize.__name__)
+    cleaned_tokens = clean_and_tokenize(target_text)
+    if not cleaned_tokens:
+        return
+
+    removed_stop_words = remove_stop_words(cleaned_tokens, stop_words)
+    if not removed_stop_words:
+        return
+
+    calculated_frequencies = calculate_frequencies(removed_stop_words)
+    if not calculated_frequencies:
+        return
+
+    expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
+    if not expected_frequency:
+        return
+
+    chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
+    if not chi_values:
+        return
+
+    significant_words = extract_significant_words(chi_values, 0.05)
+    if not significant_words:
+        return
+
+    top_words = get_top_n(significant_words, 10)
+    if not top_words:
+        return
+
+    result = top_words
     assert result, "Keywords are not extracted"
 
 
