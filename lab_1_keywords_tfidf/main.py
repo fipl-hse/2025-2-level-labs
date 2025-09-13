@@ -152,8 +152,11 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
-    if check_dict(frequencies, str, int or float, True):
-        sorted(frequencies, key=frequencies.values, reverse=True)[0:top]
+    if check_dict(frequencies, str, int or float, True) and check_positive_int(top):
+        if top > len(frequencies):
+            return sorted(frequencies)
+        else:
+            return sorted(frequencies, key=frequencies.values(), reverse=True)[0:top]
     else:
         return None
     """
