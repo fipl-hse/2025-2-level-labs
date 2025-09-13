@@ -5,7 +5,7 @@ Frequency-driven keyword extraction starter
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
 
-from lab_1_keywords_tfidf.main import (
+from main import (
     calculate_chi_values,
     calculate_expected_frequency,
     calculate_frequencies,
@@ -13,6 +13,16 @@ from lab_1_keywords_tfidf.main import (
     extract_significant_words,
     get_top_n,
     remove_stop_words,
+)
+
+FUNCTIONS: tuple[callable] = (
+    clean_and_tokenize,
+    remove_stop_words,
+    calculate_frequencies,
+    calculate_expected_frequency,
+    calculate_chi_values,
+    extract_significant_words,
+    get_top_n
 )
 
 
@@ -29,35 +39,35 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
-    cleaned_tokens = clean_and_tokenize(target_text)
-    if not cleaned_tokens:
-        return None
 
-    removed_stop_words = remove_stop_words(cleaned_tokens, stop_words)
-    if not removed_stop_words:
-        return None
+    result = None
+    current_result = target_text
 
-    calculated_frequencies = calculate_frequencies(removed_stop_words)
-    if not calculated_frequencies:
-        return None
+    for function in FUNCTIONS:
+        if function.__code__.co_argcount == 1:
+            current_result = function(current_result)
 
-    expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
-    if not expected_frequency:
-        return None
+        elif function.__name__ == "remove_stop_words":
+            result = function(current_result, stop_words)
 
-    chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
-    if not chi_values:
-        return None
+        elif function.__name__ == "calculate_expected_frequency":
+            current_result = function(current_result, corpus_freqs)
 
-    significant_words = extract_significant_words(chi_values, 0.05)
-    if not significant_words:
-        return None
+        elif function.__name__ == "calculate_chi_values":
+            current_result = function(current_result, calculated_frequencies)
 
-    top_words = get_top_n(significant_words, 10)
-    if not top_words:
-        return None
 
-    result = top_words
+        if not current_result:
+            break
+
+
+        if function.__name__ == "calculate_frequencies":
+            calculated_frequencies = current_result
+
+        if function.__name__ == "get_top_n":
+            result = function(current_result, 10)
+
+    result = current_result
     assert result, "Keywords are not extracted"
 
 
