@@ -80,7 +80,7 @@ def check_float(user_input: Any) -> bool:
 
 def clean_and_tokenize(raw_text: str) -> list[str] | None:
     if isinstance(raw_text, str):
-        symbols_to_delete = '0123456789.,?-:;!'
+        symbols_to_delete = '.,?-:;!%><#@$^&*()_'
         raw_text = raw_text.replace('\n', ' ')
         raw_text = raw_text.lower()
         for symbol in raw_text:
@@ -105,7 +105,7 @@ def clean_and_tokenize(raw_text: str) -> list[str] | None:
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
-    if isinstance(tokens, list[str]) and (stop_words, list[str]):
+    if check_list(tokens, str, True) and check_list(stop_words, str, True):
         for stop_word in stop_words:
             while stop_word in tokens:
                 tokens.remove(stop_word)
