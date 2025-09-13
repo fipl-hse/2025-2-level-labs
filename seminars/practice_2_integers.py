@@ -141,15 +141,7 @@ def factorial(n: int) -> int:
         int: Factorial of n
     """
     # student implementation goes here
-    i = 1
-    for i in range(1, n + 1):
-        factorial *= i
-    return factorial
-
-print(factorial(0))
 # factorial(1) → 1
-print(factorial(5))
-
 
 # Task 6:
 def power(a: float, b: int) -> float:
