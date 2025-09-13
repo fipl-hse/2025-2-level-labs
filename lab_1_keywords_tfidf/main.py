@@ -22,9 +22,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
 
 
-def check_dict(
-    user_input: Any, key_type: type, value_type: type, can_be_empty: bool
-) -> bool:
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -64,8 +62,6 @@ def check_float(user_input: Any) -> bool:
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
-    #   with open("Дюймовочка.txt", "r", encoding="utf-8") as t:
-    #   text = t.read()
     text = text.lower()
     clean = ""
     for element in text:
@@ -78,7 +74,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         return None
     return tokens
 
-    # tokens_text = clean_and_tokenize("the cat and the dog")
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
@@ -92,16 +87,13 @@ def clean_and_tokenize(text: str) -> list[str] | None:
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
-    #   tokens = tokens_text
-    #   with open("stop_words.txt", "r", encoding="utf-8") as sw:
-    #   stop_words = sw.read()
-    if type(tokens) is not list or type(stop_words) is not list:
+    if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
     for token in tokens:
-        if type(token) is not str:
+        if not isinstance(token, str):
             return None
     for stopword in stop_words:
-        if type(stopword) is not str:
+        if not isinstance(stopword, str):
             return None
     tokens_list = []
     for token in tokens:
@@ -109,7 +101,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
             tokens_list.append(token)
     return tokens_list
 
-    # print(remove_stop_words(tokens_text, ["the"]))
     """
     Exclude stop words from the token sequence.
 
@@ -164,9 +155,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
 
 
-def calculate_tfidf(
-    term_freq: dict[str, float], idf: dict[str, float]
-) -> dict[str, float] | None:
+def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
     Calculate TF-IDF score for tokens.
 
