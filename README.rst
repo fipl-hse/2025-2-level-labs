@@ -114,8 +114,8 @@
 Ресурсы
 -------
 
-1. `Таблица
-   успеваемости <https://docs.google.com/spreadsheets/d/1aa5XVjz62MJa7K8jMkH4u56BE9A9-jp1WrDjYKZRols>`__
-2. :ref:`starting-guide-label`
-3. :ref:`running-tests-label`
-4. :ref:`faq-label`
+1. `Таблица успеваемости <https://docs.google.com/spreadsheets/d/1aa5XVjz62MJa7K8jMkH4u56BE9A9-jp1WrDjYKZRols>`__
+2. `Сайт дисциплины <https://fipl-hse.github.io/docs/labs_2025/#>`__ с описанием лабораторных работ и полезными материалами
+3. :ref:`starting-guide-label`
+4. :ref:`running-tests-label`
+5. :ref:`faq-label`
