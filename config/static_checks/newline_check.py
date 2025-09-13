@@ -63,7 +63,7 @@ def check_paths(list_with_paths: list) -> list:
         list: Appropriate paths
     """
     paths_to_exclude = ["1_raw.txt", "__init__.cpython-310.pyc", "test_params.cpython-310.pyc"]
-    bad_endings = [".jpg", ".png", ".pkl", ".udpipe"]
+    bad_endings = [".jpg", ".png", ".pkl", ".udpipe", ".zip"]
     paths = []
     for path in sorted(list_with_paths):
         is_file = path.is_file() and path.stat().st_size != 0

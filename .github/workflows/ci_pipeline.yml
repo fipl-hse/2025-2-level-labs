@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  REPOSITORY_TYPE: admin
+  REPOSITORY_TYPE: public
 
 jobs:
   install-dependencies:
@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup FIPL environment
-        uses: fipl-hse/setup-env-action@v0.11
+        uses: fipl-hse/setup-env-action@v0.12
       - name: Confirming everything is OK
         run: |
           ls -la venv
@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup FIPL environment
-        uses: fipl-hse/setup-env-action@v0.11
+        uses: fipl-hse/setup-env-action@v0.12
       - name: PR name check
         run: |
           source venv/bin/activate
@@ -59,7 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup FIPL environment
-        uses: fipl-hse/setup-env-action@v0.11
+        uses: fipl-hse/setup-env-action@v0.12
       - name: Code Style
         run: |
           source venv/bin/activate
@@ -75,7 +75,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup FIPL environment
-        uses: fipl-hse/setup-env-action@v0.11
+        uses: fipl-hse/setup-env-action@v0.12
       - name: MyPy check
         run: |
           source venv/bin/activate
@@ -94,7 +94,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup FIPL environment
-        uses: fipl-hse/setup-env-action@v0.11
+        uses: fipl-hse/setup-env-action@v0.12
       - name: Run tests
         run: |
           source venv/bin/activate
@@ -112,7 +112,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup FIPL environment
-        uses: fipl-hse/setup-env-action@v0.11
+        uses: fipl-hse/setup-env-action@v0.12
       - name: Run start
         run: |
           source venv/bin/activate
@@ -128,7 +128,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup FIPL environment
-        uses: fipl-hse/setup-env-action@v0.11
+        uses: fipl-hse/setup-env-action@v0.12
       - name: Flake8 check
         run: |
           source venv/bin/activate
