@@ -51,7 +51,7 @@
             "name": "Launch LAB 1 start",
             "type": "debugpy",
             "request": "launch",
-            "program": "lab_1_keywords_tfidf/start.py",
+            "program": "start.py",
             "cwd": "${workspaceFolder}/lab_1_keywords_tfidf",
             "console": "integratedTerminal",
             "env": {
@@ -59,12 +59,16 @@
             }
         },
         {
-            "name": "Launch LAB 1 main",
+            "name": "Run tests",
             "type": "debugpy",
             "request": "launch",
-            "program": "lab_1_keywords_tfidf/main.py",
-            "cwd": "${workspaceFolder}/lab_1_keywords_tfidf",
+            "program": "config/run_tests.py",
+            "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
+            "args":[
+                "--pr-name", "test",
+                "--pr-author", "test"
+            ],
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }
