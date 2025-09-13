@@ -4,20 +4,20 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
-from json import load
+#from json import load
 from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
-    if user_input is []:
+    if user_input == []:
         return can_be_empty
-    elif isinstance(user_input, list):
+    if isinstance(user_input, list):
         for element in user_input:
             if not isinstance(element, elements_type):
                 return False
         return True
     else:
-        return False 
+        return False
     """
     Check if the object is a list containing elements of a certain type.
 
@@ -34,7 +34,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     if user_input is {}:
         return can_be_empty
-    elif isinstance(user_input, dict):
+    if isinstance(user_input, dict):
         for key, value in user_input.items():
             if not isinstance(key, key_type) or not isinstance(value, value_type):
                 return False
@@ -58,8 +58,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
 def check_positive_int(user_input: Any) -> bool:
     if type(user_input) is int:
         return user_input > 0
-    else:
-        return False
+    return False
     """
     Check if the object is a positive integer (not bool).
 
@@ -94,8 +93,7 @@ def clean_and_tokenize(raw_text: str) -> list[str] | None:
                 raw_text = raw_text.replace(symbol, '')
         cleaned_tokens = raw_text.split()
         return cleaned_tokens
-    else:
-        return None
+    return None
 
 
     """
@@ -116,8 +114,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
             while stop_word in tokens:
                 tokens.remove(stop_word)
         return tokens
-    else:
-        return None
+    return None
 
 
     """
@@ -137,8 +134,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     if check_list(tokens, str, True):
         frequencies = {token: tokens.count(token) for token in tokens}
         return frequencies
-    else:
-        return None
+    return None
     """
     Create a frequency dictionary from the token sequence.
 
@@ -152,13 +148,12 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
-    if check_dict(frequencies, str, int or float, True) and check_positive_int(top):
+    if check_dict(frequencies, str, int or float, False) and check_positive_int(top):
         if top > len(frequencies):
-            return sorted(frequencies)
+            return sorted(frequencies, reverse = True)
         else:
             return sorted(frequencies, key=frequencies.values(), reverse=True)[0:top]
-    else:
-        return None
+    return None
     """
     Extract the most frequent tokens.
 
