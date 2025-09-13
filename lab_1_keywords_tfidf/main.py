@@ -50,6 +50,10 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
 
 
 def check_positive_int(user_input: Any) -> bool:
+    if type(user_input) is int:
+        return user_input > 0
+    else:
+        return False
     """
     Check if the object is a positive integer (not bool).
 
@@ -62,6 +66,7 @@ def check_positive_int(user_input: Any) -> bool:
 
 
 def check_float(user_input: Any) -> bool:
+    return isinstance(user_input, float)
     """
     Check if the object is a float.
 
@@ -74,14 +79,19 @@ def check_float(user_input: Any) -> bool:
 
 
 def clean_and_tokenize(raw_text: str) -> list[str] | None:
-    symbols_to_delete = '0123456789.,?-:;!'
-    raw_text = raw_text.replace('\n', ' ')
-    raw_text = raw_text.lower()
-    for symbol in raw_text:
-        if symbol in symbols_to_delete:
-            raw_text = raw_text.replace(symbol, '')
-    cleaned_tokens = raw_text.split()
-    return cleaned_tokens
+    if isinstance(raw_text, str):
+        symbols_to_delete = '0123456789.,?-:;!'
+        raw_text = raw_text.replace('\n', ' ')
+        raw_text = raw_text.lower()
+        for symbol in raw_text:
+            if symbol in symbols_to_delete:
+                raw_text = raw_text.replace(symbol, '')
+        cleaned_tokens = raw_text.split()
+        return cleaned_tokens
+    else:
+        return None
+
+
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
@@ -95,6 +105,15 @@ def clean_and_tokenize(raw_text: str) -> list[str] | None:
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
+    if isinstance(tokens, list[str]) and (stop_words, list[str]):
+        for stop_word in stop_words:
+            while stop_word in tokens:
+                tokens.remove(stop_word)
+        return tokens
+    else:
+        return None
+
+
     """
     Exclude stop words from the token sequence.
 
