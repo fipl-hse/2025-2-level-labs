@@ -62,6 +62,12 @@ def check_float(user_input: Any) -> bool:
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
+    punctuation_marks = [',','.','!','?','(',')',':',';']
+    for element in punctuation_marks:
+        text = text.replace(element,'')
+    text = text.lower()
+    tokens = text.split()
+    return tokens
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
@@ -75,6 +81,12 @@ def clean_and_tokenize(text: str) -> list[str] | None:
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
+    if stop_words == []:
+        return None
+    for stop_word in stop_words:
+        while stop_word in tokens:
+            tokens = tokens.remove(stop_word)
+    return tokens
     """
     Exclude stop words from the token sequence.
 
@@ -89,6 +101,13 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
+    dict = {}
+    for element in tokens:
+        if element in dict:
+            dict[element] += 1
+        else:
+            dict[element] = 1
+    return dict
     """
     Create a frequency dictionary from the token sequence.
 
@@ -102,6 +121,8 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
+    dict = sorted(dict.items(), key=lambda x: x[1])
+    return dict
     """
     Extract the most frequent tokens.
 
