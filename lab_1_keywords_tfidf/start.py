@@ -57,8 +57,6 @@ def main() -> None:
         return
 
     top_words = get_top_n(significant_words, 10)
-    if not top_words:
-        return
 
     result = top_words
     assert result, "Keywords are not extracted"
