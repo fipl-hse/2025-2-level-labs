@@ -10,7 +10,11 @@ from math import log
 from typing import Any
 
 
-def check_list(user_input: Any, elements_type: type |  tuple[type, ...], can_be_empty: bool) -> bool:
+def check_list(
+        user_input: Any,
+        elements_type: type | tuple[type, ...],
+        can_be_empty: bool
+        ) -> bool:
     """
     Check if the object is a list containing elements of a certain type.
 
@@ -35,7 +39,12 @@ def check_list(user_input: Any, elements_type: type |  tuple[type, ...], can_be_
     return True
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type | tuple[type, ...], can_be_empty: bool) -> bool:
+def check_dict(
+        user_input: Any,
+        key_type: type,
+        value_type: type | tuple[type, ...],
+        can_be_empty: bool
+        ) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -312,9 +321,9 @@ def extract_significant_words(
         return None
 
     calculated_alphas = {0.05: 3.841458821, 0.01: 6.634896601, 0.001: 10.82756617}
-    if not calculated_alphas.get(alpha):
-        return None
 
     threshold = calculated_alphas.get(alpha)
+    if not (threshold := calculated_alphas.get(alpha)):
+        return None
 
     return {token: value for token, value in chi_values.items() if value > threshold}
