@@ -94,8 +94,14 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
 
 
+tokens = clean_and_tokenize(target_text)
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
-
+    if not isinstance(tokens, list) or not isinstance(stop_words, list):
+        return None
+    if stop_words not in tokens:
+        return None
+    filtered_tokens = [token for token in tokens if token not in stop_words]
+    return filtered_tokens
     """
     Exclude stop words from the token sequence.
 
@@ -109,7 +115,15 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     """
 
 
+filtered_tokens = remove_stop_words(tokens, stop_words)
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
+    frequency_dictionary = {}
+    if not isinstance(tokens, list):
+        return None
+    for token in tokens:
+        frequency_dictionary[token] = tokens.count(token)
+    return frequency_dictionary
+
     """
     Create a frequency dictionary from the token sequence.
 
@@ -121,8 +135,11 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         In case of corrupt input arguments, None is returned.
     """
 
-
+frequency_dictionary = calculate_frequencies(filtered_tokens)
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
+    if not isinstance(frequency_dictionary, dict):
+        return None
+#дальше я устала
     """
     Extract the most frequent tokens.
 
