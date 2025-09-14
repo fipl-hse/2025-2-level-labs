@@ -148,13 +148,13 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if (not check_dict(frequencies, str, int | float, True) 
         or not check_positive_int(top)
-          or not frequencies or top > len(frequencies)):
+          or not frequencies or not top):
         return None
     word_lst_sorted = []
     freq_lst = list(frequencies.items())
     freq_lst_sorted = sorted(freq_lst, key = lambda x: (-x[-1], x[0]))
-    
-    #top = min(top, len(freq_lst_sorted))
+    if top > len(freq_lst_sorted):
+        top = min(top, len(freq_lst_sorted))
     word_lst_sorted = [item[0] for item in freq_lst_sorted[:top]]
     return word_lst_sorted
 
