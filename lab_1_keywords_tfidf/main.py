@@ -94,7 +94,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     cleaned_and_tokenized_text = []
     for word in text.split():
         cleaned_word = (''.join(symbol.lower()
-                                        for symbol in word if symbol.isalpha()))
+                                        for symbol in word if symbol.isalnum()))
         if cleaned_word:
             cleaned_and_tokenized_text.append(cleaned_word)
     return cleaned_and_tokenized_text
