@@ -110,7 +110,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True):
+    if not check_list(tokens, str, True) or not check_list(stop_words, str, True):
         return None
     cleaned_tokens = [token for token in tokens if token not in stop_words]
     return cleaned_tokens
@@ -156,8 +156,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     
     top = min(top, len(freq_lst_sorted))
     word_lst_sorted = [item[0] for item in freq_lst_sorted[:top]]
-    return word_lst_sorted[:top]
-
+    return word_lst_sorted
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
