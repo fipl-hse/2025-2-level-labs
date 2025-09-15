@@ -2,7 +2,10 @@
 Frequency-driven keyword extraction starter
 """
 
-'''
+# pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
+from json import load
+
+
 def main() -> None:
     """
     Launches an implementation.
@@ -17,4 +20,7 @@ def main() -> None:
         corpus_freqs = load(file)
     result = None
     assert result, "Keywords are not extracted"
-'''
+
+
+if __name__ == "__main__":
+    main()
