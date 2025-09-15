@@ -9,11 +9,22 @@ from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+    if type(user_input) != list:
+        return False
+    if user_input == []:
+        if can_be_empty:
+            return True
+        if not can_be_empty:
+            return False
+    for element in user_input:
+        if type(element) != elements_type:
+            return False
+    return True
     """
     Check if the object is a list containing elements of a certain type.
 
     Args:
-        user_input (Any): Object to check
+        user_input (Any): Object to check 
         elements_type (type): Expected type of list elements
         can_be_empty (bool): Whether an empty list is allowed
 
@@ -62,12 +73,15 @@ def check_float(user_input: Any) -> bool:
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
-    punctuation_marks = [',','.','!','?','(',')',':',';']
-    for element in punctuation_marks:
-        text = text.replace(element,'')
-    text = text.lower()
-    tokens = text.split()
-    return tokens
+    if type(text) != str:
+        return None
+    cleaned_and_tokenized_text = []
+    for word in text.split():
+        token = ''.join(symbol.lower() for symbol in word if symbol.isalpha())
+        if token:
+            cleaned_and_tokenized_text.append(token)
+    return cleaned_and_tokenized_text
+
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
@@ -79,16 +93,17 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         In case of corrupt input arguments, None is returned.
     """
 
-
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
-    if stop_words == []:
+    if not check_list(tokens, str, False):
+        return None
+    if not check_list(stop_words, str, True):
         return None
     for stop_word in stop_words:
         while stop_word in tokens:
-            tokens = tokens.remove(stop_word)
+            tokens.remove(stop_word) 
     return tokens
     """
-    Exclude stop words from the token sequence.
+    Exclude stop words from the token sequence. 
 
     Args:
         tokens (list[str]): Original token sequence
@@ -109,7 +124,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
             dict[element] = 1
     return dict
     """
-    Create a frequency dictionary from the token sequence.
+    Create a frequency dictionary from the token sequence. 
 
     Args:
         tokens (list[str]): Token sequence
@@ -118,7 +133,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-
+# 1) не называем переменные как встроенные названия, 2) isinstance (a, int) лучше чем type, 3) is/==, 4) remove seminar.py, 5) не создавать лишние переменные
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     dict = sorted(dict.items(), key=lambda x: x[1])
