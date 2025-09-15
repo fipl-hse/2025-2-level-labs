@@ -19,13 +19,13 @@ Conditional statements (if, elif, else).
 # Conditions are expressions that evaluate to True or False (boolean values).
 # Indentation is important: code inside if/elif/else must be indented.
 #
-x = 10
+"""x = 10
 if x > 0:
     print("Positive")
 elif x == 0:
     print("Zero")
 else:
-    print("Negative")
+    print("Negative")"""
 
 # Comparison operators
 # ==   → equal
@@ -46,8 +46,8 @@ else:
 # 3. or
 #
 # Example:
-print(True or False and False)  # → True, because "and" is evaluated first
-print((True or False) and False)  # → False, parentheses change the order
+"""print(True or False and False)  # → True, because "and" is evaluated first
+print((True or False) and False)"""  # → False, parentheses change the order
 
 # The walrus operator (:=)
 #
@@ -57,13 +57,13 @@ print((True or False) and False)  # → False, parentheses change the order
 # Syntax: variable := expression
 #
 # Example:
-if (n := len("hello")) > 3:
+"""if (n := len("hello")) > 3:
     print(f"Length is {n}")  # → prints "Length is 5"
 #
 # Without walrus:
 n = len("hello")
 if n > 3:
-    print(f"Length is {n}")
+    print(f"Length is {n}")"""
 
 # Long conditions
 #
@@ -71,23 +71,23 @@ if n > 3:
 # There are two main ways to split them:
 
 # 1. Using backslash (\) for explicit line continuation
-age = 25
+"""age = 25
 country = "USA"
 has_permission = True
 
 if age > 18 and country == "USA" and \
    has_permission and age < 30:
-    print("Access granted (with backslash)")
+    print("Access granted (with backslash)")"""
 
 # 2. Using parentheses () for implicit line continuation
 #    This is more Pythonic and recommended.
-if (
+"""if (
     age > 18
     and country == "USA"
     and has_permission
     and age < 30
 ):
-    print("Access granted (with parentheses)")
+    print("Access granted (with parentheses)")"""
 
 # Note:
 # - Parentheses automatically allow line breaks without backslashes.
@@ -108,9 +108,13 @@ def is_positive(n: int) -> bool:
         bool: True if n > 0, False otherwise
     """
     # student implementation goes here
+    if n > 0:
+        return True
+    else:
+        return False
 
 
-# is_positive(5) → True
+print(is_positive(5))
 # is_positive(-3) → False
 # is_positive(0) → False
 
@@ -127,9 +131,15 @@ def number_sign(n: int) -> str:
         str: "positive", "negative", or "zero"
     """
     # student implementation goes here
+    if n > 0:
+        print("positive")
+    elif n == 0:
+        print("zero")
+    else:
+        print("negative")
 
 
-# number_sign(5) → "positive"
+print(number_sign(5))
 # number_sign(-3) → "negative"
 # number_sign(0) → "zero"
 
@@ -147,9 +157,11 @@ def max_of_two(a: int, b: int) -> int:
         int: The larger of a and b
     """
     # student implementation goes here
+    max_ = max(a, b)
+    return max_
 
 
-# max_of_two(3, 7) → 7
+print(max_of_two(3, 7))
 # max_of_two(10, 2) → 10
 # max_of_two(5, 5) → 5
 
@@ -171,9 +183,19 @@ def grade(score: int) -> str:
         str: Letter grade
     """
     # student implementation goes here
+    if 90 <= score <= 100:
+        return "A"
+    elif 80 <= score <= 89:
+        return "B"
+    elif 70 <= score <= 79:
+        return "C"
+    elif 60 <= score <= 69:
+        return "D"
+    else:
+        return "F"
 
 
-# grade(95) → "A"
+print(grade(95))
 # grade(72) → "C"
 # grade(59) → "F"
 
@@ -192,9 +214,13 @@ def is_in_range(n: int, low: int, high: int) -> bool:
         bool: True if low <= n <= high, False otherwise
     """
     # student implementation goes here
+    if low <= n <= high:
+        return True
+    else:
+        return False
 
 
-# is_in_range(5, 1, 10) → True
+print(is_in_range(5, 1, 10))
 # is_in_range(0, 1, 10) → False
 # is_in_range(10, 1, 10) → True
 
@@ -214,9 +240,15 @@ def complex_condition(a: bool, b: bool, c: bool) -> bool:
         bool: Result of the expression
     """
     # student implementation goes here
+    if a:
+        return a
+    elif b:
+        return b
+    else:
+        return c
 
 
-# complex_condition(True, True, False) → True
+print(complex_condition(True, True, False))
 # complex_condition(False, True, True) → False
 # complex_condition(False, False, False) → True
 
@@ -237,8 +269,13 @@ def leap_year(year: int) -> bool:
         bool: True if leap year, False otherwise
     """
     # student implementation goes here
+    if year % 4 == 0 and year % 400 == 0 and year % 100 != 0:
+        return True
+    else:
+        return False
 
 
-# leap_year(2000) → True
+
+print(leap_year(2000))
 # leap_year(1900) → False
 # leap_year(2024) → True

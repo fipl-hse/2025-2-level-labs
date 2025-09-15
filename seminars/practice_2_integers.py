@@ -1,3 +1,4 @@
+import math
 """
 Programming 2025.
 
@@ -59,6 +60,8 @@ def add_numbers(a: int, b: int) -> int:
         int: Sum of a and b
     """
     # student implementation goes here
+    return a + b
+print(add_numbers(2, 3))
 
 
 # add_numbers(2, 3) → 5
@@ -80,6 +83,9 @@ def average(a: float, b: float, c: float) -> float:
         float: Average value of the three numbers
     """
     # student implementation goes here
+    return (a + b + c)/3
+print(average(1, 2, 3))
+
 
 
 # average(1, 2, 3) → 2.0
@@ -99,6 +105,11 @@ def is_even(n: int) -> bool:
         bool: True if n is even, False otherwise
     """
     # student implementation goes here
+    if n % 2 == 0:
+        return True
+    else:
+        return False
+print(is_even(7))
 
 
 # is_even(2) → True
@@ -119,6 +130,8 @@ def area_of_circle(radius: float) -> float:
         float: Area of the circle
     """
     # student implementation goes here
+    return radius**2 * math.pi
+print(round(area_of_circle(2.5), 5))
 
 
 # area_of_circle(1) → 3.14159...
@@ -138,6 +151,12 @@ def factorial(n: int) -> int:
         int: Factorial of n
     """
     # student implementation goes here
+    result = 1
+    while n > 0:
+        result = result * n
+        n -= 1
+    return result
+print(factorial(5))
 
 
 # factorial(0) → 1
@@ -158,6 +177,8 @@ def power(a: float, b: int) -> float:
         float: Result of a raised to the power of b
     """
     # student implementation goes here
+    return a**b
+print(power(2, 3))
 
 
 # power(2, 3) → 8
@@ -181,6 +202,9 @@ def distance(x1: float, y1: float, x2: float, y2: float) -> float:
         float: Euclidean distance between the two points
     """
     # student implementation goes here
+    distance_ = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    return distance_
+print(distance(0, 0, 3, 4))
 
 
 # distance(0, 0, 3, 4) → 5.0
@@ -200,6 +224,14 @@ def fibonacci(n: int) -> int:
         int: n-th Fibonacci number
     """
     # student implementation goes here
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci(n - 1) + fibonacci(n - 2)
+print(fibonacci(7))
+
 
 
 # fibonacci(0) → 0
@@ -220,6 +252,18 @@ def is_prime(n: int) -> bool:
         bool: True if n is prime, False otherwise
     """
     # student implementation goes here
+    if n < 0:
+        return False
+    elif n == 2:
+        return True
+    elif n % 2 == 0:
+        return False
+    for i in range(3, int(n**0.5) + 1, 2):
+        if n % i == 0:
+            return False
+    else:
+        return True
+print(is_prime(15))
 
 
 # is_prime(2) → True
