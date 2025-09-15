@@ -9,9 +9,18 @@ from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
-    """
+    '''    
     Check if the object is a list containing elements of a certain type.
-
+    '''
+    if not isinstance(user_input, list):
+        return False
+    if not can_be_empty and len(user_input)==0:
+        return False
+    for elements in user_input:
+        if not isinstance(elements, elements_type):
+            return False
+    return True
+    '''
     Args:
         user_input (Any): Object to check
         elements_type (type): Expected type of list elements
@@ -19,13 +28,25 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 
     Returns:
         bool: True if valid, False otherwise
-    """
+    '''
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
-
+    """
+    if not isinstance(user_input, dict):
+        return False
+    if not can_be_empty and len(user_input)==0:
+        return False 
+    for key in user_input:
+        if not isinstance(key, key_type):
+            return False
+    for value in user_input:
+        if not isinstance(value, value_type):
+            return False
+    return True 
+"""
     Args:
         user_input (Any): Object to check
         key_type (type): Expected type of dictionary keys
@@ -40,28 +61,36 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
 def check_positive_int(user_input: Any) -> bool:
     """
     Check if the object is a positive integer (not bool).
-
-    Args:
-        user_input (Any): Object to check
-
-    Returns:
-        bool: True if valid, False otherwise
     """
+    return isinstance(user_input, int)
+    
 
 
 def check_float(user_input: Any) -> bool:
+     
     """
     Check if the object is a float.
-
-    Args:
-        user_input (Any): Object to check
-
-    Returns:
-        bool: True if valid, False otherwise
     """
+    return isinstance(user_input, float)
+    
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
+    if not isinstance(text, str):
+        return None
+    
+    punctuation='!@#$%^&*(\')"№;:?,./<>`{~}[]+=|№-_'
+
+    new_text=''
+    for element in text:
+        if element not in punctuation:
+            new_text+=element
+
+    low_register=new_text.lower()
+
+    splited_text=low_register.split()
+
+    return splited_text
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
@@ -75,6 +104,19 @@ def clean_and_tokenize(text: str) -> list[str] | None:
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
+    if not isinstance(tokens, list) or not isinstance(stop_words, list):
+        return None 
+    
+    text_without_stop_words=[]
+
+    for element in tokens:
+        if not isinstance(element, str):
+            return None
+        if element not in stop_words:
+            text_without_stop_words+=element
+
+    return text_without_stop_words
+
     """
     Exclude stop words from the token sequence.
 
@@ -89,6 +131,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
+
+    if not isinstance(tokens, list):
+        return None
+    
+    for element in tokens:
+        if not isinstance(element, str):
+            return None
+        if element==element:
+            quantity += 1
+            
     """
     Create a frequency dictionary from the token sequence.
 
