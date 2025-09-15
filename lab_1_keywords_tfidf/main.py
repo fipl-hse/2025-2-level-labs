@@ -9,6 +9,7 @@ from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+
     """
     Check if the object is a list containing elements of a certain type.
 
@@ -62,6 +63,15 @@ def check_float(user_input: Any) -> bool:
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
+    if not isinstance(text, str):
+        return None
+    lit_txt = text.lower()
+    done = ""
+    for el in lit_txt:
+        if el.isalnum() or el == " ":
+            done += el
+    tokens = done.split()
+    return tokens        
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
