@@ -44,8 +44,53 @@ print(example)
 # .strip() - remove the given element (space by default) from the both ends of the string
 # .find() - search the string for the specified value (return the index of the first occurrence)
 
-# TASKS
+# Common information about loops
+#
+# Loops allow repeating a block of code multiple times
+# Two main types of loops in Python: for and while
+# Loops can be nested, and can include break, continue, and else blocks
 
+# for loop over iterable
+example_list = [1, 2, 3, 4, 5]
+for item in example_list:
+    print(item)  # prints each item in the list
+
+# for loop with range
+for i in range(5):  # 0, 1, 2, 3, 4
+    print(i)
+
+# for loop with start, stop, step
+for i in range(1, 10, 2):  # 1, 3, 5, 7, 9
+    print(i)
+
+# for loop with enumerate
+fruits = ["apple", "banana", "cherry"]
+for index, fruit in enumerate(fruits):
+    print(index, fruit)  # prints index and value
+
+# break and continue
+for i in range(5):
+    if i == 3:
+        break  # exit the loop
+    if i == 1:
+        continue  # skip this iteration
+    print(i)
+
+# for / else
+for i in range(3):
+    print(i)
+    if i == 5:
+        break
+else:
+    print("Loop completed without break")
+
+# while loop
+count = 0
+while count < 5:
+    print(count)
+    count += 1
+
+# TASKS
 
 # Task 1:
 def multiply_string(input_string: str, how_many: int) -> str:
