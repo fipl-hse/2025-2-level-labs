@@ -21,59 +21,7 @@ Conditional statements (if, elif, else).
 #
 x = 10
 if x > 0:
-    print("Positive")
-elif x == 0:
-    print("Zero")
-else:
-    print("Negative")
 
-# Comparison operators
-# ==   → equal
-# !=   → not equal
-# >    → greater than
-# <    → less than
-# >=   → greater than or equal
-# <=   → less than or equal
-
-# Logical operators
-# and  → True if both conditions are True
-# or   → True if at least one condition is True
-# not  → negation (inverts True/False)
-
-# Order of evaluation (precedence):
-# 1. not
-# 2. and
-# 3. or
-#
-# Example:
-print(True or False and False)  # → True, because "and" is evaluated first
-print((True or False) and False)  # → False, parentheses change the order
-
-# The walrus operator (:=)
-#
-# Introduced in Python 3.8
-# It allows assignment inside an expression.
-#
-# Syntax: variable := expression
-#
-# Example:
-if (n := len("hello")) > 3:
-    print(f"Length is {n}")  # → prints "Length is 5"
-#
-# Without walrus:
-n = len("hello")
-if n > 3:
-    print(f"Length is {n}")
-
-# Long conditions
-#
-# Sometimes conditions can become too long to fit in one line.
-# There are two main ways to split them:
-
-# 1. Using backslash (\) for explicit line continuation
-age = 25
-country = "USA"
-has_permission = True
 
 if age > 18 and country == "USA" and has_permission and age < 30:
     print("Access granted (with backslash)")
