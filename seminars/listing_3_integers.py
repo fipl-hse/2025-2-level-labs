@@ -32,10 +32,6 @@ print(a**2)  # exponentiation
 # Type conversion
 print(int(3.9))  # convert float to int → 3
 print(float(7))  # convert int to float → 7.0
-print(float(7))  # convert int to float → 7.0
-print(float(7))  # convert int to float → 7.0
-print(float(7))  # convert int to float → 7.0
-print(float(7))  # convert int to float → 7.0
 
 # Useful functions for numbers (some of them)
 # abs(x)       → absolute value of x
