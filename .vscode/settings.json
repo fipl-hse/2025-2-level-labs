@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "lab_1_keywords_tfidf"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
