@@ -85,6 +85,12 @@ def clean_and_tokenize(text: str) -> list[str] | None:
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
+    if stop_words not in tokens:
+        return None
+    for el in tokens:
+        if el == stop_words:
+            tokens.remove(el)
+    return tokens
     """
     Exclude stop words from the token sequence.
 
