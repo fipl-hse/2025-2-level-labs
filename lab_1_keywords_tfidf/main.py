@@ -20,7 +20,14 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     Returns:
         bool: True if valid, False otherwise
     """
-
+    if type(user_input) is not list:
+        return False
+    if len(can_be_empty) == 0:
+        return can_be_empty
+    for element in user_input:
+        if type(element) != elements_type:
+            return False
+    return True
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
@@ -47,7 +54,10 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-
+    if type(user_input) != bool:
+        return True
+    else:
+        return False
 
 def check_float(user_input: Any) -> bool:
     """
@@ -59,7 +69,10 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-
+    if type(user_input) == float:
+        return True
+    else:
+        return False
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
