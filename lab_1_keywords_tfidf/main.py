@@ -105,6 +105,15 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
+    if not isinstance(tokens, str):
+        return None
+    num = {}
+    for el in tokens:
+        if el not in num:
+            num[el] = 1
+        else:
+            num[el] += 1 
+    return num
     """
     Create a frequency dictionary from the token sequence.
 
