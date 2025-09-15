@@ -105,7 +105,8 @@ def multiply_string(input_string: str, how_many: int) -> str:
         str: Repeated string
     """
     # student realisation goes here
-
+    return input_string * how_many
+print(multiply_string('meow ', 2))
 
 # multiply_string('Hi', 2) → 'HiHi'
 # multiply_string('Hi', 3) → 'HiHiHi'
