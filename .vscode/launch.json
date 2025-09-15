@@ -48,6 +48,16 @@
             }
         },
         {
+            "name": "Launch seminar 4",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/practice_4_strings.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
             "name": "Launch LAB 1 start",
             "type": "debugpy",
             "request": "launch",
