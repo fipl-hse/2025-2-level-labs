@@ -100,8 +100,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     for symbol in text:
         if symbol.isalnum() or symbol.isspace():
             cleaned.append(symbol)
-    cleaned = "".join(cleaned)
-    tokens = cleaned.split()
+    cleaned_ = "".join(cleaned)
+    tokens = cleaned_.split()
     return tokens
 
 
@@ -193,6 +193,12 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
             return None
         tf_dict[token] = nt / dict_length
     return tf_dict
+
+
+def log_recursive(x, base):
+    if x < base:
+        return 0
+    return 1 + log_recursive(x / base, base)
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> \
