@@ -154,7 +154,7 @@ def get_top_n(frequencies: Mapping[str, Union[int, float]], top: int) -> list[st
         or not check_positive_int(top)):
         return None
     for k, v in frequencies.items():
-        if not isinstance(k, str) or not (isinstance(v, int) or isinstance(v, float)):
+        if not isinstance(k, str) or not isinstance(v, (float, int)):
             return None
     word_lst_sorted = []
     freq_lst = list(frequencies.items())

@@ -21,38 +21,24 @@ def main() -> None:
     """
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    tokens = clean_and_tokenize(target_text)
+    tokens = clean_and_tokenize(target_text) or []
     print(tokens)
-    if tokens is None:
-        return
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    cleaned_tokens = remove_stop_words(tokens, stop_words)
+    cleaned_tokens = remove_stop_words(tokens, stop_words) or []
     print(cleaned_tokens)
-    if cleaned_tokens is None:
-        return
-    frequencies = calculate_frequencies(cleaned_tokens)
+    frequencies = calculate_frequencies(cleaned_tokens) or {}
     print(frequencies)
-    if frequencies is None:
-        return
-    top_n = get_top_n(frequencies, 5)
+    top_n = get_top_n(frequencies, 5) or []
     print(top_n)
-    if top_n is None:
-        return
-    tf_d = calculate_tf(frequencies)
+    tf_d = calculate_tf(frequencies) or {}
     print(tf_d)
-    if tf_d is None:
-        return
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    idf_d = calculate_tfidf(tf_d, idf)
+    idf_d = calculate_tfidf(tf_d, idf) or {}
     print(idf_d)
-    if idf_d is None:
-        return
-    top_idf = get_top_n(idf_d, 10)
+    top_idf = get_top_n(idf_d, 10) or []
     print(top_idf)
-    if top_idf is None:
-        return
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     result = top_idf
