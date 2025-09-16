@@ -22,29 +22,40 @@ def main() -> None:
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
     tokens = clean_and_tokenize(target_text)
+    print(tokens)
     if tokens is None:
-        print("Error: Failed to remove stop words")
-    else:
-        print(tokens)
+        return
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    cleaned_tokens = remove_stop_words(clean_and_tokenize(target_text), stop_words)
+    cleaned_tokens = remove_stop_words(tokens, stop_words)
     print(cleaned_tokens)
+    if cleaned_tokens is None:
+        return
     frequencies = calculate_frequencies(cleaned_tokens)
     print(frequencies)
+    if frequencies is None:
+        return
     top_n = get_top_n(frequencies, 5)
     print(top_n)
+    if top_n is None:
+        return
     tf_d = calculate_tf(frequencies)
     print(tf_d)
+    if tf_d is None:
+        return
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
     idf_d = calculate_tfidf(tf_d, idf)
     print(idf_d)
+    if idf_d is None:
+        return
     top_idf = get_top_n(idf_d, 10)
     print(top_idf)
+    if top_idf is None:
+        return
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    result = idf_d
+    result = top_idf
     assert result, "Keywords are not extracted"
 
 
