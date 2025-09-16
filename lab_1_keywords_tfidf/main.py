@@ -72,11 +72,11 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
-    cleaned_and_tokenized_text = []
-    for word in text.split():
-        token = ''.join(symbol.lower() for symbol in word if symbol.isalpha())
-        cleaned_and_tokenized_text.append(token)
-    return cleaned_and_tokenized_text
+    if isinstance(text, str):
+        cleaned_and_tokenized_text  = [ ''.join(symbol.lower() for symbol in word if symbol.isalpha()) for word in text.split()]
+        return cleaned_and_tokenized_text
+
+
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -91,8 +91,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    tokens_without_stopwords = [word for word in tokens if word not in stop_words]
-    return tokens_without_stopwords
+    
+    return [word for word in tokens if word not in stop_words]
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -106,9 +106,14 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    token_dict = {i:tokens.count(i) for i in set(tokens)}
-
-    return token_dict
+    if isinstance(tokens, list):
+        token_dict = {}
+        for el in tokens:
+            if el not in token_dict:
+                token_dict[el] = 1
+            else:
+                token_dict[el] += 1
+        return token_dict
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -124,13 +129,14 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    tempo_dict = frequencies
-    top_list = []
-    while len(top_list) != top:
-        top_word = max(tempo_dict, key=tempo_dict.get)
-        top_list.append(top_word)
-        tempo_dict.pop(top_word)
-    return top_list
+    if isinstance(frequencies, dict):
+        tempo_dict = frequencies
+        top_list = []
+        while len(top_list) != top:
+            top_word = max(tempo_dict, key=tempo_dict.get)
+            top_list.append(top_word)
+            tempo_dict.pop(top_word)
+        return top_list
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:

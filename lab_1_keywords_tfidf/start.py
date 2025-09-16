@@ -13,13 +13,13 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    with open("lab_1_keywords_tfidf/assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
+    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    with open("lab_1_keywords_tfidf/assets/stop_words.txt", "r", encoding="utf-8") as file:
+    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open("lab_1_keywords_tfidf/assets/IDF.json", "r", encoding="utf-8") as file:
+    with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    with open("lab_1_keywords_tfidf/assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     tokenized_text = clean_and_tokenize(target_text)
     no_stopwords_text = remove_stop_words(tokenized_text, stop_words)
