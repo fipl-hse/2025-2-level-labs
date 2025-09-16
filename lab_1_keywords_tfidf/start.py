@@ -4,6 +4,19 @@ Frequency-driven keyword extraction starter
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
+from main import (check_list,
+                  check_dict,
+                  check_positive_int,
+                  check_float,
+                  clean_and_tokenize,
+                  remove_stop_words,
+                  calculate_frequencies,
+                  get_top_n,
+                  calculate_tf,
+                  calculate_tfidf,
+                  calculate_expected_frequency,
+                  calculate_chi_values,
+                  extract_significant_words)
 
 
 def main() -> None:
@@ -18,7 +31,26 @@ def main() -> None:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    result = None
+    tokens = clean_and_tokenize(target_text)
+    #print(tokens)
+    cleaned_tokens = remove_stop_words(clean_and_tokenize(target_text), stop_words)
+    #print(cleaned_tokens)
+    frequencies = calculate_frequencies(cleaned_tokens)
+    #print(frequencies)
+    #top = 5
+    #sorted_frequency_dict = get_top_n(frequencies, top)
+    #print(sorted_frequency_dict)
+    term_freq_tf = calculate_tf(frequencies)
+    #print(term_freq)
+    term_freq_tfidf = calculate_tfidf(term_freq_tf, idf)
+    top_key_words = get_top_n(term_freq_tfidf, 10)
+    print(', '.join(top_key_words))
+    expected = calculate_expected_frequency(frequencies, corpus_freqs)
+    chi_values = calculate_chi_values(expected, frequencies)
+    significant_words = extract_significant_words(chi_values, alpha=0.001)
+    key_words_chi = get_top_n(chi_values, 10)
+    print(', '.join(key_words_chi))
+    result = key_words_chi
     assert result, "Keywords are not extracted"
 
 
