@@ -192,7 +192,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-    import math
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, False):
         return None
     new_dict = {}
