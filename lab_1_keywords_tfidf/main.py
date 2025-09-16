@@ -156,10 +156,10 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(frequencies, dict) or not isinstance(top, int):
+    if not check_dict(frequencies, str, int | float, False) or not check_positive_int(top):
         return None
     changed_dict = dict(sorted(frequencies.items(), key=lambda item: item[1], reverse=True))
-    result = list(changed_dict.keys())[:(top + 1)]
+    result = list(changed_dict.keys())[:(top)]
     return result
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
