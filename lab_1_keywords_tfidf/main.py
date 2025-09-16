@@ -3,8 +3,8 @@ Lab 1
 
 Extract keywords based on frequency related metrics
 """
-
 # pylint:disable=unused-argument
+import math
 from typing import Any
 
 
@@ -136,7 +136,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         return None
     new_data = {}
     for element in tokens:
-        if element not in new_data.keys():
+        if element not in new_data:
             new_data[element] = 1
         else:
             new_data[element] += 1
