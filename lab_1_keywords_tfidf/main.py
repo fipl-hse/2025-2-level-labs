@@ -22,14 +22,11 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    
     if not user_input:
         return can_be_empty
-    
     for element in user_input:
         if not isinstance(element, elements_type):
             return False
-
     return True
     
 
@@ -48,15 +45,11 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    
     if not user_input:
         return can_be_empty
-
     for key, value in user_input.items():
         if not isinstance(key, key_type) or not isinstance(value, value_type):
             return False
-    
-
     return True
 
 
@@ -75,7 +68,6 @@ def check_positive_int(user_input: Any) -> bool:
     else:
         return False
     
-
 
 def check_float(user_input: Any) -> bool:
     """
@@ -103,8 +95,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    
-
     new_text = ''
     for element in text:
         if element.isalnum() or element.isspace():
@@ -128,7 +118,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         return None
     if not check_list(stop_words, str, False):
         return None
-    
     result = []
     for token in tokens:
         if token not in stop_words:
@@ -190,8 +179,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
-    
-    
+       
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
