@@ -25,7 +25,6 @@ def main() -> None:
         frequencies = calculate_frequencies(cleaned_tokens)
         tf_values = calculate_tf(frequencies)
         idf_values = calculate_tfidf(tf_values, idf)
-        print(idf_values)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     result = cleaned_tokens
