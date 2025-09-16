@@ -28,7 +28,6 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         if not isinstance(element, elements_type):
             return False
     return True
-    
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
@@ -63,11 +62,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if isinstance(user_input, int) and user_input > 0 and not isinstance(user_input, bool):
-        return True
-    else:
-        return False
-    
+    return isinstance(user_input, int) and user_input > 0 and not isinstance(user_input, bool)
 
 def check_float(user_input: Any) -> bool:
     """
@@ -166,7 +161,6 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     changed_dict = dict(sorted(frequencies.items(), key=lambda item: item[1], reverse=True))
     result = list(changed_dict.keys())[:(top + 1)]
     return result
-    
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
@@ -178,8 +172,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     Returns:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
-    """
-       
+    """     
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
