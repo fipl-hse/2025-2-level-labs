@@ -6,7 +6,7 @@ Extract keywords based on frequency related metrics
 
 # pylint:disable=unused-argument
 import math
-from typing import Any
+from typing import Any, Mapping, Union
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -137,7 +137,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     return freq_dict
 
 
-def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
+def get_top_n(frequencies: Mapping[str, Union[int, float]], top: int) -> list[str] | None:
     """
     Extract the most frequent tokens.
 
