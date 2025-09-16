@@ -16,7 +16,7 @@ def main() -> None:
         tokens = clean_and_tokenize(target_text)
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-        cleaned_tokens = remove_stop_words(clean_and_tokenize(target_text), stop_words)
+        cleaned_tokens = remove_stop_words(tokens, stop_words)
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
