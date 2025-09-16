@@ -4,11 +4,7 @@ Frequency-driven keyword extraction starter
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
-from main import (check_list,
-                  check_dict,
-                  check_positive_int,
-                  check_float,
-                  clean_and_tokenize,
+from main import (clean_and_tokenize,
                   remove_stop_words,
                   calculate_frequencies,
                   get_top_n,
