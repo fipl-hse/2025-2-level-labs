@@ -109,9 +109,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False):
+    if not check_list(tokens, str, True):
         return None
-    if not check_list(stop_words, str, False):
+    if not check_list(stop_words, str, True):
         return None
     result = []
     for token in tokens:
