@@ -106,16 +106,9 @@ def multiply_string(input_string: str, how_many: int) -> str:
     """
     
     # student realisation goes here
-    result = []
-    for i in range(how_many):
-        result.append(input_string)
-    result = "".join(result)
-    return result
 
-print(multiply_string("Hi", 2))
-print(multiply_string("Hi", 3))
-print(multiply_string("Hi", 1))
-print(multiply_string("Hi", 0))
+
+
 
 # multiply_string('Hi', 2) → 'HiHi'
 # multiply_string('Hi', 3) → 'HiHiHi'
@@ -136,19 +129,9 @@ def front_times(input_string: str, how_many: int) -> str:
         str: Repeated substring
     """
     # student realisation goes here
-    result = []
-    for i in range(how_many):
-        result.append(input_string[0:3])
-    result = "".join(result)
-    return result
 
-print(front_times("Chocolate", 2))
-print(front_times("Chocolate", 3))
-print(front_times("Abc", 3))
-print(front_times("A", 4))
-print(front_times("", 4))
-print(front_times("Abc", 0))
-print()
+
+
 
 # front_times('Chocolate', 2) → 'ChoCho'
 # front_times('Chocolate', 3) → 'ChoChoCho'
