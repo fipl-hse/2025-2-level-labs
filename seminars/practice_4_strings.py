@@ -92,7 +92,7 @@ while count < 5:
 
 # TASKS
 
-print("Task 1:")
+# Task 1:
 def multiply_string(input_string: str, how_many: int) -> str:
     """
     Repeat the given string `how_many` times.
@@ -104,10 +104,7 @@ def multiply_string(input_string: str, how_many: int) -> str:
     Returns:
         str: Repeated string
     """
-    
     # student realisation goes here
-
-
 
 
 # multiply_string('Hi', 2) → 'HiHi'
@@ -116,7 +113,7 @@ def multiply_string(input_string: str, how_many: int) -> str:
 # multiply_string('Hi', 0) → ''
 
 
-print("Task 2:")
+# Task 2:
 def front_times(input_string: str, how_many: int) -> str:
     """
     Take the first three characters of the string and repeat them `how_many` times.
@@ -131,8 +128,6 @@ def front_times(input_string: str, how_many: int) -> str:
     # student realisation goes here
 
 
-
-
 # front_times('Chocolate', 2) → 'ChoCho'
 # front_times('Chocolate', 3) → 'ChoChoCho'
 # front_times('Abc', 3) → 'AbcAbcAbc'
@@ -140,7 +135,8 @@ def front_times(input_string: str, how_many: int) -> str:
 # front_times('', 4) → ''
 # front_times('Abc', 0) → ''
 
-print("Task 3:")
+
+# Task 3:
 def extra_end(input_string: str) -> str:
     """
     Take the last two characters of the string and repeat them three times.
@@ -152,14 +148,6 @@ def extra_end(input_string: str) -> str:
         str: Resulting string
     """
     # student realisation goes here
-    modified_word = input_string[-2:]*3
-    return modified_word
-
-print(extra_end("Hello"))
-print(extra_end("ab"))
-print(extra_end("Hi"))
-print(extra_end("Code"))
-print()
 
 
 # extra_end('Hello') → 'lololo'
@@ -168,7 +156,7 @@ print()
 # extra_end('Code') → 'dedede'
 
 
-print("Task 4:")
+# Task 4:
 def make_abba(first_string: str, second_string: str) -> str:
     """
     Concatenate two strings in the pattern first+second+second+first.
@@ -181,13 +169,6 @@ def make_abba(first_string: str, second_string: str) -> str:
         str: Concatenated result
     """
     # student realisation goes here
-    result = first_string + second_string*2 + first_string
-    return result
-
-print(make_abba("Hi", "Bye"))
-print(make_abba("Yo", "Alice"))
-print(make_abba("What", "Up"))
-print(make_abba("", "y"))
 
 
 # make_abba('Hi', 'Bye') → 'HiByeByeHi'
@@ -196,7 +177,7 @@ print(make_abba("", "y"))
 # make_abba('', 'y') → 'yy'
 
 
-print("Task 5:")
+# Task 5:
 def combo_string(first_string: str, second_string: str) -> str:
     """
     Concatenate strings as shorter+longer+shorter.
@@ -209,19 +190,6 @@ def combo_string(first_string: str, second_string: str) -> str:
         str: Concatenated result
     """
     # student realisation goes here
-    result = ""
-    if len(first_string) >= len(second_string):
-        result = second_string + first_string + second_string
-    else:
-        result = first_string + second_string + first_string
-    return result
-
-print(combo_string("hello", "hi"))
-print(combo_string("hi", "Hello"))
-print(combo_string("aaa", "b"))
-print(combo_string("", "bb"))
-print(combo_string("aaa", "1234"))
-print(combo_string("bb", "a"))
 
 
 # combo_string('Hello', 'hi') → 'hiHellohi'
@@ -232,6 +200,20 @@ print(combo_string("bb", "a"))
 # combo_string('bb', 'a') → 'abba'
 
 
+# Task 6:
+def count_vowels(input_string: str) -> int:
+    """
+    Count the number of vowels in a string.
+
+    Must use a for-loop over characters.
+
+    Args:
+        input_string (str): Input string
+
+    Returns:
+        int: Number of vowels
+    """
+    # student implementation goes here
 
 
 # count_vowels("hello") → 2
@@ -275,13 +257,11 @@ def count_non_space(input_string: str) -> int:
     # student implementation goes here
 
 
-
-
 # count_non_space("a b c") → 3
 # count_non_space("   ") → 0
 
 
-print("Task 9:")
+# Task 9:
 def find_first_digit(input_string: str) -> str | None:
     """
     Find the first digit in the string and return it.
@@ -296,22 +276,26 @@ def find_first_digit(input_string: str) -> str | None:
         str | None: First digit found, or None if no digits
     """
     # student implementation goes here
-    for el in input_string:
-        if el.isdigit():
-            first_dig = el
-            break
-    
-    return first_dig
 
-print(find_first_digit("abs123"))
 
 # find_first_digit("abc123") → "1"
 # find_first_digit("no digits") → None
 
 
-print("Task 10:")
+# Task 10:
+def find_repeated_letter(input_string: str) -> str | None:
+    """
+    Find the first letter that appears twice in a row.
 
+    Must use for-loop with enumerate().
 
+    Args:
+        input_string (str): Input string
+
+    Returns:
+        str | None: First repeated letter, or None if no repetition
+    """
+    # student implementation goes here
 
 
 # find_repeated_letter("hello") → "l"

@@ -29,7 +29,6 @@ print(a // 3)  # integer division
 print(a % 3)  # modulus (remainder)
 print(a**2)  # exponentiation
 
-print()
 # Type conversion
 print(int(3.9))  # convert float to int → 3
 print(float(7))  # convert int to float → 7.0
@@ -42,12 +41,12 @@ print(float(7))  # convert int to float → 7.0
 # max(a, b, …) → the largest value
 # min(a, b, …) → the smallest value
 # sum(iterable) → sum of all elements in an iterable
-print()
+
 
 # TASKS
 
 
-print("Task 1:")
+# Task 1:
 def add_numbers(a: int, b: int) -> int:
     """
     Return the sum of two integers.
@@ -59,16 +58,15 @@ def add_numbers(a: int, b: int) -> int:
     Returns:
         int: Sum of a and b
     """
-    return a + b
     # student implementation goes here
-print(add_numbers(2, 3))
+
 
 # add_numbers(2, 3) → 5
 # add_numbers(-5, 10) → 5
 # add_numbers(0, 0) → 0
-print()
 
-print("Task 2:")
+
+# Task 2:
 def average(a: float, b: float, c: float) -> float:
     """
     Calculate the average of three numbers.
@@ -81,19 +79,15 @@ def average(a: float, b: float, c: float) -> float:
     Returns:
         float: Average value of the three numbers
     """
-    return (a+b+c)/3
     # student implementation goes here
-print(average(1, 2, 3))
-print(average(10, 20, 30))
-print(average(5.5, 6.5, 7.5))
-print()
+
 
 # average(1, 2, 3) → 2.0
 # average(10, 20, 30) → 20.0
 # average(5.5, 6.5, 7.5) → 6.5
 
 
-print("Task 3:")
+# Task 3:
 def is_even(n: int) -> bool:
     """
     Check if a number is even.
@@ -105,14 +99,6 @@ def is_even(n: int) -> bool:
         bool: True if n is even, False otherwise
     """
     # student implementation goes here
-    a=n%2
-
-    return True if a==0 else False
-print(is_even(2))
-print(is_even(3))
-print(is_even(4))
-print(is_even(-4))
-print()
 
 
 # is_even(2) → True
@@ -121,8 +107,7 @@ print()
 # is_even(-4) → True
 
 
-print("Task 4:")
-import math
+# Task 4:
 def area_of_circle(radius: float) -> float:
     """
     Calculate the area of a circle.
@@ -134,20 +119,14 @@ def area_of_circle(radius: float) -> float:
         float: Area of the circle
     """
     # student implementation goes here
-    pi=math.pi
-    return pi*radius**2
 
-print(area_of_circle(1))
-print(area_of_circle(0))
-print(area_of_circle(2.5))
-print()
 
 # area_of_circle(1) → 3.14159...
 # area_of_circle(0) → 0
 # area_of_circle(2.5) → ~19.63495
 
 
-print("Task 5:")
+# Task 5:
 def factorial(n: int) -> int:
     """
     Calculate the factorial of a number.
@@ -159,25 +138,14 @@ def factorial(n: int) -> int:
         int: Factorial of n
     """
     # student implementation goes here
-    fact = 1
-    if n == 0:
-        fact = 1
-    else:
-        for i in range(1, n + 1):
-            fact*=i
-    return fact
 
-print(factorial(0))        
-print(factorial(1))
-print(factorial(5))
-print()
 
 # factorial(0) → 1
 # factorial(1) → 1
 # factorial(5) → 120
 
 
-print("Task 6:")
+# Task 6:
 def power(a: float, b: int) -> float:
     """
     Raise a number to a power.
@@ -190,19 +158,14 @@ def power(a: float, b: int) -> float:
         float: Result of a raised to the power of b
     """
     # student implementation goes here
-    return a**b
 
-print(power(2, 3))
-print(power(5, 0))
-print(power(2, -2))
-print()
+
 # power(2, 3) → 8
 # power(5, 0) → 1
 # power(2, -2) → 0.25
 
 
-print("Task 7:")
-from math import sqrt
+# Task 7:
 def distance(x1: float, y1: float, x2: float, y2: float) -> float:
     """
     Calculate the Euclidean distance between two points.
@@ -218,20 +181,14 @@ def distance(x1: float, y1: float, x2: float, y2: float) -> float:
         float: Euclidean distance between the two points
     """
     # student implementation goes here
-    result = sqrt((x2 - x1)**2 + (y2-y1)**2)
-    return result
 
-print(distance(0, 0, 3, 4))
-print(distance(1, 2, 1, 2))
-print(distance(-1, -1, 2, 3))
-print()
 
 # distance(0, 0, 3, 4) → 5.0
 # distance(1, 2, 1, 2) → 0.0
 # distance(-1, -1, 2, 3) → 5.0
 
 
-print("Task 8 (advanced):")
+# Task 8 (advanced):
 def fibonacci(n: int) -> int:
     """
     Return the n-th Fibonacci number (0-indexed).
@@ -243,19 +200,7 @@ def fibonacci(n: int) -> int:
         int: n-th Fibonacci number
     """
     # student implementation goes here
-    seq_len = n+5
-    fib_sequ = [0, 1]
-    for i in range(0, seq_len):
-        a = fib_sequ[i+1] + fib_sequ[i]
-        fib_sequ.append(a)
-    return fib_sequ[n]
-    
-    
-print(fibonacci(0))
-print(fibonacci(1))
-print(fibonacci(5))
-print(fibonacci(7))
-print()
+
 
 # fibonacci(0) → 0
 # fibonacci(1) → 1
@@ -263,7 +208,7 @@ print()
 # fibonacci(7) → 13
 
 
-print("Task 9 (advanced):")
+# Task 9 (advanced):
 def is_prime(n: int) -> bool:
     """
     Check if a number is prime.
@@ -275,18 +220,6 @@ def is_prime(n: int) -> bool:
         bool: True if n is prime, False otherwise
     """
     # student implementation goes here
-    if_prime = True
-    for i in range(2, n):
-        a = n % i
-        if a == 0:
-            if_prime = False
-            break
-    return if_prime
-
-print(is_prime(2))
-print(is_prime(15))
-print(is_prime(17))
-
 
 
 # is_prime(2) → True
