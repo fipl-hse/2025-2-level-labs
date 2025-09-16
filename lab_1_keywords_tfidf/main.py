@@ -62,7 +62,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if isinstance(user_input, int) and user_input > 0:
+    if type(user_input) is int and user_input > 0:
         return True
     return False
 
@@ -168,7 +168,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> \
         not check_positive_int(top)):
         return None
     sorted_frequency_dict = sorted(frequencies.items(),
-                                key=lambda item: item[1], reverse=True)
+                                   key=lambda item: item[1], reverse=True)
     top_items = sorted_frequency_dict[:top]
     return [item[0] for item in top_items]
 
