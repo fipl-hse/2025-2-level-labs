@@ -7,6 +7,7 @@ from json import load
 
 from main import calculate_frequencies, clean_and_tokenize, get_top_n, remove_stop_words
 
+
 def main() -> None:
     """
     Launches an implementation.
