@@ -6,8 +6,7 @@ Frequency-driven keyword extraction starter
 
 from json import load
 
-from lab_1_keywords_tfidf.main import (
-    calculate_chi_values,
+from main import (calculate_chi_values,
     calculate_expected_frequency,
     calculate_frequencies,
     calculate_tf,
@@ -15,8 +14,7 @@ from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     extract_significant_words,
     get_top_n,
-    remove_stop_words
-)
+    remove_stop_words)
 
 
 def main() -> None:
