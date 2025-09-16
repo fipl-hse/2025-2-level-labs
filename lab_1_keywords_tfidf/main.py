@@ -29,7 +29,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> \
 
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type,
+def check_dict(user_input: Any, key_type: type, value_type: type | type,
                can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
@@ -62,9 +62,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if type(user_input) is int and user_input > 0:
-        return True
-    return False
+    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
 
 
 def check_float(user_input: Any) -> bool:
@@ -164,7 +162,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> \
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if (not check_dict(frequencies, str, (int, float), False) or
+    if (not check_dict(frequencies, str, int | float, False) or
         not check_positive_int(top)):
         return None
     sorted_frequency_dict = sorted(frequencies.items(),
@@ -193,12 +191,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
             return None
         tf_dict[token] = nt / dict_length
     return tf_dict
-
-
-def log_recursive(x, base):
-    if x < base:
-        return 0
-    return 1 + log_recursive(x / base, base)
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> \
