@@ -6,6 +6,7 @@ Extract keywords based on frequency related metrics
 
 # pylint:disable=unused-argument
 from typing import Any
+
 import math
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -47,10 +48,8 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-
     if not user_input:
         return can_be_empty
-    
     for key, value in user_input.items():
         if not isinstance(key, key_type) or not isinstance(value, value_type):
             return False
@@ -138,7 +137,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     return freq_dict
 
 
-def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
+def get_top_n(frequencies: dict[str, (int, float)], top: int) -> list[str] | None:
     """
     Extract the most frequent tokens.
 
@@ -151,9 +150,8 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if (not check_dict(frequencies, str, int | float, False) 
-        or not check_positive_int(top)
-          or not frequencies):
+    if (not check_dict(frequencies, str, (int, float), False) 
+        or not check_positive_int(top) or not frequencies):
         return None
     word_lst_sorted = []
     freq_lst = list(frequencies.items())
@@ -195,7 +193,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     """
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
-    tfidf_dict = {term: term_freq[term] * idf[term] if term in idf else term_freq[term] * math.log(47) for term in term_freq}
+    tfidf_dict = {term: term_freq[term] * idf[term] 
+                  if term in idf else term_freq[term] * math.log(47) for term in term_freq}
     return tfidf_dict
 
 
