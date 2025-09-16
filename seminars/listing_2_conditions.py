@@ -75,8 +75,7 @@ if n > 3:
 country = "USA"
 has_permission = True
 
-if age > 18 and country == "USA" and \
-   has_permission and age < 30:
+if age > 18 and country == "USA" and has_permission and age < 30:
     print("Access granted (with backslash)")"""
 
 # 2. Using parentheses () for implicit line continuation
@@ -97,8 +96,8 @@ if age > 18 and country == "USA" and \
 
 
 # Task 1:
-def is_positive(n: int) -> bool:
-    """
+#def is_positive(n: int) -> bool:
+"""
     Check if a number is positive.
 
     Args:
@@ -108,20 +107,20 @@ def is_positive(n: int) -> bool:
         bool: True if n > 0, False otherwise
     """
     # student implementation goes here
-    if n > 0:
+"""if n > 0:
         return True
     else:
-        return False
+        return False"""
 
 
-print(is_positive(5))
+#print(is_positive(5))
 # is_positive(-3) → False
 # is_positive(0) → False
 
 
 # Task 2:
-def number_sign(n: int) -> str:
-    """
+#def number_sign(n: int) -> str:
+"""
     Return whether a number is positive, negative, or zero.
 
     Args:
@@ -131,22 +130,22 @@ def number_sign(n: int) -> str:
         str: "positive", "negative", or "zero"
     """
     # student implementation goes here
-    if n > 0:
+"""if n > 0:
         print("positive")
     elif n == 0:
         print("zero")
     else:
-        print("negative")
+        print("negative")"""
 
 
-print(number_sign(5))
+#print(number_sign(5))
 # number_sign(-3) → "negative"
 # number_sign(0) → "zero"
 
 
 # Task 3:
-def max_of_two(a: int, b: int) -> int:
-    """
+#def max_of_two(a: int, b: int) -> int:
+"""
     Return the maximum of two numbers.
 
     Args:
@@ -157,18 +156,18 @@ def max_of_two(a: int, b: int) -> int:
         int: The larger of a and b
     """
     # student implementation goes here
-    max_ = max(a, b)
-    return max_
+    #max_ = max(a, b)
+    #return max_
 
 
-print(max_of_two(3, 7))
+#print(max_of_two(3, 7))
 # max_of_two(10, 2) → 10
 # max_of_two(5, 5) → 5
 
 
 # Task 4:
-def grade(score: int) -> str:
-    """
+#def grade(score: int) -> str:
+"""
     Convert a numeric score to a grade:
     - 90–100 → "A"
     - 80–89 → "B"
@@ -183,7 +182,7 @@ def grade(score: int) -> str:
         str: Letter grade
     """
     # student implementation goes here
-    if 90 <= score <= 100:
+"""if 90 <= score <= 100:
         return "A"
     elif 80 <= score <= 89:
         return "B"
@@ -192,17 +191,17 @@ def grade(score: int) -> str:
     elif 60 <= score <= 69:
         return "D"
     else:
-        return "F"
+        return "F" """
 
 
-print(grade(95))
+#print(grade(95))
 # grade(72) → "C"
 # grade(59) → "F"
 
 
 # Task 5:
-def is_in_range(n: int, low: int, high: int) -> bool:
-    """
+#def is_in_range(n: int, low: int, high: int) -> bool:
+"""
     Check if n is within the inclusive range [low, high].
 
     Args:
@@ -214,20 +213,20 @@ def is_in_range(n: int, low: int, high: int) -> bool:
         bool: True if low <= n <= high, False otherwise
     """
     # student implementation goes here
-    if low <= n <= high:
+"""if low <= n <= high:
         return True
     else:
-        return False
+        return False"""
 
 
-print(is_in_range(5, 1, 10))
+#print(is_in_range(5, 1, 10))
 # is_in_range(0, 1, 10) → False
 # is_in_range(10, 1, 10) → True
 
 
 # Task 6:
-def complex_condition(a: bool, b: bool, c: bool) -> bool:
-    """
+#def complex_condition(a: bool, b: bool, c: bool) -> bool:
+"""
     Evaluate a logical expression with given boolean values.
     Expression: (a and b) or (not c)
 
@@ -240,22 +239,22 @@ def complex_condition(a: bool, b: bool, c: bool) -> bool:
         bool: Result of the expression
     """
     # student implementation goes here
-    if a:
+"""if a:
         return a
     elif b:
         return b
     else:
-        return c
+        return c"""
 
 
-print(complex_condition(True, True, False))
+#print(complex_condition(True, True, False))
 # complex_condition(False, True, True) → False
 # complex_condition(False, False, False) → True
 
 
 # Task 7 (advanced):
-def leap_year(year: int) -> bool:
-    """
+#def leap_year(year: int) -> bool:
+"""
     Check if a year is a leap year.
     Rule:
     - divisible by 4 → leap year
@@ -269,13 +268,13 @@ def leap_year(year: int) -> bool:
         bool: True if leap year, False otherwise
     """
     # student implementation goes here
-    if year % 4 == 0 and year % 400 == 0 and year % 100 != 0:
+"""if year % 4 == 0 and year % 400 == 0 and year % 100 != 0:
         return True
     else:
-        return False
+        return False"""
 
 
 
-print(leap_year(2000))
+#print(leap_year(2000))
 # leap_year(1900) → False
 # leap_year(2024) → True
