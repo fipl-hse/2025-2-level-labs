@@ -6,7 +6,16 @@ Frequency-driven keyword extraction starter
 
 from json import load
 
-from main import *
+from main import (
+    calculate_chi_values,
+    calculate_expected_frequency,
+    calculate_frequencies,
+    clean_and_tokenize,
+    extract_significant_words,
+    get_top_n,
+    remove_stop_words,
+)
+
 
 def main() -> None:
     """
