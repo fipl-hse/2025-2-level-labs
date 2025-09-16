@@ -23,13 +23,13 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     if not isinstance(user_input, list):
         return False
 
-    if not user_input and can_be_empty is not True:
-        return False
-    
-    if user_input and can_be_empty is not True:
-        for element in user_input:
-            if not isinstance(element, elements_type):
-                return False
+    if not user_input:
+        return can_be_empty
+
+
+    for element in user_input:
+        if not isinstance(element, elements_type):
+            return False
             
     return True
 
@@ -50,7 +50,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     if not isinstance(user_input, dict):
         return False
 
-    if not user_input and can_be_empty is not True:
+    if not user_input and not can_be_empty:
         return False
 
     for key, value in user_input.items():
@@ -136,9 +136,6 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     
     token_dict = {}
     for el in tokens:
-        if not isinstance(el, str):
-            return None
-
         if el not in token_dict:
             token_dict[el] = 1
         else:
@@ -159,7 +156,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str,  int, False) or not check_positive_int(top):
+    if not check_dict(frequencies, str,  (int, float), False) or not check_positive_int(top):
         return None
     
     if len(frequencies) < top:
