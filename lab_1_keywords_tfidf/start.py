@@ -22,21 +22,24 @@ def main() -> None:
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
     tokens = clean_and_tokenize(target_text)
-    #print(tokens)
+    if tokens is None:
+        print("Error: Failed to remove stop words")
+    else:
+        print(tokens)
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
     cleaned_tokens = remove_stop_words(clean_and_tokenize(target_text), stop_words)
-    #print(cleaned_tokens)
+    print(cleaned_tokens)
     frequencies = calculate_frequencies(cleaned_tokens)
-    #print(frequencies)
+    print(frequencies)
     top_n = get_top_n(frequencies, 5)
-    #print(top_n)
+    print(top_n)
     tf_d = calculate_tf(frequencies)
-    #print(tf_d)
+    print(tf_d)
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
     idf_d = calculate_tfidf(tf_d, idf)
-    #print(idf_d)
+    print(idf_d)
     top_idf = get_top_n(idf_d, 10)
     print(top_idf)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
