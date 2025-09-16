@@ -3,10 +3,10 @@ Lab 1
 
 Extract keywords based on frequency related metrics
 """
+import math
 
 # pylint:disable=unused-argument
 from typing import Any
-import math
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> \
     bool:
@@ -29,7 +29,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> \
 
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type | type,
+def check_dict(user_input: Any, key_type: type, value_type: Any | Any,
                can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
