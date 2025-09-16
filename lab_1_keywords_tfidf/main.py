@@ -14,13 +14,13 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 
     Args:
         user_input (Any): Object to check
-        elements_type (
-        type): Expected type of list elements
+        elements_type (type): Expected type of list elements
         can_be_empty (bool): Whether an empty list is allowed
 
     Returns:
         bool: True if valid, False otherwise
     """
+    
     if not isinstance(user_input, list):
         return False
     
