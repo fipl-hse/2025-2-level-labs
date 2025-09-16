@@ -6,7 +6,7 @@ Extract keywords based on frequency related metrics
 
 # pylint:disable=unused-argument
 import math
-from typing import Any
+from typing import Any, Union
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -78,7 +78,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-
+    return isinstance(user_input, float)
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
