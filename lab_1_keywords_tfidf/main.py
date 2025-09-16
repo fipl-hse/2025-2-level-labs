@@ -20,7 +20,6 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     Returns:
         bool: True if valid, False otherwise
     """
-    
     if not isinstance(user_input, list):
         return False
     
@@ -130,7 +129,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     if not check_list(stop_words, str, False):
         return None
     
-    check_list(stop_words)
     result = []
     for token in tokens:
         if token not in stop_words:
