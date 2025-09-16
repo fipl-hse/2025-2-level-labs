@@ -25,8 +25,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> \
         return False
     if not can_be_empty and len(user_input) == 0:
         return False
-    else:
-        return all(isinstance(element, elements_type) for element in user_input)
+    return all(isinstance(element, elements_type) for element in user_input)
 
 
 
@@ -46,10 +45,9 @@ def check_dict(user_input: Any, key_type: type, value_type: type,
     """
     if not isinstance(user_input, dict):
         return False
-    elif len(user_input) == 0:
+    if len(user_input) == 0:
         return can_be_empty
-    else:
-        return (all(isinstance(key, key_type) for key in user_input) and 
+    return (all(isinstance(key, key_type) for key in user_input) and
         all(isinstance(value, value_type) for value in user_input.values()))
 
 
@@ -64,7 +62,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if type(user_input) is int and user_input > 0:
+    if isinstance(user_input, int) and user_input > 0:
         return True
     return False
 
@@ -79,7 +77,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if type(user_input) is float:
+    if isinstance(user_input, float):
         return True
     return False
 
@@ -97,15 +95,14 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    else:
-        text = text.lower()
-        cleaned = []
-        for symbol in text:
-            if symbol.isalnum() or symbol.isspace():
-                cleaned.append(symbol)
-        cleaned = "".join(cleaned)
-        tokens = cleaned.split()
-        return tokens
+    text = text.lower()
+    cleaned = []
+    for symbol in text:
+        if symbol.isalnum() or symbol.isspace():
+            cleaned.append(symbol)
+    cleaned = "".join(cleaned)
+    tokens = cleaned.split()
+    return tokens
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> \
@@ -121,7 +118,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> \
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if (not check_list(tokens, str, True) or 
+    if (not check_list(tokens, str, True) or
         not check_list(stop_words, str, True)):
         return None
     filtered_tokens = []
@@ -129,7 +126,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> \
         if token not in stop_words:
             filtered_tokens.append(token)
     return filtered_tokens
-    
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -171,11 +167,11 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> \
     if (not check_dict(frequencies, str, (int, float), False) or
         not check_positive_int(top)):
         return None
-    sorted_frequency_dict = sorted(frequencies.items(), 
-                                   key=lambda item: item[1], reverse=True)
+    sorted_frequency_dict = sorted(frequencies.items(),
+                                key=lambda item: item[1], reverse=True)
     top_items = sorted_frequency_dict[:top]
     return [item[0] for item in top_items]
-    
+
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
@@ -196,7 +192,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         if dict_length == 0:
             return None
         tf_dict[token] = nt / dict_length
-    return tf_dict        
+    return tf_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> \
