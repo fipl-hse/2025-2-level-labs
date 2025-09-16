@@ -24,6 +24,7 @@ def main() -> None:
     print(frequencies)
     top_n = get_top_n(frequencies, 5)
     print(top_n)
+    
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
