@@ -12,7 +12,7 @@ from typing import Any
 
 
 
-def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> \
+def check_list(user_input: Any, elements_type: type | tuple[type, type], can_be_empty: bool) -> \
     bool:
     """
     Check if the object is a list containing elements of a certain type.
