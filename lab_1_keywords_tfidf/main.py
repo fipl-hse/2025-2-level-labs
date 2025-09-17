@@ -62,6 +62,8 @@ def check_float(user_input: Any) -> bool:
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
+    if not isinstance(text, str):
+        return None
     text = text.lower()
     clean = ""
     for element in text:
@@ -70,8 +72,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         else:
             clean += " "
     tokens = clean.split()
-    if not tokens:
-        return None
     return tokens
 
     """
@@ -115,6 +115,19 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
+    freq_dict: dict[str, int] = {}
+    if not isinstance(tokens, list):
+        return None
+    for token in tokens:
+        if not isinstance(token, str):
+            return None
+    freq_dict: dict[str, int] = {}
+    for token in tokens:
+        if token in freq_dict:
+            freq_dict[token] += 1
+        else:
+            freq_dict[token] = 1
+    return freq_dict
     """
     Create a frequency dictionary from the token sequence.
 
@@ -128,6 +141,19 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
+    if not isinstance(frequencies, dict) or not isinstance(top, int) or top <= 0:
+        return None
+    for token, freq in frequencies.items():
+        if not isinstance(token, str) or not isinstance(freq, (int, float)):
+            return None
+    def get_freq(pair):
+        token, freq = pair
+        return freq 
+    sorted_tokens = sorted(frequencies.items(), key=get_freq, reverse=True)
+    top_tokens = []
+    for token, freq in sorted_tokens:
+        top_tokens.append(token)
+    return top_tokens
     """
     Extract the most frequent tokens.
 
