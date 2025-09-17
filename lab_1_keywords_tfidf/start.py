@@ -44,13 +44,13 @@ def main() -> None:
     print(top_idf)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    corpus_freqs_dict = calculate_expected_frequency(frequencies, corpus_freqs)
+    corpus_freqs_dict = calculate_expected_frequency(frequencies, corpus_freqs) or {}
     print(corpus_freqs_dict)
-    chi_values = calculate_chi_values(corpus_freqs_dict, frequencies)
+    chi_values = calculate_chi_values(corpus_freqs_dict, frequencies) or {}
     print(chi_values)
-    sign_chi_values = extract_significant_words(chi_values, 0.05)
+    sign_chi_values = extract_significant_words(chi_values, 0.05) or {}
     print(sign_chi_values)
-    top_sign_chi_values = get_top_n(sign_chi_values, 10)
+    top_sign_chi_values = get_top_n(sign_chi_values, 10) or []
     print(top_sign_chi_values)
     result = top_sign_chi_values
     assert result, "Keywords are not extracted"
