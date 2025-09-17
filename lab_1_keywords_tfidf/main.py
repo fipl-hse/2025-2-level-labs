@@ -177,7 +177,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         return None
     new_dict = {}
     for keys, values in frequencies.items():
-        new_dict[keys] = round(values / sum(frequencies.values()), 2)
+        new_dict[keys] = round(values / sum(frequencies.values()), 4)
     return new_dict
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -192,7 +192,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, False):
+    if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
     new_dict = {}
     for keys, values in term_freq.items():
