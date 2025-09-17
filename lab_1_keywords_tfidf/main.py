@@ -75,12 +75,12 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
     punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
-    cleaned_text = ''
+    cleaned_text = ""
     for symbol in text:
         if symbol not in punctuation:
             cleaned_text += symbol
         else:
-            cleaned_text += ' '
+            cleaned_text += ""
     lower_cleaned_text = cleaned_text.lower()
     tokens = lower_cleaned_text.split()
     return tokens
@@ -119,6 +119,17 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(tokens, list):
+        return None
+    if not all(isinstance(token, str) for token in tokens):
+        return None
+    tokens_dict = {}
+    for token in tokens:
+        if token in tokens_dict:
+            tokens_dict[token] += 1
+        else:
+            tokens_dict[token] = 1
+    return tokens_dict
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -134,6 +145,19 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(frequencies, dict):
+        return None
+    if not isinstance(top, int) or isinstance(top, bool) or top <= 0:
+        return None
+    if not frequencies:
+        return None
+    for key, value in frequencies.items():
+        if not isinstance(key, str) or not isinstance(value, (int, float)):
+            return None
+    sorted_words = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
+    if top >= len(sorted_words):
+        return [word for word, freq in sorted_words]
+    return [word for word, freq in sorted_words[:top]]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
