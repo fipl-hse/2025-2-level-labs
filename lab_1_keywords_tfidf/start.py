@@ -3,7 +3,12 @@ Frequency-driven keyword extraction starter
 """
 from json import load
 
-from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n
+from lab_1_keywords_tfidf.main import (
+    calculate_frequencies,
+    clean_and_tokenize,
+    get_top_n,
+    remove_stop_words,
+)
 
 
 def main() -> None:
