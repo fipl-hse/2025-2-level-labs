@@ -101,6 +101,13 @@ def is_positive(n: int) -> bool:
     Returns:
         bool: True if n > 0, False otherwise
     """
+    if n > 0:
+        return True
+    else: 
+        return False
+print(is_positive(5))
+print(is_positive(-3))
+print(is_positive(0))
     # student implementation goes here
 
 
@@ -120,9 +127,16 @@ def number_sign(n: int) -> str:
     Returns:
         str: "positive", "negative", or "zero"
     """
+    if n > 0:
+        return "positive"
+    elif n < 0:
+        return "negative"
+    else:
+        return "zero"
+print(number_sign(5))
+print(number_sign(-3))
+print(number_sign(0))
     # student implementation goes here
-
-
 # number_sign(5) → "positive"
 # number_sign(-3) → "negative"
 # number_sign(0) → "zero"

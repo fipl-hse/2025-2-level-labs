@@ -58,6 +58,8 @@ def add_numbers(a: int, b: int) -> int:
     Returns:
         int: Sum of a and b
     """
+    return a + b
+print (add_numbers)
     # student implementation goes here
 
 
@@ -79,6 +81,7 @@ def average(a: float, b: float, c: float) -> float:
     Returns:
         float: Average value of the three numbers
     """
+    return (a+b+c)/3
     # student implementation goes here
 
 
@@ -98,6 +101,7 @@ def is_even(n: int) -> bool:
     Returns:
         bool: True if n is even, False otherwise
     """
+    
     # student implementation goes here
 
 
