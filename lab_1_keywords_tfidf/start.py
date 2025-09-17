@@ -14,7 +14,7 @@ from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     extract_significant_words,
     get_top_n,
-    remove_stop_words
+    remove_stop_words,
 )
 
 
