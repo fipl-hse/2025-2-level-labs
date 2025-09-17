@@ -31,9 +31,11 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     tokens = clean_and_tokenize(target_text) or []
+    if tokens is None:
+        tokens = []
+    tokens = remove_stop_words(tokens, stop_words)
     #print(tokens)
-    cleaned_tokens = (remove_stop_words(clean_and_tokenize(target_text), stop_words) or
-                      [])
+    cleaned_tokens = remove_stop_words(tokens, stop_words) or []
     #print(cleaned_tokens)
     frequencies = calculate_frequencies(cleaned_tokens) or {}
     #print(frequencies)
