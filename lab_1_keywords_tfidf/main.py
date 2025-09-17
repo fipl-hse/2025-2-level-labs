@@ -50,7 +50,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
 
 
 def check_positive_int(user_input: Any) -> bool:
-    if type(user_input) is int:
+    if isinstance(user_input, int) and not isinstance(user_input, bool):
         return user_input > 0
     return False
     # Check if the object is a positive integer (not bool).
@@ -133,7 +133,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     if check_dict(frequencies, str, int or float, False) and check_positive_int(top):
         if top > len(frequencies):
             return sorted(frequencies, reverse = True)
-        return sorted(frequencies, key=frequencies.values(), reverse=True)[0:top]
+        return [item[0] for item in sorted(list(frequencies.items()), key=lambda item: (-item[1], item[0]))][0:top]
     return None
     # """
     # Extract the most frequent tokens.
