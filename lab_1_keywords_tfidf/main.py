@@ -9,11 +9,22 @@ from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+    if type(user_input) != list:
+        return False
+    if user_input == []:
+        if can_be_empty:
+            return True
+        if not can_be_empty:
+            return False
+    for element in user_input:
+        if type(element) != elements_type:
+            return False
+    return True
     """
     Check if the object is a list containing elements of a certain type.
 
     Args:
-        user_input (Any): Object to check
+        user_input (Any): Object to check 
         elements_type (type): Expected type of list elements
         can_be_empty (bool): Whether an empty list is allowed
 
@@ -23,6 +34,20 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    if type(user_input) != dict:
+        return False
+    if user_input == {}:
+        if can_be_empty:
+            return True
+        if not can_be_empty:
+            return False
+    for key in user_input.keys():
+        if type(key) != key_type:
+            return False
+    for value in user_input.values(): 
+        if type(value) != value_type:
+            return False
+    return True
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -37,7 +62,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
 
 
-def check_positive_int(user_input: Any) -> bool:
+def check_positive_int(user_input: Any) -> bool: 
     """
     Check if the object is a positive integer (not bool).
 
@@ -49,7 +74,7 @@ def check_positive_int(user_input: Any) -> bool:
     """
 
 
-def check_float(user_input: Any) -> bool:
+def check_float(user_input: Any) -> bool: 
     """
     Check if the object is a float.
 
@@ -62,6 +87,15 @@ def check_float(user_input: Any) -> bool:
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
+    if type(text) != str:
+        return None
+    cleaned_and_tokenized_text = []
+    for word in text.split():
+        token = ''.join(symbol.lower() for symbol in word if symbol.isalnum())
+        if token:
+            cleaned_and_tokenized_text.append(token)
+    return cleaned_and_tokenized_text
+
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
@@ -73,10 +107,17 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         In case of corrupt input arguments, None is returned.
     """
 
-
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
+    if not check_list(tokens, str, False):
+        return None
+    if not check_list(stop_words, str, True):
+        return None
+    for stop_word in stop_words:
+        while stop_word in tokens:
+            tokens.remove(stop_word) 
+    return tokens
     """
-    Exclude stop words from the token sequence.
+    Exclude stop words from the token sequence. 
 
     Args:
         tokens (list[str]): Original token sequence
@@ -89,8 +130,17 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
+    if not check_list(tokens, str, False):
+        return None
+    dict = {}
+    for element in tokens:
+        if element in dict:
+            dict[element] += 1
+        else:
+            dict[element] = 1
+    return dict
     """
-    Create a frequency dictionary from the token sequence.
+    Create a frequency dictionary from the token sequence. 
 
     Args:
         tokens (list[str]): Token sequence
@@ -102,6 +152,15 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
+    if type(top) != int or top < 1:
+        return None
+    if not check_dict(frequencies, str, int, False) and not check_dict(frequencies, str, float, False):
+        return None
+    tokens = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
+    result = [i[0] for i in tokens]
+    if len(result) > top:
+        result = result[:top]
+    return result
     """
     Extract the most frequent tokens.
 
