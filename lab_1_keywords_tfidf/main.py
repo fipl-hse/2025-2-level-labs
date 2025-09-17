@@ -17,7 +17,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     if not can_be_empty and len(user_input)==0:
         return False
     for elements in user_input:
-        if not isinstance(elements, elements_type):
+        if not isinstance(elements, type):
             return False
     return True
     '''
@@ -40,10 +40,10 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     if not can_be_empty and len(user_input)==0:
         return False 
     for key in user_input:
-        if not isinstance(key, key_type):
+        if not isinstance(key, type):
             return False
     for value in user_input:
-        if not isinstance(value, value_type):
+        if not isinstance(value, type):
             return False
     return True 
 """
@@ -135,11 +135,16 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     if not isinstance(tokens, list):
         return None
     
+    dictionary={}
     for element in tokens:
         if not isinstance(element, str):
             return None
-        if element==element:
-            quantity += 1
+        for element in tokens:
+            if element in dictionary:
+                dictionary[element]+=1
+    return dictionary
+
+
             
     """
     Create a frequency dictionary from the token sequence.
@@ -154,6 +159,34 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
+
+    if not isinstance(frequencies, dict):
+        return None
+    
+    if not isinstance(top, int):
+        return None
+    
+    for keys, elements in frequencies.items():
+        if not isinstance(keys, str):
+            return None  
+        if not isinstance(elements, int) or not isinstance(elements, float):
+            return None
+    
+    if top>len(frequencies):
+        return len(frequencies)
+    if len(frequencies)==0:
+        return []
+    
+    sorted_dictionary=sorted(frequencies.items(), key=lambda elements: elements, reverse=True)
+
+    top_n_words=[]
+    for keys, elements in sorted_dictionary[:top]:
+        top_n_words.append(keys)
+
+    return top_n_words
+
+
+
     """
     Extract the most frequent tokens.
 
