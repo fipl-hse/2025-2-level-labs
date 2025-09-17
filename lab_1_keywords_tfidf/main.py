@@ -34,6 +34,20 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    if type(user_input) != dict:
+        return False
+    if user_input == {}:
+        if can_be_empty:
+            return True
+        if not can_be_empty:
+            return False
+    for key in user_input.keys():
+        if type(key) != key_type:
+            return False
+    for value in user_input.values(): 
+        if type(value) != value_type:
+            return False
+    return True
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -48,7 +62,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
 
 
-def check_positive_int(user_input: Any) -> bool:
+def check_positive_int(user_input: Any) -> bool: 
     """
     Check if the object is a positive integer (not bool).
 
@@ -60,7 +74,7 @@ def check_positive_int(user_input: Any) -> bool:
     """
 
 
-def check_float(user_input: Any) -> bool:
+def check_float(user_input: Any) -> bool: 
     """
     Check if the object is a float.
 
@@ -116,6 +130,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
+    if not check_list(tokens, str, False):
+        return None
     dict = {}
     for element in tokens:
         if element in dict:
@@ -133,11 +149,18 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-# 1) не называем переменные как встроенные названия, 2) isinstance (a, int) лучше чем type, 3) is/==, 4) remove seminar.py, 5) не создавать лишние переменные
+
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
-    dict = sorted(dict.items(), key=lambda x: x[1])
-    return dict
+    if type(top) != int or top < 1:
+        return None
+    if not check_dict(frequencies, str, int, False) and not check_dict(frequencies, str, float, False):
+        return None
+    tokens = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
+    result = [i[0] for i in tokens]
+    if len(result) > top:
+        result = result[:top]
+    return result
     """
     Extract the most frequent tokens.
 
