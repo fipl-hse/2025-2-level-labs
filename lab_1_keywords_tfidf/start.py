@@ -14,7 +14,7 @@ from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     extract_significant_words,
     get_top_n,
-    remove_stop_words,
+    remove_stop_words
 )
 
 def main() -> None:
@@ -26,7 +26,8 @@ def main() -> None:
     tokens = clean_and_tokenize(target_text)
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    cleaned_tokens = remove_stop_words(tokens, stop_words)
+    if tokens is not None:
+        cleaned_tokens = remove_stop_words(tokens, stop_words)
     frequencies = calculate_frequencies(cleaned_tokens)
     tf_values = calculate_tf(frequencies)
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
