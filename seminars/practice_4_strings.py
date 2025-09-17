@@ -215,8 +215,10 @@ def count_vowels(input_string: str) -> int:
         int: Number of vowels
     """
     # student implementation goes here
-
-
+    vowels = 'aeyiou'
+    for vowels in input_string:
+        print([count(vowels)])
+print(count_vowels(input_string='dear mycelium'))
 # count_vowels("hello") → 2
 # count_vowels("xyz") → 0
 # count_vowels("AEIOU") → 5
