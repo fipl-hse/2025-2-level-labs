@@ -268,13 +268,12 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
-    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    critical_value = criterion[alpha]
-    if critical_value is None:
-        return None
-
     if not check_dict(chi_values, str, float, False) or not check_float(alpha):
         return None
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if alpha not in criterion:
+        return None
+    critical_value = criterion[alpha]
     significant_chi_values = {}
     for k, v in chi_values.items():
         if v > critical_value:
