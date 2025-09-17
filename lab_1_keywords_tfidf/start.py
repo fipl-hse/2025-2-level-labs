@@ -5,6 +5,7 @@ Frequency-driven keyword extraction starter
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
 
+
 from lab_1_keywords_tfidf.main import (
     calculate_chi_values,
     calculate_expected_frequency,
@@ -30,24 +31,24 @@ def main() -> None:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    tokens = clean_and_tokenize(target_text)
+    tokens = clean_and_tokenize(target_text) or []
     #print(tokens)
-    cleaned_tokens = remove_stop_words(clean_and_tokenize(target_text), stop_words)
+    cleaned_tokens = remove_stop_words(clean_and_tokenize(target_text), stop_words) or []
     #print(cleaned_tokens)
-    frequencies = calculate_frequencies(cleaned_tokens)
+    frequencies = calculate_frequencies(cleaned_tokens) or {}
     #print(frequencies)
     #top = 5
     #sorted_frequency_dict = get_top_n(frequencies, top)
     #print(sorted_frequency_dict)
-    term_freq_tf = calculate_tf(frequencies)
+    term_freq_tf = calculate_tf(frequencies) or {}
     #print(term_freq)
-    term_freq_tfidf = calculate_tfidf(term_freq_tf, idf)
-    top_key_words = get_top_n(term_freq_tfidf, 10)
+    term_freq_tfidf = calculate_tfidf(term_freq_tf, idf) or {}
+    top_key_words = get_top_n(term_freq_tfidf, 10) or []
     print(', '.join(top_key_words))
-    expected = calculate_expected_frequency(frequencies, corpus_freqs)
-    chi_values = calculate_chi_values(expected, frequencies)
-    significant_words = extract_significant_words(chi_values, alpha=0.001)
-    key_words_chi = get_top_n(chi_values, 10)
+    expected = calculate_expected_frequency(frequencies, corpus_freqs) or {}
+    chi_values = calculate_chi_values(expected, frequencies) or {}
+    significant_words = extract_significant_words(chi_values, alpha=0.001) or {}
+    key_words_chi = get_top_n(chi_values, 10) or []
     print(', '.join(key_words_chi))
     result = key_words_chi
     assert result, "Keywords are not extracted"
