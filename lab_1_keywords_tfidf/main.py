@@ -217,7 +217,6 @@ def calculate_expected_frequency(
     """
     if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
         return None
-    
     exp_freq = {}
     doc_s = sum(doc_freqs.values())
     corp_s = sum(corpus_freqs.values())
@@ -230,7 +229,6 @@ def calculate_expected_frequency(
         exp_freq[k_doc] = expected
     return exp_freq
 
-    
 
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
@@ -248,7 +246,6 @@ def calculate_chi_values(
     """
     if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
         return None
-    
     chi_values_dict = {}
     for k, v in expected.items():
         chi = (observed[k] - v)**2 / v
@@ -271,10 +268,15 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    critical_value = criterion[alpha]
+    if critical_value is None:
+        return None
+
     if not check_dict(chi_values, str, float, False) or not check_float(alpha):
         return None
     significant_chi_values = {}
     for k, v in chi_values.items():
-        if v > alpha:
+        if v > critical_value:
             significant_chi_values[k] = v
     return significant_chi_values
