@@ -14,8 +14,9 @@ from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     extract_significant_words,
     get_top_n,
-    remove_stop_words
+    remove_stop_words,
 )
+
 
 def main() -> None:
     """
@@ -28,15 +29,19 @@ def main() -> None:
         stop_words = file.read().split("\n")
     if tokens is not None:
         cleaned_tokens = remove_stop_words(tokens, stop_words)
-    frequencies = calculate_frequencies(cleaned_tokens)
-    tf_values = calculate_tf(frequencies)
+    if cleaned_tokens is not None:
+        frequencies = calculate_frequencies(cleaned_tokens)
+    if frequencies is not None:
+        tf_values = calculate_tf(frequencies)
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    tfidf_values = calculate_tfidf(tf_values, idf)
+    if tf_values is not None:
+        tfidf_values = calculate_tfidf(tf_values, idf)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     result = tfidf_values
-    print(get_top_n(result, 10))
+    if result is not None:
+        print(get_top_n(result, 10))
     assert result, "Keywords are not extracted"
 
 

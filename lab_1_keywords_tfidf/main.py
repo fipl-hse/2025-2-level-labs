@@ -134,12 +134,12 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     if not check_list(tokens, str, True):
         return None
     new_data = {}
-    if tokens is not None:
-        for element in tokens:
-            if element not in new_data:
-                new_data[element] = 1
-            else:
-                new_data[element] += 1
+
+    for element in tokens:
+        if element not in new_data:
+            new_data[element] = 1
+        else:
+            new_data[element] += 1
     return new_data
 
 
@@ -178,9 +178,8 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     if not check_dict(frequencies, str, int, False):
         return None
     new_dict = {}
-    if frequencies is not None:
-        for keys, values in frequencies.items():
-            new_dict[keys] = round(values / sum(frequencies.values()), 4)
+    for keys, values in frequencies.items():
+        new_dict[keys] = round(values / sum(frequencies.values()), 4)
     return new_dict
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -198,12 +197,11 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
     new_dict = {}
-    if term_freq is not None:
-        for keys, values in term_freq.items():
-            if keys in list(idf.keys()):
-                new_dict[keys] = values * idf[keys]
-            else:
-                new_dict[keys] = values * math.log(47)
+    for keys, values in term_freq.items():
+        if keys in list(idf.keys()):
+            new_dict[keys] = values * idf[keys]
+        else:
+            new_dict[keys] = values * math.log(47)
     return new_dict
 
 
@@ -221,7 +219,6 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
-    return None
 
 
 def calculate_chi_values(
@@ -238,7 +235,6 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
-    return None
 
 
 def extract_significant_words(
@@ -255,4 +251,3 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
-    return None
