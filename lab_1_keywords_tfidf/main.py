@@ -204,7 +204,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
             new_dict[keys] = values * math.log(47)
     return new_dict
 
-print(get_top_n(calculate_tfidf, 10))
+#print(get_top_n(calculate_tfidf, 10)) ???
 
 
 def calculate_expected_frequency(
