@@ -93,7 +93,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return(isinstance(user_input, float))
+    return isinstance(user_input, float)
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
@@ -111,7 +111,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
 
     excess_symbols: str  = str.maketrans("","","!,.:…@!$&><*#%№()[]}{\"*/-_=;“”'|~`«»;—―?")
     cleaned_tokens = text.lower().translate(excess_symbols).split()
-    return (cleaned_tokens)
+    return cleaned_tokens
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
