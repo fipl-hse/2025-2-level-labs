@@ -44,7 +44,7 @@ def main() -> None:
     if not calculated_tfidf:
         return
 
-    top_frequencies = get_top_n(calculated_tf)
+    top_frequencies = get_top_n(calculated_tfidf)
 
     result = top_frequencies
     assert result, "Keywords are not extracted"

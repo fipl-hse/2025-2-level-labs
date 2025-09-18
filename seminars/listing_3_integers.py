@@ -103,11 +103,7 @@ def is_even(n: int) -> bool:
     Returns:
         bool: True if n is even, False otherwise
     """
-    n = 2
-    if n % 2:
-        return True
-    else:
-        return False
+# student implementation goes here
 
 
 print(is_even(2))
@@ -127,6 +123,7 @@ def area_of_circle(radius: float) -> float:
     Returns:
         float: Area of the circle
     """
+
 
 # area_of_circle(0) → 0
 # area_of_circle(2.5) → ~19.63495
@@ -211,15 +208,8 @@ def fibonacci(n: int) -> int:
     Returns:
         int: n-th Fibonacci number
     """
-    if n <= 0:
-        return 0
-    elif n == 1:
-        return 1
-    else:
-        return fibonacci(n - 1) + fibonacci(n - 2)
+    #student implementation goes here
 
-
-print(fibonacci(0))
 # fibonacci(1) → 1
 # fibonacci(5) → 5
 # fibonacci(7) → 13
