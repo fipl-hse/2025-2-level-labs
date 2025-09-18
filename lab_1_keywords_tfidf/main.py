@@ -102,7 +102,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     text_without_punctuation = ""
 
     for char in text:
-        if char.isalpha() or char.isspace():
+        if char.isalnum() or char.isspace():
             text_without_punctuation += char
 
     text_cleaned = text_without_punctuation.lower()
@@ -125,10 +125,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
     
-    if not any(element in tokens for element in stop_words):
+    tokens_without_stop_words = [element for element in tokens if element not in stop_words]
+
+    if tokens_without_stop_words == tokens:
         return None
     
-    tokens_without_stop_words = [element for element in tokens if element not in stop_words]
     return tokens_without_stop_words
 
 
