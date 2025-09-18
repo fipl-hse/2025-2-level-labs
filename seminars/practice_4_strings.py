@@ -92,6 +92,7 @@ while count < 5:
 
 # TASKS
 
+
 # Task 1:
 def multiply_string(input_string: str, how_many: int) -> str:
     """
