@@ -10,7 +10,7 @@ from main import (
     calculate_tfidf,
     clean_and_tokenize,
     get_top_n,
-    remove_stop_words
+    remove_stop_words,
 )
 
 
