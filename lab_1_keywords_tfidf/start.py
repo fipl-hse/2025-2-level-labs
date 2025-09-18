@@ -15,12 +15,26 @@ def main() -> None:
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
-        idf = load(file)
+        idf = load(file)  
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
+    
+    from main import clean_and_tokenize
+    
+    tokens = clean_and_tokenize(target_text)
+    print(f"Tokens: {tokens}")
+
+    from main import remove_stop_words 
+
+    filtered_tokens = remove_stop_words(tokens, stop_words)
+    print(f"Tokens without stop-words: {filtered_tokens}")
+
     result = None
     assert result, "Keywords are not extracted"
 
+    
+
+   
 
 if __name__ == "__main__":
     main()
