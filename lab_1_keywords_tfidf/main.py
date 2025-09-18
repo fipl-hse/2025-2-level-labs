@@ -16,8 +16,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     for word in text:
         if word.isalnum() or word.isspace():
             cleaned_text += word
-    tokens = cleaned_text.split()
-    return tokens
+    return cleaned_text.split()
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
@@ -30,7 +29,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
 
 
-#tokens = clean_and_tokenize(target_text)
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
     Exclude stop words from the token sequence.
@@ -43,15 +41,20 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
+    if tokens is None or stop_words is None:
+        return None
     if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
-    if stop_words not in tokens:
-        return None
+    for token in tokens:
+        if not isinstance(token, str):
+            return None
+    for words in stop_words:
+        if not isinstance(words, str):
+            return None
     filtered_tokens = [token for token in tokens if token not in stop_words]
     return filtered_tokens
 
 
-#filtered_tokens = remove_stop_words(tokens, stop_words)
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     Create a frequency dictionary from the token sequence.
@@ -63,15 +66,18 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    frequency_dictionary = {}
+    if tokens is None:
+        return None
     if not isinstance(tokens, list):
         return None
+    frequency_dictionary = {}
     for token in tokens:
+        if not isinstance(token, str):
+            return None
         frequency_dictionary[token] = tokens.count(token)
     return frequency_dictionary
 
 
-#frequency_dictionary = calculate_frequencies(filtered_tokens)
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
     Extract the most frequent tokens.
@@ -85,15 +91,19 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(frequencies, dict) or not isinstance(top, int) or \
-    not frequencies or top < 1:
+    if not isinstance(frequencies, dict) or not isinstance(top, int):
         return None
-    for val in frequencies.values():
-        if not isinstance(val, (int, float)):
+    if not frequencies:
+        return None
+    if top < 1:
+        return None
+    for key, val in frequencies.items():
+        if not isinstance(val, (int, float)) or not isinstance(key, str):
             return None
     if top > len(frequencies):
         top = len(frequencies)
-    sorted_tokens = sorted(frequencies.keys(), key = lambda x: frequencies[x], reverse = True)
+    sorted_tokens = sorted(frequencies.keys(),
+                          key=lambda x: (-frequencies[x], x))
     return sorted_tokens[:top]
 
 
@@ -108,9 +118,26 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(frequencies, dict) or not frequencies:
+        return None
+    for val in frequencies.values():
+        if not isinstance(val, int) or val < 0:
+            return None
+    for key in frequencies.keys():
+        if not isinstance(key, str):
+            return None
+    total_tokens = sum(frequencies.values())
+    if total_tokens == 0:
+        return None
+    return {token: val / total_tokens for token, val in frequencies.items()}
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
+    if not isinstance(term_freq, dict) or not isinstance(idf, dict) or not term_freq:
+        return None
+    for key, val in term_freq.items():
+        if not isinstance(key, str) or not isinstance(val, float):
+            return None
     """
     Calculate TF-IDF score for tokens.
 
