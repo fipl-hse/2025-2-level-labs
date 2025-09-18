@@ -7,8 +7,10 @@ from json import load
 
 from main import (
     calculate_frequencies,
+    calculate_tfidf,
     clean_and_tokenize,
-    remove_stop_words,
+    get_top_n,
+    remove_stop_words
 )
 
 
@@ -16,16 +18,16 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    with open("lab_1_keywords_tfidf/assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
+    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    with open("lab_1_keywords_tfidf/assets/stop_words.txt", "r", encoding="utf-8") as file:
+    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open("lab_1_keywords_tfidf/assets/IDF.json", "r", encoding="utf-8") as file:
+    with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    with open("lab_1_keywords_tfidf/assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
-    print(clean_and_tokenize.__name__)
+
     cleaned_tokens = clean_and_tokenize(target_text)
     if not cleaned_tokens:
         return
@@ -38,7 +40,13 @@ def main() -> None:
     if not calculated_frequencies:
         return
 
-    result = None
+    calculated_tfidf = calculate_tfidf(idf, corpus_freqs)
+    if not calculated_tfidf:
+        return
+
+    top_frequencies = get_top_n(calculated_tf)
+
+    result = top_frequencies
     assert result, "Keywords are not extracted"
 
 
