@@ -99,10 +99,11 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
-    if isinstance(text, str):
-        tokenized_text = [''.join(symb.lower() for symb in word if symb.isalnum()) for word in text.split()]
-        result = [token for token in tokenized_text if token]
-        return result
+    if not isinstance(text, str):
+        return None
+
+    tokens = [''.join(symb.lower() for symb in word if symb.isalnum()) for word in text.split()]
+    return [token for token in tokens if token]
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -117,9 +118,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if check_list(tokens, str, False) and check_list(stop_words, str, True):
-        result = [word for word in tokens if word not in stop_words]
-        return result
+    if not check_list(tokens, str, False) and check_list(stop_words, str, True):
+        return None
+
+    result = [word for word in tokens if word not in stop_words]
+    return result
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
