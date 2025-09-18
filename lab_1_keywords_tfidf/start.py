@@ -10,19 +10,20 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
+    with open("lab_1_keywords_tfidf/assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
+    with open("lab_1_keywords_tfidf/assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open("assets/IDF.json", "r", encoding="utf-8") as file:
+    with open("lab_1_keywords_tfidf/assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+    with open("lab_1_keywords_tfidf/assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     result = None
     assert result, "Keywords are not extracted"
 
-
 if __name__ == "__main__":
-    tokens = main()
-    print(tokens)
+    main()
     
+    
+
+
