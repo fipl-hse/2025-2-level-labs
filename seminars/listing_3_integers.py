@@ -50,7 +50,7 @@ print(float(7))  # convert int to float → 7.0
 def add_numbers(a: int, b: int) -> int:
     """
     Return the sum of two integers.
-
+    
     Args:
         a (int): First integer
         b (int): Second integer
@@ -58,8 +58,9 @@ def add_numbers(a: int, b: int) -> int:
     Returns:
         int: Sum of a and b
     """
+    return a+b
     # student implementation goes here
-
+print(add_numbers(3,4))
 
 # add_numbers(2, 3) → 5
 # add_numbers(-5, 10) → 5
@@ -79,8 +80,9 @@ def average(a: float, b: float, c: float) -> float:
     Returns:
         float: Average value of the three numbers
     """
+    return (a+b+c)/3
     # student implementation goes here
-
+print(average(3.5,7.3,6.3))
 
 # average(1, 2, 3) → 2.0
 # average(10, 20, 30) → 20.0
@@ -98,8 +100,12 @@ def is_even(n: int) -> bool:
     Returns:
         bool: True if n is even, False otherwise
     """
+    if n%2 == 0:
+        return True
+    else:
+        return False
     # student implementation goes here
-
+print(is_even(-4))
 
 # is_even(2) → True
 # is_even(3) → False
@@ -118,8 +124,9 @@ def area_of_circle(radius: float) -> float:
     Returns:
         float: Area of the circle
     """
+    return 3.14*(radius**2)
     # student implementation goes here
-
+print(area_of_circle(3.5))
 
 # area_of_circle(1) → 3.14159...
 # area_of_circle(0) → 0
@@ -137,8 +144,12 @@ def factorial(n: int) -> int:
     Returns:
         int: Factorial of n
     """
+    fact = 1
+    for i in range(1,n+1):
+        fact *=i
+    return fact
     # student implementation goes here
-
+print(factorial(0))
 
 # factorial(0) → 1
 # factorial(1) → 1
