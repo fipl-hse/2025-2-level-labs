@@ -101,6 +101,13 @@ def is_positive(n: int) -> bool:
     Returns:
         bool: True if n > 0, False otherwise
     """
+    if n>0:
+        return True 
+    else:
+        return False
+print(is_positive(5))
+print(is_positive(-3))
+print(is_positive(0))
     # student implementation goes here
 
 
@@ -120,6 +127,15 @@ def number_sign(n: int) -> str:
     Returns:
         str: "positive", "negative", or "zero"
     """
+    if n>0:
+        return "positive"
+    elif n<0:
+        return "negative"
+    elif n==0:
+        return "zero"
+print(number_sign(5))
+print(number_sign(-3))
+print(number_sign(0))
     # student implementation goes here
 
 
@@ -140,6 +156,10 @@ def max_of_two(a: int, b: int) -> int:
     Returns:
         int: The larger of a and b
     """
+    return max(a,b)
+print(max_of_two(3, 7))
+print(max_of_two(10, 2))
+print(max_of_two(5, 5))
     # student implementation goes here
 
 
@@ -164,6 +184,11 @@ def grade(score: int) -> str:
     Returns:
         str: Letter grade
     """
+    if 90<=score<=100:
+        return "A"
+    elif 80<=score<=89:
+        return "B"
+    elif 70
     # student implementation goes here
 
 

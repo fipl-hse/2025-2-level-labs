@@ -58,6 +58,8 @@ def add_numbers(a: int, b: int) -> int:
     Returns:
         int: Sum of a and b
     """
+    return a + b
+print (add_numbers(2,5))
     # student implementation goes here
 
 
@@ -79,6 +81,9 @@ def average(a: float, b: float, c: float) -> float:
     Returns:
         float: Average value of the three numbers
     """
+    numbers=[a, b, c]
+    return (sum(numbers) / len(numbers))
+print(average(2.5,4.3,2.2))
     # student implementation goes here
 
 
@@ -98,6 +103,14 @@ def is_even(n: int) -> bool:
     Returns:
         bool: True if n is even, False otherwise
     """
+    if n % 2 == 0:
+        return True
+    else: 
+        return False
+print(is_even(2))
+print(is_even(3))
+print(is_even(0))
+print(is_even(-4))
     # student implementation goes here
 
 
@@ -118,6 +131,11 @@ def area_of_circle(radius: float) -> float:
     Returns:
         float: Area of the circle
     """
+    import math
+    return (2*math.pi*radius**2)
+print(area_of_circle(1))
+print(area_of_circle(0))
+print(area_of_circle(2.5))
     # student implementation goes here
 
 
@@ -137,6 +155,11 @@ def factorial(n: int) -> int:
     Returns:
         int: Factorial of n
     """
+    from math import factorial
+    return factorial(n)
+print(factorial(0))
+print(factorial(1))
+print(factorial(5))
     # student implementation goes here
 
 
@@ -157,6 +180,10 @@ def power(a: float, b: int) -> float:
     Returns:
         float: Result of a raised to the power of b
     """
+    return a**b
+print(power(2, 3))
+print(power(5, 0))
+print(power(2, -2))
     # student implementation goes here
 
 
@@ -180,6 +207,11 @@ def distance(x1: float, y1: float, x2: float, y2: float) -> float:
     Returns:
         float: Euclidean distance between the two points
     """
+    import math
+    return math.sqrt((x2 - x1)^2 + (y2 - y1)^2)
+print(distance(0, 0, 3, 4))
+print(distance(1, 2, 1, 2))
+print(distance(-1, -1, 2, 3))
     # student implementation goes here
 
 
@@ -199,6 +231,7 @@ def fibonacci(n: int) -> int:
     Returns:
         int: n-th Fibonacci number
     """
+    
     # student implementation goes here
 
 
@@ -219,6 +252,7 @@ def is_prime(n: int) -> bool:
     Returns:
         bool: True if n is prime, False otherwise
     """
+
     # student implementation goes here
 
 
