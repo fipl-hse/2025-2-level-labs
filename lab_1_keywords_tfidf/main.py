@@ -4,9 +4,10 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 
+from math import log
+
 # pylint:disable=unused-argument
 from typing import Any
-from math import log
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -32,7 +33,6 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
             return False
 
     return True
-
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -61,7 +61,6 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
             return False
 
     return True
-
 
 
 def check_positive_int(user_input: Any) -> bool:
@@ -95,6 +94,7 @@ def check_float(user_input: Any) -> bool:
     """
     return isinstance(user_input, float)
 
+
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
     Remove punctuation, convert to lowercase, and split into tokens.
@@ -109,7 +109,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
 
-    excess_symbols: str  = str.maketrans("","","!,.:…@!$&><*#%№()[]}{\"*/-_=;“”'|~`«»;—―?")
+    excess_symbols: str = str.maketrans("", "", "!,.:…@!$&><*#%№()[]}{\"*/-_=;“”'|~`«»;—―?")
     cleaned_tokens = text.lower().translate(excess_symbols).split()
     return cleaned_tokens
 
@@ -134,6 +134,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
     cleansed_tokens = [token for token in tokens if token not in stop_words]
     return cleansed_tokens
+
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
@@ -170,12 +171,13 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     if not check_positive_int(top):
         return None
 
-    top_tokens: list[str]  = []
+    top_tokens: list[str] = []
 
-    for word in sorted(frequencies.items(), key= lambda item: item[1], reverse=True):
+    for word in sorted(frequencies.items(), key=lambda item: item[1], reverse=True):
         top_tokens.append(word[0])
 
     return top_tokens[:top]
+
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
@@ -192,7 +194,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         return None
 
     doc_wordcount: int = sum(frequencies.values())
-    term_freq = {token: count/doc_wordcount for token, count in frequencies.items()}
+    term_freq = {token: count / doc_wordcount for token, count in frequencies.items()}
     return term_freq
 
 
@@ -214,6 +216,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         return None
 
     return {word: count * idf.get(word, log(47)) for word, count in term_freq.items()}
+
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
