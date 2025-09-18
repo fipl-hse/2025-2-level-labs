@@ -94,6 +94,8 @@ while count < 5:
 
 # Task 1:
 def multiply_string(input_string: str, how_many: int) -> str:
+    repeated = input_string * how_many
+    return repeated
     """
     Repeat the given string `how_many` times.
 
@@ -115,6 +117,9 @@ def multiply_string(input_string: str, how_many: int) -> str:
 
 # Task 2:
 def front_times(input_string: str, how_many: int) -> str:
+    cropped = input_string[:3]
+    repeat = cropped * how_many
+    return repeat
     """
     Take the first three characters of the string and repeat them `how_many` times.
 
@@ -138,6 +143,8 @@ def front_times(input_string: str, how_many: int) -> str:
 
 # Task 3:
 def extra_end(input_string: str) -> str:
+    n = input_string[-1:-3:-1]
+    return n[::-1] * 3
     """
     Take the last two characters of the string and repeat them three times.
 
@@ -150,14 +157,17 @@ def extra_end(input_string: str) -> str:
     # student realisation goes here
 
 
-# extra_end('Hello') → 'lololo'
-# extra_end('ab') → 'ababab'
+print(extra_end('Hello'))
+print(extra_end('ab'))
 # extra_end('Hi') → 'HiHiHi'
 # extra_end('Code') → 'dedede'
 
 
 # Task 4:
 def make_abba(first_string: str, second_string: str) -> str:
+    first = first_string + second_string
+    second = second_string + first_string
+    return first + second
     """
     Concatenate two strings in the pattern first+second+second+first.
 
@@ -171,7 +181,7 @@ def make_abba(first_string: str, second_string: str) -> str:
     # student realisation goes here
 
 
-# make_abba('Hi', 'Bye') → 'HiByeByeHi'
+print(make_abba('Hi', 'Bye'))
 # make_abba('Yo', 'Alice') → 'YoAliceAliceYo'
 # make_abba('What', 'Up') → 'WhatUpUpWhat'
 # make_abba('', 'y') → 'yy'
@@ -179,6 +189,12 @@ def make_abba(first_string: str, second_string: str) -> str:
 
 # Task 5:
 def combo_string(first_string: str, second_string: str) -> str:
+    if len(first_string) > len(second_string):
+        return second_string + first_string + second_string
+    if len(first_string) < len(second_string):
+        return first_string + second_string + first_string
+    else:
+        return first_string * 3
     """
     Concatenate strings as shorter+longer+shorter.
 
@@ -192,7 +208,7 @@ def combo_string(first_string: str, second_string: str) -> str:
     # student realisation goes here
 
 
-# combo_string('Hello', 'hi') → 'hiHellohi'
+print(combo_string('Hello', 'hi'))
 # combo_string('hi', 'Hello') → 'hiHellohi'
 # combo_string('aaa', 'b') → 'baaab'
 # combo_string('', 'bb') → 'bb'
@@ -202,6 +218,13 @@ def combo_string(first_string: str, second_string: str) -> str:
 
 # Task 6:
 def count_vowels(input_string: str) -> int:
+    vowels = 'aeuio'
+    count_v = 0
+    for el in input_string:
+        if el not in vowels:
+            continue
+        count_v += 1
+    return count_v
     """
     Count the number of vowels in a string.
 
@@ -216,13 +239,20 @@ def count_vowels(input_string: str) -> int:
     # student implementation goes here
 
 
-# count_vowels("hello") → 2
+print(count_vowels("hello"))
 # count_vowels("xyz") → 0
 # count_vowels("AEIOU") → 5
 
 
 # Task 7:
 def remove_vowels(input_string: str) -> str:
+    vowels = 'aeuio'
+    s = ''
+    for el in input_string:
+        if el in vowels:
+            continue
+        s += el
+    return s
     """
     Return a copy of the input string without vowels.
 
@@ -237,12 +267,18 @@ def remove_vowels(input_string: str) -> str:
     # student implementation goes here
 
 
-# remove_vowels("hello") → "hll"
+print(remove_vowels("hello"))
 # remove_vowels("xyz") → "xyz"
 
 
 # Task 8:
 def count_non_space(input_string: str) -> int:
+    s = ''
+    for el in input_string:
+        if el == " ":
+            continue
+        s += el
+    return len(s)
     """
     Count all characters in the string except spaces.
 
@@ -257,12 +293,16 @@ def count_non_space(input_string: str) -> int:
     # student implementation goes here
 
 
-# count_non_space("a b c") → 3
+print(count_non_space("a b c"))
 # count_non_space("   ") → 0
 
 
 # Task 9:
 def find_first_digit(input_string: str) -> str | None:
+    for el in input_string:
+        if el.isdigit:
+            return el
+    
     """
     Find the first digit in the string and return it.
     If there is no digit, return None.
@@ -278,12 +318,16 @@ def find_first_digit(input_string: str) -> str | None:
     # student implementation goes here
 
 
-# find_first_digit("abc123") → "1"
+print(find_first_digit("abc123"))
 # find_first_digit("no digits") → None
 
 
 # Task 10:
 def find_repeated_letter(input_string: str) -> str | None:
+    for i, el in enumerate(input_string):
+        if i.isalpha and i(el + 1) == i(el):
+            return el
+
     """
     Find the first letter that appears twice in a row.
 
@@ -298,7 +342,7 @@ def find_repeated_letter(input_string: str) -> str | None:
     # student implementation goes here
 
 
-# find_repeated_letter("hello") → "l"
+print(find_repeated_letter("hello"))
 # find_repeated_letter("world") → None
 
 
