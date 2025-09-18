@@ -267,3 +267,12 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+
+print(get_top_n({"happy": 2, "man": 3}, 1))
+print(get_top_n({"happy": 2, "man": 2}, 2))
+print(get_top_n({"happy": 2, "man": 2}, 1))
+print(get_top_n({"happy": 2, "man": 3}, 10))
+bad_inputs = ["string", (), None, 9, 9.34, True, [None], []]
+for bad_input in bad_inputs:
+    actual = get_top_n(bad_input, 2)
+print(actual)
