@@ -127,11 +127,7 @@ def area_of_circle(radius: float) -> float:
     Returns:
         float: Area of the circle
     """
-    radius = 1
-    return 3.14 * (radius**2)
 
-
-print(area_of_circle(1))
 # area_of_circle(0) → 0
 # area_of_circle(2.5) → ~19.63495
 
@@ -167,12 +163,9 @@ def power(a: float, b: int) -> float:
     Returns:
         float: Result of a raised to the power of b
     """
-    a = 2
-    b = 3
-    return a**b
+    # student implementation goes here
 
 
-print(power(2, 3))
 # power(5, 0) → 1
 # power(2, -2) → 0.25
 
