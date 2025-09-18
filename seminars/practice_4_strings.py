@@ -105,7 +105,8 @@ def multiply_string(input_string: str, how_many: int) -> str:
         str: Repeated string
     """
     # student realisation goes here
-
+    return input_string * how_many
+print(multiply_string('Hi',2))
 
 # multiply_string('Hi', 2) → 'HiHi'
 # multiply_string('Hi', 3) → 'HiHiHi'
@@ -126,8 +127,9 @@ def front_times(input_string: str, how_many: int) -> str:
         str: Repeated substring
     """
     # student realisation goes here
-
-
+    cropped = input_string[:3]
+    return cropped*how_many
+print (front_times('Chocolate', 2))
 # front_times('Chocolate', 2) → 'ChoCho'
 # front_times('Chocolate', 3) → 'ChoChoCho'
 # front_times('Abc', 3) → 'AbcAbcAbc'
@@ -148,7 +150,8 @@ def extra_end(input_string: str) -> str:
         str: Resulting string
     """
     # student realisation goes here
-
+    return input_string[-2:]*3
+print(extra_end('Hello'))
 
 # extra_end('Hello') → 'lololo'
 # extra_end('ab') → 'ababab'
@@ -169,8 +172,8 @@ def make_abba(first_string: str, second_string: str) -> str:
         str: Concatenated result
     """
     # student realisation goes here
-
-
+    return first_string+second_string+second_string+first_string
+print(make_abba('Hi', 'Bye'))
 # make_abba('Hi', 'Bye') → 'HiByeByeHi'
 # make_abba('Yo', 'Alice') → 'YoAliceAliceYo'
 # make_abba('What', 'Up') → 'WhatUpUpWhat'
@@ -190,8 +193,11 @@ def combo_string(first_string: str, second_string: str) -> str:
         str: Concatenated result
     """
     # student realisation goes here
-
-
+    if len(first_string)>len(second_string):
+        return second_string+first_string+second_string
+    else:
+        return first_string+second_string+first_string
+print(combo_string('Hello', 'hi'))
 # combo_string('Hello', 'hi') → 'hiHellohi'
 # combo_string('hi', 'Hello') → 'hiHellohi'
 # combo_string('aaa', 'b') → 'baaab'
@@ -214,7 +220,12 @@ def count_vowels(input_string: str) -> int:
         int: Number of vowels
     """
     # student implementation goes here
-
+    vow = 0
+    for i in input_string:
+        if i in 'euoai':
+           vow+=1
+    return vow
+print(count_vowels("hello"))
 
 # count_vowels("hello") → 2
 # count_vowels("xyz") → 0
@@ -235,7 +246,14 @@ def remove_vowels(input_string: str) -> str:
         str: String without vowels
     """
     # student implementation goes here
-
+    vowels = 'euoai'
+    new_str=[]
+    for el in input_string:
+        if el not in vowels:
+            new_str.append(el)  
+    new_str =''.join(new_str)   
+    return new_str
+print(remove_vowels("hello"))
 
 # remove_vowels("hello") → "hll"
 # remove_vowels("xyz") → "xyz"
@@ -255,8 +273,13 @@ def count_non_space(input_string: str) -> int:
         int: Number of non-space characters
     """
     # student implementation goes here
-
-
+    s = ''
+    for el in input_string:
+        if el == ' ':
+            continue
+        s+=el
+    return len(s)
+print(count_non_space("a b c"))
 # count_non_space("a b c") → 3
 # count_non_space("   ") → 0
 
@@ -276,7 +299,10 @@ def find_first_digit(input_string: str) -> str | None:
         str | None: First digit found, or None if no digits
     """
     # student implementation goes here
-
+    for el in input_string:
+        if el.isdigit():
+            return el
+print(find_first_digit("abc123"))
 
 # find_first_digit("abc123") → "1"
 # find_first_digit("no digits") → None
@@ -296,7 +322,12 @@ def find_repeated_letter(input_string: str) -> str | None:
         str | None: First repeated letter, or None if no repetition
     """
     # student implementation goes here
+    for i in range(len(input_string)):
+        if i>0:
+            if input_string[i]==input_string[i-1]:
+                return input_string[i]
 
+print(find_repeated_letter("hello"))
 
 # find_repeated_letter("hello") → "l"
 # find_repeated_letter("world") → None
