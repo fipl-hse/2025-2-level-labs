@@ -222,10 +222,9 @@ def calculate_expected_frequency(
         without_t_count_in_doc = doc_freqs_sum - t_count_in_doc
         t_count_in_corpus = corpus_freqs.get(token, 0)
         without_t_count_in_corpus = corpus_freqs_sum - t_count_in_corpus
-        expected_value = (t_count_in_doc +
-                          t_count_in_corpus)*(t_count_in_doc + without_t_count_in_doc)
-        expected_value = expected_value/(t_count_in_doc + t_count_in_corpus
-                                         + without_t_count_in_doc + without_t_count_in_corpus)
+        expected_value = (t_count_in_doc + t_count_in_corpus)*(t_count_in_doc +
+                            without_t_count_in_doc)/(t_count_in_doc +
+                            t_count_in_corpus + without_t_count_in_doc + without_t_count_in_corpus)
         expected_freq[token] = expected_value
     return expected_freq
 
