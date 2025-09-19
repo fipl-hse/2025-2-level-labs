@@ -60,7 +60,6 @@ def add_numbers(a: int, b: int) -> int:
     """
     # student implementation goes here
 
-
 # add_numbers(2, 3) → 5
 # add_numbers(-5, 10) → 5
 # add_numbers(0, 0) → 0
