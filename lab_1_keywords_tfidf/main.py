@@ -121,6 +121,14 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    dict_frequency = {}
+    if isinstance(tokens, list) and all(isinstance(step1, str) for step1 in tokens):
+        for i in tokens:
+            dict_frequency.update({i : tokens.count(i)})
+        return dict_frequency
+    else:
+        return None
+
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
