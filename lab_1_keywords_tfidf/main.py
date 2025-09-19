@@ -188,7 +188,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     if not check_positive_int(top):
         return None
 
-    return sorted(frequencies, key=frequencies.get, reverse=True)[:top]
+    return sorted(frequencies.keys(), key=lambda x: frequencies[x], reverse=True)[:top]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
