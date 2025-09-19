@@ -29,9 +29,6 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
-
-
-    print(clean_and_tokenize.__name__)
     cleaned_tokens = clean_and_tokenize(target_text)
     if not cleaned_tokens:
         return

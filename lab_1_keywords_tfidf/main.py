@@ -188,12 +188,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     if not check_positive_int(top):
         return None
 
-    top_words: list[str] = []
-
-    for element in sorted(frequencies.items(), key=lambda item: item[1], reverse=True):
-        top_words.append(element[0])
-
-    return top_words[:top]
+    return sorted(frequencies, key=frequencies.get, reverse=True)[:top]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -232,9 +227,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     if not check_dict(idf, str, float, True):
         return None
 
-    max_idf = log(47 / 1)
-
-    return {token: count * idf.get(token, max_idf) for token, count in term_freq.items()}
+    return {token: count * idf.get(token, log(47)) for token, count in term_freq.items()}
 
 
 def calculate_expected_frequency(
@@ -322,7 +315,6 @@ def extract_significant_words(
 
     calculated_alphas = {0.05: 3.841458821, 0.01: 6.634896601, 0.001: 10.82756617}
 
-    threshold = calculated_alphas.get(alpha)
     if not (threshold := calculated_alphas.get(alpha)):
         return None
 
