@@ -20,6 +20,16 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     Returns:
         bool: True if valid, False otherwise
     """
+    if not isinstance(user_input, list):
+        return False
+    
+    if not can_be_empty and not user_input:
+        return False
+    
+    for element in user_input:
+        if not isinstance(element, elements_type):
+            return False
+    return True
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -35,6 +45,18 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     Returns:
         bool: True if valid, False otherwise
     """
+    if not isinstance(user_input, dict):
+        return False
+    
+    if not can_be_empty and not user_input:
+        return False
+
+    for key, value in user_input.items():
+        if not isinstance(key, key_type):
+            return False
+        if not isinstance(value, value_type):
+            return False
+    return True
 
 
 def check_positive_int(user_input: Any) -> bool:
@@ -47,6 +69,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
+    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
 
 
 def check_float(user_input: Any) -> bool:
@@ -59,6 +82,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
+    return isinstance(user_input, float)
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -72,6 +96,18 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(text, str):
+        return None
+    
+    text_without_punctuation = ""
+
+    for char in text:
+        if char.isalnum() or char.isspace():
+            text_without_punctuation += char
+
+    text_cleaned = text_without_punctuation.lower()
+    tokens = text_cleaned.split()
+    return tokens
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -86,6 +122,12 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False) or not check_list(stop_words, str, True):
+        return None
+
+    tokens_without_stop_words = [element for element in tokens if element not in stop_words]
+    return tokens_without_stop_words
+
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -99,6 +141,13 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False):
+        return None
+    
+    frequencies_dictionary = {}
+    for token in tokens:
+        frequencies_dictionary[token] = tokens.count(token)
+    return frequencies_dictionary
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -114,6 +163,20 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(frequencies, str, int | float, False) or not check_positive_int(top):
+        return None
+
+    #for key, value in frequencies.items():
+    #    if not isinstance(key, str):
+    #        return None
+    #    if not isinstance(value, int):
+    #        return None
+        
+    tokens = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
+    result = [i[0] for i in tokens]
+    if len(result) > top:
+        result = result[:top]
+    return result
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
