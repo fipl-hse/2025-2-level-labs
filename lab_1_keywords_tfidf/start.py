@@ -5,7 +5,7 @@ Frequency-driven keyword extraction starter
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
 
-from lab_1_keywords_tfidf.main import (
+from main import (
     calculate_chi_values,
     calculate_expected_frequency,
     calculate_frequencies,
@@ -34,13 +34,13 @@ def main() -> None:
     print(frequencies)
     top_n = get_top_n(frequencies, 5) or []
     print(top_n)
-    tf_d = calculate_tf(frequencies) or {}
-    print(tf_d)
+    tf = calculate_tf(frequencies) or {}
+    print(tf)
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    idf_d = calculate_tfidf(tf_d, idf) or {}
-    print(idf_d)
-    top_idf = get_top_n(idf_d, 10) or []
+    tf_idf = calculate_tfidf(tf, idf) or {}
+    print(tf_idf)
+    top_idf = get_top_n(tf_idf, 10) or []
     print(top_idf)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)

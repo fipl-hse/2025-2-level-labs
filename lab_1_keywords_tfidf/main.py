@@ -23,10 +23,8 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not user_input:
         return can_be_empty
-
     if not isinstance(user_input, list):
         return False
-
     for element in user_input:
         if not isinstance(element, elements_type):
             return False
@@ -159,8 +157,7 @@ def get_top_n(frequencies: Mapping[str, Union[int, float]], top: int) -> list[st
     word_lst_sorted = []
     freq_lst = list(frequencies.items())
     freq_lst_sorted = sorted(freq_lst, key = lambda x: (-x[-1], x[0]))
-    if top > len(freq_lst_sorted):
-        top = min(top, len(freq_lst_sorted))
+    top = min(top, len(freq_lst_sorted))
     word_lst_sorted = [item[0] for item in freq_lst_sorted[:top]]
     return word_lst_sorted
 
@@ -196,9 +193,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     """
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
-    tfidf_dict = {term: term_freq[term] * idf[term]
-                  if term in idf else term_freq[term] * math.log(47) for term in term_freq}
-    return tfidf_dict
+    tf_idf_dict = {token: term_freq[token] * idf[token]
+                  if token in idf else term_freq[token] * math.log(47) for token in term_freq}
+    return tf_idf_dict
 
 
 def calculate_expected_frequency(
@@ -217,17 +214,18 @@ def calculate_expected_frequency(
     """
     if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
         return None
-    exp_freq = {}
-    doc_s = sum(doc_freqs.values())
-    corp_s = sum(corpus_freqs.values())
-    for k_doc, v_doc in doc_freqs.items():
-        j = v_doc
-        l = doc_s - j
-        k = corpus_freqs.get(k_doc, 0)
-        m = corp_s - k
-        expected = ((j + k)*(j + l))/(j + k + l + m)
-        exp_freq[k_doc] = expected
-    return exp_freq
+    expected_freq = {}
+    doc_freqs_sum = sum(doc_freqs.values())
+    corpus_freqs_sum = sum(corpus_freqs.values())
+    for token, frequency in doc_freqs.items():
+        t_count_in_doc = frequency
+        without_t_count_in_doc = doc_freqs_sum - t_count_in_doc
+        t_count_in_corpus = corpus_freqs.get(token, 0)
+        without_t_count_in_corpus = corpus_freqs_sum - t_count_in_corpus
+        expected_value = (t_count_in_doc + t_count_in_corpus)*(t_count_in_doc + without_t_count_in_doc)
+        expected_value = expected_value/(t_count_in_doc + t_count_in_corpus + without_t_count_in_doc + without_t_count_in_corpus)
+        expected_freq[token] = expected_value
+    return expected_freq
 
 
 def calculate_chi_values(

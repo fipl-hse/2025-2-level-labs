@@ -104,8 +104,9 @@ def multiply_string(input_string: str, how_many: int) -> str:
     Returns:
         str: Repeated string
     """
+    return input_string * how_many
     # student realisation goes here
-
+print(multiply_string('Hi', 3))
 
 # multiply_string('Hi', 2) → 'HiHi'
 # multiply_string('Hi', 3) → 'HiHiHi'
@@ -125,8 +126,9 @@ def front_times(input_string: str, how_many: int) -> str:
     Returns:
         str: Repeated substring
     """
+    return input_string[:3] * how_many
     # student realisation goes here
-
+print(front_times('Chocolate', 3))
 
 # front_times('Chocolate', 2) → 'ChoCho'
 # front_times('Chocolate', 3) → 'ChoChoCho'
@@ -148,7 +150,8 @@ def extra_end(input_string: str) -> str:
         str: Resulting string
     """
     # student realisation goes here
-
+    return input_string[-2:] * 3
+print(extra_end('Code'))
 
 # extra_end('Hello') → 'lololo'
 # extra_end('ab') → 'ababab'
@@ -169,7 +172,8 @@ def make_abba(first_string: str, second_string: str) -> str:
         str: Concatenated result
     """
     # student realisation goes here
-
+    return first_string + second_string + second_string + first_string
+print(make_abba('Yo', 'Alice'))
 
 # make_abba('Hi', 'Bye') → 'HiByeByeHi'
 # make_abba('Yo', 'Alice') → 'YoAliceAliceYo'
@@ -190,7 +194,14 @@ def combo_string(first_string: str, second_string: str) -> str:
         str: Concatenated result
     """
     # student realisation goes here
-
+    if first_string > second_string:
+        short = first_string
+        long = second_string
+    else:
+        short = second_string
+        long = first_string
+    return short + long + short
+print(combo_string('aaa', '1234'))
 
 # combo_string('Hello', 'hi') → 'hiHellohi'
 # combo_string('hi', 'Hello') → 'hiHellohi'
@@ -214,7 +225,13 @@ def count_vowels(input_string: str) -> int:
         int: Number of vowels
     """
     # student implementation goes here
-
+    c_vowels = 0
+    for el in input_string:
+        if el.lower() in 'aeouiy':
+            c_vowels += 1
+        
+    return c_vowels
+print(count_vowels("aeoui"))
 
 # count_vowels("hello") → 2
 # count_vowels("xyz") → 0
@@ -234,8 +251,15 @@ def remove_vowels(input_string: str) -> str:
     Returns:
         str: String without vowels
     """
+    vow = 'aeiou'
+    res = ''
+    for el in input_string:
+        if el not in vow:
+            res += el
+    return res
     # student implementation goes here
-
+print(remove_vowels('hello'))
+    
 
 # remove_vowels("hello") → "hll"
 # remove_vowels("xyz") → "xyz"
@@ -255,8 +279,12 @@ def count_non_space(input_string: str) -> int:
         int: Number of non-space characters
     """
     # student implementation goes here
-
-
+    k = 0
+    for el in input_string:
+        if el != ' ':
+            k += 1
+    return k
+print(count_non_space("a b c"))
 # count_non_space("a b c") → 3
 # count_non_space("   ") → 0
 
@@ -276,7 +304,13 @@ def find_first_digit(input_string: str) -> str | None:
         str | None: First digit found, or None if no digits
     """
     # student implementation goes here
-
+    digit = None
+    for el in input_string:
+        if el.isdigit():
+            digit = el
+            break
+    return digit
+print(find_first_digit('abc123'))
 
 # find_first_digit("abc123") → "1"
 # find_first_digit("no digits") → None
@@ -296,7 +330,12 @@ def find_repeated_letter(input_string: str) -> str | None:
         str | None: First repeated letter, or None if no repetition
     """
     # student implementation goes here
-
+    res = None
+    for i in range(len(input_string)-1):
+        if input_string[i] == input_string[i+1]:
+            res = input_string[i]
+    return res
+print(find_repeated_letter("hello"))
 
 # find_repeated_letter("hello") → "l"
 # find_repeated_letter("world") → None
@@ -316,8 +355,15 @@ def all_words_capitalized(sentence: str) -> bool:
         bool: True if all words are capitalized, False otherwise
     """
     # student implementation goes here
-
-
+    lst = sentence.split()
+    k = 0
+    for el in lst:
+        if el[0].isupper():
+            k += 1
+    if k == len(lst) or sentence == "":
+        return True
+    return False
+print(all_words_capitalized("Hello World"))
 # all_words_capitalized("Hello World") → True
 # all_words_capitalized("Hello world") → False
 # all_words_capitalized("") → True
@@ -337,7 +383,8 @@ def is_palindrome(input_string: str) -> bool:
         bool: True if input_string is a palindrome, False otherwise
     """
     # student implementation goes here
-
+    return input_string == input_string[::-1]
+print(is_palindrome('level'))
 
 # is_palindrome("level") → True
 # is_palindrome("hello") → False
@@ -358,7 +405,8 @@ def count_substring_occurrences(text: str, pattern: str) -> int:
         int: Number of times pattern appears in text
     """
     # student implementation goes here
-
+    return text.count(pattern)
+print(count_substring_occurrences("aaaa", "aa"))
 
 # count_substring_occurrences("banana", "ana") → 1
 # count_substring_occurrences("aaaa", "aa") → 3
@@ -376,7 +424,14 @@ def reverse_word(sentence: str) -> str:
         str: Modified sentence
     """
     # student realisation goes here
-
+    lst = sentence.split()
+    new_lst = []
+    for el in lst:
+        if len(el) >= 5:
+            el = el[::-1]
+        new_lst.append(el)
+    return ' '.join(new_lst)
+print(reverse_word("Hey fellow warriors"))
 
 # reverse_word("Hey fellow warriors") → "Hey wollef sroirraw"
 # reverse_word("This is a test") → "This is a test"
@@ -398,8 +453,13 @@ def generate_hashtag(input_string: str) -> str:
         str | bool: Hashtag string or False
     """
     # student realisation goes here
+    lst = input_string.split()
+    new_lst = ['#']
+    for el in lst:
+        new_lst.append(el.capitalize())
 
-
+    return ''.join(new_lst)
+print(generate_hashtag(" Hello there thanks for trying my quiz"))
 # " Hello there thanks for trying my quiz" → "#HelloThereThanksForTryingMyQuiz"
 # "    Hello     World   " → "#HelloWorld"
 # "" → False
@@ -416,6 +476,13 @@ def string_splosion(input_string: str) -> str:
     Returns:
         str: Exploded string
     """
+    s = []
+    index = 1
+    for el in input_string:
+        s += el[:index]
+        index += 1
+    return s
+print(string_splosion('Code'))
     # student realisation goes here
 
 
