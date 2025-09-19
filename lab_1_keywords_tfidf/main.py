@@ -72,7 +72,18 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
-
+    if isinstance(text, str):
+        cleaned_text = []
+        for i in text.split(' '):
+            newWord = ''
+            for j in i:
+                if j.isalpha() or j == "'" or j.isdigit():
+                    newWord += j.lower()
+            if (newWord != ''):
+                cleaned_text.append(newWord)
+        return cleaned_text
+    else:
+        return None
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
@@ -86,8 +97,19 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-
-
+    no_stop_words_text = []
+    # if isinstance(tokens, list) and isinstance(stop_words, list):
+    #     return None
+    if isinstance(tokens, list) and isinstance(stop_words, list) and all(isinstance(step1, str) for step1 in tokens) and all(isinstance(step2, str) for step2 in stop_words):
+        for i in tokens:
+            if i not in stop_words:
+                no_stop_words_text.append(i)
+        if no_stop_words_text != []:
+            return no_stop_words_text
+        else:
+            return []
+    else:
+        return None
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     Create a frequency dictionary from the token sequence.
