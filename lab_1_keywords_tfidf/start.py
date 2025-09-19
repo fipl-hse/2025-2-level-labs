@@ -25,8 +25,7 @@ def main() -> None:
     tokens_without_stop_words = remove_stop_words(text_tokenized, stop_words)
     frequencies_dictionary = calculate_frequencies(tokens_without_stop_words)
     top_n_tokens = get_top_n(frequencies_dictionary, 10)
-
-    print(top_n_tokens)
+    result = top_n_tokens
     assert result, "Keywords are not extracted"
 
 
