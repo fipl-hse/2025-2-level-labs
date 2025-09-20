@@ -228,7 +228,6 @@ def calculate_expected_frequency(
         m = sum(corpus_freqs.values()) - k1
         expected[k] = ((v + k1)*(v + l))/(v + k1 + l + m)
     return expected
-    
 
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
@@ -271,9 +270,8 @@ def extract_significant_words(
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     result_dict = {}
     for k, v in chi_values.items():
-        if alpha not in criterion.keys():
+        if alpha not in criterion:
             return None
-        else:
-            if v > criterion[alpha]:
-                result_dict[k] = v
+        if v > criterion[alpha]:
+            result_dict[k] = v
     return result_dict
