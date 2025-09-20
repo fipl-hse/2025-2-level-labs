@@ -47,6 +47,10 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
+    if isinstance(user_input, int) and user_input > 0:
+        return True
+    else:
+        return False
 
 
 def check_float(user_input: Any) -> bool:
@@ -59,6 +63,10 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
+    if isinstance(user_input, float):
+        return True
+    else: 
+        return False
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -144,7 +152,29 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-
+    if isinstance(frequencies, dict) and isinstance(top, int):
+        if frequencies == {}:
+            return None
+        if top <= 0:
+            return None
+        if top > len(frequencies):
+            top = len(frequencies)
+        top_frequencies = []
+        if not isinstance(top, bool):
+            if len(list(set(list(frequencies.values())))) == 1:
+                top_frequencies = sorted(frequencies.items())
+            else:
+                top_frequencies = sorted(frequencies.items(), reverse=True)
+            top_n_in_frequencies = []
+            the_item = ()
+            for i in range(top):
+                the_item = top_frequencies[i]
+                top_n_in_frequencies.append(the_item[0])
+            return top_n_in_frequencies
+        else:
+            return None
+    else:
+        return None
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
