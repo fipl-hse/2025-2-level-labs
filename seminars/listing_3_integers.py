@@ -60,7 +60,6 @@ def add_numbers(a: int, b: int) -> int:
     """
     # student implementation goes here
 
-
 # add_numbers(2, 3) → 5
 # add_numbers(-5, 10) → 5
 # add_numbers(0, 0) → 0
@@ -82,6 +81,7 @@ def average(a: float, b: float, c: float) -> float:
     # student implementation goes here
 
 
+
 # average(1, 2, 3) → 2.0
 # average(10, 20, 30) → 20.0
 # average(5.5, 6.5, 7.5) → 6.5
@@ -99,6 +99,9 @@ def is_even(n: int) -> bool:
         bool: True if n is even, False otherwise
     """
     # student implementation goes here
+
+
+
 
 
 # is_even(2) → True
@@ -121,6 +124,7 @@ def area_of_circle(radius: float) -> float:
     # student implementation goes here
 
 
+
 # area_of_circle(1) → 3.14159...
 # area_of_circle(0) → 0
 # area_of_circle(2.5) → ~19.63495
@@ -138,6 +142,8 @@ def factorial(n: int) -> int:
         int: Factorial of n
     """
     # student implementation goes here
+    
+
 
 
 # factorial(0) → 1

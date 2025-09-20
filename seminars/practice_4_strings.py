@@ -107,6 +107,7 @@ def multiply_string(input_string: str, how_many: int) -> str:
     # student realisation goes here
 
 
+
 # multiply_string('Hi', 2) → 'HiHi'
 # multiply_string('Hi', 3) → 'HiHiHi'
 # multiply_string('Hi', 1) → 'Hi'
@@ -126,6 +127,8 @@ def front_times(input_string: str, how_many: int) -> str:
         str: Repeated substring
     """
     # student realisation goes here
+    
+
 
 
 # front_times('Chocolate', 2) → 'ChoCho'
@@ -169,6 +172,7 @@ def make_abba(first_string: str, second_string: str) -> str:
         str: Concatenated result
     """
     # student realisation goes here
+    return 
 
 
 # make_abba('Hi', 'Bye') → 'HiByeByeHi'
@@ -190,6 +194,8 @@ def combo_string(first_string: str, second_string: str) -> str:
         str: Concatenated result
     """
     # student realisation goes here
+
+
 
 
 # combo_string('Hello', 'hi') → 'hiHellohi'
@@ -216,6 +222,8 @@ def count_vowels(input_string: str) -> int:
     # student implementation goes here
 
 
+
+
 # count_vowels("hello") → 2
 # count_vowels("xyz") → 0
 # count_vowels("AEIOU") → 5
@@ -237,6 +245,8 @@ def remove_vowels(input_string: str) -> str:
     # student implementation goes here
 
 
+
+
 # remove_vowels("hello") → "hll"
 # remove_vowels("xyz") → "xyz"
 
@@ -255,6 +265,7 @@ def count_non_space(input_string: str) -> int:
         int: Number of non-space characters
     """
     # student implementation goes here
+
 
 
 # count_non_space("a b c") → 3
