@@ -44,10 +44,13 @@ def main() -> None:
         tfidf_values = calculate_tfidf(tf_values, idf)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    expected_frequency = calculate_expected_frequency(frequencies, corpus_freqs)
+    if frequencies is not None:
+        expected_frequency = calculate_expected_frequency(frequencies, corpus_freqs)
     observed = frequencies
-    chi_values = calculate_chi_values(expected_frequency, observed)
-    result = extract_significant_words(chi_values, alpha)
+    if expected_frequency is not None:
+        chi_values = calculate_chi_values(expected_frequency, observed)
+    if chi_values is not None:
+        result = extract_significant_words(chi_values, alpha)
     if result is not None:
         print(get_top_n(result, 10))
     assert result, "Keywords are not extracted"
