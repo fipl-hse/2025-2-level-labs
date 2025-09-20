@@ -94,6 +94,9 @@ while count < 5:
 
 # Task 1:
 def multiply_string(input_string: str, how_many: int) -> str:
+    
+    return input_string * how_many
+
     """
     Repeat the given string `how_many` times.
 
@@ -125,6 +128,8 @@ def front_times(input_string: str, how_many: int) -> str:
     Returns:
         str: Repeated substring
     """
+    front = input_string[:3]
+    return front * how_many
     # student realisation goes here
 
 
@@ -138,6 +143,10 @@ def front_times(input_string: str, how_many: int) -> str:
 
 # Task 3:
 def extra_end(input_string: str) -> str:
+    last_two = input_string[-2:]
+    result = last_two * 3
+    return result
+
     """
     Take the last two characters of the string and repeat them three times.
 
@@ -158,6 +167,8 @@ def extra_end(input_string: str) -> str:
 
 # Task 4:
 def make_abba(first_string: str, second_string: str) -> str:
+    result = first_string + second_string
+    return result
     """
     Concatenate two strings in the pattern first+second+second+first.
 
@@ -179,6 +190,13 @@ def make_abba(first_string: str, second_string: str) -> str:
 
 # Task 5:
 def combo_string(first_string: str, second_string: str) -> str:
+    if len(first_string) < len(second_string):
+        shorter = first_string
+        longer = second_string
+    else:
+        shorter = second_string
+        longer = first_string
+    return shorter + longer + shorter
     """
     Concatenate strings as shorter+longer+shorter.
 
@@ -202,6 +220,13 @@ def combo_string(first_string: str, second_string: str) -> str:
 
 # Task 6:
 def count_vowels(input_string: str) -> int:
+    vowels = "abcdry"
+    count = 0 
+    for char in input_string:
+        if char in vowels:
+            count += 1
+    return count
+
     """
     Count the number of vowels in a string.
 
@@ -223,6 +248,12 @@ def count_vowels(input_string: str) -> int:
 
 # Task 7:
 def remove_vowels(input_string: str) -> str:
+    vowels = 'dhfjdAdO'
+    result = ''
+    for char in input_string:
+        if char not in vowels:
+            result += char
+
     """
     Return a copy of the input string without vowels.
 
@@ -243,6 +274,12 @@ def remove_vowels(input_string: str) -> str:
 
 # Task 8:
 def count_non_space(input_string: str) -> int:
+    count = 0
+    for char in input_string:
+        if char == ' ':
+            continue
+        count += 1
+        return count
     """
     Count all characters in the string except spaces.
 
@@ -263,6 +300,13 @@ def count_non_space(input_string: str) -> int:
 
 # Task 9:
 def find_first_digit(input_string: str) -> str | None:
+    result = None
+    for char in input_string:
+        if char.isdigit():
+            return char
+            break
+    return result
+
     """
     Find the first digit in the string and return it.
     If there is no digit, return None.
@@ -284,6 +328,12 @@ def find_first_digit(input_string: str) -> str | None:
 
 # Task 10:
 def find_repeated_letter(input_string: str) -> str | None:
+    for i, char in enumerate(input_string):
+        if i < len(input_string) - 1:
+            if char == input_string[i +1]:
+                return char
+    return None
+
     """
     Find the first letter that appears twice in a row.
 
@@ -304,6 +354,13 @@ def find_repeated_letter(input_string: str) -> str | None:
 
 # Task 11:
 def all_words_capitalized(sentence: str) -> bool:
+    words = sentence.split()
+    if not words:
+        return True
+    for word in words:
+        if not word or not word[0].isupper():
+            return False
+        return True
     """
     Return True if every word in the sentence starts with a capital letter.
 
