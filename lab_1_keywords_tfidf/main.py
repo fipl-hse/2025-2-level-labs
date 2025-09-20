@@ -225,6 +225,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         new_dict.update({i : round(new_tf, 4)})
     return new_dict
 
+import math
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
     Calculate TF-IDF score for tokens.
@@ -237,11 +238,23 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-    c = {}
-    for i in term_freq.items():
-        c.update({i, term_freq.values()[i]})
-    print(c)
-print(calculate_tfidf({1:3}, {2:5}))
+    if not check_dict(term_freq, str, float, False):
+        return None
+    # if not check_dict(idf, str, float, False):
+    #     return None
+    tfidf_dict = {}
+    if term_freq == {}:
+        return None
+    if idf == {}:
+        for i, val in term_freq.items():
+            tfidf_dict[i] = val * math.log(47 / 1)
+        return tfidf_dict
+    for i, val in term_freq.items():
+        if i in idf:
+            tfidf_dict[i] = val * idf[i]
+        else:
+            tfidf_dict[i] = val * math.log(47 / 1)
+    return tfidf_dict
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
