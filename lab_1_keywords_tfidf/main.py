@@ -20,7 +20,18 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     Returns:
         bool: True if valid, False otherwise
     """
-
+    if not isinstance(user_input, list):
+        return False
+    if can_be_empty:
+        if user_input == []:
+            return True
+    else:
+        if user_input == []:
+            return False
+    if all(isinstance(step1, elements_type) for step1 in user_input):
+        return True
+    else:
+        return False
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
@@ -35,6 +46,18 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     Returns:
         bool: True if valid, False otherwise
     """
+    if not isinstance(user_input, dict):
+        return False
+    if can_be_empty:
+        if user_input == {}:
+            return True
+    else:
+        if user_input == {}:
+            return False
+    if all(isinstance(step1, key_type) for step1 in user_input.keys()) and all(isinstance(step2, value_type) for step2 in user_input.values()):
+        return True
+    else:
+        return False
 
 
 def check_positive_int(user_input: Any) -> bool:
@@ -187,7 +210,20 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
-
+    if not isinstance(frequencies, dict):
+        return None
+    if not all(isinstance(step1, int) for step1 in frequencies.values()):
+        return None
+    if not all(isinstance(step2, str) for step2 in frequencies.keys()):
+        return None
+    new_dict = {}
+    total_words = 0
+    for word in frequencies.values():
+        total_words += word
+    for i, j in frequencies.items():
+        new_tf = j/total_words
+        new_dict.update({i : round(new_tf, 4)})
+    return new_dict
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
@@ -201,7 +237,11 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-
+    c = {}
+    for i in term_freq.items():
+        c.update({i, term_freq.values()[i]})
+    print(c)
+print(calculate_tfidf({1:3}, {2:5}))
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
