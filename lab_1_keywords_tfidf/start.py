@@ -27,6 +27,9 @@ def main() -> None:
     tf_values = None
     tfidf_values = None
     alpha = 0.001
+    expected_frequency = None
+    chi_values = None
+    result = None
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
     tokens = clean_and_tokenize(target_text)
@@ -47,7 +50,7 @@ def main() -> None:
     if frequencies is not None:
         expected_frequency = calculate_expected_frequency(frequencies, corpus_freqs)
     observed = frequencies
-    if expected_frequency is not None:
+    if expected_frequency is not None and observed is not None:
         chi_values = calculate_chi_values(expected_frequency, observed)
     if chi_values is not None:
         result = extract_significant_words(chi_values, alpha)
