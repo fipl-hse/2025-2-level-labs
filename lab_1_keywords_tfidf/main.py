@@ -297,7 +297,17 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
-
+    if not check_dict(expected, str, float, False):
+        return None
+    if not check_dict(observed, str, int, False):
+        return None
+    chi_freqs = {}
+    for i, val in expected.items():
+        if i in observed:
+            chi_freqs[i] = (observed[i] - val)**2/val
+        else:
+            chi_freqs[i] = val
+    return chi_freqs
 
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
@@ -313,3 +323,30 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    new_chi_dict = {}
+    for i in chi_values.items():
+        if i[1] / alpha < alpha:
+            new_chi_dict.update({i})
+        # if i[1] > alpha + i[1]:
+        #     new_chi_dict.update({i})
+    return new_chi_dict
+
+chi_values = {
+            "this": 0.0521,
+            "is": 0.0521,
+            "an": 0.0521,
+            "example": 0.0521,
+            "of": 0.0521,
+            "test": 4.02,
+            "text": 3.9,
+            "contains": 0.0521,
+            "two": 0.0521,
+            "parts": 5.08123,
+            "vale": 7.89123,
+            "yarn": 15.094,
+        }
+    
+alpha = 0.05
+    
+expected = {"parts": 5.08123, "test": 4.02, "text": 3.9, "vale": 7.89123, "yarn": 15.094}
+print(extract_significant_words(chi_values, 0.05))
