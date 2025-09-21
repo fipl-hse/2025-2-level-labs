@@ -270,8 +270,19 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
-
-
+    if not check_dict(doc_freqs, str, int, False):
+        return None
+    if not check_dict(corpus_freqs, str, int, True):
+        return None
+    if corpus_freqs == {}:
+        return doc_freqs
+    expec_freqs = {}
+    for i, val in doc_freqs.items():
+        if i in corpus_freqs:
+            expec_freqs[i] = (val + corpus_freqs[i])/5
+        else:
+            expec_freqs[i] = val/5
+    return expec_freqs
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
