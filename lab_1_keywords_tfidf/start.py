@@ -7,7 +7,6 @@ from json import load
 
 from lab_1_keywords_tfidf.main import (
     calculate_frequencies,
-    calculate_tfidf,
     clean_and_tokenize,
     get_top_n,
     remove_stop_words,
@@ -39,11 +38,7 @@ def main() -> None:
     if not calculated_frequencies:
         return
 
-    calculated_tfidf = calculate_tfidf(idf, corpus_freqs)
-    if not calculated_tfidf:
-        return
-
-    top_frequencies = get_top_n(calculated_tfidf)
+    top_frequencies = get_top_n(calculated_frequencies, 10)
 
     result = top_frequencies
     assert result, "Keywords are not extracted"
