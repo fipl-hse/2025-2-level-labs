@@ -5,19 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "[GITHUB] Update forks",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "config/github/update_forks.py",
-            "args": [
-                "--config", "config/github/update_fork_config.json"
-            ],
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
             "name": "Launch seminar 1",
             "type": "debugpy",
             "request": "launch",
@@ -69,7 +56,7 @@
             }
         },
         {
-            "name": "Run tests",
+            "name": "[ADMIN] Run tests",
             "type": "debugpy",
             "request": "launch",
             "program": "config/run_tests.py",
@@ -79,6 +66,43 @@
                 "--pr-name", "test",
                 "--pr-author", "test"
             ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Run spelling",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/spellcheck/check_spelling.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "args":[],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Sort spelling dictionaries",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/spellcheck/sort_wordlist.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "args":[],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Update forks",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/github/update_forks.py",
+            "args": [
+                "--config", "config/github/update_fork_config.json"
+            ],
+            "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }
