@@ -58,12 +58,10 @@ def add_numbers(a: int, b: int) -> int:
     Returns:
         int: Sum of a and b
     """
-    a = 2
-    b = 3
-    return a + b
+    # student implementation goes here
 
 
-print(add_numbers(2, 3))
+# add_numbers(2, 3) → 5
 # add_numbers(-5, 10) → 5
 # add_numbers(0, 0) → 0
 
@@ -81,13 +79,10 @@ def average(a: float, b: float, c: float) -> float:
     Returns:
         float: Average value of the three numbers
     """
-    a = 1
-    b = 2
-    c = 3
-    return (a + b + c) / 3
+    # student implementation goes here
 
 
-print(average(1, 2, 3))
+# average(1, 2, 3) → 2.0
 # average(10, 20, 30) → 20.0
 # average(5.5, 6.5, 7.5) → 6.5
 
@@ -103,10 +98,10 @@ def is_even(n: int) -> bool:
     Returns:
         bool: True if n is even, False otherwise
     """
-# student implementation goes here
+    # student implementation goes here
 
 
-print(is_even(2))
+# is_even(2) → True
 # is_even(3) → False
 # is_even(0) → True
 # is_even(-4) → True
@@ -123,8 +118,10 @@ def area_of_circle(radius: float) -> float:
     Returns:
         float: Area of the circle
     """
+    # student implementation goes here
 
 
+# area_of_circle(1) → 3.14159...
 # area_of_circle(0) → 0
 # area_of_circle(2.5) → ~19.63495
 
@@ -163,14 +160,12 @@ def power(a: float, b: int) -> float:
     # student implementation goes here
 
 
+# power(2, 3) → 8
 # power(5, 0) → 1
 # power(2, -2) → 0.25
 
 
 # Task 7:
-from math import sqrt
-
-
 def distance(x1: float, y1: float, x2: float, y2: float) -> float:
     """
     Calculate the Euclidean distance between two points.
@@ -185,11 +180,7 @@ def distance(x1: float, y1: float, x2: float, y2: float) -> float:
     Returns:
         float: Euclidean distance between the two points
     """
-    x1 = 1
-    y2 = 2
-    x2 = 1
-    y2 = 2
-    return sqrt((x2 - x1**2) + (y2 - y1) ** 2)
+    # student implementation goes here
 
 
 # distance(0, 0, 3, 4) → 5.0
@@ -208,8 +199,10 @@ def fibonacci(n: int) -> int:
     Returns:
         int: n-th Fibonacci number
     """
-    #student implementation goes here
+    # student implementation goes here
 
+
+# fibonacci(0) → 0
 # fibonacci(1) → 1
 # fibonacci(5) → 5
 # fibonacci(7) → 13
