@@ -216,6 +216,27 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
+    import math
+    
+    if not isinstance(term_freq, dict) or not isinstance(idf, dict) or not all(isinstance(word,str) for word in term_freq.keys()):
+        return None
+    if len(term_freq) == 0:
+        return None
+    
+    tfidf = term_freq.copy()
+
+    if len(idf) == 0:
+        for key1 in term_freq.keys():
+            tfidf[key1] = term_freq[key1] * math.log(47)
+        return tfidf
+    
+    for key in term_freq.keys():
+        if key not in idf:
+            tfidf[key] =term_freq[key] * math.log(47 / 1)
+            continue
+        if key in idf:
+            tfidf[key] = term_freq[key] * idf[key]
+    return tfidf
 
 
 def calculate_expected_frequency(
