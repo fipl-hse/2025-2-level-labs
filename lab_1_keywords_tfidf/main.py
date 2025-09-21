@@ -109,7 +109,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
 
-    excess_symbols: str = str.maketrans("", "", "!,.:…@!$&><*#%№()[]}{\*/-_=;“”'|~`«»;—―?")
+    excess_symbols = str.maketrans("", "", "!,.:…@!$&><*#%№()[]}{\"/*-_=;“”'|~`«»;—―?")
     cleaned_tokens = text.lower().translate(excess_symbols).split()
     return cleaned_tokens
 
@@ -166,7 +166,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int, float), False):
+    if not check_dict(frequencies, str, int, False):
         return None
     if not check_positive_int(top):
         return None
