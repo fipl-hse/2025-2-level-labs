@@ -92,6 +92,7 @@ while count < 5:
 
 # TASKS
 
+
 # Task 1:
 def multiply_string(input_string: str, how_many: int) -> str:
     """
@@ -228,7 +229,7 @@ def count_vowels(input_string: str) -> int:
 print(count_vowels("hello"))
 
 # count_vowels("hello") → 2
-# count_vowels("xyz") → 0
+# count_vowels("xzg") → 0
 # count_vowels("AEIOU") → 5
 
 
@@ -256,7 +257,7 @@ def remove_vowels(input_string: str) -> str:
 print(remove_vowels("hello"))
 
 # remove_vowels("hello") → "hll"
-# remove_vowels("xyz") → "xyz"
+# remove_vowels("xgz") → "xgz"
 
 
 # Task 8:
@@ -392,7 +393,7 @@ def count_substring_occurrences(text: str, pattern: str) -> int:
 
 
 # count_substring_occurrences("banana", "ana") → 1
-# count_substring_occurrences("aaaa", "aa") → 3
+# count_substring_occurrences("aaaa", "aa") → 2
 
 
 # Task 14:
@@ -406,7 +407,7 @@ def reverse_word(sentence: str) -> str:
     Returns:
         str: Modified sentence
     """
-    # student realisation goes here
+    # student implementation goes here
 
 
 # reverse_word("Hey fellow warriors") → "Hey wollef sroirraw"
@@ -428,7 +429,7 @@ def generate_hashtag(input_string: str) -> str:
     Returns:
         str | bool: Hashtag string or False
     """
-    # student realisation goes here
+    # student implementation goes here
 
 
 # " Hello there thanks for trying my quiz" → "#HelloThereThanksForTryingMyQuiz"
@@ -447,7 +448,7 @@ def string_splosion(input_string: str) -> str:
     Returns:
         str: Exploded string
     """
-    # student realisation goes here
+    # student implementation goes here
 
 
 # string_splosion('Code') → 'CCoCodCode'
@@ -469,7 +470,7 @@ def string_match(first_string: str, second_string: str) -> int:
     Returns:
         int: Number of matching substrings
     """
-    # student realisation goes here
+    # student implementation goes here
 
 
 # string_match('xxcaazz', 'xxbaaz') → 3
