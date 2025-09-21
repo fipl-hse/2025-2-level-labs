@@ -109,7 +109,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
 
-    excess_symbols: str = str.maketrans("", "", "!,.:…@!$&><*#%№()[]}{\"*/-_=;“”'|~`«»;—―?")
+    excess_symbols: str = str.maketrans("", "", "!,.:…@!$&><*#%№()[]}{\*/-_=;“”'|~`«»;—―?")
     cleaned_tokens = text.lower().translate(excess_symbols).split()
     return cleaned_tokens
 

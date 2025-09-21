@@ -38,7 +38,7 @@ def main() -> None:
     if not calculated_frequencies:
         return
 
-    top_frequencies = get_top_n(calculated_frequencies, 10)
+    top_frequencies = get_top_n(calculated_frequencies)
 
     result = top_frequencies
     assert result, "Keywords are not extracted"
