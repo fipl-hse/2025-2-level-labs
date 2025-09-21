@@ -4,7 +4,6 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
-#from json import load
 from typing import Any
 
 
@@ -92,13 +91,11 @@ def clean_and_tokenize(raw_text: str) -> list[str] | None:
     """
     if isinstance(raw_text, str):
         symbols_to_delete = '.,?-:;!%><#@$^&*()_'
-        raw_text = raw_text.replace('\n', ' ')
-        raw_text = raw_text.lower()
+        raw_text = raw_text.replace('\n', ' ').lower()
         for symbol in raw_text:
             if symbol in symbols_to_delete:
                 raw_text = raw_text.replace(symbol, '')
-        cleaned_tokens = raw_text.split()
-        return cleaned_tokens
+        return raw_text.split()
     return None
 
 
