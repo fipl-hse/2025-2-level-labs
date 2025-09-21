@@ -141,15 +141,16 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list) and not isinstance(tokens, str):
+    if not isinstance(tokens, list):
+        return None
+    if not all(isinstance(token, str) for token in tokens):
         return None
     frequency_dict = {}
     for token in tokens:
         if token not in frequency_dict:
             frequency_dict[token] = 1
-        else:
+        elif token in frequency_dict:
             frequency_dict[token] += 1 
-        return None
     return frequency_dict
 
 
@@ -167,7 +168,16 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(frequencies, dict) or not isinstance(top, int) or len(frequencies) == 0 or isinstance(top, bool):
+        return None
 
+    sorted_frequencies = sorted(frequencies.items(), key = lambda item: item[1], reverse=True)
+    if len(sorted_frequencies) < top:
+        return [item[0] for item in sorted_frequencies]
+    elif top > 0:
+        return [item[0] for item in sorted_frequencies[:top]]
+    else:
+        return None
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
