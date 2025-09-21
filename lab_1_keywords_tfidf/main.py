@@ -72,6 +72,11 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(text, str):
+        return None
+    text = text.strip().lower()
+    tokens = [char for char in text if char.isalpha()]
+    return list("".join(tokens))
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -86,6 +91,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(tokens, list) or not isinstance(stop_words, list):
+        return None
+    
+    if not all(isinstance(t, str) for t in tokens):
+        return None
+    if not all(isinstance(s, str) for s in stop_words):
+        return None
+    
+    filtrovany_tokens = [t for t in tokens if t not in stop_words]
+    return filtrovany_tokens
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -99,6 +114,19 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(tokens, list):
+        return None
+    if not all (isinstance(t,str) for t in tokens):
+        return None
+    
+    frequences = {}
+    for t in tokens:
+        if t in frequences:
+            frequences[t] += 1
+        else:
+            frequences[t] = 1
+    return frequences
+
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -189,3 +217,11 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+if __name__ == "__main__":
+    moi_text = "Hey! How are you?"
+    tokens = clean_and_tokenize(moi_text)
+    stop_words = ["h", "e","a"]
+    filtrovany = remove_stop_words(tokens, stop_words)
+    print(filtrovany)
+    frequences = calculate_frequencies(filtrovany)
+    print(frequences)
