@@ -204,10 +204,10 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
             tfidf_dict[token] = tf_value * math.log(47 / 1)
         return tfidf_dict
     for token, tf_value in term_freq.items():
-            if token in idf:
-                tfidf_dict[token] = tf_value * idf[token]
-            else:
-                tfidf_dict[token] = tf_value * math.log(47 / 1)
+        if token in idf:
+            tfidf_dict[token] = tf_value * idf[token]
+        else:
+            tfidf_dict[token] = tf_value * math.log(47 / 1)
     return tfidf_dict
 
 
