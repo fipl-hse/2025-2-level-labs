@@ -215,7 +215,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         new_dict.update({i : round(new_tf, 4)})
     return new_dict
 
-import math
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
     Calculate TF-IDF score for tokens.
