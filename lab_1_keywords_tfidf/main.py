@@ -11,7 +11,10 @@ from typing import Any
 
 
 def check_list(
-        user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+        user_input: Any,
+        elements_type: type | tuple[type, ...],
+        can_be_empty: bool
+        ) -> bool:
     """
     Check if the object is a list containing elements of a certain type.
 
@@ -36,7 +39,12 @@ def check_list(
     return True
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(
+        user_input: Any,
+        key_type: type,
+        value_type: type | tuple[type, ...],
+        can_be_empty: bool
+        ) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -175,7 +183,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int | float, False):
+    if not check_dict(frequencies, str, (int, float), False):
         return None
     if not check_positive_int(top):
         return None
