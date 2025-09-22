@@ -25,31 +25,21 @@ def main() -> None:
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
     tokens = clean_and_tokenize(target_text) or []
-    print(tokens)
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
     cleaned_tokens = remove_stop_words(tokens, stop_words) or []
-    print(cleaned_tokens)
     frequencies = calculate_frequencies(cleaned_tokens) or {}
-    print(frequencies)
     top_n = get_top_n(frequencies, 5) or []
-    print(top_n)
     tf = calculate_tf(frequencies) or {}
-    print(tf)
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
     tf_idf = calculate_tfidf(tf, idf) or {}
-    print(tf_idf)
     top_idf = get_top_n(tf_idf, 10) or []
-    print(top_idf)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    corpus_freqs_dict = calculate_expected_frequency(frequencies, corpus_freqs) or {}
-    print(corpus_freqs_dict)
+    exp_freqs_dict = calculate_expected_frequency(frequencies, corpus_freqs) or {}
     chi_values = calculate_chi_values(corpus_freqs_dict, frequencies) or {}
-    print(chi_values)
     sign_chi_values = extract_significant_words(chi_values, 0.05) or {}
-    print(sign_chi_values)
     top_sign_chi_values = get_top_n(sign_chi_values, 10) or []
     print(top_sign_chi_values)
     result = top_sign_chi_values
