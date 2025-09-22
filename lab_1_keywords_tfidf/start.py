@@ -38,7 +38,7 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     exp_freqs_dict = calculate_expected_frequency(frequencies, corpus_freqs) or {}
-    chi_values = calculate_chi_values(corpus_freqs_dict, frequencies) or {}
+    chi_values = calculate_chi_values(exp_freqs_dict, frequencies) or {}
     sign_chi_values = extract_significant_words(chi_values, 0.05) or {}
     top_sign_chi_values = get_top_n(sign_chi_values, 10) or []
     print(top_sign_chi_values)
