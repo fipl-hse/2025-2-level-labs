@@ -3,19 +3,11 @@ Frequency-driven keyword extraction starter
 """
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
-import os
+
 from json import load
-from main import clean_and_tokenize
-from main import check_dict
-from main import check_list
-from main import remove_stop_words
-from main import calculate_frequencies
-from main import get_top_n
+from main import (clean_and_tokenize, check_dict, check_list, remove_stop_words, calculate_frequencies, get_top_n, calculate_tf)
 
-BASE_DIR = os.path.dirname(__file__)
-ASSETS_DIR = os.path.join(BASE_DIR, "assets")
-
-def main() -> None: 
+def main() -> None:
     """
     Launches an implementation.  
     """
@@ -31,8 +23,12 @@ def main() -> None:
     result_text = clean_and_tokenize(target_text)
     result_text = remove_stop_words(result_text, stop_words)
     result_text = calculate_frequencies(result_text)
+    result_text = calculate_tf(result_text)
     result = result_text
+    print(get_top_n(result, 10))
     assert result, "Keywords are not extracted" 
+    
+    
 
 
 
