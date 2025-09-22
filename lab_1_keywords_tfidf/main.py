@@ -46,6 +46,7 @@ def check_positive_int(user_input: Any) -> bool:
 
 
 def check_float(user_input: Any) -> bool:
+    
     """
     Check if the object is a float.
     Args:
