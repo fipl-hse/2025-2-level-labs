@@ -94,12 +94,12 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if isinstance(text, str):
         cleaned_text = []
         for i in text.split(' '):
-            newWord = ''
+            new_word = ''
             for j in i:
                 if j.isalpha() or j == "'" or j.isdigit():
-                    newWord += j.lower()
-            if newWord != '':
-                cleaned_text.append(newWord)
+                    new_word += j.lower()
+            if new_word != '':
+                cleaned_text.append(new_word)
         return cleaned_text
     else:
         return None
@@ -125,7 +125,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
                 for i in tokens:
                     if i not in stop_words:
                         no_stop_words_text.append(i)
-                if no_stop_words_text != []:
+                if no_stop_words_text:
                     return no_stop_words_text
                 else:
                     return []
@@ -314,26 +314,24 @@ def extract_significant_words(
     """
     new_chi_dict = {}
     for i in chi_values.items():
-        if i[1] > len(chi_values)*alpha:
+        if i[1] > alpha:
             new_chi_dict.update({i})
-        # if i[1] > alpha + i[1]:
-        #     new_chi_dict.update({i})
     return new_chi_dict
 
-chi_values = {
-            "this": 0.0521,
-            "is": 0.0521,
-            "an": 0.0521,
-            "example": 0.0521,
-            "of": 0.0521,
-            "test": 4.02,
-            "text": 3.9,
-            "contains": 0.0521,
-            "two": 0.0521,
-            "parts": 5.08123,
-            "vale": 7.89123,
-            "yarn": 15.094,
-        }
-alpha = 0.05
-expected = {"parts": 5.08123, "test": 4.02, "text": 3.9, "vale": 7.89123, "yarn": 15.094}
-print(extract_significant_words(chi_values, 0.01))
+# chi_values = {
+#             "this": 0.0521,
+#             "is": 0.0521,
+#             "an": 0.0521,
+#             "example": 0.0521,
+#             "of": 0.0521,
+#             "test": 4.02,
+#             "text": 3.9,
+#             "contains": 0.0521,
+#             "two": 0.0521,
+#             "parts": 5.08123,
+#             "vale": 7.89123,
+#             "yarn": 15.094,
+#         }
+# alpha = 0.05
+# expected = {"parts": 5.08123, "test": 4.02, "text": 3.9, "vale": 7.89123, "yarn": 15.094}
+# print(extract_significant_words(chi_values, 0.01))

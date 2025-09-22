@@ -4,7 +4,7 @@ Frequency-driven keyword extraction starter
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
-from lab_1_keywords_tfidf.main import clean_and_tokenize, get_top_n, calculate_frequencies, calculate_chi_values, calculate_expected_frequency, calculate_tf, calculate_tfidf, remove_stop_words
+from lab_1_keywords_tfidf.main import clean_and_tokenize, get_top_n, calculate_frequencies, calculate_expected_frequency, calculate_tf, calculate_tfidf, remove_stop_words
 
 def main() -> None:
     """
