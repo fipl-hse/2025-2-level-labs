@@ -1,0 +1,318 @@
+[33mcommit ee4d97511c364683967670ad7afda9200c935048[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Merge: 2e53c9a 5fb8f5d
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Mon Sep 22 14:30:29 2025 +0300
+
+    removed tuple annotation in check_list, check_dics
+
+[33mcommit 2e53c9ac36c83b9a3cf02e11a7ae4043e4bc44ca[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Mon Sep 22 11:40:40 2025 +0300
+
+    test
+
+[33mcommit 5fb8f5dde8b567511cb27149cfa89bbc1362577b[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: cd30547 9d525e2
+Author: EIzharikov <$EIzharikov@users.noreply.github.com>
+Date:   Mon Sep 22 00:44:04 2025 +0300
+
+    Merge remote-tracking branch 'upstream/main' into HEAD
+
+[33mcommit 9d525e26e52d241c9f76c226df3a0331c7bff624[m
+Author: Alexander Demidovskij <monadv@yandex.ru>
+Date:   Sun Sep 21 18:15:30 2025 +0300
+
+    [SYNC] [WW38] [LECTURES] Strings (#43)
+
+[33mcommit cd30547f61f3a103e72f5cbdb2e4c3ebacab5263[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Fri Sep 19 12:57:15 2025 +0300
+
+    changed for cycle to immediate return
+
+[33mcommit 742c065cb74926598f846a1d8b6dd2f6fa16fea5[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Fri Sep 19 11:10:42 2025 +0300
+
+    apply review suggestions
+
+[33mcommit cd48cd12fdd07f8032a12e9fe3671ae19627ee11[m
+Merge: 1e7df32 49f6e6b
+Author: notBlueSpaceThinker <127470538+notBlueSpaceThinker@users.noreply.github.com>
+Date:   Mon Sep 15 11:30:25 2025 +0300
+
+    Merge branch 'fipl-hse:main' into main
+
+[33mcommit 49f6e6be95935c7b0b161133f832f00bb30629ef[m
+Author: Zharikov Egor <90442695+EIzharikov@users.noreply.github.com>
+Date:   Mon Sep 15 09:32:08 2025 +0300
+
+    [SEMINARS] Loops in strings (#41)
+
+[33mcommit 0d84ab98d4944c4d0139251fd89c0869fc5147c8[m
+Author: Alexander Demidovskij <monadv@yandex.ru>
+Date:   Sun Sep 14 23:23:00 2025 +0300
+
+    [SYNC] [WW37] [SEMINARS] Strings (#39)
+
+[33mcommit 1e7df320c23877af6f9326cceac75fd28142a6b6[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Sun Sep 14 16:57:42 2025 +0300
+
+    deleted 1 line in seminar files
+
+[33mcommit 73127883e19ca2b9f6ae703d563e1ef505e95cb4[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Sat Sep 13 15:06:34 2025 +0300
+
+    trying to fix start.py codestyle problems
+
+[33mcommit 74e546d090183a6f2e30a5f03dd28a371238dcda[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Sat Sep 13 15:04:29 2025 +0300
+
+    trying to fix start problems
+
+[33mcommit dd3e175430d283b14f2a54ed611180be46ec266c[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Sat Sep 13 14:59:32 2025 +0300
+
+    trying to fix ci problems
+
+[33mcommit 1076f5b618300f795611cd474397f1cac0c515dd[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Sat Sep 13 12:04:57 2025 +0300
+
+    fixed multiple return problem
+
+[33mcommit 5ca0431a42241c3b2fdb75cdf28732b348adb728[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Sat Sep 13 10:58:22 2025 +0300
+
+    attempt to fix pytest errors
+
+[33mcommit 7e83822578cb8171e3ebf6b3e274be10691c8a31[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Sat Sep 13 10:52:36 2025 +0300
+
+    attempt to fix pytest errors
+
+[33mcommit e9daaf23e5b6d9b413da065657b306dcbc640478[m
+Merge: d8237fa ff403f8
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Sat Sep 13 00:51:58 2025 +0300
+
+    Merge branch 'main' of https://github.com/notBlueSpaceThinker/2025-2-level-labs
+    merge main
+
+[33mcommit d8237fa4c42c2ad487b824960a132c1381d2e965[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Sat Sep 13 00:51:06 2025 +0300
+
+    ci errors fix
+
+[33mcommit ff403f8162194a101ddb51130a70d13c671e41a9[m
+Merge: a54ccae 2dd114e
+Author: Zharikov Egor <90442695+EIzharikov@users.noreply.github.com>
+Date:   Fri Sep 12 22:54:56 2025 +0300
+
+    Merge branch 'fipl-hse:main' into main
+
+[33mcommit 2dd114e3d303d3dbc18c2eb6f823ebeb032fb99e[m
+Author: Alexander Demidovskij <monadv@yandex.ru>
+Date:   Fri Sep 12 22:22:14 2025 +0300
+
+    [CI] subprocess checks return code (#38)
+
+[33mcommit a54ccae027345db1881204d242577ec053da9d0b[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Thu Sep 11 23:33:54 2025 +0300
+
+    Import changes
+
+[33mcommit 6eb0ee71e96b3625e2a50e2409aa6e150143db7a[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Thu Sep 11 23:31:57 2025 +0300
+
+    Review changes
+
+[33mcommit f58383f9e649f2d0ad64359d01027c139fc923c7[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Thu Sep 11 14:32:20 2025 +0300
+
+    маленькие изменения
+
+[33mcommit 82341621e0c3ee57ae9636f92c9579e8be09a886[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Thu Sep 11 14:29:15 2025 +0300
+
+    восстановление семинарских файлов
+
+[33mcommit b8edcdf727d59dac8f596bcdd1dc382654e1231d[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Thu Sep 11 10:46:08 2025 +0300
+
+    маленькие изменения
+
+[33mcommit 60ebd63f82135ec50f142152762118b4c898b230[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Wed Sep 10 21:52:04 2025 +0300
+
+    убрал отладочный принт
+
+[33mcommit 7f0e1aa80e39586bc976cfcf2fb4500c9c76cdd3[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Wed Sep 10 21:31:45 2025 +0300
+
+    переписал импорты
+
+[33mcommit 17592dda6d94e5ff98a6652efdcc23ba601e1a4e[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Wed Sep 10 16:16:52 2025 +0300
+
+    поправил импорт для ci
+
+[33mcommit eaae8d8daf4e66684ac23805f3e2c257810f860e[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Wed Sep 10 16:13:31 2025 +0300
+
+    поправил импорт для ci
+
+[33mcommit 4a528d66cca8414e112468fe7b3ec0440d4ce093[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Wed Sep 10 16:01:30 2025 +0300
+
+    импорт
+
+[33mcommit e798112ae3db95e2f1478ab1dc075f0deb88948d[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Tue Sep 9 13:37:49 2025 +0300
+
+    Поработал с форматированием
+
+[33mcommit 919e592c26b66340af7de175b52fab6b2efac7a9[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Tue Sep 9 12:40:59 2025 +0300
+
+    Trailing Whitespaces тест
+
+[33mcommit 477c8b5165f9ac4189066a5f20bac8cea9a734a3[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Tue Sep 9 12:07:50 2025 +0300
+
+    устранение ошибок
+
+[33mcommit ac6822ef7532bea4e7cbf97e316ef675e4a619a3[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Tue Sep 9 12:06:18 2025 +0300
+
+    устранение ошибок
+
+[33mcommit 3715d715c2204c997e5d95c910ef532c620b69e1[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Tue Sep 9 11:50:24 2025 +0300
+
+    устранение ошибок
+
+[33mcommit 9d4f7546b10c47b913cd714efa87ee539af3fc84[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Tue Sep 9 11:31:14 2025 +0300
+
+    устранение ошибок
+
+[33mcommit 0862a87dd589029b80be36343bf6f5a672733218[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Tue Sep 9 11:11:33 2025 +0300
+
+    пока реализация с импортами
+
+[33mcommit 374a5c9910c1d4d7cc49bd3323b1134d28577304[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Mon Sep 8 20:30:27 2025 +0300
+
+    подогнал под пайтесты
+
+[33mcommit c559844ea39f01cd1d7672f4f2c7b71fecb2b0ec[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Mon Sep 8 18:25:30 2025 +0300
+
+    проверка CI для 6ки
+
+[33mcommit 6bf7ab189deef749897650954fd190c03788b4b5[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Mon Sep 8 18:21:20 2025 +0300
+
+    проверка CI для 6ки
+
+[33mcommit 417f8471c2d075dc097717fbb0656b04f4a49c72[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Mon Sep 8 17:44:53 2025 +0300
+
+    убрал пробелы
+
+[33mcommit 625b67b3e775d9d978b64c92878326de28a4f78c[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Mon Sep 8 17:38:43 2025 +0300
+
+    убрал пробелы
+
+[33mcommit ca33516777a6f9f6cb802cfc3313f7448f563438[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Mon Sep 8 17:29:31 2025 +0300
+
+    убрал пробелы
+
+[33mcommit 2892128750b33e7f827930b1f3747d78c1a331dc[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Mon Sep 8 17:02:56 2025 +0300
+
+    4 балла, базовая реализация
+
+[33mcommit 266ea1f37301b96baa2fe61edf0bfc2ba47650c3[m
+Merge: 1225c7b c9d9f3c
+Author: notBlueSpaceThinker <127470538+notBlueSpaceThinker@users.noreply.github.com>
+Date:   Mon Sep 8 11:21:51 2025 +0300
+
+    Merge branch 'fipl-hse:main' into main
+
+[33mcommit c9d9f3c0773be89df85b00ba12b1badc43bf18e1[m
+Author: Zharikov Egor <90442695+EIzharikov@users.noreply.github.com>
+Date:   Mon Sep 8 09:29:53 2025 +0300
+
+    [SEMINAR] Conditions (#32)
+
+[33mcommit 0050898308ebff6a000e9003af34428dfa65c876[m
+Author: Alexander Demidovskij <monadv@yandex.ru>
+Date:   Mon Sep 8 07:27:09 2025 +0300
+
+    [SEMINARS] Numbers and conditions (#31)
+
+[33mcommit f5a08f5ddf877b672b1c0b0ff7c77978328d3350[m
+Author: Alexander Demidovskij <monadv@yandex.ru>
+Date:   Sun Sep 7 19:53:06 2025 +0300
+
+    [LAB 1] Documentation, stubs, tests (#30)
+
+[33mcommit 1225c7b76d2465447019503ba46ea2ad42c656ba[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Mon Sep 1 12:36:26 2025 +0300
+
+    Перезапуск CI
+
+[33mcommit 53e244ef3e70178420866c87bad83faa13f8ee70[m
+Author: Yuztrazure <artemijsidnev04923@gmail.com>
+Date:   Mon Sep 1 12:19:57 2025 +0300
+
+    semi
+
+[33mcommit f7d31d81de8d160e6f32cea58dc8e1250fb6dc1b[m
+Author: Alexander Demidovskij <monadv@yandex.ru>
+Date:   Sat Aug 30 19:38:42 2025 +0300
+
+    [INIT] (#1)
+
+[33mcommit 775e8c8e459c399841f5812dea577f6f56c7eec8[m
+Author: Alexander Demidovskij <monadv@yandex.ru>
+Date:   Tue Aug 26 22:56:31 2025 +0300
+
+    Initial commit
