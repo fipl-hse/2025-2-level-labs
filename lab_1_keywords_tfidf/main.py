@@ -53,17 +53,9 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    
+
 
 def clean_and_tokenize(text: str) -> list[str] | None:
-    if not isinstance(text, str):
-        return None
-    text = text.lower()
-    cleaned_text = ''
-    for word in text:
-        if word.isalnum() or word.isspace():
-            cleaned_text += word
-    return cleaned_text.split()
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
@@ -74,6 +66,14 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(text, str):
+        return None
+    text = text.lower()
+    cleaned_text = ''
+    for word in text:
+        if word.isalnum() or word.isspace():
+            cleaned_text += word
+    return cleaned_text.split()
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -147,8 +147,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     for key, val in frequencies.items():
         if not isinstance(val, (int, float)) or not isinstance(key, str):
             return None
-    if top > len(frequencies):
-        top = len(frequencies)
+    top = min(top, len(frequencies))
     sorted_tokens = sorted(frequencies.keys(),
                           key=lambda key: (-frequencies[key], key))
     return sorted_tokens[:top]
@@ -179,7 +178,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     return {token: val / total_tokens for token, val in frequencies.items()}
 
 
-def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:  
+def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
     Calculate TF-IDF score for tokens.
 
@@ -241,7 +240,7 @@ def calculate_expected_frequency(
         t_in_corp = corpus_freqs.get(token, 0)
         without_t_in_doc = total_doc_freq - t_in_doc
         without_t_in_corp = total_corp_freq - t_in_corp
-        expected = (((t_in_doc + t_in_corp) * (t_in_doc + without_t_in_doc)) 
+        expected = (((t_in_doc + t_in_corp) * (t_in_doc + without_t_in_doc))
                 / (t_in_doc + t_in_corp + without_t_in_doc + without_t_in_corp))
         expected_frequency[token] = expected
     return dict(sorted(expected_frequency.items()))

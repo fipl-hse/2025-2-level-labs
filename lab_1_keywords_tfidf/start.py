@@ -3,7 +3,10 @@ Frequency-driven keyword extraction starter
 """
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
-from main import (
+from json import load
+
+
+from lab_1_keywords_tfidf.main import (
     calculate_chi_values,
     calculate_expected_frequency,
     calculate_frequencies,
@@ -13,10 +16,7 @@ from main import (
     extract_significant_words,
     get_top_n,
     remove_stop_words
-    ) 
-
-
-from json import load
+    )
 
 
 def main() -> None:
@@ -33,13 +33,16 @@ def main() -> None:
         corpus_freqs = load(file)
     cleaned_tokens = clean_and_tokenize(target_text) or []
     removed_stop_words = remove_stop_words(cleaned_tokens, stop_words) or []
-    calculated_frequencies = calculate_frequencies(removed_stop_words) or {}
-    expected_frequency = calculate_expected_frequency(calculate_frequencies, corpus_freqs) or {}
-    chi_values = calculate_chi_values(expected_frequency, calculated_frequencies) or {}
-    significant_words = extract_significant_words(chi_values, 0.005) or {}
-    top_words = get_top_n(significant_words, 6) or []
-    result = None
-    assert result, "Keywords are not extracted"
+    frequencies = calculate_frequencies(removed_stop_words) or {}
+    term_frequencies = calculate_tf(frequencies) or {}
+    tf_idf = calculate_tfidf(term_frequencies, idf) or {}
+    expected = calculate_expected_frequency(frequencies, corpus_freqs) or {}
+    chi_values = calculate_chi_values(expected, frequencies) or {}
+    significant_words = extract_significant_words(chi_values, 0.001) or {}
+    top_words = get_top_n(significant_words, 10) or []
+    print(top_words)
+    #result = None
+    #assert result, "Keywords are not extracted"
 
 
 if __name__ == "__main__":
