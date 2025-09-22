@@ -1,3 +1,4 @@
+import math
 """
 Lab 1
 
@@ -28,10 +29,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     else:
         if user_input == []:
             return False
-    if all(isinstance(step1, elements_type) for step1 in user_input):
-        return True
-    else:
-        return False
+    return bool(all(isinstance(step1, elements_type) for step1 in user_input))
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
@@ -54,12 +52,8 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     else:
         if user_input == {}:
             return False
-    if all(isinstance(step1, key_type) for step1 in user_input.keys()) and all(isinstance(step2, value_type) for step2 in user_input.values()):
-        return True
-    else:
-        return False
-
-
+    if all(isinstance(step1, key_type) for step1 in user_input.keys()):
+        return bool(all(isinstance(step2, value_type) for step2 in user_input.values()))
 def check_positive_int(user_input: Any) -> bool:
     """
     Check if the object is a positive integer (not bool).
@@ -70,10 +64,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if isinstance(user_input, int) and user_input > 0:
-        return True
-    else:
-        return False
+    return bool(isinstance(user_input, int) and user_input > 0)
 
 
 def check_float(user_input: Any) -> bool:
@@ -86,10 +77,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if isinstance(user_input, float):
-        return True
-    else: 
-        return False
+    return bool(isinstance(user_input, float))
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -110,7 +98,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
             for j in i:
                 if j.isalpha() or j == "'" or j.isdigit():
                     newWord += j.lower()
-            if (newWord != ''):
+            if newWord != '':
                 cleaned_text.append(newWord)
         return cleaned_text
     else:
@@ -131,16 +119,18 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     no_stop_words_text = []
     # if isinstance(tokens, list) and isinstance(stop_words, list):
     #     return None
-    if isinstance(tokens, list) and isinstance(stop_words, list) and all(isinstance(step1, str) for step1 in tokens) and all(isinstance(step2, str) for step2 in stop_words):
-        for i in tokens:
-            if i not in stop_words:
-                no_stop_words_text.append(i)
-        if no_stop_words_text != []:
-            return no_stop_words_text
-        else:
-            return []
-    else:
-        return None
+    if isinstance(tokens, list) and isinstance(stop_words, list):
+        if all(isinstance(step1, str) for step1 in tokens):
+            if all(isinstance(step2, str) for step2 in stop_words):
+                for i in tokens:
+                    if i not in stop_words:
+                        no_stop_words_text.append(i)
+                if no_stop_words_text != []:
+                    return no_stop_words_text
+                else:
+                    return []
+            else:
+                return None
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     Create a frequency dictionary from the token sequence.
@@ -325,7 +315,7 @@ def extract_significant_words(
     """
     new_chi_dict = {}
     for i in chi_values.items():
-        if i[1] / alpha < alpha:
+        if i[1] > len(chi_values)*alpha:
             new_chi_dict.update({i})
         # if i[1] > alpha + i[1]:
         #     new_chi_dict.update({i})
@@ -345,8 +335,6 @@ chi_values = {
             "vale": 7.89123,
             "yarn": 15.094,
         }
-    
 alpha = 0.05
-    
 expected = {"parts": 5.08123, "test": 4.02, "text": 3.9, "vale": 7.89123, "yarn": 15.094}
-print(extract_significant_words(chi_values, 0.05))
+print(extract_significant_words(chi_values, 0.01))
