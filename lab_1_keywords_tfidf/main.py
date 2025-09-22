@@ -72,6 +72,20 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(text, str):
+        return None
+    text=text.lower()
+    symbols="!?,.:;-–"
+    for symbol in symbols:
+      text=text.replace(symbol, "")
+    text=text.split(" ")
+    filtered_list=[]
+    for el in text:
+      if el !="":
+        filtered_list.append(el)
+    return(filtered_list)        
+    
+    
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -86,6 +100,18 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False):
+        return None
+    if not check_list(stop_words, str, True):
+        return None
+    filtered_tokens = []
+    for token in tokens:
+        if token not in stop_words:
+            filtered_tokens.append(token)
+    return filtered_tokens
+    
+    
+    
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -99,6 +125,15 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False):
+        return None
+    frequency_dictionary = {}
+    for token in tokens:
+        if token in frequency_dictionary:
+            frequency_dictionary[token] += 1
+        else:
+            frequency_dictionary[token] = 1
+    return frequency_dictionary
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -114,6 +149,13 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(frequencies, str, (int, float), False):
+        return None
+    if not check_positive_int(top):
+        return None
+    sorted_dict = dict(sorted(frequencies.items(), key=lambda item: item[1], reverse=True))
+    return sorted_dict[:top]
+    
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
