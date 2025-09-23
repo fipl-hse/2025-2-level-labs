@@ -22,29 +22,16 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    with open(
-        r"C:\Users\polin\SuperSlay\2025-2-level-labs\lab_1_keywords_tfidf\assets\Дюймовочка.txt",
-        "r",
-        encoding="utf-8",
-    ) as file:
+    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    with open(
-        r"C:\Users\polin\SuperSlay\2025-2-level-labs\lab_1_keywords_tfidf\assets\stop_words.txt",
-        "r",
-        encoding="utf-8",
-    ) as file:
+
+    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open(
-        r"C:\Users\polin\SuperSlay\2025-2-level-labs\lab_1_keywords_tfidf\assets\IDF.json",
-        "r",
-        encoding="utf-8",
-    ) as file:
+
+    with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    with open(
-        r"C:\Users\polin\SuperSlay\2025-2-level-labs\lab_1_keywords_tfidf\assets\corpus_frequencies.json",
-        "r",
-        encoding="utf-8",
-    ) as file:
+
+    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
     tokens = clean_and_tokenize(target_text)
