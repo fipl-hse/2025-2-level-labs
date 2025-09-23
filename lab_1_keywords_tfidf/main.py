@@ -161,8 +161,8 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return None
     if not check_positive_int(top):
         return None
-    sorted_dict = dict(sorted(frequencies.items(), key=lambda item: item[1], reverse=True))
-    return sorted_dict[:top]
+    sorted_words = sorted(frequencies, key=frequencies.get, reverse=True)
+    return sorted_words[:top]
     
 
 
