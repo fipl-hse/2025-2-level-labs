@@ -179,8 +179,6 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return [item[0] for item in sorted_frequencies]
     if top > 0:
         return [item[0] for item in sorted_frequencies[:top]]
-    else:
-        return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -208,6 +206,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     return better_dict
 
 
+import math
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
     Calculate TF-IDF score for tokens.
@@ -220,8 +219,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-    import math
-
     if (
         not isinstance(term_freq, dict)
         or not isinstance(idf, dict)
