@@ -4,10 +4,10 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 
+import math
+
 # pylint:disable=unused-argument
 from typing import Any
-
-import math
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -88,6 +88,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
+    return isinstance(user_input, float)
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -158,9 +159,10 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str,  int | float, False) or not check_positive_int(top):
+    if not check_dict(frequencies, str,  (int, float), False) and not check_dict(frequencies, str, float, False):
         return None
-
+    if not check_positive_int(top):
+        return None
     sorted_freq = sorted(frequencies.keys(), key=lambda word: frequencies[word], reverse=True)
     top = min(len(frequencies), top)
     return sorted_freq[0:top]
@@ -181,8 +183,8 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         return None
 
     words_in_text = sum(frequencies.values())
-    tf_dict = frequencies.copy()
-    for key, value in tf_dict.items():
+    tf_dict = {}
+    for key, value in frequencies.items():
         tf_dict[key] = value / words_in_text
 
     return tf_dict
