@@ -25,7 +25,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     for el in user_input:
         if not isinstance(el, elements_type):
             return False
-    if len(user_input) == 0 and can_be_empty == False:
+    if len(user_input) == 0 and can_be_empty is False:
         return False
     return True
 
@@ -185,7 +185,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
 
     if len(sorted_frequencies) < top:
         return [item[0] for item in sorted_frequencies]
-    elif top > 0:
+    if top > 0:
         return [item[0] for item in sorted_frequencies[:top]]
     else:
         return None
@@ -286,13 +286,12 @@ def calculate_expected_frequency(
     result = doc_freqs.copy()
     if len(corpus_freqs) == 0:
         for keys in result.keys():
-            result[keys] = float(result[keys])
+            result[keys] = int(result[keys])
         return result
     
-    result: dict[str, float] = {}
     for word, freq in doc_freqs.items():
         corpus_freq = corpus_freqs.get(word, 0)
-        result[word] = round((freq + corpus_freq) / 5, 1)
+        result[word] = float(round((freq + corpus_freq) / 5, 1))
     return result
     
 
@@ -321,7 +320,7 @@ def calculate_chi_values(
             return None
     
     result_chi_values: dict[str, float] = {}
-    for word, freq in expected.items():
+    for word in expected.keys():
         observed_freqs = observed.get(word, 0)
         expected_freqs = expected.get(word, 0)
         result_chi_values[word] = round((observed_freqs - expected_freqs)** 2 / expected_freqs, 1 )
