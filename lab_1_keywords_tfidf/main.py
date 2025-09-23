@@ -1,5 +1,4 @@
 import math
-from typing import Any
 """
 Lab 1
 
@@ -7,6 +6,7 @@ Extract keywords based on frequency related metrics
 """
 
 # pylint:disable=unused-argument
+from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -102,6 +102,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
             if new_word != '':
                 cleaned_text.append(new_word)
         return cleaned_text
+    else:
+        return None
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
     Exclude stop words from the token sequence.
@@ -125,6 +127,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
                     return no_stop_words_text
                 else:
                     return []
+            else:
+                return None
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     Create a frequency dictionary from the token sequence.
@@ -141,6 +145,8 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         for i in tokens:
             dict_frequency.update({i : tokens.count(i)})
         return dict_frequency
+    else:
+        return None
 
 
 
@@ -171,11 +177,16 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
             else:
                 top_frequencies = sorted(frequencies.items(), reverse=True)
             top_n_in_frequencies = []
+            the_item = ()
             for i in range(top):
-                if i < len(top_frequencies):
-                    the_item = top_frequencies[i]
-                    top_n_in_frequencies.append(the_item[0])
+                the_item = top_frequencies[i]
+                top_n_in_frequencies.append(the_item[0])
             return top_n_in_frequencies
+        else:
+            return None
+    else:
+        return None
+
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     Calculate Term Frequency (TF) for each token.
@@ -302,16 +313,15 @@ def extract_significant_words(
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     new_chi_dict = {}
     if not check_dict(chi_values, str, float, False):
-        return None
+        return 
     if not isinstance(alpha, float):
         return None
     for i in chi_values.items():
-        for i in criterion.keys():
-            if i == alpha:
-                crit = criterion.get(alpha)
-                if crit is not None:
-                    if i[1] > crit:
-                        new_chi_dict.update({i})
+        if alpha in criterion.keys():
+            crit = criterion.get(alpha)
+            if crit is not None:
+                if i[1] > crit:
+                    new_chi_dict.update({i})
         else:
             return None
     return new_chi_dict
