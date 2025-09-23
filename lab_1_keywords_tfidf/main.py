@@ -4,6 +4,10 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 
+
+import math
+
+
 # pylint:disable=unused-argument
 from typing import Any
 
@@ -179,7 +183,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return [item[0] for item in sorted_frequencies]
     if top > 0:
         return [item[0] for item in sorted_frequencies[:top]]
-
+    return None
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
@@ -205,8 +209,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         better_dict[key] = per_one
     return better_dict
 
-
-import math
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
