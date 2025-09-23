@@ -117,8 +117,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         In case of corrupt input arguments, None is returned.
     """
     no_stop_words_text = []
-    # if isinstance(tokens, list) and isinstance(stop_words, list):
-    #     return None
     if isinstance(tokens, list) and isinstance(stop_words, list):
         if all(isinstance(step1, str) for step1 in tokens):
             if all(isinstance(step2, str) for step2 in stop_words):
@@ -312,26 +310,17 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     new_chi_dict = {}
+    if not check_dict(chi_values, str, float, False):
+        return 
+    if not isinstance(alpha, float):
+        return None
     for i in chi_values.items():
-        if i[1] > alpha:
-            new_chi_dict.update({i})
+        if alpha in criterion.keys():
+            crit = criterion.get(alpha)
+            if i[1] > crit:
+                    new_chi_dict.update({i})
+        else:
+            return None
     return new_chi_dict
-
-# chi_values = {
-#             "this": 0.0521,
-#             "is": 0.0521,
-#             "an": 0.0521,
-#             "example": 0.0521,
-#             "of": 0.0521,
-#             "test": 4.02,
-#             "text": 3.9,
-#             "contains": 0.0521,
-#             "two": 0.0521,
-#             "parts": 5.08123,
-#             "vale": 7.89123,
-#             "yarn": 15.094,
-#         }
-# alpha = 0.05
-# expected = {"parts": 5.08123, "test": 4.02, "text": 3.9, "vale": 7.89123, "yarn": 15.094}
-# print(extract_significant_words(chi_values, 0.01))
