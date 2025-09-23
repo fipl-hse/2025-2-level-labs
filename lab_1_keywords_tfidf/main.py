@@ -16,7 +16,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
             return False
     if user_input == []:
         if can_be_empty:
-            return False
+            return True
     return True
     """
     Check if the object is a list containing elements of a certain type.
@@ -32,6 +32,15 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    if not isinstance(user_input, dict):
+        return False
+    for key, value in user_input.items():
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
+            return False
+    if user_input == {}:
+        if can_be_empty:
+            return True
+    return True
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -74,14 +83,15 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
     text = text.lower()
-    clean = ""
-    for element in text:
-        if element.isalnum():
-            clean += element
-        else:
-            clean += " "
-    tokens = clean.split()
-    return tokens
+    clean_words = []
+    for word in text.split():
+        clean_word = ''
+        for char in word:
+            if char.isalnum():
+                clean_word += char
+        if clean_word:
+            clean_words.append(clean_word)
+    return clean_words
 
     """
     Remove punctuation, convert to lowercase, and split into tokens.
@@ -96,14 +106,10 @@ def clean_and_tokenize(text: str) -> list[str] | None:
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
-    if not isinstance(tokens, list) or not isinstance(stop_words, list):
+    if not check_list(tokens, str, True):
         return None
-    for token in tokens:
-        if not isinstance(token, str):
-            return None
-    for stopword in stop_words:
-        if not isinstance(stopword, str):
-            return None
+    if not check_list(stop_words, str, True):
+        return None
     tokens_list = []
     for token in tokens:
         if token not in stop_words:
@@ -150,18 +156,23 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
-    if not isinstance(frequencies, dict) or not isinstance(top, int) or top <= 0:
+    if not check_dict(frequencies, str, (int, float), False):
         return None
-    for token, freq in frequencies.items():
-        if not isinstance(token, str) or not isinstance(freq, (int, float)):
+    if frequencies == {}:
+        return None
+    if not isinstance(top, int) or isinstance(top, bool) or top <=0:
             return None
     def get_freq(pair):
         token, freq = pair
         return freq 
     sorted_tokens = sorted(frequencies.items(), key=get_freq, reverse=True)
     top_tokens = []
+    count = 0
     for token, freq in sorted_tokens:
+        if count >= top:
+            break
         top_tokens.append(token)
+        count += 1
     return top_tokens
     """
     Extract the most frequent tokens.
@@ -178,6 +189,15 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
+    if not check_dict(frequencies, str, int, False):
+        return None
+    total_tokens = sum(frequencies.values())
+    if total_tokens == 0:
+        return None
+    tf = {}
+    for token, count in frequencies.items():
+        tf[token] = count / total_tokens
+    return tf
     """
     Calculate Term Frequency (TF) for each token.
 
@@ -191,6 +211,17 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
+    if not check_dict(term_freq, str, float, False):
+        return None
+    if not check_dict(idf, str, float, False):
+        return None
+    if len(term_freq) == 0:
+        return None
+    tfidf = {}
+    for token, tf_value in term_freq.items():
+        idf_value = idf.get(token, 0.0)
+        tfidf[token] = float(tf_value) * float(idf_value)
+    return tfidf
     """
     Calculate TF-IDF score for tokens.
 
