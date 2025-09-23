@@ -48,9 +48,14 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
         return False
     if not user_input:
         return can_be_empty
-    for key, value in user_input.items():
-        if not isinstance(key, key_type) or not isinstance(value, value_type):
-            return False
+    if isinstance(user_input, tuple):
+        for key, value in user_input.items():
+            if not isinstance (key, key_type) or not any(isinstance(value, t_value) for t_value in value):
+                return False
+    else:
+        for key, value in user_input.items():
+            if not isinstance(key, key_type) or not isinstance(value, value_type):
+                return False
     return True
 
 def check_positive_int(user_input: Any) -> bool:
@@ -153,8 +158,8 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return None
     freq_lst_sorted = sorted(frequencies.items(), key = lambda x: (-x[-1], x[0]))
     top = min(top, len(freq_lst_sorted))
-    word_lst_sorted = [item[0] for item in freq_lst_sorted[:top]]
-    return word_lst_sorted
+    top_words = [item[0] for item in freq_lst_sorted[:top]]
+    return top_words
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
