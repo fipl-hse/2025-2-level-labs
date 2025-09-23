@@ -72,7 +72,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if not isinstance(user_input, int) or isinstance(user_input, bool) or user_input == 0:
+    if not isinstance(user_input, int) or isinstance(user_input, bool) or user_input <= 0:
         return False
 
     return True
@@ -122,9 +122,10 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     """
     if not check_list(tokens, str, False):
         return None
+    if not check_list(stop_words, str, False):
+        return None
 
-    result = [word for word in tokens if word not in stop_words]
-    return result
+    return [word for word in tokens if word not in stop_words]
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -138,16 +139,10 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True):
+    if not check_list(tokens, str, False):
         return None
 
-    token_dict = {}
-    for el in tokens:
-        if el not in token_dict:
-            token_dict[el] = 1
-        else:
-            token_dict[el] += 1
-    return token_dict
+    return {token: tokens.count(token) for token in tokens}
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -163,19 +158,11 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str,  (int, float), False) or not check_positive_int(top):
+    if not check_dict(frequencies, str,  int | float, False) or not check_positive_int(top):
         return None
 
-    top = min(top, len(frequencies))
-
-    tempo_dict = frequencies.copy()
-    top_list = []
-
-    while len(top_list) != top:
-        top_word = max(tempo_dict, key=tempo_dict.get)
-        top_list.append(top_word)
-        tempo_dict.pop(top_word)
-    return top_list
+    sorted_freq = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
+    return sorted_freq[0:top]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -221,7 +208,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         idf_value = idf.get(key, math.log(47))
         tfidf_dict[key] = value * idf_value
     return tfidf_dict
-    
+
 
 
 def calculate_expected_frequency(
