@@ -29,7 +29,8 @@ def main() -> None:
         stop_words = file.read().split("\n")
     cleaned_tokens = remove_stop_words(tokens, stop_words) or []
     frequencies = calculate_frequencies(cleaned_tokens) or {}
-    top_n = get_top_n(frequencies, 5, 5.0) or []
+    frequencies_typed: dict[str, int | float] = frequencies
+    top_n = get_top_n(frequencies_typed, 5) or []
     tf = calculate_tf(frequencies) or {}
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)

@@ -48,14 +48,9 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
         return False
     if not user_input:
         return can_be_empty
-    if isinstance(user_input, tuple):
-        for key, value in user_input.items():
-            if not isinstance (key, key_type) or not any(isinstance(value, t_value) for t_value in value):
-                return False
-    else:
-        for key, value in user_input.items():
-            if not isinstance(key, key_type) or not isinstance(value, value_type):
-                return False
+    for key, value in user_input.items():
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
+            return False
     return True
 
 def check_positive_int(user_input: Any) -> bool:
