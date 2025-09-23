@@ -20,6 +20,11 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     Returns:
         bool: True if valid, False otherwise
     """
+    if not isinstance(user_input, elements_type):
+        return False
+    if can_be_empty or len(user_input) == 0:
+        return False
+    return all(isinstance(element, elements_type) for element in user_input)
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -72,6 +77,15 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_list(text, str, False):
+        return None
+    text_lower = text.lower()
+    text_isalnum = ""
+    for el in text_lower:
+        if el.isalnum() or el == " ":
+            text_isalnum += el
+    unfilt_tokens = text_isalnum.split()
+    return unfilt_tokens
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -86,6 +100,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
+    tokens = []
+    for el in unfilt_tokens:
+        if el not in stop_words:
+            tokens.append(el)
+    return tokens
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -99,6 +118,12 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    global frequencies
+    frequencies = dict.fromkeys(tokens, 0)
+    for el in tokens:
+        val = tokens.count(el)
+        frequencies[el] = val
+    return frequencies
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -113,7 +138,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     Returns:
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
-    """
+    """    
+    top_values = sorted(frequencies.items(), reverse=True) [:top]
+    return top_values
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
