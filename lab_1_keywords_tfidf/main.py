@@ -51,9 +51,14 @@ def check_dict(user_input: Any, key_type: type, value_type:
         return False
     if len(user_input) == 0:
         return can_be_empty
-    return (all(isinstance(key, key_type) for key in user_input) and
-        all(isinstance(value, value_type) for value in user_input.values()))
-
+    for key, value in user_input.items():
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
+            if isinstance(value_type, tuple):
+                if not any(isinstance(value, type) for type in value_type):
+                    return False
+            else:
+                return False
+    return True
 
 
 def check_positive_int(user_input: Any) -> bool:
@@ -159,7 +164,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> \
         In case of corrupt input arguments, None is returned.
     """
     if not all([check_dict(frequencies, str, int | float, False),
-        check_positive_int(top)]):
+                check_positive_int(top)]):
         return None
     return [item[0] for item in sorted(frequencies.items(),
                                        key=lambda item: item[1], reverse=True)[:top]]
