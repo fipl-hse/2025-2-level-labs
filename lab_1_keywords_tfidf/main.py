@@ -305,4 +305,3 @@ def extract_significant_words(
         if val > criterion[alpha]:
             significant_words[key] = val
     return significant_words
-
