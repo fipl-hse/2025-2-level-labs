@@ -292,7 +292,12 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(expected, dict) or not isinstance(observed, dict) or expected == {} or observed == {}:
+    if (
+        not isinstance(expected, dict)
+        or not isinstance(observed, dict)
+        or expected == {}
+        or observed == {}
+    ):
         return None
     for k, v in expected.items():
         if not isinstance(k, str) or not isinstance(v, float):
@@ -304,9 +309,9 @@ def calculate_chi_values(
     for word in expected.keys():
         observed_freqs = observed.get(word, 0)
         expected_freqs = expected.get(word, 0)
-        result_chi_values[word] = round((observed_freqs - expected_freqs)** 2 / expected_freqs, 1 )
+        result_chi_values[word] = round((observed_freqs - expected_freqs) ** 2 / expected_freqs, 1)
     return result_chi_values
-    
+
 
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
@@ -324,9 +329,9 @@ def extract_significant_words(
     """
     if not isinstance(chi_values, dict) or len(chi_values) == 0:
         return None
-    if alpha not in (0.05, 0.01, 0.001) or not isinstance(alpha,(int, float)):
+    if alpha not in (0.05, 0.01, 0.001) or not isinstance(alpha, (int, float)):
         return None
-    for k,v in chi_values.items():
+    for k, v in chi_values.items():
         if not isinstance(k, str) or not isinstance(v, float) or isinstance(v, bool):
             return None
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
