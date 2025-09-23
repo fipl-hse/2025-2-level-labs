@@ -37,7 +37,7 @@ def main() -> None:
     frequencies = calculate_frequencies(tokens_without_stopwords) or {}
     print(frequencies)
     top = 5
-    sorted_frequency_dict = get_top_n(frequencies, top)
+    sorted_frequency_dict = get_top_n(frequencies, top) or []
     print(sorted_frequency_dict)
     term_freq_tf = calculate_tf(frequencies) or {}
     print(term_freq_tf)
