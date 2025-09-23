@@ -177,7 +177,6 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
             else:
                 top_frequencies = sorted(frequencies.items(), reverse=True)
             top_n_in_frequencies = []
-            the_item = ()
             for i in range(top):
                 if i < len(top_frequencies):
                     the_item = top_frequencies[i]
