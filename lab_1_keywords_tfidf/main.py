@@ -171,7 +171,8 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     if not check_dict(frequencies, str, int, False):
         return None
-    tf_dict = {k: v/sum(frequencies.values()) for k, v in frequencies.items()}
+    all_tokens_count = sum(frequencies.values()) 
+    tf_dict = {token: token_value/all_tokens_count for token, token_value in frequencies.items()}
     return tf_dict
 
 
@@ -189,8 +190,11 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     """
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
-    tf_idf_dict = {token: term_freq[token] * idf[token]
-                  if token in idf else term_freq[token] * math.log(47) for token in term_freq}
+    no_token_idf = math.log(47)
+    tf_idf_dict = {}
+    for token, tf_value in term_freq.items():
+        idf_value = idf.get(token, no_token_idf)
+        tf_idf_dict[token] = tf_value * idf_value
     return tf_idf_dict
 
 
@@ -242,9 +246,9 @@ def calculate_chi_values(
     if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
         return None
     chi_values_dict = {}
-    for k, v in expected.items():
-        chi = (observed[k] - v)**2 / v
-        chi_values_dict[k] = chi
+    for token, token_freq in expected.items():
+        chi = (observed[token] - token_freq)**2 / token_freq
+        chi_values_dict[token] = chi
     return chi_values_dict
 
 
@@ -270,7 +274,7 @@ def extract_significant_words(
         return None
     critical_value = criterion[alpha]
     significant_chi_values = {}
-    for k, v in chi_values.items():
-        if v > critical_value:
-            significant_chi_values[k] = v
+    for token, token_chi_value in chi_values.items():
+        if token_chi_value > critical_value:
+            significant_chi_values[token] = token_chi_value
     return significant_chi_values
