@@ -6,6 +6,7 @@ Extract keywords based on frequency related metrics
 
 # pylint:disable=unused-argument
 from typing import Any
+from math import log
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -166,17 +167,11 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     if not check_dict(frequencies, str, int | float, False) or not check_positive_int(top):
         return None
 
-    #for key, value in frequencies.items():
-    #    if not isinstance(key, str):
-    #        return None
-    #    if not isinstance(value, int):
-    #        return None
-        
-    tokens = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
-    result = [i[0] for i in tokens]
-    if len(result) > top:
-        result = result[:top]
-    return result
+    tokens_sorted = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
+    top_tokens = [element[0] for element in tokens_sorted]
+    if len(top_tokens) > top:
+        top_tokens = top_tokens[:top]
+    return top_tokens
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -190,6 +185,15 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(frequencies, str, int, False):
+        return None
+    
+    tf_dict = dict()
+    words_total = sum(frequencies.values())
+    for key, value in frequencies.items():
+        tf = value / words_total
+        tf_dict[key] = tf
+    return tf_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -204,6 +208,18 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
+        return None
+    
+    tfidf = dict()
+    for key in term_freq:
+        if key in idf.keys():
+            tfidf_element = idf[key] * term_freq[key]
+            tfidf[key] = tfidf_element
+        else:
+            tfidf[key] = term_freq[key] * log(47/1)
+    return tfidf
+
 
 
 def calculate_expected_frequency(
@@ -220,6 +236,10 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, False):
+        return None
+    
+    doc_total = sum(doc_freqs.values)
 
 
 def calculate_chi_values(
