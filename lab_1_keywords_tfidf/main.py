@@ -90,6 +90,15 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         In case of corrupt input arguments, None is returned.
     """
 
+    if not isinstance(text, str):
+        return
+    cleaned_str = ''
+    for char in text:
+        if char.isalpha():
+            cleaned_str += char.lower()
+        else:
+            cleaned_str += ' '
+    return cleaned_str.split()
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
