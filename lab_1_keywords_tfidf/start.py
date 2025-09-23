@@ -2,13 +2,13 @@
 Frequency-driven keyword extraction starter
 """
 
-# from pathlib import Path
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
+
 from json import load
 
 from main import (
     calculate_chi_values,
-    calculate_expected_frequency, 
+    calculate_expected_frequency,
     extract_significant_words,
     calculate_frequencies,
     calculate_tf,
