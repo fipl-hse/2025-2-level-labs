@@ -20,7 +20,11 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     Returns:
         bool: True if valid, False otherwise
     """
-
+    if not  isinstance(user_input, list):
+         return False
+    if not can_be_empty and len(user_input) == 0:
+        return False
+    return all(isinstance(element, elements_type) for element in user_input)
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
@@ -35,7 +39,12 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     Returns:
         bool: True if valid, False otherwise
     """
-
+    if not isinstance(user_input, dict):
+        return False
+    if len(user_input) == 0:
+        return can_be_empty
+    return (all(isinstance(key, key_type) for key in user_input) and
+        all(isinstance(value, value_type) for value in user_input.values()))
 
 def check_positive_int(user_input: Any) -> bool:
     """
@@ -47,7 +56,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-
+    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
 
 def check_float(user_input: Any) -> bool:
     """
@@ -59,7 +68,9 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-
+    if isinstance(user_input, float):
+        return True
+    return False
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
@@ -100,15 +111,12 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False):
-        return None
-    if not check_list(stop_words, str, True):
-        return None
-    filtered_tokens = []
-    for token in tokens:
-        if token not in stop_words:
-            filtered_tokens.append(token)
-    return filtered_tokens
+    if check_list(tokens, str, True) and check_list(stop_words, str, True):
+        for stop_word in stop_words:
+            while stop_word in tokens:
+                tokens.remove(stop_word)
+        return tokens
+    return None
     
     
     
@@ -169,6 +177,12 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(frequencies, str, int, False):
+        return None
+    new_dictionary = {}
+    for keys, values in frequencies.items():
+        new_dictionary [keys] = round(values / sum(frequencies.values()), 4)
+    return new_dictionary
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
