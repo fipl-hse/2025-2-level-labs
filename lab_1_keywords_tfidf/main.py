@@ -54,6 +54,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
             return False
     if all(isinstance(step1, key_type) for step1 in user_input.keys()):
         return bool(all(isinstance(step2, value_type) for step2 in user_input.values()))
+    return False
 def check_positive_int(user_input: Any) -> bool:
     """
     Check if the object is a positive integer (not bool).
@@ -103,7 +104,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         return cleaned_text
     else:
         return None
-
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
     Exclude stop words from the token sequence.
@@ -179,8 +179,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
             top_n_in_frequencies = []
             the_item = ()
             for i in range(top):
-                the_item = top_frequencies[i]
-                top_n_in_frequencies.append(the_item[0])
+                if i < len(top_frequencies):
+                    the_item = top_frequencies[i]
+                    top_n_in_frequencies.append(the_item[0])
             return top_n_in_frequencies
         else:
             return None
@@ -313,13 +314,14 @@ def extract_significant_words(
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     new_chi_dict = {}
     if not check_dict(chi_values, str, float, False):
-        return 
+        return None
     if not isinstance(alpha, float):
         return None
     for i in chi_values.items():
         if alpha in criterion.keys():
             crit = criterion.get(alpha)
-            if i[1] > crit:
+            if crit != None:
+                if i[1] > crit:
                     new_chi_dict.update({i})
         else:
             return None
