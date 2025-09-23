@@ -189,9 +189,6 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return [item[0] for item in sorted_frequencies[:top]]
     else:
         return None
-    
-
-
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -286,14 +283,13 @@ def calculate_expected_frequency(
     result = doc_freqs.copy()
     if len(corpus_freqs) == 0:
         for keys in result.keys():
-            result[keys] = int(result[keys])
+            result[keys] = result[keys]
         return result
     
     for word, freq in doc_freqs.items():
         corpus_freq = corpus_freqs.get(word, 0)
-        result[word] = float(round((freq + corpus_freq) / 5, 1))
+        result[word] = round((freq + corpus_freq) / 5, 1)
     return result
-    
 
 
 def calculate_chi_values(
