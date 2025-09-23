@@ -274,7 +274,7 @@ def calculate_expected_frequency(
         return result
     for word, freq in doc_freqs.items():
         corpus_freq = corpus_freqs.get(word, 0)
-        result[word] = round((freq + corpus_freq) / 5, 1)
+        result[word] = float((freq + corpus_freq) / 5)
     return result
 
 
