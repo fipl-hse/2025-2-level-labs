@@ -72,7 +72,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if not isinstance(user_input, int) or isinstance(user_input, bool) or user_input <= 0:
+    if not isinstance(user_input, int) or isinstance(user_input, bool) or not check_positive_int(user_input):
         return False
 
     return True
@@ -159,7 +159,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str,  int, False) and not check_dict(frequencies, str, float, False):
+    if not check_dict(frequencies, str,  int, False):
+        return None
+    if not check_dict(frequencies, str, float, False):
         return None
     if not check_positive_int(top):
         return None
