@@ -189,6 +189,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return [item[0] for item in sorted_frequencies[:top]]
     else:
         return None
+    
+
+
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -280,12 +283,18 @@ def calculate_expected_frequency(
         if not isinstance(key2, str) or not isinstance(value2, int) or isinstance(value2, bool):
             return None
 
-    result = {}
+    result = doc_freqs.copy()
     if len(corpus_freqs) == 0:
-        result = doc_freqs.copy()
         for keys in result.keys():
             result[keys] = float(result[keys])
+        return result
+    
+    result: dict[str, float] = {}
+    for word, freq in doc_freqs.items():
+        corpus_freq = corpus_freqs.get(word, 0)
+        result[word] = round((freq + corpus_freq) / 5, 1)
     return result
+    
 
 
 def calculate_chi_values(
@@ -302,7 +311,22 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
-
+    if not isinstance(expected, dict) or not isinstance(observed, dict) or expected == {} or observed == {}:
+        return None
+    for k, v in expected.items():
+        if not isinstance(k, str) or not isinstance(v, float):
+            return None
+    for k1, v1 in observed.items():
+        if not isinstance(k1, str) or not isinstance(v1, int):
+            return None
+    
+    result_chi_values: dict[str, float] = {}
+    for word, freq in expected.items():
+        observed_freqs = observed.get(word, 0)
+        expected_freqs = expected.get(word, 0)
+        result_chi_values[word] = round((observed_freqs - expected_freqs)** 2 / expected_freqs, 1 )
+    return result_chi_values
+    
 
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
@@ -318,3 +342,16 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(chi_values, dict) or len(chi_values) == 0:
+        return None
+    if alpha not in (0.05, 0.01, 0.001) or not isinstance(alpha,(int, float)):
+        return None
+    for k,v in chi_values.items():
+        if not isinstance(k, str) or not isinstance(v, float) or isinstance(v, bool):
+            return None
+
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    threshold = criterion[float(alpha)]
+
+    significant_words = {word: chi for word, chi in chi_values.items() if chi > threshold}
+    return significant_words
