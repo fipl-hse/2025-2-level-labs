@@ -9,6 +9,15 @@ from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+    if not isinstance(user_input, list):
+        return False
+    for el in user_input:
+        if not isinstance(el, elements_type):
+            return False
+    if user_input == []:
+        if can_be_empty:
+            return False
+    return True
     """
     Check if the object is a list containing elements of a certain type.
 
