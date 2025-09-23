@@ -31,14 +31,9 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     tokens = clean_and_tokenize(target_text) or []
-    print(tokens)
     tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
     print(tokens_without_stopwords)
     frequencies = calculate_frequencies(tokens_without_stopwords) or {}
-    print(frequencies)
-    top = 5
-    sorted_frequency_dict = get_top_n(frequencies, top) or []
-    print(sorted_frequency_dict)
     term_freq_tf = calculate_tf(frequencies) or {}
     print(term_freq_tf)
     term_freq_tfidf = calculate_tfidf(term_freq_tf, idf) or {}
