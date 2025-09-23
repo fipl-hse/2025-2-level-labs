@@ -100,10 +100,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-
     lit_txt = text.lower()
     done = ""
-
     for el in lit_txt:
         if el.isalnum() or el == " ":
             done += el
@@ -125,9 +123,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     """
     if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
-
     result = []
-
     for token in tokens:
         if token not in stop_words:
             result.append(token)
@@ -149,9 +145,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         return None
     if not all(isinstance(token, str) for token in tokens):
         return None
-
     frequency_dict = {}
-
     for token in tokens:
         if token not in frequency_dict:
             frequency_dict[token] = 1
@@ -180,9 +174,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         or isinstance(top, bool)
     ):
         return None
-
     sorted_frequencies = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
-
     if len(sorted_frequencies) < top:
         return [item[0] for item in sorted_frequencies]
     if top > 0:
@@ -206,9 +198,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         return None
     if not all(isinstance(key, str) for key in frequencies.keys()):
         return None
-
     amount = sum(frequencies.values())
-
     if amount == 0:
         return None
     better_dict = {}
@@ -240,9 +230,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         return None
     if len(term_freq) == 0:
         return None
-
     tfidf = term_freq.copy()
-
     if len(idf) == 0:
         for key1 in term_freq.keys():
             tfidf[key1] = term_freq[key1] * math.log(47)
@@ -279,13 +267,11 @@ def calculate_expected_frequency(
     for key2, value2 in corpus_freqs.items():
         if not isinstance(key2, str) or not isinstance(value2, int) or isinstance(value2, bool):
             return None
-
     result = doc_freqs.copy()
     if len(corpus_freqs) == 0:
         for keys in result.keys():
             result[keys] = result[keys]
         return result
-    
     for word, freq in doc_freqs.items():
         corpus_freq = corpus_freqs.get(word, 0)
         result[word] = round((freq + corpus_freq) / 5, 1)
@@ -314,7 +300,6 @@ def calculate_chi_values(
     for k1, v1 in observed.items():
         if not isinstance(k1, str) or not isinstance(v1, int):
             return None
-    
     result_chi_values: dict[str, float] = {}
     for word in expected.keys():
         observed_freqs = observed.get(word, 0)
@@ -344,9 +329,7 @@ def extract_significant_words(
     for k,v in chi_values.items():
         if not isinstance(k, str) or not isinstance(v, float) or isinstance(v, bool):
             return None
-
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     threshold = criterion[float(alpha)]
-
     significant_words = {word: chi for word, chi in chi_values.items() if chi > threshold}
     return significant_words
