@@ -35,16 +35,43 @@ def main() -> None:
         corpus_freqs = load(file)
 
     tokens = clean_and_tokenize(target_text)
+    if not tokens:
+        return
+
     wo_stop_words = remove_stop_words(tokens, stop_words)
+    if not wo_stop_words:
+        return
+
     frequencies = calculate_frequencies(wo_stop_words)
+    if not frequencies:
+        return
+
     get_top_n_1 = get_top_n(frequencies, 10)
+    if not get_top_n:
+        return
+
     term_frequencies = calculate_tf(frequencies)
+    if not term_frequencies:
+        return
+
     tf_idf = calculate_tfidf(term_frequencies, idf)
+    if not tf_idf:
+        return
+
     get_top_n_2 = get_top_n(tf_idf, 10)
     print(get_top_n_2)
     expected = calculate_expected_frequency(frequencies, corpus_freqs)
+    if not expected:
+        return
+
     chi_values = calculate_chi_values(expected, frequencies)
+    if not chi_values:
+        return
+
     significant_words = extract_significant_words(chi_values, 0.001)
+    if not significant_words:
+        return
+
     get_top_n_3 = get_top_n(significant_words, 10)
     print(get_top_n_3)
 
