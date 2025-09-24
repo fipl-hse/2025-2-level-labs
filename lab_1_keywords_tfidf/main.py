@@ -31,7 +31,9 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(
+    user_input: Any, key_type: type, value_type: type, can_be_empty: bool
+) -> bool:
     if not isinstance(user_input, dict):
         return False
     for key, value in user_input.items():
@@ -85,7 +87,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     text = text.lower()
     clean_words = []
     for word in text.split():
-        clean_word = ''
+        clean_word = ""
         for char in word:
             if char.isalnum():
                 clean_word += char
@@ -160,11 +162,13 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return None
     if frequencies == {}:
         return None
-    if not isinstance(top, int) or isinstance(top, bool) or top <=0:
-            return None
+    if not isinstance(top, int) or isinstance(top, bool) or top <= 0:
+        return None
+
     def get_freq(pair):
         token, freq = pair
-        return freq 
+        return freq
+
     sorted_tokens = sorted(frequencies.items(), key=get_freq, reverse=True)
     top_tokens = []
     count = 0
@@ -209,8 +213,13 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         In case of corrupt input arguments, None is returned.
     """
 
+
 import math
-def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
+
+
+def calculate_tfidf(
+    term_freq: dict[str, float], idf: dict[str, float]
+) -> dict[str, float] | None:
     if not check_dict(term_freq, str, float, False):
         return None
     if not check_dict(idf, str, float, False):
@@ -219,7 +228,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         return None
     for tf_token, tf_value in term_freq.items():
         if not isinstance(tf_token, str) or not isinstance(tf_value, (int, float)):
-           return None
+            return None
     for idf_token, idf_value in idf.items():
         if not isinstance(idf_token, str) or not isinstance(idf_value, (int, float)):
             return None
@@ -262,8 +271,8 @@ def calculate_expected_frequency(
         tf_corpus = corpus_freqs.get(term, 0)
         expected = doc_total * (tf_corpus + tf_doc) / (corpus_total + doc_total)
         expected_freqs[term] = round(expected, 1)
-    return expected_freqs    
-    
+    return expected_freqs
+
     """
     Calculate expected frequency for tokens based on document and corpus frequencies.
 
@@ -292,7 +301,7 @@ def calculate_chi_values(
         chi_value = (obs - exp) ** 2 / exp
         chi_values[term] = round(chi_value, 1)
     return chi_values if chi_values else None
-    
+
     """
     Calculate chi-squared values for tokens.
 

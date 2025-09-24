@@ -5,21 +5,32 @@ Frequency-driven keyword extraction starter
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
 
+from lab_1_keywords_tfidf.main import (calculate_chi_values, calculate_expected_frequency, calculate_frequencies, calculate_tf, calculate_tfidf, clean_and_tokenize, extract_significant_words, get_top_n, remove_stop_words,)
 
 def main() -> None:
     """
     Launches an implementation.
     """
-    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
+    with open("C:/Users/banan/pibble/2025-2-level-labs/lab_1_keywords_tfidf/assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
+    with open("C:/Users/banan/pibble/2025-2-level-labs/lab_1_keywords_tfidf/assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open("assets/IDF.json", "r", encoding="utf-8") as file:
+    with open("C:/Users/banan/pibble/2025-2-level-labs/lab_1_keywords_tfidf/assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+    with open("C:/Users/banan/pibble/2025-2-level-labs/lab_1_keywords_tfidf/assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    result = None
-    assert result, "Keywords are not extracted"
+    clean_words = clean_and_tokenize(target_text) or []
+    tokens_list = remove_stop_words(clean_words, stop_words) or []
+    freq_dict = calculate_frequencies(tokens_list) or {}
+    tf = calculate_tf(freq_dict) or {}
+    tfidf = calculate_tfidf(tf, idf) or {}
+    expected_freqs = calculate_expected_frequency(freq_dict, corpus_freqs) or {}
+    chi_values = calculate_chi_values(expected_freqs, freq_dict) or {}
+    significant_words = extract_significant_words(chi_values, 0.001) or {}
+    top_tokens = get_top_n(significant_words, 10) or []
+    print(top_tokens)
+#   result = None
+#   assert result, "Keywords are not extracted"
 
 
 if __name__ == "__main__":
