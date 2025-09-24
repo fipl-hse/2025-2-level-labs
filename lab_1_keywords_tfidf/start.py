@@ -4,37 +4,45 @@ Frequency-driven keyword extraction starter
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
-from lab_1_keywords_tfidf.main import(remove_stop_words, clean_and_tokenize, calculate_frequencies, get_top_n)
+from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tfidf, calculate_tf, clean_and_tokenize, get_top_n, remove_stop_words 
 
 def main() -> None:
     """
     Launches an implementation.
     """
-    with open("lab_1_keywords_tfidf/assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
+    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    with open("lab_1_keywords_tfidf/assets/stop_words.txt", "r", encoding="utf-8") as file:
+    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open("lab_1_keywords_tfidf/assets/IDF.json", "r", encoding="utf-8") as file:
+    with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    with open("lab_1_keywords_tfidf/assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     result = None
-    assert result, "Keywords are not extracted"
-
-    if __name__ == "__main__":
-        main()
-    
-
     clean_and_tokenize_text = clean_and_tokenize(target_text)
-    print("Cleaned_text:", clean_and_tokenize_text)
-
     text_without_stop_words=remove_stop_words(clean_and_tokenize_text, stop_words)
-    print("Text without stop words: ", text_without_stop_words)
-
     calculated_frequencies=calculate_frequencies(text_without_stop_words)
+    top_n_words=get_top_n(calculated_frequencies, 10)
+    calculated_tf=calculate_tf(top_n_words)
+    calculated_tfidf=calculate_tfidf(calculated_tf, idf)
+    
+    print("Очищенные токены:", clean_and_tokenize_text)
+    print("Текст без стоп-слов:", text_without_stop_words)
+    print("Частоты слов:", calculated_frequencies)
+    print("Топ-10 ключевых слов:", top_n_words)
+    print("Term Frequency для всех слов: ", calculated_tf)
+    print("TF-IDF для всех слов: ", calculated_tfidf, idf)
+    
+    assert result, "Keywords are not extracted"
+if __name__ == "__main__":
+    main()
+  
+        
+        
+       
 
-    top_n_text=get_top_n(calculated_frequencies, 10)
+   
 
-    result=top_n_text
+    
 
 
