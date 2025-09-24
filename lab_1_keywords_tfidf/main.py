@@ -5,6 +5,7 @@ Extract keywords based on frequency related metrics
 """
 
 # pylint:disable=unused-argument
+import math
 from typing import Any
 
 
@@ -72,6 +73,21 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
+    best_text=[]
+    clean_text=text.split()
+    for x in clean_text:
+        if x.islower()==False: x=x.lower()
+        if x.isalpha()==False:
+            for i in x:
+                key=x.index(i)
+                if i.isalpha()==False and not(i=='-' and x[0]!=i and x[-1]!=i):
+                    x=x[:key]+x[key+1:]
+        if len(x)>0 and '-' not in x:
+            best_text.append(x)
+        if '-' in x:
+            parts=x.split('-')
+            best_text.extend(parts)
+    return best_text
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -86,6 +102,10 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
+    final_text=[]
+    for x in tokens:
+        if x not in stop_words: final_text.append(x)
+    return final_text
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -99,6 +119,10 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    dic_freq={}
+    for i in tokens:
+        dic_freq[i]= tokens.count(i)
+    return dic_freq
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -114,6 +138,10 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
+    sorted_dict = list(dict(sorted(frequencies.items(), key=lambda x: x[1], reverse=True)))
+    if top>len(sorted_dict):
+        return sorted_dict
+    return sorted_dict[:top]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -127,6 +155,11 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
+    tf_dict={}
+    for key, value in frequencies.items():
+        tf_value=value/len(frequencies)
+        tf_dict[key]=tf_value
+    return tf_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -141,7 +174,12 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-
+    tfidf_dict={}
+    for key, value in term_freq.items():
+        if key not in idf: tfidf_value = term_freq[key]*math.log(47)
+        else: tfidf_value=term_freq[key]*idf[key]
+        tfidf_dict[key]=tfidf_value
+    return tfidf_dict
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
