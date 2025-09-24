@@ -123,7 +123,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
             del tokens[i]
         else:
             i += 1
-    return tokens     
+    return tokens
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
