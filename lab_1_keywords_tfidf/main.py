@@ -5,6 +5,7 @@ Extract keywords based on frequency related metrics
 """
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from typing import Any
+import math
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -169,8 +170,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         In case of corrupt input arguments, None is returned.
     """
     if check_dict(frequencies, str, int, False):
-#        for i in range(len(frequencies)):
-#           values_sum += frequencies.values[i]
         return {token: frequencies[token] / sum(frequencies.values()) for token in frequencies.keys()}
     return None
 
@@ -187,7 +186,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-    return
+    if check_dict(term_freq, str, float, False) and check_dict(idf, str, float, True):
+        return {token: term_freq[token] * idf.get(token, math.log(47)) for token in term_freq.keys()}
+    return None
 
 
 def calculate_expected_frequency(
