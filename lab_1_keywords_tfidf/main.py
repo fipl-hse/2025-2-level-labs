@@ -7,6 +7,8 @@ Extract keywords based on frequency related metrics
 # pylint:disable=unused-argument
 from typing import Any
 
+import math
+
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
@@ -179,10 +181,9 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     if not check_dict(frequencies, str, int, False):
         return None
-    term_freq = dict.fromkeys(frequencies.keys())
+    term_freq = {}
     for k, v in frequencies.items():
-        k_term_freq = v/len(unfilt_tokens)
-        term_freq[k] = k_term_freq
+        term_freq[k] = v/len(unfilt_tokens)
     return term_freq
 
 
@@ -198,6 +199,17 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(term_freq, str, float, False):
+        return None
+    if not check_dict(idf, str, float, True):
+        return None
+    tfidf_dict = {}
+    for k, v in term_freq.items():
+        if k not in idf:
+            tfidf_dict[k] = v*math.log(47)
+        else:
+            tfidf_dict[k] = v*idf[k]
+    return tfidf_dict
 
 
 def calculate_expected_frequency(
