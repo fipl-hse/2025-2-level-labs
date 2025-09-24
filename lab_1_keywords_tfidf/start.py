@@ -25,12 +25,16 @@ def main() -> None:
     """
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
+
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
+
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
+
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
+        
     clean_words = clean_and_tokenize(target_text) or []
     tokens_list = remove_stop_words(clean_words, stop_words) or []
     freq_dict = calculate_frequencies(tokens_list) or {}
@@ -40,6 +44,7 @@ def main() -> None:
     chi_values = calculate_chi_values(expected_freqs, freq_dict) or {}
     significant_words = extract_significant_words(chi_values, 0.001) or {}
     top_tokens = get_top_n(significant_words, 10) or []
+
     print(top_tokens)
 #   result = None
 #   assert result, "Keywords are not extracted"
