@@ -209,18 +209,27 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         In case of corrupt input arguments, None is returned.
     """
 
-
+import math
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     if not check_dict(term_freq, str, float, False):
         return None
     if not check_dict(idf, str, float, False):
         return None
-    if len(term_freq) == 0:
+    if not term_freq:
         return None
+    for tf_token, tf_value in term_freq.items():
+        if not isinstance(tf_token, str) or not isinstance(tf_value, (int, float)):
+           return None
+    for idf_token, idf_value in idf.items():
+        if not isinstance(idf_token, str) or not isinstance(idf_value, (int, float)):
+            return None
+    max_idf = math.log(47 / 1)
     tfidf = {}
-    for token, tf_value in term_freq.items():
-        idf_value = idf.get(token, 0.0)
-        tfidf[token] = float(tf_value) * float(idf_value)
+    for term, tf in term_freq.items():
+        if not isinstance(term, str):
+            return None
+        term_idf = idf.get(term, max_idf)
+        tfidf[term] = tf * term_idf
     return tfidf
     """
     Calculate TF-IDF score for tokens.
@@ -238,6 +247,23 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> dict[str, float] | None:
+    if not check_dict(doc_freqs, str, int, False):
+        return None
+    if not check_dict(corpus_freqs, str, int, True):
+        return None
+    if not doc_freqs:
+        return None
+    doc_total = sum(doc_freqs.values())
+    if doc_total == 0:
+        return None
+    corpus_total = sum(corpus_freqs.values())
+    expected_freqs = {}
+    for term, tf_doc in doc_freqs.items():
+        tf_corpus = corpus_freqs.get(term, 0)
+        expected = doc_total * (tf_corpus + tf_doc) / (corpus_total + doc_total)
+        expected_freqs[term] = round(expected, 1)
+    return expected_freqs    
+    
     """
     Calculate expected frequency for tokens based on document and corpus frequencies.
 
@@ -254,6 +280,19 @@ def calculate_expected_frequency(
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
+    if not check_dict(expected, str, float, False):
+        return None
+    if not check_dict(observed, str, int, False):
+        return None
+    chi_values = {}
+    for term, obs in observed.items():
+        exp = expected.get(term)
+        if exp is None or exp == 0:
+            continue
+        chi_value = (obs - exp) ** 2 / exp
+        chi_values[term] = round(chi_value, 1)
+    return chi_values if chi_values else None
+    
     """
     Calculate chi-squared values for tokens.
 
@@ -270,6 +309,21 @@ def calculate_chi_values(
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
 ) -> dict[str, float] | None:
+    if not check_dict(chi_values, str, float, False):
+        return None
+    if not isinstance(alpha, float) or not chi_values:
+        return None
+    if not chi_values:
+        return None
+    chi_critical = {0.05: 3.84, 0.01: 6.63, 0.001: 10.83}
+    if alpha not in chi_critical:
+        return None
+    limit = chi_critical[alpha]
+    significant_words = {}
+    for word, value in chi_values.items():
+        if value > limit:
+            significant_words[word] = value
+    return significant_words
     """
     Select tokens with chi-squared values greater than the critical threshold.
 
