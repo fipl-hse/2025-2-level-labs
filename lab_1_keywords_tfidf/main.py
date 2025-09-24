@@ -92,7 +92,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
 
     if not isinstance(text, str):
-        return
+        return None
     cleaned_str = ''
     for char in text:
         if char.isalnum():
@@ -114,16 +114,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         In case of corrupt input arguments, None is returned.
     """
     if not check_list(tokens, str, False):
-        return
+        return None
     if not check_list(stop_words, str, True):
-        return
+        return None
     i = 0
     while i < len(tokens):
         if tokens[i] in stop_words:
             del tokens[i]
         else:
             i += 1
-    return tokens        
+    return tokens     
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -159,9 +159,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         In case of corrupt input arguments, None is returned.
     """
     if not check_positive_int(top):
-        return
+        return None
     if not check_dict(frequencies, str, int | float, False):
-        return 
+        return None
     sorted_frequencies = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)[:top]
     return [value[0] for value in sorted_frequencies]
 
@@ -177,7 +177,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         In case of corrupt input arguments, None is returned.
     """
     if not check_dict(frequencies, str, int, False):
-        return
+        return None
     total_count = 0
     for count in frequencies.values():
         total_count += count
@@ -201,7 +201,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         In case of corrupt input arguments, None is returned.
     """
     if not check_dict(term_freq, str, float, False):
-        return
+        return None
     tfidf = {}
     default_idf = math.log(47 / 1)
     for token, tf in term_freq.items():
@@ -226,13 +226,14 @@ def calculate_expected_frequency(
         In case of corrupt input arguments, None is returned.
     """
     if not check_dict(doc_freqs, str, int, False):
-        return
+        return None
     if not check_dict(corpus_freqs, str, int, False):
-        return
+        return None
     doc_freqs_tf = calculate_tf(doc_freqs)
     corpus_freqs_tf = calculate_tf(corpus_freqs)
     tfidf_for_calculate = calculate_tfidf(doc_freqs_tf, corpus_freqs_tf)
     print(get_top_n(tfidf_for_calculate, 10))
+    return None
 
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
