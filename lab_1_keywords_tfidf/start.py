@@ -3,21 +3,33 @@ Frequency-driven keyword extraction starter
 """
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
+
 from json import load
 
-from lab_1_keywords_tfidf.main import (calculate_chi_values, calculate_expected_frequency, calculate_frequencies, calculate_tf, calculate_tfidf, clean_and_tokenize, extract_significant_words, get_top_n, remove_stop_words,)
+from lab_1_keywords_tfidf.main import (
+    calculate_chi_values,
+    calculate_expected_frequency,
+    calculate_frequencies,
+    calculate_tf,
+    calculate_tfidf, 
+    clean_and_tokenize,
+    extract_significant_words,
+    get_top_n,
+    remove_stop_words,
+)
+
 
 def main() -> None:
     """
     Launches an implementation.
     """
-    with open("C:/Users/banan/pibble/2025-2-level-labs/lab_1_keywords_tfidf/assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
+    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    with open("C:/Users/banan/pibble/2025-2-level-labs/lab_1_keywords_tfidf/assets/stop_words.txt", "r", encoding="utf-8") as file:
+    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open("C:/Users/banan/pibble/2025-2-level-labs/lab_1_keywords_tfidf/assets/IDF.json", "r", encoding="utf-8") as file:
+    with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    with open("C:/Users/banan/pibble/2025-2-level-labs/lab_1_keywords_tfidf/assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     clean_words = clean_and_tokenize(target_text) or []
     tokens_list = remove_stop_words(clean_words, stop_words) or []
