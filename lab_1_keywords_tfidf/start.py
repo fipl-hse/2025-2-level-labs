@@ -34,44 +34,23 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
-    tokens = clean_and_tokenize(target_text)
-    if not tokens:
-        return
+    tokens = clean_and_tokenize(target_text) or []
+    wo_stop_words = remove_stop_words(tokens, stop_words) or []
+    frequencies = calculate_frequencies(wo_stop_words) or {}
 
-    wo_stop_words = remove_stop_words(tokens, stop_words)
-    if not wo_stop_words:
-        return
+    get_top_n_1 = get_top_n(frequencies, 10) or []
 
-    frequencies = calculate_frequencies(wo_stop_words)
-    if not frequencies:
-        return
+    term_frequencies = calculate_tf(frequencies) or {}
+    tf_idf = calculate_tfidf(term_frequencies, idf) or {}
 
-    get_top_n_1 = get_top_n(frequencies, 10)
-
-    term_frequencies = calculate_tf(frequencies)
-    if not term_frequencies:
-        return
-
-    tf_idf = calculate_tfidf(term_frequencies, idf)
-    if not tf_idf:
-        return
-
-    get_top_n_2 = get_top_n(tf_idf, 10)
+    get_top_n_2 = get_top_n(tf_idf, 10) or []
     print(get_top_n_2)
 
-    expected = calculate_expected_frequency(frequencies, corpus_freqs)
-    if not expected:
-        return
+    expected = calculate_expected_frequency(frequencies, corpus_freqs) or {}
+    chi_values = calculate_chi_values(expected, frequencies) or {}
 
-    chi_values = calculate_chi_values(expected, frequencies)
-    if not chi_values:
-        return
-
-    significant_words = extract_significant_words(chi_values, 0.001)
-    if not significant_words:
-        return
-
-    get_top_n_3 = get_top_n(significant_words, 10)
+    significant_words = extract_significant_words(chi_values, 0.001) or {}
+    get_top_n_3 = get_top_n(significant_words, 10) or []
     print(get_top_n_3)
 
     # result = None
