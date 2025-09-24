@@ -38,7 +38,7 @@ def main() -> None:
     wo_stop_words = remove_stop_words(tokens, stop_words) or []
     frequencies = calculate_frequencies(wo_stop_words) or {}
 
-    get_top_n_1 = get_top_n(frequencies, 10) or []
+    get_top_n_1 = get_top_n(dict(frequencies, 10)) or []
 
     term_frequencies = calculate_tf(frequencies) or {}
     tf_idf = calculate_tfidf(term_frequencies, idf) or {}
