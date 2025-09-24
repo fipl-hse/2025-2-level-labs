@@ -222,11 +222,12 @@ def calculate_expected_frequency(
     if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
         return None
     expected = {}
-    for k, v in doc_freqs.items():
-        k1 = corpus_freqs.get(k, 0)
-        l = sum(doc_freqs.values()) - v
-        m = sum(corpus_freqs.values()) - k1
-        expected[k] = ((v + k1)*(v + l))/(v + k1 + l + m)
+    for key, value in doc_freqs.items():
+        t_in_D = corpus_freqs.get(key, 0)
+        words_without_t_d = sum(doc_freqs.values()) - value
+        words_without_t_D = sum(corpus_freqs.values()) - t_in_D
+        expected[key] = ((value + t_in_D)*(value + words_without_t_d))\
+            /(value + t_in_D + words_without_t_d + words_without_t_D)
     return expected
 
 def calculate_chi_values(
