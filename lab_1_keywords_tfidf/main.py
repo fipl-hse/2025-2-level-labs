@@ -5,6 +5,7 @@ Extract keywords based on frequency related metrics
 """
 
 # pylint:disable=unused-argument
+import math
 from typing import Any
 
 
@@ -94,9 +95,9 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         return
     cleaned_str = ''
     for char in text:
-        if char.isalpha():
+        if char.isalnum():
             cleaned_str += char.lower()
-        else:
+        elif char.isspace():
             cleaned_str += ' '
     return cleaned_str.split()
 
@@ -159,7 +160,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not check_positive_int(top):
         return
-    if not check_dict(frequencies, str, int, False):
+    if not check_dict(frequencies, str, int | float, False):
         return 
     sorted_frequencies = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)[:top]
     return [value[0] for value in sorted_frequencies]
@@ -199,6 +200,15 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(term_freq, str, float, False):
+        return
+    tfidf = {}
+    default_idf = math.log(47 / 1)
+    for token, tf in term_freq.items():
+        idf_value = idf.get(token, default_idf)
+        tfidf[token] = tf * idf_value
+
+    return tfidf
 
 
 def calculate_expected_frequency(
@@ -215,7 +225,14 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
-
+    if not check_dict(doc_freqs, str, int, False):
+        return
+    if not check_dict(corpus_freqs, str, int, False):
+        return
+    doc_freqs_tf = calculate_tf(doc_freqs)
+    corpus_freqs_tf = calculate_tf(corpus_freqs)
+    tfidf_for_calculate = calculate_tfidf(doc_freqs_tf, corpus_freqs_tf)
+    print(get_top_n(tfidf_for_calculate, 10))
 
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
