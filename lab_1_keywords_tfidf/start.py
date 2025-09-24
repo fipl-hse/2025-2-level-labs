@@ -15,6 +15,8 @@ from main import get_top_n
 
 from main import calculate_tf
 
+from main import calculate_tfidf
+
 
 def main() -> None:
     """
@@ -38,7 +40,10 @@ def main() -> None:
     print (top_values)
     term_freq = calculate_tf(frequencies)
     print (term_freq)
-    result = term_freq #(изменить в 12 шаге)
+    tfidf_dict = calculate_tfidf(term_freq, idf)
+    print (tfidf_dict)
+    print (get_top_n(tfidf_dict, 10))
+    result = tfidf_dict #(изменить в 12 шаге)
     assert result, "Keywords are not extracted"
 
 
