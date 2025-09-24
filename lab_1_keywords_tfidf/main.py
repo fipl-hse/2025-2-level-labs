@@ -112,13 +112,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list):
+    if not check_list(tokens, str, False):
         return
-    for token in tokens:
-        if not isinstance(token, str):
-            return
-        if token in stop_words:
-            tokens.remove(token)
+    if not check_list(stop_words, str, True):
+        return
+    i = 0
+    while i < len(tokens):
+        if tokens[i] in stop_words:
+            del tokens[i]
+        else:
+            i += 1
     return tokens        
 
 
@@ -133,6 +136,12 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False):
+        return None
+    frequencies: dict[str, int] = {}
+    for token in tokens:
+        frequencies[token] = frequencies.get(token, 0) + 1
+    return frequencies
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
