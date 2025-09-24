@@ -184,6 +184,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return [item[0] for item in sorted_frequencies[:top]]
     return None
 
+
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     Calculate Term Frequency (TF) for each token.
@@ -207,7 +208,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         per_one = value / amount
         better_dict[key] = per_one
     return better_dict
-
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -267,14 +267,14 @@ def calculate_expected_frequency(
     for key2, value2 in corpus_freqs.items():
         if not isinstance(key2, str) or not isinstance(value2, int) or isinstance(value2, bool):
             return None
-    result = doc_freqs.copy()
+    result: dict[str, float] = {}
     if len(corpus_freqs) == 0:
-        for keys in result.keys():
-            result[keys] = result[keys]
+        for key, val in doc_freqs.items():
+            result[key] = float(val)
         return result
     for word, freq in doc_freqs.items():
         corpus_freq = corpus_freqs.get(word, 0)
-        result[word] = float((freq + corpus_freq) / 5)
+        result[word] = (freq + corpus_freq) / 5.0
     return result
 
 

@@ -49,7 +49,12 @@ def main() -> None:
     get_top_n_1 = get_top_n(frequencies, 10)
 
     term_frequencies = calculate_tf(frequencies)
+    if not term_frequencies:
+        return
+
     tf_idf = calculate_tfidf(term_frequencies, idf)
+    if not tf_idf:
+        return
 
     get_top_n_2 = get_top_n(tf_idf, 10)
     print(get_top_n_2)
