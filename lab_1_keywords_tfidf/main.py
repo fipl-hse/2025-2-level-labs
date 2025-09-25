@@ -1,13 +1,11 @@
 import math
-
+from typing import Any
 """
 Lab 1
 
 Extract keywords based on frequency related metrics
 """
-
 # pylint:disable=unused-argument
-from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -103,8 +101,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
             if not new_word == '':
                 cleaned_text.append(new_word)
         return cleaned_text
-    else:
-        return None
+    return None
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
     Exclude stop words from the token sequence.
@@ -128,12 +125,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
                     return no_stop_words_text
                 else:
                     return []
-            else:
-                return None
-        else:
             return None
-    else:
         return None
+    return None
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     Create a frequency dictionary from the token sequence.
@@ -185,10 +179,8 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
                 the_item = top_frequencies[i]
                 top_n_in_frequencies.append(the_item[0])
             return top_n_in_frequencies
-        else:
-            return None
-    else:
         return None
+    return None
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
