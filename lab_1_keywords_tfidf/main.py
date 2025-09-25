@@ -258,7 +258,7 @@ def extract_significant_words(
     """
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     significant_words = {}
-    if check_dict(chi_values, str, float, False) and alpha in criterion.keys():
+    if check_dict(chi_values, str, float, False) and alpha in criterion:
         for token in chi_values:
             if chi_values[token] > criterion[alpha]:
                 significant_words[token] = chi_values[token]
