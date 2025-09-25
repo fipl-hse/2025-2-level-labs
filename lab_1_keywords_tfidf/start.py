@@ -2,17 +2,10 @@
 Frequency-driven keyword extraction starter
 """
 from json import load
-from lab_1_keywords_tfidf.main import (
-    calculate_chi_values,
-    calculate_expected_frequency,
-    calculate_frequencies,
-    calculate_tf,
-    calculate_tfidf,
-    clean_and_tokenize,
-    extract_significant_words,
-    get_top_n,
-    remove_stop_words
-)
+
+from lab_1_keywords_tfidf.main import calculate_chi_values, calculate_expected_frequency, calculate_frequencies, calculate_tf, calculate_tfidf, clean_and_tokenize, extract_significant_words, get_top_n, remove_stop_words
+
+
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 def main() -> None:
     """
