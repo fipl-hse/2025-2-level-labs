@@ -226,8 +226,8 @@ def calculate_expected_frequency(
         k = corpus_freqs.get(key, 0) # t in D
         words_without_t_d = sum(doc_freqs.values()) - value
         words_without_t = sum(corpus_freqs.values()) - k
-        expected[key] = ((value + k)*(value + words_without_t_d))\
-            /(value + k + words_without_t_d + words_without_t)
+        expected[key] = (((value + k)*(value + words_without_t_d))
+            /(value + k + words_without_t_d + words_without_t))
     return expected
 
 def calculate_chi_values(
