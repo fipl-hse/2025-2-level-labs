@@ -98,7 +98,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
             for j in i:
                 if j.isalpha() or j == "'" or j.isdigit():
                     new_word += j.lower()
-            if not new_word == '':
+            if new_word != '':
                 cleaned_text.append(new_word)
         return cleaned_text
     return None
@@ -123,8 +123,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
                         no_stop_words_text.append(i)
                 if no_stop_words_text:
                     return no_stop_words_text
-                else:
-                    return []
+                return []
             return None
         return None
     return None
@@ -144,8 +143,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         for i in tokens:
             dict_frequency.update({i : tokens.count(i)})
         return dict_frequency
-    else:
-        return None
+    return None
 
 
 
@@ -167,8 +165,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
             return None
         if top <= 0:
             return None
-        if top >= len(frequencies):
-            top = len(frequencies)
+        top = min(top, len(frequencies))
         if not isinstance(top, bool):
             if len(list(set(list(frequencies.values())))) == 1:
                 top_frequencies = sorted(frequencies.items())
@@ -315,7 +312,7 @@ def extract_significant_words(
     if not isinstance(alpha, float):
         return None
     for i in chi_values.items():
-        if alpha in criterion.keys():
+        if alpha in list(criterion.keys()):
             crit = criterion.get(alpha)
             if crit is not None:
                 if i[1] > crit:
