@@ -173,7 +173,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
             return None
         if top <= 0:
             return None
-        if top > len(frequencies):
+        if top >= len(frequencies):
             top = len(frequencies)
         if not isinstance(top, bool):
             if len(list(set(list(frequencies.values())))) == 1:
@@ -182,10 +182,8 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
                 top_frequencies = sorted(frequencies.items(), reverse=True)
             top_n_in_frequencies = []
             for i in range(top):
-                if len(top_frequencies) < i:
-                    the_item = top_frequencies[i]
-                    if len(the_item) >= 1:
-                        top_n_in_frequencies.append(the_item[0])
+                the_item = top_frequencies[i]
+                top_n_in_frequencies.append(the_item[0])
             return top_n_in_frequencies
         else:
             return None
