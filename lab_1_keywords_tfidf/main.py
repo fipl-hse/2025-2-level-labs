@@ -6,6 +6,7 @@ Extract keywords based on frequency related metrics
 
 # pylint:disable=unused-argument
 from typing import Any
+import math
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -27,9 +28,9 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     for el in user_input:
         if not isinstance(el, elements_type):
             return False
-        return True
-    return
-    
+    return True
+
+
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
@@ -68,6 +69,7 @@ def check_positive_int(user_input: Any) -> bool:
         return False 
     return True
 
+
 def check_float(user_input: Any) -> bool:
     """
     Check if the object is a float.
@@ -78,7 +80,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return(isinstance(user_input,float))
+    return isinstance(user_input,float)
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
@@ -98,8 +100,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     for el in text:
         if el in punctuation:
             text=text.replace(el, "")
-    text=text.split(' ')
-    return [el for el in text if el.strip()]
+    text_new=text.split(' ')
+    return [el for el in text_new if el.strip()]
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
@@ -148,7 +150,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int or float, False):
+    if not (check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)):
         return None
     if not check_positive_int(top) or isinstance(top, bool):
         return None
@@ -170,7 +172,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         In case of corrupt input arguments, None is returned.
     """
     if not check_dict(frequencies, str, int, True):
-        return None 
+        return None
     total = sum(frequencies.values())
     if total==0:
         return {}
@@ -181,7 +183,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     srt_tf_tokens=dict(srt_tf)
     return srt_tf_tokens
 
-import math
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
@@ -196,7 +197,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         In case of corrupt input arguments, None is returned.
     """
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
-        return None  
+        return None
     tf_idf={}
     for k, v in term_freq.items():
         if k in idf:
@@ -219,7 +220,7 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
-   
+
 
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
