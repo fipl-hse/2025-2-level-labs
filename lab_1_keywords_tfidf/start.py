@@ -1,3 +1,6 @@
+"""
+Frequency-driven keyword extraction starter
+"""
 from json import load
 from lab_1_keywords_tfidf.main import (
     calculate_chi_values,
@@ -10,9 +13,6 @@ from lab_1_keywords_tfidf.main import (
     get_top_n,
     remove_stop_words
 )
-"""
-Frequency-driven keyword extraction starter
-"""
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 def main() -> None:
     """
@@ -42,7 +42,7 @@ def main() -> None:
     tfidf_frequencies = calculate_tfidf(tf_frequencies, idf)
     if not tfidf_frequencies:
         return
-    expected_frequencies = calculate_expected_frequency(tfidf_frequencies, corpus_freqs)
+    expected_frequencies = calculate_expected_frequency(tf_frequencies, corpus_freqs)
     if not expected_frequencies:
         return
     chi_value_frequency = calculate_chi_values(tfidf_frequencies, corpus_freqs)
