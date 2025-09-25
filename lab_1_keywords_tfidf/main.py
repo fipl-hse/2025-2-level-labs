@@ -4,8 +4,6 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 import math
-
-# pylint:unused-argument
 from typing import Any
 
 
