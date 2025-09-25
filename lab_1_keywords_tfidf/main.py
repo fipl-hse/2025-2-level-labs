@@ -313,14 +313,13 @@ def extract_significant_words(
         return None
     ii = 0
     for i in chi_values.items():
-        for j in criterion.keys():
+        for j, val in criterion.items():
             if alpha == j:
                 ii += 1
                 crit = criterion.get(j)
                 if crit is not None:
                     if i[1] > crit:
                         new_chi_dict.update({i})
-         
                 else:
                     return None
     if ii == 0:
