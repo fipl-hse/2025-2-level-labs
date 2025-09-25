@@ -3,9 +3,10 @@ Lab 1
 
 Extract keywords based on frequency related metrics
 """
+import math
+
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from typing import Any
-import math
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -152,9 +153,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if check_dict(frequencies, str, (int, float), False) and check_positive_int(top):
+    if (check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)) and check_positive_int(top):
         return [item[0] for item in sorted(list(frequencies.items()), \
-                                           key=lambda item: (-item[1], item[0]))][0:top]
+            key=lambda item: (-item[1], item[0]))][0:top]
     return None
 
 
@@ -170,7 +171,9 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         In case of corrupt input arguments, None is returned.
     """
     if check_dict(frequencies, str, int, False):
-        return {token: frequencies[token] / sum(frequencies.values()) for token in frequencies.keys()}
+        return {
+            token: frequencies[token] / sum(frequencies.values()) for token in frequencies.keys()
+        }
     return None
 
 
@@ -187,7 +190,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         In case of corrupt input arguments, None is returned.
     """
     if check_dict(term_freq, str, float, False) and check_dict(idf, str, float, True):
-        return {token: term_freq[token] * idf.get(token, math.log(47)) for token in term_freq.keys()}
+        return {
+            token: term_freq[token] * idf.get(token, math.log(47)) for token in term_freq.keys()
+        }
     return None
 
 
@@ -239,4 +244,4 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
-    return 
+    return
