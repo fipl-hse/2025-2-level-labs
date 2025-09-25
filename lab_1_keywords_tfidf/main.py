@@ -28,7 +28,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     else:
         if user_input == []:
             return False
-    return bool(all(isinstance(step1, elements_type) for step1 in user_input))
+        return all(isinstance(step1, elements_type) for step1 in user_input)
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
@@ -45,14 +45,13 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    if can_be_empty:
-        if user_input == {}:
+    if user_input == {}:
+        if can_be_empty:
             return True
-    else:
-        if user_input == {}:
+        else:
             return False
     if all(isinstance(step1, key_type) for step1 in user_input.keys()):
-        return bool(all(isinstance(step2, value_type) for step2 in user_input.values()))
+        return all(isinstance(step2, value_type) for step2 in user_input.values())
     return False
 def check_positive_int(user_input: Any) -> bool:
     """
@@ -64,7 +63,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return bool(isinstance(user_input, int) and user_input > 0)
+    return isinstance(user_input, int) and user_input > 0
 
 
 def check_float(user_input: Any) -> bool:
@@ -77,7 +76,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return bool(isinstance(user_input, float))
+    return isinstance(user_input, float)
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -224,10 +223,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     tfidf_dict = {}
     if term_freq == {}:
         return None
-    if idf == {}:
-        for i, val in term_freq.items():
-            tfidf_dict[i] = val * math.log(47 / 1)
-        return tfidf_dict
     for i, val in term_freq.items():
         if i in idf:
             tfidf_dict[i] = val * idf[i]
@@ -253,13 +248,13 @@ def calculate_expected_frequency(
         return None
     if not check_dict(corpus_freqs, str, int, True):
         return None
-    if corpus_freqs == {}:
-        new_docs = {}
-        for i, val in doc_freqs.items():
-            new_docs[i] = float(val)
-        return new_docs
     expec_freqs = {}
     for i, val in doc_freqs.items():
+        if corpus_freqs == {}:
+            new_docs = {}
+            for i, val in doc_freqs.items():
+                new_docs[i] = float(val)
+            return new_docs
         if i in corpus_freqs:
             expec_freqs[i] = (val + corpus_freqs[i])/5
         else:
@@ -317,10 +312,9 @@ def extract_significant_words(
             if alpha == j:
                 ii += 1
                 crit = val
-                if crit is not None:
-                    if i[1] > crit:
-                        new_chi_dict.update({i})
-                else:
+                if crit is not None and i[1] > crit:
+                    new_chi_dict.update({i})
+                if crit is None:
                     return None
     if ii == 0:
         return None

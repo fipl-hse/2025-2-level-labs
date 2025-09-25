@@ -42,7 +42,7 @@ def main() -> None:
     tfidf_frequencies = calculate_tfidf(tf_frequencies, idf)
     if not tfidf_frequencies:
         return
-    expected_frequencies = calculate_expected_frequency(tf_frequencies, corpus_freqs)
+    expected_frequencies = calculate_expected_frequency(text_frequencies, corpus_freqs)
     chi_value_frequency = calculate_chi_values(tfidf_frequencies, corpus_freqs)
     only_key_words = extract_significant_words(tfidf_frequencies, 0.001)
     if not only_key_words:
