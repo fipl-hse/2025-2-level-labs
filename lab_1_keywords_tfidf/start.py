@@ -48,11 +48,6 @@ def main() -> None:
         return
     result = get_top_n(significant_words, 10)
     print(result)
-    term_freq = calculate_tf(frequencies)
-    if not term_freq:
-        return
-    tf_idf = calculate_tfidf(term_freq, idf)
-    print(term_freq, tf_idf)
     assert result, "Keywords are not extracted"
 
 
