@@ -5,7 +5,7 @@ Extract keywords based on frequency related metrics
 """
 import math
 
-# pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
+# pylint:unused-argument
 from typing import Any
 
 
