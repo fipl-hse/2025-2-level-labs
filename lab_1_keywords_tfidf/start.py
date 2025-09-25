@@ -41,6 +41,10 @@ def main() -> None:
     top_frequencies = get_top_n(tfidf, 10)
 
     result = top_frequencies
+
+    if not (cleaned_tokens, removed_stop_words, calculated_frequencies, tf, tfidf):
+        return
+
     print(result)
     assert result, "Keywords are not extracted"
 
