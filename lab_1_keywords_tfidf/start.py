@@ -29,22 +29,22 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     if not clean_and_tokenize(target_text):
-        return None
+        return
     cleaned_and_tokenized = clean_and_tokenize(target_text)
     if not remove_stop_words(cleaned_and_tokenized, stop_words):
-        return None
+        return
     without_stop_words = remove_stop_words(cleaned_and_tokenized, stop_words)
     if not calculate_frequencies(without_stop_words):
-        return None
+        return
     frequencies = calculate_frequencies(without_stop_words)
     if not calculate_expected_frequency(frequencies, corpus_freqs):
-        return None
+        return
     expected_frequency = calculate_expected_frequency(frequencies, corpus_freqs)
     if not calculate_chi_values(expected_frequency, frequencies):
-        return None
+        return
     chi_values = calculate_chi_values(expected_frequency, frequencies)
     if not extract_significant_words(chi_values, alpha=0.05):
-        return None
+        return
     significant_words = extract_significant_words(chi_values, alpha=0.05)
     result = get_top_n(significant_words, 10)
     print(result)
