@@ -7,6 +7,8 @@ from json import load
 
 from lab_1_keywords_tfidf.main import (
     calculate_frequencies,
+    calculate_tf,
+    calculate_tfidf,
     clean_and_tokenize,
     get_top_n,
     remove_stop_words,
@@ -38,7 +40,13 @@ def main() -> None:
     if not calculated_frequencies:
         return
 
-    top_frequencies = get_top_n(calculated_frequencies, 10)
+    tf = calculate_tf(calculated_frequencies)
+    if not tf:
+        return
+
+    calculated_tfidf = calculate_tfidf(tf, idf)
+
+    top_frequencies = get_top_n(calculated_tfidf, 10)
 
     result = top_frequencies
     print(result)

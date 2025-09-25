@@ -28,8 +28,8 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     if not user_input and can_be_empty:
         return False
 
-    for character in user_input:
-        if not isinstance(character, elements_type):
+    for item in user_input:
+        if not isinstance(item, elements_type):
             return False
 
     return True
@@ -149,7 +149,8 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     if not check_list(tokens, str, False):
         return None
-    frequencies: dict[str, int | float] = {token: tokens.count(token) for token in tokens}
+
+    frequencies = {token: tokens.count(token) for token in tokens}
     return frequencies
 
 
@@ -166,8 +167,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, False):
+    if not check_dict(frequencies, str, (int,float), False):
         return None
+
     if not check_positive_int(top):
         return None
 
