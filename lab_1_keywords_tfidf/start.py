@@ -7,6 +7,8 @@ from lab_1_keywords_tfidf.main import (
     calculate_chi_values,
     calculate_expected_frequency,
     calculate_frequencies,
+    calculate_tf,
+    calculate_tfidf,
     clean_and_tokenize,
     extract_significant_words,
     get_top_n,
@@ -44,10 +46,11 @@ def main() -> None:
     if not extract_significant_words(chi_values, alpha=0.05):
         return None
     significant_words = extract_significant_words(chi_values, alpha=0.05)
-    if not get_top_n(chi_values, 10):
-        return None
     result = get_top_n(significant_words, 10)
     print(result)
+    term_freq = calculate_tf(frequencies)
+    tf_idf = calculate_tfidf(term_freq, idf)
+    print(term_freq, tf_idf)
     assert result, "Keywords are not extracted"
 
 
