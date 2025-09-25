@@ -127,13 +127,11 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     return {token: tokens.count(token) for token in set(tokens)}
 
 
-
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
     Extract the most frequent tokens.
 
     Args:
-
         frequencies (dict[str, int | float]): A dictionary with tokens and their frequencies
         top (int): Number of tokens to extract
 
@@ -216,14 +214,14 @@ def calculate_expected_frequency(
         return None
     if not doc_freqs:
         return None
-    doc_total = sum(doc_freqs.values())  
-    corpus_total = sum(corpus_freqs.values())  
+    doc_total = sum(doc_freqs.values())
+    corpus_total = sum(corpus_freqs.values())
     if doc_total == 0 and corpus_total == 0:
         return None
     expected_freqs = {}
     for token in sorted(doc_freqs.keys()):
-        token_doc_freq = doc_freqs[token]  
-        token_corpus_freq = corpus_freqs.get(token, 0)  
+        token_doc_freq = doc_freqs[token]
+        token_corpus_freq = corpus_freqs.get(token, 0)
         expected = (token_doc_freq + token_corpus_freq) * doc_total / (doc_total + corpus_total)
         expected_freqs[token] = expected
     return expected_freqs
@@ -253,7 +251,7 @@ def calculate_chi_values(
             continue
         observed_freq = observed[token]
         expected_freq = expected[token]
-        if expected_freq > 0:  
+        if expected_freq > 0:
             chi_value = (observed_freq - expected_freq) ** 2 / expected_freq
             chi_values[token] = round(chi_value, 1)
         else:
