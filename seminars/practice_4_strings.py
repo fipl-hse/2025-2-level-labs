@@ -92,7 +92,6 @@ while count < 5:
 
 # TASKS
 
-
 # Task 1:
 def multiply_string(input_string: str, how_many: int) -> str:
     """
@@ -229,7 +228,7 @@ def count_vowels(input_string: str) -> int:
 print(count_vowels("hello"))
 
 # count_vowels("hello") → 2
-# count_vowels("xzg") → 0
+# count_vowels("xyz") → 0
 # count_vowels("AEIOU") → 5
 
 
@@ -257,7 +256,7 @@ def remove_vowels(input_string: str) -> str:
 print(remove_vowels("hello"))
 
 # remove_vowels("hello") → "hll"
-# remove_vowels("xgz") → "xgz"
+# remove_vowels("xyz") → "xyz"
 
 
 # Task 8:
@@ -348,14 +347,7 @@ def all_words_capitalized(sentence: str) -> bool:
         bool: True if all words are capitalized, False otherwise
     """
     # student implementation goes here
-    sentence = sentence.split()
-    if not sentence:
-        return False
-    for word in sentence:
-        if not word==word.capitalize():
-            return False
-    return True
-print(all_words_capitalized("Hello World"))
+    
 
 
 # all_words_capitalized("Hello World") → True
@@ -377,11 +369,8 @@ def is_palindrome(input_string: str) -> bool:
         bool: True if input_string is a palindrome, False otherwise
     """
     # student implementation goes here
-    if input_string==input_string[::-1]:
-        return True
-    return False
-print(is_palindrome("level"))
-print(is_palindrome("hello"))
+
+
 # is_palindrome("level") → True
 # is_palindrome("hello") → False
 
@@ -401,16 +390,10 @@ def count_substring_occurrences(text: str, pattern: str) -> int:
         int: Number of times pattern appears in text
     """
     # student implementation goes here
-    amount = 0
-    for i in range(len(text) - len(pattern)):
-        if text[i:i+len(pattern)] == pattern:
-            amount += 1
-    return amount
-    
-print(count_substring_occurrences("banana", "ana"))
-print(count_substring_occurrences("aaaa", "aa"))
+
+
 # count_substring_occurrences("banana", "ana") → 1
-# count_substring_occurrences("aaaa", "aa") → 2
+# count_substring_occurrences("aaaa", "aa") → 3
 
 
 # Task 14:
@@ -424,19 +407,9 @@ def reverse_word(sentence: str) -> str:
     Returns:
         str: Modified sentence
     """
-    # student implementation goes here
-    words = sentence.split()
-    reversed_words = []
-    for word in words:
-        if len(word) >= 5:
-            reversed_words.append(word[::-1])  
-        else:
-            reversed_words.append(word)
-    return " ".join(reversed_words)
+    # student realisation goes here
 
-print(reverse_word("Hey fellow warriors"))
-print(reverse_word("This is a test"))
-print(reverse_word("This is another test"))
+
 # reverse_word("Hey fellow warriors") → "Hey wollef sroirraw"
 # reverse_word("This is a test") → "This is a test"
 # reverse_word("This is another test") → "This is rehtona test"
@@ -456,22 +429,8 @@ def generate_hashtag(input_string: str) -> str:
     Returns:
         str | bool: Hashtag string or False
     """
-    # student implementation goes here
-    if not input_string:
-        return False
+    # student realisation goes here
 
-    words = input_string.split()
-    capitalized_words = [word.capitalize() for word in words]
-    hashtag = "#" + "".join(capitalized_words)
-
-    if len(hashtag) > 140:
-        return False
-    else:
-        return hashtag
-    
-print(generate_hashtag(" Hello there thanks for trying my quiz"))
-print(generate_hashtag("    Hello     World   "))
-print(generate_hashtag(""))
 
 # " Hello there thanks for trying my quiz" → "#HelloThereThanksForTryingMyQuiz"
 # "    Hello     World   " → "#HelloWorld"
@@ -489,15 +448,8 @@ def string_splosion(input_string: str) -> str:
     Returns:
         str: Exploded string
     """
-    # student implementation goes here
-    result = ""
-    for i in range(len(input_string)):
-        result += input_string[:i+1]
-    return result
-print(string_splosion('Code'))
-print(string_splosion('abc') )
-print(string_splosion('ab'))
-print(string_splosion('Kitten'))
+    # student realisation goes here
+
 
 # string_splosion('Code') → 'CCoCodCode'
 # string_splosion('abc') → 'aababc'
@@ -518,21 +470,8 @@ def string_match(first_string: str, second_string: str) -> int:
     Returns:
         int: Number of matching substrings
     """
-    # student implementation goes here
-    count = 0
-    shorter = min(len(first_string), len(second_string))
+    # student realisation goes here
 
-    for i in range(shorter - 1):
-        a_sub = first_string[i:i+2]
-        b_sub = second_string[i:i+2]
-        if a_sub == b_sub:
-            count += 1
-
-    return count
-
-print(string_match('xxcaazz', 'xxbaaz'))
-print(string_match('abc', 'abc'))
-print(string_match('abc', 'axc'))
 
 # string_match('xxcaazz', 'xxbaaz') → 3
 # string_match('abc', 'abc') → 2
