@@ -27,9 +27,8 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     for el in user_input:
         if not isinstance(el, elements_type):
             return False
-        else:
-            return True
-        
+        return True
+    return
     
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
@@ -67,8 +66,7 @@ def check_positive_int(user_input: Any) -> bool:
     """
     if not isinstance(user_input,int) or user_input<=0:
         return False 
-    else: 
-        return True
+    return True
 
 def check_float(user_input: Any) -> bool:
     """
@@ -80,10 +78,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if isinstance(user_input,float):
-        return True
-    else: 
-        return False
+    return(isinstance(user_input,float))
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
@@ -154,7 +149,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         In case of corrupt input arguments, None is returned.
     """
     if not check_dict(frequencies, str, int or float, False):
-        return None 
+        return None
     if not check_positive_int(top) or isinstance(top, bool):
         return None
     sorted_frequencies = sorted(frequencies.items(), key = lambda x: x[1], reverse=True)
@@ -176,15 +171,17 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     if not check_dict(frequencies, str, int, True):
         return None 
-    N = sum(frequencies.values())
-    if N==0:
+    total = sum(frequencies.values())
+    if total==0:
         return {}
     tf_tokens={}
     for k,v in frequencies.items():
-        tf_tokens[k] = v / N
+        tf_tokens[k] = v / total
     srt_tf=sorted(tf_tokens.items())
     srt_tf_tokens=dict(srt_tf)
     return srt_tf_tokens
+
+import math
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
@@ -198,7 +195,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-    import math
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None  
     tf_idf={}
@@ -223,35 +219,7 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict)==0:
-        return None
-    for k, v in doc_freqs.items():
-        if not isinstance(k, str):
-            return None 
-        if not isinstance(v, int):
-            return None 
-    for k, v in corpus_freqs.items():
-        if not isinstance(k, str):
-            return None 
-        if not isinstance(v, int):
-            return None 
-    exp_freq_dict={}
-    sum_in_doc = sum(doc_freqs.values())
-    sum_in_corpus = sum(corpus_freqs.values())
-    exp_freq_dict={}
-    for t, j in doc_freqs.items():
-        k=corpus_freqs.get(t, 0)
-        l=sum_in_doc-j
-        m=sum_in_corpus-k
-        multi=(j+k)*(j+l)
-        sum=j+k+l+m
-        if sum==0:
-            exp_freq_dict[t] = 0.0
-        else:
-            exp_freq_dict[t]=float(multi/sum)
-        exp_freq_list=sorted(exp_freq_dict.items())
-        exp_freq_dict=dict(exp_freq_list)
-    return exp_freq_dict
+   
 
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
