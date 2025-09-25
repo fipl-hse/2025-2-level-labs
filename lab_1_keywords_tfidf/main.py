@@ -167,7 +167,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int, float), False):
+    if not check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False):
         return None
 
     if not check_positive_int(top):
@@ -229,6 +229,7 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
+    
 
 
 def calculate_chi_values(

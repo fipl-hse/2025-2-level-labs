@@ -28,22 +28,30 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
+
     cleaned_tokens = clean_and_tokenize(target_text)
+    if not cleaned_tokens:
+        return
 
     removed_stop_words = remove_stop_words(cleaned_tokens, stop_words)
+    if not removed_stop_words:
+        return
 
     calculated_frequencies = calculate_frequencies(removed_stop_words)
+    if not calculated_frequencies:
+        return
 
     tf = calculate_tf(calculated_frequencies)
+    if not tf:
+        return
 
     tfidf = calculate_tfidf(tf, idf)
+    if not tfidf:
+        return
 
     top_frequencies = get_top_n(tfidf, 10)
 
     result = top_frequencies
-
-    if not (cleaned_tokens, removed_stop_words, calculated_frequencies, tf, tfidf):
-        return
 
     print(result)
     assert result, "Keywords are not extracted"
