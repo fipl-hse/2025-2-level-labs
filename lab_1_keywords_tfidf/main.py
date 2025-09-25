@@ -267,9 +267,9 @@ def calculate_expected_frequency(
     if not check_dict(corpus_freqs, str, int, True):
         return None
     if corpus_freqs == {}:
-        for i, val in doc_freqs.items():
-            doc_freqs[i] = float(val)
-        return doc_freqs
+        res = (dict([key, float(value)] 
+       for key, value in doc_freqs.items()))
+        return res
     expec_freqs = {}
     for i, val in doc_freqs.items():
         if i in corpus_freqs:
