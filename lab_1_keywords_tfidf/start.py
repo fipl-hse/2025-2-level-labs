@@ -49,7 +49,7 @@ def main() -> None:
     if not tfidf:
         return
 
-    top_frequencies = get_top_n(tfidf, 10)
+    top_frequencies = get_top_n(calculated_frequencies, 10)
 
     result = top_frequencies
 

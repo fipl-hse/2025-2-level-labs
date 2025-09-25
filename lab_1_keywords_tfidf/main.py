@@ -229,7 +229,7 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
-    
+
 
 
 def calculate_chi_values(
