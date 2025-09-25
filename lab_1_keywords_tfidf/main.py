@@ -232,6 +232,8 @@ def calculate_expected_frequency(
         return None
     doc_freqs_tf = calculate_tf(doc_freqs)
     corpus_freqs_tf = calculate_tf(corpus_freqs)
+    if doc_freqs_tf is None or corpus_freqs_tf is None:
+        return None
     tfidf_for_calculate = calculate_tfidf(doc_freqs_tf, corpus_freqs_tf)
     if tfidf_for_calculate is not None:
         print(get_top_n(tfidf_for_calculate, 10))
