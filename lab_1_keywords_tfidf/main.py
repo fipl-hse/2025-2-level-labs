@@ -149,7 +149,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     if not check_list(tokens, str, False):
         return None
-    frequencies = {token: tokens.count(token) for token in tokens}
+    frequencies: dict[str, int | float] = {token: tokens.count(token) for token in tokens}
     return frequencies
 
 
