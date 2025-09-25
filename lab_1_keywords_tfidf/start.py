@@ -35,7 +35,7 @@ def main() -> None:
         tf_frequencies = calculate_tf(text_frequencies)
         tfidf_frequencies = calculate_tfidf(tf_frequencies, idf)
         expected_frequencies = calculate_expected_frequency(text_frequencies, corpus_freqs)
-        only_key_words = extract_significant_words(tfidf_frequencies)
+        only_key_words = extract_significant_words(tfidf_frequencies, 0.001)
         top_words = get_top_n(only_key_words, 10)
     assert result, "Keywords are not extracted"
 

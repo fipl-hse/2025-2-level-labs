@@ -100,7 +100,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
             for j in i:
                 if j.isalpha() or j == "'" or j.isdigit():
                     new_word += j.lower()
-            if new_word != '':
+            if not new_word == '':
                 cleaned_text.append(new_word)
         return cleaned_text
     else:
@@ -130,6 +130,10 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
                     return []
             else:
                 return None
+        else:
+            return None
+    else:
+        return None
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     Create a frequency dictionary from the token sequence.
@@ -314,7 +318,7 @@ def extract_significant_words(
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     new_chi_dict = {}
     if not check_dict(chi_values, str, float, False):
-        return 
+        return None
     if not isinstance(alpha, float):
         return None
     for i in chi_values.items():
