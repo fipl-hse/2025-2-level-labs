@@ -236,7 +236,7 @@ def calculate_chi_values(
     """
     if check_dict(expected, str, float, False) and check_dict(observed, str, int, False):
         return {
-            token: (observed.get(token) - expected[token]) ** 2 / expected[token]\
+            token: (observed.get(token, 0) - expected[token]) ** 2 / expected[token]\
                 for token in expected.keys()
         }
     return None
@@ -256,4 +256,11 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
-    return
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    significant_words = {}
+    if check_dict(chi_values, str, float, False) and alpha in criterion.keys():
+        for token in chi_values.keys():
+            if chi_values[token] > criterion[alpha]:
+                significant_words[token] = chi_values[token]
+        return significant_words
+    return None
