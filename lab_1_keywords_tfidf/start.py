@@ -32,6 +32,8 @@ def main() -> None:
     if not cleaned_text:
         return
     cleaned_text = remove_stop_words(cleaned_text, stop_words)
+    if not cleaned_text:
+        return
     text_frequencies = calculate_frequencies(cleaned_text)
     if not text_frequencies:
         return
@@ -44,7 +46,7 @@ def main() -> None:
     expected_frequencies = calculate_expected_frequency(text_frequencies, corpus_freqs)
     if not expected_frequencies:
         return
-    only_key_words = extract_significant_words(tfidf_frequencies)
+    only_key_words = extract_significant_words(tfidf_frequencies, 0.001)
     if not only_key_words:
         return
     top_words = get_top_n(only_key_words, 10)
