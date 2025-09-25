@@ -5,8 +5,9 @@ Extract keywords based on frequency related metrics
 """
 
 # pylint:disable=unused-argument
-from typing import Any
 import math
+from typing import Any
+
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
@@ -140,7 +141,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int, float), False): 
+    if not check_dict(frequencies, str, int, False): 
         return None
     if not check_positive_int(top):
         return None
@@ -205,6 +206,21 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(doc_freqs, str, int, True) or not check_dict(corpus_freqs, str, int, True):
+        return None
+    if not doc_freqs:
+        return None
+    d = sum(doc_freqs.values())
+    D = sum(corpus_freqs.values())
+    if d == 0 and D == 0:
+        return None
+    expected_freqs = {}
+    for token in sorted(doc_freqs.keys()):
+        t = doc_freqs[token]
+        T = corpus_freqs.get(token, 0)
+        expected = (t + T) * d / (d + D)
+        expected_freqs[token] = expected
+    return expected_freqs
 
 
 def calculate_chi_values(
@@ -221,6 +237,22 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(expected, str, float, True) or not check_dict(observed, str, int, True):
+        return None
+    if not expected or not observed:
+        return None
+    chi_values = {}
+    for token in observed:
+        if token not in expected:
+            continue
+        observed_freq = observed[token]
+        expected_freq = expected[token]
+        if expected_freq > 0:  
+            chi_value = (observed_freq - expected_freq) ** 2 / expected_freq
+            chi_values[token] = round(chi_value, 1)
+        else:
+            chi_values[token] = float('inf') if observed_freq > 0 else 0.0
+    return chi_values
 
 
 def extract_significant_words(
@@ -237,3 +269,16 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(chi_values, str, float, True) or not check_float(alpha):
+        return None
+    if not chi_values:
+        return None
+    CRITERION = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if alpha not in CRITERION:
+        return None
+    critical_value = CRITERION[alpha]
+    significant_words = {}
+    for token, chi_value in chi_values.items():
+        if chi_value > critical_value:
+            significant_words[token] = chi_value
+    return significant_words
