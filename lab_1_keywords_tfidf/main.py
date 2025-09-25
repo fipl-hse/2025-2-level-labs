@@ -115,8 +115,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-
-           
+    if not isinstance(tokens, list):
+        return None
+    if not isinstance(stop_words, list):
+        return None
+    for el in tokens:
+        if not el in stop_words:
+            return None
+        if el == stop_words:
+            tokens.remove(el)
+    return tokens 
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -130,7 +138,14 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    
+    if not isinstance(tokens, list):
+        return None
+    frequencies = {}
+    for token in tokens:
+        frequencies[tokens] = frequencies.get(token, 0) +1
+    return frequencies
+
+
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
@@ -145,6 +160,24 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(frequencies, dict):
+        return None
+    if not isinstance(top, int) or top < 0:
+        return None
+    for el in frequencies.items():
+        token = el[0]
+        per = el [1]
+        if not isinstance(token, str) or not isinstance(per, (int, float)):
+            return None
+    if not frequencies or top == 0:
+        return []
+    sorted_t = sorted(frequencies.items(), key = lambda item: item[1], reverse = True)
+    most_frequent = []
+    for syb in sorted_t[:top]:
+        token, per = syb
+        most_frequent.append(token)
+    return most_frequent
+
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -158,6 +191,8 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(frequencies, dict):
+        return 
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
