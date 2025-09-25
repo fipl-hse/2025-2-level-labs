@@ -160,7 +160,8 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not check_positive_int(top):
         return None
-    if not check_dict(frequencies, str, int, False) and not check_dict(frequencies, str, float, False):
+    if (not check_dict(frequencies, str, int, False) and
+            not check_dict(frequencies, str, float, False)):
         return None
     sorted_frequencies = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)[:top]
     return [value[0] for value in sorted_frequencies]
@@ -231,8 +232,8 @@ def calculate_expected_frequency(
         return None
     doc_freqs_tf = calculate_tf(doc_freqs)
     corpus_freqs_tf = calculate_tf(corpus_freqs)
-    if doc_freqs is not None and corpus_freqs is not None:
-        tfidf_for_calculate = calculate_tfidf(doc_freqs_tf, corpus_freqs_tf)
+    tfidf_for_calculate = calculate_tfidf(doc_freqs_tf, corpus_freqs_tf)
+    if tfidf_for_calculate is not None:
         print(get_top_n(tfidf_for_calculate, 10))
     return None
 
