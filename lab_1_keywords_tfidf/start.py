@@ -30,13 +30,18 @@ def main() -> None:
     result = None
     if not target_text == None and not stop_words == None and not idf == None and not corpus_freqs == None:
         cleaned_text = clean_and_tokenize(target_text)
-        cleaned_text = remove_stop_words(cleaned_text, stop_words)
-        text_frequencies = calculate_frequencies(cleaned_text)
-        tf_frequencies = calculate_tf(text_frequencies)
-        tfidf_frequencies = calculate_tfidf(tf_frequencies, idf)
-        expected_frequencies = calculate_expected_frequency(text_frequencies, corpus_freqs)
-        only_key_words = extract_significant_words(tfidf_frequencies, 0.001)
-        top_words = get_top_n(only_key_words, 10)
+        if not cleaned_text == None:
+            cleaned_text = remove_stop_words(cleaned_text, stop_words)
+        if not cleaned_text == None:
+            text_frequencies = calculate_frequencies(cleaned_text)
+            tf_frequencies = calculate_tf(text_frequencies)
+            expected_frequencies = calculate_expected_frequency(text_frequencies, corpus_freqs)
+        if not tf_frequencies == None:
+            tfidf_frequencies = calculate_tfidf(tf_frequencies, idf)
+        if not tfidf_frequencies == None:
+            only_key_words = extract_significant_words(tfidf_frequencies, 0.001)
+        if not only_key_words == None:
+            top_words = get_top_n(only_key_words, 10)
     assert result, "Keywords are not extracted"
 
 
