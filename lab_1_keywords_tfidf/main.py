@@ -143,7 +143,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     return frequencies_dictionary
 
 
-def get_top_n(frequencies: dict[str, int | float], top: int) -> (list[str], None):
+def get_top_n(frequencies: dict[str, (int, float)], top: int) -> [list[str], None]:
     """
     Extract the most frequent tokens.
 
