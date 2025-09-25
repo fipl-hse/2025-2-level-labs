@@ -1,4 +1,5 @@
 import math
+
 """
 Lab 1
 
