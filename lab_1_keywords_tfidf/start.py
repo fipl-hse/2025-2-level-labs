@@ -4,8 +4,7 @@ Frequency-driven keyword extraction starter
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
-from main import check_dict, check_float, check_list, check_positive_int, clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n, calculate_tf, calculate_tfidf
-
+from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n, calculate_tf, calculate_tfidf
 
 def main() -> None:
     """
@@ -27,6 +26,7 @@ def main() -> None:
     tf_dict = calculate_tf(frequency_stats)
     tfidf_calculated = calculate_tfidf(tf_dict, idf)
     top_tfidf_tokens = get_top_n(tfidf_calculated, 10)
+    print(top_tfidf_tokens)
     result = top_tfidf_tokens
     assert result, "Keywords are not extracted"
 
