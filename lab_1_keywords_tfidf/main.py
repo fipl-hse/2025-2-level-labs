@@ -258,8 +258,8 @@ def calculate_chi_values(
     """
     if not check_dict(expected, str, float, False):
         return None
-    if not check_dict(observed, str, (int, float), False):
-        if not check_dict(observed, str, (int, float), False):
+    if not check_dict(observed, str, int, False):
+        if not check_dict(observed, str, float, False):
             return None
     chi_values = {}
     for word in expected.keys():
@@ -288,13 +288,12 @@ def extract_significant_words(
         return None
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     if alpha not in criterion:
-                return None
+        return None
     # for word, chi_value in chi_values.items():
     if not criterion.get(alpha):
         return None
     significant_words = {
         word: chi_values[word] for word in chi_values
-        if chi_values[word] > criterion.get(alpha)
+        if chi_values[word] > criterion.get(alpha, 3.842)
         }
     return significant_words
-    
