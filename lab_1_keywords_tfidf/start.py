@@ -44,9 +44,11 @@ def main() -> None:
     if not tf:
         return
 
-    calculated_tfidf = calculate_tfidf(tf, idf)
+    tfidf = calculate_tfidf(tf, idf)
+    if not tfidf:
+        return
 
-    top_frequencies = get_top_n(calculated_tfidf, 10)
+    top_frequencies = get_top_n(tfidf, 10)
 
     result = top_frequencies
     print(result)
