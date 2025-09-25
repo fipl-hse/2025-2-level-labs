@@ -57,7 +57,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     for key, value in user_input.items():
         if not isinstance(key, key_type):
             return False
-        if not isinstance(value, value_type):
+        if not any(isinstance(value, value_type) for value_type in tuple(value_type)):
             return False
 
     return True
@@ -167,7 +167,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int,float), False):
+    if not check_dict(frequencies, str, (int, float), False):
         return None
 
     if not check_positive_int(top):
