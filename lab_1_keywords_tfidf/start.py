@@ -25,14 +25,16 @@ def main() -> None:
     """
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
+
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
+        
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
+
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    result = None
-    assert result, "Keywords are not extracted"
+
 
     tokens = clean_and_tokenize(target_text) or []
     wo_stop_words = remove_stop_words(tokens, stop_words) or []
@@ -45,8 +47,8 @@ def main() -> None:
     top_n_3 = get_top_n(significant_words, 10) or []
     print(top_n_3)
 
-    #result = None
-    #assert result, "Keywords are not extracted"
+    result = top_n_3
+    assert result, "Keywords are not extracted"
 
 
 if __name__ == "__main__":
