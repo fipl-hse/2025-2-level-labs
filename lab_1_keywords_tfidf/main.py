@@ -107,8 +107,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
             text_without_punctuation += char
 
     text_cleaned = text_without_punctuation.lower()
-    tokens = text_cleaned.split()
-    return tokens
+    return text_cleaned.split()
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -125,9 +124,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     """
     if not check_list(tokens, str, False) or not check_list(stop_words, str, True):
         return None
-
-    tokens_without_stop_words = [element for element in tokens if element not in stop_words]
-    return tokens_without_stop_words
+    return [element for element in tokens if element not in stop_words]
 
 
 
@@ -190,8 +187,8 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     
     tf_dict = dict()
     words_total = sum(frequencies.values())
-    for key, value in frequencies.items():
-        tf = value / words_total
+    for key in frequencies:
+        tf = frequencies[key] / words_total
         tf_dict[key] = tf
     return tf_dict
 
@@ -236,10 +233,23 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, False):
+    if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
         return None
-    
-    doc_total = sum(doc_freqs.values)
+    expected_freqency_dictionary = dict()
+    doc_total = sum(doc_freqs.values())
+    corpus_total = sum(corpus_freqs.values())
+    for key in doc_freqs:
+        j = doc_freqs[key]
+        l = doc_total - doc_freqs[key]
+        if key in corpus_freqs:
+            k = corpus_freqs[key]
+            m = corpus_total - corpus_freqs[key]
+            expected_freqency = (j + k) * (j + l) / (j + k + l + m)
+            expected_freqency_dictionary[key] = expected_freqency
+        else:
+            expected_freqency = j * (j + l) / (j + l + corpus_total)
+            expected_freqency_dictionary[key] = expected_freqency
+    return expected_freqency_dictionary
 
 
 def calculate_chi_values(
@@ -256,6 +266,18 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
+        return None
+    chi_values = dict()
+    for key in expected:
+        if key in observed.keys():
+            chi_squared = (observed[key] - expected[key]) ** 2 / expected[key]
+            chi_values[key] = chi_squared
+        else:
+            chi_squared = expected[key] ** 2 / expected[key]
+            chi_values[key] = chi_squared
+    return chi_values
+
 
 
 def extract_significant_words(
@@ -272,3 +294,8 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if not check_dict(chi_values, str, float, False) or not check_float(alpha) or alpha not in criterion.keys():
+        return None
+    threshold = criterion[alpha]
+    return {token: value for token, value in chi_values.items() if value > threshold}
