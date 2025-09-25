@@ -188,7 +188,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     return tf_dict
 
 
-
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
     Calculate TF-IDF score for tokens.
@@ -211,7 +210,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     return tfidf_dict
 
 
-
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> dict[str, float] | None:
@@ -226,6 +224,19 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
+        return None
+    expexted_freq_dict = {}
+    words_in_doc = sum(doc_freqs.values())
+    words_in_corpus = sum(corpus_freqs.values())
+    for word in doc_freqs.keys():
+        i = doc_freqs.get(word)
+        k = corpus_freqs.get(word, 0)
+        l = words_in_doc - i
+        m = words_in_corpus - k
+        expexted_freq = ((i + k) * (i + l)) / (i + k + l + m)
+        expexted_freq_dict[word] = expexted_freq
+    return expexted_freq_dict
 
 
 def calculate_chi_values(
@@ -242,6 +253,15 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(expected, str, float, False) or not check_dict(observed, str, (int, float), False):
+        return None
+    chi_values = {}
+    for word in expected.keys():
+        exp_fr = expected.get(word)
+        obs_fr = observed.get(word)
+        chi = pow(obs_fr - exp_fr, 2) / exp_fr
+        chi_values[word] = chi
+    return chi_values
 
 
 def extract_significant_words(
@@ -258,3 +278,14 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(chi_values, str, float, False) or not check_float(alpha):
+        return None
+    significant_words = {}
+    for word, chi_value in chi_values.items():
+        if chi_value > alpha:
+            significant_words[word] = chi_value
+    if not significant_words:
+        return None
+    
+    return significant_words
+    

@@ -6,10 +6,13 @@ Frequency-driven keyword extraction starter
 from json import load
 
 from lab_1_keywords_tfidf.main import (
+    calculate_chi_values,
+    calculate_expected_frequency,
     calculate_frequencies,
     calculate_tf,
     calculate_tfidf,
     clean_and_tokenize,
+    extract_significant_words,
     get_top_n,
     remove_stop_words,
 )
@@ -32,8 +35,12 @@ def main() -> None:
     frequ_dict = calculate_frequencies(text_without_stopwords) or {}
     tf_dict = calculate_tf(frequ_dict) or {}
     tfidf_dict = calculate_tfidf(tf_dict, idf) or {}
-    top_n_tfidf = get_top_n(tfidf_dict, 10)
-    result = top_n_tfidf
+    expected_freq = calculate_expected_frequency(frequ_dict, corpus_freqs)
+    chi_values = calculate_chi_values(expected_freq, tfidf_dict)
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    for key in criterion.keys():
+        significant_words = extract_significant_words(chi_values, key)
+    result = significant_words
 
     print(result)
     assert result, "Keywords are not extracted"
