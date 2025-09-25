@@ -106,8 +106,7 @@ def multiply_string(input_string: str, how_many: int) -> str:
         str: Repeated string
     """
     # student realisation goes here
-    return input_string * how_many
-print(multiply_string('Hi',2))
+    
 
 # multiply_string('Hi', 2) → 'HiHi'
 # multiply_string('Hi', 3) → 'HiHiHi'
@@ -128,9 +127,7 @@ def front_times(input_string: str, how_many: int) -> str:
         str: Repeated substring
     """
     # student realisation goes here
-    cropped = input_string[:3]
-    return cropped*how_many
-print (front_times('Chocolate', 2))
+    
 # front_times('Chocolate', 2) → 'ChoCho'
 # front_times('Chocolate', 3) → 'ChoChoCho'
 # front_times('Abc', 3) → 'AbcAbcAbc'
@@ -151,8 +148,7 @@ def extra_end(input_string: str) -> str:
         str: Resulting string
     """
     # student realisation goes here
-    return input_string[-2:]*3
-print(extra_end('Hello'))
+    
 
 # extra_end('Hello') → 'lololo'
 # extra_end('ab') → 'ababab'
@@ -173,8 +169,7 @@ def make_abba(first_string: str, second_string: str) -> str:
         str: Concatenated result
     """
     # student realisation goes here
-    return first_string+second_string+second_string+first_string
-print(make_abba('Hi', 'Bye'))
+   
 # make_abba('Hi', 'Bye') → 'HiByeByeHi'
 # make_abba('Yo', 'Alice') → 'YoAliceAliceYo'
 # make_abba('What', 'Up') → 'WhatUpUpWhat'
@@ -194,11 +189,7 @@ def combo_string(first_string: str, second_string: str) -> str:
         str: Concatenated result
     """
     # student realisation goes here
-    if len(first_string)>len(second_string):
-        return second_string+first_string+second_string
-    else:
-        return first_string+second_string+first_string
-print(combo_string('Hello', 'hi'))
+    
 # combo_string('Hello', 'hi') → 'hiHellohi'
 # combo_string('hi', 'Hello') → 'hiHellohi'
 # combo_string('aaa', 'b') → 'baaab'
@@ -221,13 +212,7 @@ def count_vowels(input_string: str) -> int:
         int: Number of vowels
     """
     # student implementation goes here
-    vow = 0
-    for i in input_string:
-        if i in 'euoai':
-           vow+=1
-    return vow
-print(count_vowels("hello"))
-
+    
 # count_vowels("hello") → 2
 # count_vowels("xzg") → 0
 # count_vowels("AEIOU") → 5
@@ -247,15 +232,7 @@ def remove_vowels(input_string: str) -> str:
         str: String without vowels
     """
     # student implementation goes here
-    vowels = 'euoai'
-    new_str=[]
-    for el in input_string:
-        if el not in vowels:
-            new_str.append(el)  
-    new_str =''.join(new_str)   
-    return new_str
-print(remove_vowels("hello"))
-
+    
 # remove_vowels("hello") → "hll"
 # remove_vowels("xgz") → "xgz"
 
@@ -274,13 +251,7 @@ def count_non_space(input_string: str) -> int:
         int: Number of non-space characters
     """
     # student implementation goes here
-    s = ''
-    for el in input_string:
-        if el == ' ':
-            continue
-        s+=el
-    return len(s)
-print(count_non_space("a b c"))
+    
 # count_non_space("a b c") → 3
 # count_non_space("   ") → 0
 
@@ -300,10 +271,7 @@ def find_first_digit(input_string: str) -> str | None:
         str | None: First digit found, or None if no digits
     """
     # student implementation goes here
-    for el in input_string:
-        if el.isdigit():
-            return el
-print(find_first_digit("abc123"))
+    
 
 # find_first_digit("abc123") → "1"
 # find_first_digit("no digits") → None
@@ -323,12 +291,7 @@ def find_repeated_letter(input_string: str) -> str | None:
         str | None: First repeated letter, or None if no repetition
     """
     # student implementation goes here
-    for i in range(len(input_string)):
-        if i>0:
-            if input_string[i]==input_string[i-1]:
-                return input_string[i]
-
-print(find_repeated_letter("hello"))
+    
 
 # find_repeated_letter("hello") → "l"
 # find_repeated_letter("world") → None
@@ -348,14 +311,7 @@ def all_words_capitalized(sentence: str) -> bool:
         bool: True if all words are capitalized, False otherwise
     """
     # student implementation goes here
-    sentence = sentence.split()
-    if not sentence:
-        return False
-    for word in sentence:
-        if not word==word.capitalize():
-            return False
-    return True
-print(all_words_capitalized("Hello World"))
+    
 
 
 # all_words_capitalized("Hello World") → True
@@ -377,11 +333,7 @@ def is_palindrome(input_string: str) -> bool:
         bool: True if input_string is a palindrome, False otherwise
     """
     # student implementation goes here
-    if input_string==input_string[::-1]:
-        return True
-    return False
-print(is_palindrome("level"))
-print(is_palindrome("hello"))
+    
 # is_palindrome("level") → True
 # is_palindrome("hello") → False
 
@@ -401,14 +353,7 @@ def count_substring_occurrences(text: str, pattern: str) -> int:
         int: Number of times pattern appears in text
     """
     # student implementation goes here
-    amount = 0
-    for i in range(len(text) - len(pattern)):
-        if text[i:i+len(pattern)] == pattern:
-            amount += 1
-    return amount
     
-print(count_substring_occurrences("banana", "ana"))
-print(count_substring_occurrences("aaaa", "aa"))
 # count_substring_occurrences("banana", "ana") → 1
 # count_substring_occurrences("aaaa", "aa") → 2
 
@@ -425,18 +370,7 @@ def reverse_word(sentence: str) -> str:
         str: Modified sentence
     """
     # student implementation goes here
-    words = sentence.split()
-    reversed_words = []
-    for word in words:
-        if len(word) >= 5:
-            reversed_words.append(word[::-1])  
-        else:
-            reversed_words.append(word)
-    return " ".join(reversed_words)
-
-print(reverse_word("Hey fellow warriors"))
-print(reverse_word("This is a test"))
-print(reverse_word("This is another test"))
+    
 # reverse_word("Hey fellow warriors") → "Hey wollef sroirraw"
 # reverse_word("This is a test") → "This is a test"
 # reverse_word("This is another test") → "This is rehtona test"
@@ -457,21 +391,7 @@ def generate_hashtag(input_string: str) -> str:
         str | bool: Hashtag string or False
     """
     # student implementation goes here
-    if not input_string:
-        return False
-
-    words = input_string.split()
-    capitalized_words = [word.capitalize() for word in words]
-    hashtag = "#" + "".join(capitalized_words)
-
-    if len(hashtag) > 140:
-        return False
-    else:
-        return hashtag
     
-print(generate_hashtag(" Hello there thanks for trying my quiz"))
-print(generate_hashtag("    Hello     World   "))
-print(generate_hashtag(""))
 
 # " Hello there thanks for trying my quiz" → "#HelloThereThanksForTryingMyQuiz"
 # "    Hello     World   " → "#HelloWorld"
@@ -490,14 +410,7 @@ def string_splosion(input_string: str) -> str:
         str: Exploded string
     """
     # student implementation goes here
-    result = ""
-    for i in range(len(input_string)):
-        result += input_string[:i+1]
-    return result
-print(string_splosion('Code'))
-print(string_splosion('abc') )
-print(string_splosion('ab'))
-print(string_splosion('Kitten'))
+    
 
 # string_splosion('Code') → 'CCoCodCode'
 # string_splosion('abc') → 'aababc'
@@ -519,20 +432,9 @@ def string_match(first_string: str, second_string: str) -> int:
         int: Number of matching substrings
     """
     # student implementation goes here
-    count = 0
-    shorter = min(len(first_string), len(second_string))
+    
 
-    for i in range(shorter - 1):
-        a_sub = first_string[i:i+2]
-        b_sub = second_string[i:i+2]
-        if a_sub == b_sub:
-            count += 1
-
-    return count
-
-print(string_match('xxcaazz', 'xxbaaz'))
-print(string_match('abc', 'abc'))
-print(string_match('abc', 'axc'))
+ 
 
 # string_match('xxcaazz', 'xxbaaz') → 3
 # string_match('abc', 'abc') → 2
