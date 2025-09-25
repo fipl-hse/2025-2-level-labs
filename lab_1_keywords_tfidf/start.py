@@ -28,24 +28,24 @@ def main() -> None:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    if not clean_and_tokenize(target_text):
-        return
     cleaned_and_tokenized = clean_and_tokenize(target_text)
-    if not remove_stop_words(cleaned_and_tokenized, stop_words):
+    if not cleaned_and_tokenized:
         return
     without_stop_words = remove_stop_words(cleaned_and_tokenized, stop_words)
-    if not calculate_frequencies(without_stop_words):
+    if not without_stop_words:
         return
     frequencies = calculate_frequencies(without_stop_words)
-    if not calculate_expected_frequency(frequencies, corpus_freqs):
+    if not frequencies:
         return
     expected_frequency = calculate_expected_frequency(frequencies, corpus_freqs)
-    if not calculate_chi_values(expected_frequency, frequencies):
+    if not expected_frequency:
         return
     chi_values = calculate_chi_values(expected_frequency, frequencies)
-    if not extract_significant_words(chi_values, alpha=0.05):
+    if not chi_values:
         return
     significant_words = extract_significant_words(chi_values, alpha=0.05)
+    if not significant_words:
+        return
     result = get_top_n(significant_words, 10)
     print(result)
     term_freq = calculate_tf(frequencies)
