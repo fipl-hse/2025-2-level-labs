@@ -141,7 +141,13 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, False): 
+    if not isinstance(frequencies, dict):
+        return None
+    if not frequencies:
+        return None
+    if not all(isinstance(k, str) for k in frequencies):
+        return None
+    if not all(isinstance(v, (int, float)) for v in frequencies.values()):
         return None
     if not check_positive_int(top):
         return None
@@ -210,15 +216,15 @@ def calculate_expected_frequency(
         return None
     if not doc_freqs:
         return None
-    d = sum(doc_freqs.values())
-    D = sum(corpus_freqs.values())
-    if d == 0 and D == 0:
+    doc_total = sum(doc_freqs.values())  
+    corpus_total = sum(corpus_freqs.values())  
+    if doc_total == 0 and corpus_total == 0:
         return None
     expected_freqs = {}
     for token in sorted(doc_freqs.keys()):
-        t = doc_freqs[token]
-        T = corpus_freqs.get(token, 0)
-        expected = (t + T) * d / (d + D)
+        token_doc_freq = doc_freqs[token]  
+        token_corpus_freq = corpus_freqs.get(token, 0)  
+        expected = (token_doc_freq + token_corpus_freq) * doc_total / (doc_total + corpus_total)
         expected_freqs[token] = expected
     return expected_freqs
 
@@ -273,10 +279,10 @@ def extract_significant_words(
         return None
     if not chi_values:
         return None
-    CRITERION = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if alpha not in CRITERION:
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if alpha not in criterion:
         return None
-    critical_value = CRITERION[alpha]
+    critical_value = criterion[alpha]
     significant_words = {}
     for token, chi_value in chi_values.items():
         if chi_value > critical_value:
