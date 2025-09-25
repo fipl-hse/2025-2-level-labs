@@ -49,7 +49,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
         return False
     if len(user_input) == 0:
         return can_be_empty
-    return (all(isinstance(key, key_type) for key in user_input) and 
+    return (all(isinstance(key, key_type) for key in user_input) and
             all(isinstance(value, value_type) for value in user_input.values()))
 
 
@@ -101,7 +101,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     for el in text_lower:
         if el.isalnum() or el == " ":
             text_isalnum += el
-    global unfilt_tokens
     unfilt_tokens = text_isalnum.split()
     return unfilt_tokens
 
@@ -164,7 +163,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     Returns:
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
-    """    
+    """
     if not isinstance (frequencies, dict):
         return None
     if not isinstance(top, int) or isinstance(top, bool):
