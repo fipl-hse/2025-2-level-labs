@@ -267,9 +267,10 @@ def calculate_expected_frequency(
     if not check_dict(corpus_freqs, str, int, True):
         return None
     if corpus_freqs == {}:
-       for key, val in doc_freqs.items():
-        doc_freqs.update({key : float(val)})
-        return doc_freqs
+        new_docs = {}
+        for i, val in doc_freqs.items():
+            new_docs[i] = float(val)
+        return new_docs
     expec_freqs = {}
     for i, val in doc_freqs.items():
         if i in corpus_freqs:
@@ -277,7 +278,6 @@ def calculate_expected_frequency(
         else:
             expec_freqs[i] = val/5
     return expec_freqs
-print(calculate_expected_frequency({"one" : 1, "two" : 36}, {}))
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
