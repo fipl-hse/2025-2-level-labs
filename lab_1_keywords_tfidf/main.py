@@ -23,10 +23,8 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    
     if not can_be_empty and not user_input:
         return False
-    
     for element in user_input:
         if not isinstance(element, elements_type):
             return False
@@ -48,7 +46,6 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    
     if not can_be_empty and not user_input:
         return False
 
@@ -99,7 +96,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    
     text_without_punctuation = ""
 
     for char in text:
@@ -141,7 +137,6 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     if not check_list(tokens, str, False):
         return None
-    
     frequencies_dictionary = {}
     for token in tokens:
         frequencies_dictionary[token] = tokens.count(token)
@@ -184,8 +179,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     if not check_dict(frequencies, str, int, False):
         return None
-    
-    tf_dict = dict()
+    tf_dict = {}
     words_total = sum(frequencies.values())
     for key in frequencies:
         tf = frequencies[key] / words_total
@@ -207,8 +201,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     """
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
-    
-    tfidf = dict()
+    tfidf = {}
     for key in term_freq:
         if key in idf.keys():
             tfidf_element = idf[key] * term_freq[key]
@@ -235,7 +228,7 @@ def calculate_expected_frequency(
     """
     if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
         return None
-    expected_freqency_dictionary = dict()
+    expected_freqency_dictionary = {}
     doc_total = sum(doc_freqs.values())
     corpus_total = sum(corpus_freqs.values())
     for key in doc_freqs:
@@ -268,7 +261,7 @@ def calculate_chi_values(
     """
     if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
         return None
-    chi_values = dict()
+    chi_values = {}
     for key in expected:
         if key in observed.keys():
             chi_squared = (observed[key] - expected[key]) ** 2 / expected[key]
@@ -297,7 +290,7 @@ def extract_significant_words(
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     if not check_dict(chi_values, str, float, False) or not check_float(alpha):
         return None
-    if alpha not in criterion.keys():
+    if alpha not in criterion:
         return None
     threshold = criterion[alpha]
     return {token: value for token, value in chi_values.items() if value > threshold}
