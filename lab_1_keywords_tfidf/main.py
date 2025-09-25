@@ -234,7 +234,12 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
-    return
+    if check_dict(expected, str, float, False) and check_dict(observed, str, int, False):
+        return {
+            token: (observed.get(token) - expected[token]) ** 2 / expected[token]\
+                for token in expected.keys()
+        }
+    return None
 
 
 def extract_significant_words(
