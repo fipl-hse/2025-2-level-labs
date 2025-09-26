@@ -119,7 +119,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     if not check_list(stop_words, str, True):
         return None
     for stop_word in stop_words:
-        tokens = [word for word in tokens if word != stop_word]
+        tokens = [token for token in tokens if token != stop_word]
     return tokens
 
 
@@ -154,9 +154,10 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not check_positive_int(top):
         return None
-    if not check_dict(frequencies, str, int, False) and not check_dict(frequencies, str, float, False):
+    if (not check_dict(frequencies, str, int, False) and
+        not check_dict(frequencies, str, float, False)):
         return None
-    result = [couple[0] for couple in sorted(frequencies.items(), key=lambda x: x[1], reverse=True)]
+    result = sorted(frequencies.keys(), key=lambda x: frequencies[x], reverse=True)
     if len(result) > top:
         result = result[:top]
     return result
@@ -173,12 +174,14 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, False) and not check_dict(frequencies, str, float, False):
+    if (not check_dict(frequencies, str, int, False) and
+        not check_dict(frequencies, str, float, False)):
         return None
     all_words = sum(frequencies.values())
+    result = {}
     for key in frequencies.keys():
-        frequencies[key] = frequencies[key] / all_words
-    return frequencies
+        result[key] = frequencies[key] / all_words
+    return result
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -202,7 +205,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     return result
 
 
-def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> dict[str, float] | None:
+def calculate_expected_frequency(doc_freqs: dict[str, int],
+    corpus_freqs: dict[str, int]) -> dict[str, float] | None:
     """
     Calculate expected frequency for tokens based on document and corpus frequencies.
 
@@ -216,7 +220,8 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
     """
 
 
-def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> dict[str, float] | None:
+def calculate_chi_values(expected: dict[str, float],
+    observed: dict[str, int]) -> dict[str, float] | None:
     """
     Calculate chi-squared values for tokens.
 
@@ -230,7 +235,8 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     """
 
 
-def extract_significant_words(chi_values: dict[str, float], alpha: float) -> dict[str, float] | None:
+def extract_significant_words(chi_values: dict[str, float],
+    alpha: float) -> dict[str, float] | None:
     """
     Select tokens with chi-squared values greater than the critical threshold.
 
@@ -242,3 +248,4 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> dic
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+
