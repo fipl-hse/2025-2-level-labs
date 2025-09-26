@@ -109,6 +109,16 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    
+    frequency_dict = {}
+    
+    for token in tokens:
+        if token in frequency_dict:
+            frequency_dict[token] += 1
+        else:
+            frequency_dict[token] = 1
+    
+    return frequency_dict
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -124,6 +134,11 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
+    
+    sorted_words = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
+    top_words = [word for word, freq in sorted_words[:top]]
+    
+    return top_words
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
