@@ -31,8 +31,9 @@ def main() -> None:
     tokens_wo_stop_words = remove_stop_words(tokens, stop_words) or []
     frequencies = calculate_frequencies(tokens_wo_stop_words) or {}
     tfs = calculate_tf(frequencies) or {}
-    print(get_top_n(tfs, 10))
-    assert tokens, "Keywords are not extracted"
+    result = tfs
+    print(get_top_n(result, 10))
+    assert result, "Keywords are not extracted"
 
 
 
