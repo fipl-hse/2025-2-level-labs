@@ -42,7 +42,7 @@ def main() -> None:
    
    
    
-    result = None
+    result = top_words
     assert result, "Keywords are not extracted"
 
     
