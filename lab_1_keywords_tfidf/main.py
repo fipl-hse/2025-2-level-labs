@@ -248,4 +248,3 @@ def extract_significant_words(chi_values: dict[str, float],
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
-

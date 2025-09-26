@@ -6,11 +6,11 @@ Frequency-driven keyword extraction starter
 
 from json import load
 
-from main import (
+from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
-    remove_stop_words, 
-    calculate_frequencies, 
-    get_top_n, 
+    remove_stop_words,
+    calculate_frequencies,
+    get_top_n,
     calculate_tf
 )
 
@@ -35,8 +35,7 @@ def main() -> None:
     result = result_text
     print(get_top_n(result, 10))
     assert result, "Keywords are not extracted"
-    
-    
+
 
 
 
