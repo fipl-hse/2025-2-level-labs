@@ -10,7 +10,7 @@ from lab_1_keywords_tfidf.main import (
     calculate_tf,
     clean_and_tokenize,
     get_top_n,
-    remove_stop_words
+    remove_stop_words,
 )
 
 
