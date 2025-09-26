@@ -50,6 +50,8 @@ def main() -> None:
         return
 
     top_frequencies = get_top_n(calculated_frequencies, 10)
+    if not top_frequencies:
+        return
 
     result = top_frequencies
 
