@@ -6,11 +6,11 @@ Frequency-driven keyword extraction starter
 from json import load
 
 from lab_1_keywords_tfidf.main import (
-    clean_and_tokenize,
-    remove_stop_words,
     calculate_frequencies,
+    calculate_tf,
+    clean_and_tokenize,
     get_top_n,
-    calculate_tf
+    remove_stop_words
 )
 
 
