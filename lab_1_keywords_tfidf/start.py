@@ -33,10 +33,9 @@ def main() -> None:
     print("Term Frequency для всех слов: ", calculated_tf)
     print("TF-IDF для всех слов: ", calculated_tfidf, idf)
     
-    assert result, "Keywords are not extracted"
+    assert calculate_tfidf, "Keywords are not extracted"
 if __name__ == "__main__":
     main()
-  
         
         
        

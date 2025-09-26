@@ -6,7 +6,7 @@ Extract keywords based on frequency related metrics
 
 # pylint:disable=unused-argument
 from typing import Any
-
+import math
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     '''    
@@ -166,7 +166,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
             
 
 
-def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
+def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None: 
 
     """
     Extract the most frequent tokens.
@@ -180,7 +180,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(top, int) or top<=0:
+    if not isinstance(top, int) or isinstance(top, bool) or top<=0:
         return None
 
     if not isinstance(frequencies, dict):
@@ -195,8 +195,6 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         if not isinstance(values, (int, float)):
             return None
     
-    if top>len(frequencies):
-        top=len(frequencies)
     
     sorted_dictionary=sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
 
@@ -239,7 +237,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     return dictionary
     
 
-import math
+
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
     Calculate TF-IDF score for tokens.
@@ -274,16 +272,17 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
             return None
         if not isinstance(value2, (int, float)):
             return None 
-        
-    idf_without_entering=math.log(47/(0+1))
+    
+    idf_without_entering=math.log(47/1)
 
     dictionary_tfidf={}
     for token, value in term_freq.items():
         if token in idf:
-            dictionary_tfidf[token]=idf[token]
+            dictionary_tfidf_value=idf[token]
         else:
-            dictionary_tfidf[token]=idf_without_entering
-        dictionary_tfidf[token]=value*dictionary_tfidf
+            dictionary_tfidf_value=idf_without_entering
+
+        dictionary_tfidf[token]=value*dictionary_tfidf_value
     
     return dictionary_tfidf
 
