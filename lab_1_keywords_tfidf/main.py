@@ -4,6 +4,8 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 
+import math
+
 # pylint:disable=unused-argument
 from typing import Any
 
@@ -26,15 +28,11 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         if not isinstance(el, elements_type):
             return False
     if user_input == []:
-        if can_be_empty:
-            return True
+        return can_be_empty
     return True
 
 
-
-def check_dict(
-    user_input: Any, key_type: type, value_type: type, can_be_empty: bool
-) -> bool:
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -58,28 +56,30 @@ def check_dict(
     return True
 
 
-#def check_positive_int(user_input: Any) -> bool:
-#    """
-#    Check if the object is a positive integer (not bool).
-#
-#     Args:
-#        user_input (Any): Object to check
-#
-#    Returns:
-#        bool: True if valid, False otherwise
-#    """
+def check_positive_int(user_input: Any) -> bool:
+    """
+    Check if the object is a positive integer (not bool).
+
+    Args:
+        user_input (Any): Object to check
+
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
 
 
-#def check_float(user_input: Any) -> bool:
-#    """
-#    Check if the object is a float.
-#
-#     Args:
-#        user_input (Any): Object to check
-#
-#    Returns:
-#        bool: True if valid, False otherwise
-#    """
+def check_float(user_input: Any) -> bool:
+    """
+    Check if the object is a float.
+
+    Args:
+        user_input (Any): Object to check
+
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    return isinstance(user_input, float)
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -141,7 +141,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list):
+    if not check_list(tokens, str, False):
         return None
     for token in tokens:
         if not isinstance(token, str):
@@ -170,14 +170,11 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not check_dict(frequencies, str, (int, float), False):
         return None
-    if frequencies == {}:
+    if not frequencies:
         return None
-    if not isinstance(top, int) or isinstance(top, bool) or top <= 0:
+    if not check_positive_int(top):
         return None
-    def get_freq(pair):
-        token, freq = pair
-        return freq
-    sorted_tokens = sorted(frequencies.items(), key=get_freq, reverse=True)
+    sorted_tokens = sorted(frequencies.items(), key=lambda pair: pair[1], reverse=True)
     top_tokens = []
     count = 0
     for token, freq in sorted_tokens:
@@ -211,12 +208,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     return tf
 
 
-import math
-
-
-def calculate_tfidf(
-    term_freq: dict[str, float], idf: dict[str, float]
-) -> dict[str, float] | None:
+def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
     Calculate TF-IDF score for tokens.
 
@@ -234,17 +226,9 @@ def calculate_tfidf(
         return None
     if not term_freq:
         return None
-    for tf_token, tf_value in term_freq.items():
-        if not isinstance(tf_token, str) or not isinstance(tf_value, (int, float)):
-            return None
-    for idf_token, idf_value in idf.items():
-        if not isinstance(idf_token, str) or not isinstance(idf_value, (int, float)):
-            return None
     max_idf = math.log(47 / 1)
     tfidf = {}
     for term, tf in term_freq.items():
-        if not isinstance(term, str):
-            return None
         term_idf = idf.get(term, max_idf)
         tfidf[term] = tf * term_idf
     return tfidf
@@ -271,8 +255,6 @@ def calculate_expected_frequency(
     if not doc_freqs:
         return None
     doc_total = sum(doc_freqs.values())
-    if doc_total == 0:
-        return None
     corpus_total = sum(corpus_freqs.values())
     expected_freqs = {}
     for term, tf_doc in doc_freqs.items():
