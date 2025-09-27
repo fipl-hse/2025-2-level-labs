@@ -86,15 +86,11 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
     text=text.lower()
-    symbols="!?,.:;-–"
-    for symbol in symbols:
-      text=text.replace(symbol, "")
-    text=text.split(" ")
-    filtered_list=[]
-    for el in text:
-      if el !="":
-        filtered_list.append(el)
-    return(filtered_list)        
+    filtered_text=""
+    for symbol in text:
+        if symbol.isalnum() or symbol.isspace():
+            filtered_text += symbol
+    return filtered_text.split()       
     
     
 
@@ -111,16 +107,15 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if check_list(tokens, str, True) and check_list(stop_words, str, True):
-        for stop_word in stop_words:
-            while stop_word in tokens:
-                tokens.remove(stop_word)
-        return tokens
-    return None
+    if not check_list(tokens, str, True) or not check_list(stop_words, str, True):
+        return None
+    no_stopwords = []
+    for token in tokens:
+        if token not in stop_words:
+            no_stopwords.append(token)
+    return no_stopwords
     
     
-    
-
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
@@ -133,7 +128,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False):
+    if not check_list(tokens, str, True):
         return None
     frequency_dictionary = {}
     for token in tokens:
