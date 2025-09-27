@@ -27,8 +27,7 @@ def main() -> None:
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
-        corpus_freqs = load(file)
-        
+        corpus_freqs = load(file)  
     clean_words = clean_and_tokenize(target_text) or []
     tokens_list = remove_stop_words(clean_words, stop_words) or []
     freq_dict = calculate_frequencies(tokens_list) or {}
