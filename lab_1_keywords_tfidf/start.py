@@ -42,7 +42,6 @@ def main() -> None:
     if not calculated_frequencies:
         return
 
-
     expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
     if not expected_frequency:
         return
@@ -54,6 +53,7 @@ def main() -> None:
     significant_words = extract_significant_words(chi_values, 0.05)
 
     top_keywords = get_top_n(significant_words, 10)
+
     result = top_keywords
 
     print(result)
