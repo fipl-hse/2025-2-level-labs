@@ -32,7 +32,7 @@ def main() -> None:
         corpus_freqs = load(file)
     unfilt_tokens = clean_and_tokenize(target_text) or []
     print(unfilt_tokens)
-    tokens = remove_stop_words(unfilt_tokens, stop_words) or {}
+    tokens = remove_stop_words(unfilt_tokens, stop_words) or []
     print (tokens)
     frequencies = calculate_frequencies(tokens) or {}
     print (frequencies)
