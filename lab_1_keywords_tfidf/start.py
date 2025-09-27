@@ -14,6 +14,7 @@ from lab_1_keywords_tfidf.main import (
     calculate_tfidf,
 )
 
+
 def main() -> None:
     """
     Launches an implementation.
@@ -35,9 +36,6 @@ def main() -> None:
         return
     frequency_stats = calculate_frequencies(clean_tokens)
     if not frequency_stats:
-        return
-    top_freq_tokens = get_top_n(frequency_stats, 10)
-    if not top_freq_tokens:
         return
     tf_dict = calculate_tf(frequency_stats)
     if not tf_dict:
