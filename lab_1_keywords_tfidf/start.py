@@ -30,8 +30,6 @@ def main() -> None:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    result = None
-    assert result, "Keywords are not extracted"
     unfilt_tokens = clean_and_tokenize(target_text)
     print(unfilt_tokens)
     tokens = remove_stop_words(unfilt_tokens, stop_words)
@@ -44,7 +42,8 @@ def main() -> None:
     print (tfidf_dict)
     print (get_top_n(tfidf_dict, 10))
     result = tfidf_dict
-    
+    assert result, "Keywords are not extracted"
+
 
 if __name__ == "__main__":
     main()
