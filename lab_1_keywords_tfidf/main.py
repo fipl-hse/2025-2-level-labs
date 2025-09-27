@@ -117,13 +117,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         return None
     if not check_list(stop_words, str, True):
         return None
-    i = 0
-    while i < len(tokens):
-        if tokens[i] in stop_words:
-            del tokens[i]
-        else:
-            i += 1
-    return tokens
+    return [token for token in tokens if token not in stop_words]
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -228,16 +222,33 @@ def calculate_expected_frequency(
     """
     if not check_dict(doc_freqs, str, int, False):
         return None
-    if not check_dict(corpus_freqs, str, int, False):
+
+    if not check_dict(corpus_freqs, str, int, True):
         return None
-    doc_freqs_tf = calculate_tf(doc_freqs)
-    corpus_freqs_tf = calculate_tf(corpus_freqs)
-    if doc_freqs_tf is None or corpus_freqs_tf is None:
-        return None
-    tfidf_for_calculate = calculate_tfidf(doc_freqs_tf, corpus_freqs_tf)
-    if tfidf_for_calculate is not None:
-        print(get_top_n(tfidf_for_calculate, 10))
-    return None
+
+    total_words_in_document = sum(doc_freqs.values())
+    total_words_in_corpus = sum(corpus_freqs.values())
+    expected_frequencies = {}
+
+    for word, freq_in_document in doc_freqs.items():
+        freq_in_corpus = corpus_freqs.get(word, 0)
+        other_words_in_document = total_words_in_document - freq_in_document
+        other_words_in_corpus = total_words_in_corpus - freq_in_corpus
+
+        denominator = (
+            freq_in_document + freq_in_corpus +
+            other_words_in_document + other_words_in_corpus
+        )
+        expected_freq = (
+            (freq_in_document + freq_in_corpus) * (freq_in_document + other_words_in_document)
+            / denominator if denominator else 0.0
+        )
+
+        expected_frequencies[word] = expected_freq
+
+    return dict(sorted(expected_frequencies.items()))
+
+
 
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
@@ -253,6 +264,21 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(expected, str, float, False):
+        return None
+    if not check_dict(observed, str, int, False):
+        return None
+    chi_values = {}
+    for token in expected:
+        exp_value = expected[token]
+        obs_value = observed[token]
+        if not (isinstance(exp_value, (int, float)) and exp_value > 0):
+                    return None
+        if not (isinstance(obs_value, int) and obs_value >= 0):
+                    return None
+        chi_sq = (obs_value - exp_value) ** 2 / exp_value
+        chi_values[token] = chi_sq
+    return chi_values
 
 
 def extract_significant_words(
@@ -269,3 +295,19 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(chi_values, str, float, False):
+        return None
+    if not check_float(alpha):
+        return None
+    criterion = {
+        0.05: 3.842, 
+        0.01: 6.635, 
+        0.001: 10.828
+    }
+    if alpha not in criterion:
+        return None
+    significant = {}
+    for key, value in chi_values.items():
+        if value > criterion[alpha]:
+            significant[key] = value
+    return significant
