@@ -24,9 +24,12 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if not can_be_empty and len(user_input) == 0:
+    if not user_input and not can_be_empty:
         return False
-    return all(isinstance(element, elements_type) for element in user_input)
+    for element in user_input:
+        if not isinstance(element, elements_type):
+            return False
+    return True
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -118,6 +121,12 @@ def remove_stop_words(unfilt_tokens: list[str], stop_words: list[str]) -> list[s
         return None
     if not isinstance(stop_words, list):
         return None
+    for el in unfilt_tokens:
+        if not isinstance(el, str):
+            return None
+    for el in stop_words:
+        if not isinstance(el, str):
+            return None
     tokens = []
     for el in unfilt_tokens:
         if el not in stop_words:
