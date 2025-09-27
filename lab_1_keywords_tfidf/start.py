@@ -30,7 +30,6 @@ def main() -> None:
         frequencies = calculate_frequencies(cleaned_tokens)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    result = None
     if result is not None:
         print(get_top_n(result, 10))
     assert result, "Keywords are not extracted"
