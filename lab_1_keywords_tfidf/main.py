@@ -194,10 +194,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         return None
     new_dict = {}
     for keys, values in term_freq.items():
-        if keys in list(idf.keys()):
-            new_dict[keys] = values * idf[keys]
-        else:
-            new_dict[keys] = values * math.log(47)
+        new_dict[keys] = idf.get(keys, math.log(47)) * values
     return new_dict
 
 
