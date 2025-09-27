@@ -10,10 +10,7 @@ from lab_1_keywords_tfidf.main import (
     calculate_frequencies,
     get_top_n,
     calculate_tf,
-    calculate_tfidf,
-    calculate_expected_frequency,
-    calculate_chi_values,
-    extract_significant_words)
+    calculate_tfidf)
 
 def main() -> None:
     """
