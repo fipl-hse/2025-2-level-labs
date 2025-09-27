@@ -30,12 +30,14 @@ def main() -> None:
     cleaned_tokens = remove_stop_words(tokens, stop_words) or []
     frequencies = calculate_frequencies(cleaned_tokens) or {}
     frequencies_typed: dict[str, int | float] = dict(frequencies)
-    top_n = get_top_n(frequencies_typed, 5) or []
+    top_n = get_top_n(frequencies_typed, 10) or []
+    print(top_n)
     tf = calculate_tf(frequencies) or {}
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
     tf_idf = calculate_tfidf(tf, idf) or {}
-    top_idf = get_top_n(tf_idf, 10) or []
+    top_tfidf = get_top_n(tf_idf, 10) or []
+    print(top_tfidf)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     exp_freqs_dict = calculate_expected_frequency(frequencies, corpus_freqs) or {}

@@ -44,14 +44,15 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     Returns:
         bool: True if valid, False otherwise
     """
-    if not isinstance(user_input, dict):
-        return False
     if not user_input:
         return can_be_empty
+    if not isinstance(user_input, dict):
+        return False
     for key, value in user_input.items():
         if not isinstance(key, key_type) or not isinstance(value, value_type):
             return False
     return True
+
 
 def check_positive_int(user_input: Any) -> bool:
     """
@@ -152,7 +153,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     if (not check_dict(frequencies, str, int, False) and
         not check_dict(frequencies, str, float, False)) or not check_positive_int(top):
         return None
-    freq_lst_sorted = sorted(frequencies.items(), key = lambda x: (-x[-1], x[0]))
+    freq_lst_sorted = sorted(frequencies.items(), key = lambda item: (-item[1], item[0]))
     top = min(top, len(freq_lst_sorted))
     top_words = [item[0] for item in freq_lst_sorted[:top]]
     return top_words
@@ -219,8 +220,8 @@ def calculate_expected_frequency(
     corpus_freqs_sum = sum(corpus_freqs.values())
     for token, frequency in doc_freqs.items():
         t_count_in_doc = frequency
-        without_t_count_in_doc = doc_freqs_sum - t_count_in_doc
         t_count_in_corpus = corpus_freqs.get(token, 0)
+        without_t_count_in_doc = doc_freqs_sum - t_count_in_doc
         without_t_count_in_corpus = corpus_freqs_sum - t_count_in_corpus
         expected_value = (t_count_in_doc + t_count_in_corpus)*(t_count_in_doc +
                             without_t_count_in_doc)/(t_count_in_doc +
@@ -250,7 +251,6 @@ def calculate_chi_values(
         chi = (observed[token] - token_freq)**2 / token_freq
         chi_values_dict[token] = chi
     return chi_values_dict
-
 
 
 def extract_significant_words(
