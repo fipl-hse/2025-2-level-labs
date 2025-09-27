@@ -161,7 +161,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     or check_dict(frequencies, str, int, False))\
     or not check_positive_int(top):
         return None
-    top_n = sorted(frequencies.keys(), key=lambda k: frequencies.get(k), reverse=True)
+    top_n = sorted(frequencies.keys(), key=frequencies.__getitem__, reverse=True)
     if len(top_n) > top:
         top_n = top_n[:top]
     return top_n
