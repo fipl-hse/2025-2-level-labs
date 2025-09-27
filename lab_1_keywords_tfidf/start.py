@@ -37,7 +37,7 @@ def main() -> None:
     print (term_freq)
     tfidf_dict = calculate_tfidf(term_freq, idf) or {}
     print (tfidf_dict)
-    print (get_top_n(tfidf_dict, 10)) or ""
+    print (get_top_n(tfidf_dict, 10))
     result = tfidf_dict
     assert result, "Keywords are not extracted"
 
