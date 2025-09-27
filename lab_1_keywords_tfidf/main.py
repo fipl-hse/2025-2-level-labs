@@ -86,10 +86,17 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(text, str):
-        return None
-    cleaned = ''.join(symbol if symbol.isalnum() else ' ' for symbol in text.lower())
-    return [token for token in cleaned.split() if token]
+    tokens = []
+    word = []
+    for symbol in text.lower():
+        if symbol.isalnum():
+            word.append(symbol)
+        elif word:
+            tokens.append(''.join(word))
+            word = []
+    if word:
+        tokens.append(''.join(word))
+    return tokens
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -144,7 +151,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         In case of corrupt input arguments, None is returned.
     """
     if not check_dict(frequencies, str, (int, float), True) or not check_positive_int(top):
-        return []
+        return None
     sorted_words = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
     top_words = [word for word, freq in sorted_words[:top]]
     return top_words
