@@ -135,10 +135,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     new_data = {}
 
     for element in tokens:
-        if element not in new_data:
-            new_data[element] = 1
-        else:
-            new_data[element] += 1
+        new_data[element] = new_data.get(element, 0) + 1
     return new_data
 
 
