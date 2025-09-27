@@ -21,6 +21,17 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         bool: True if valid, False otherwise
     """
 
+    if not isinstance(user_input, list):
+        return False
+    
+    if not can_be_empty and len(user_input) == 0:
+        return False
+    
+    for element in user_input:
+        if not isinstance(element, elements_type):
+            return False
+    
+    return True
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
@@ -36,6 +47,17 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
         bool: True if valid, False otherwise
     """
 
+    if not isinstance(user_input, dict):
+        return False
+    
+    if not can_be_empty and len(user_input) == 0:
+        return False
+    
+    for key, value in user_input.items():
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
+            return False
+    
+    return True
 
 def check_positive_int(user_input: Any) -> bool:
     """
@@ -47,7 +69,8 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-
+    
+    return isinstance(user_input, int) and user_input > 0
 
 def check_float(user_input: Any) -> bool:
     """
@@ -59,7 +82,8 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-
+    
+    return isinstance(user_input, float)
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
@@ -110,6 +134,9 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         In case of corrupt input arguments, None is returned.
     """
     
+    if not check_list(tokens, str, True):
+        return {}
+    
     frequency_dict = {}
     
     for token in tokens:
@@ -134,6 +161,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
+    
+    if not check_dict(frequencies, str, (int, float), True) or not check_positive_int(top):
+        return []
     
     sorted_words = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
     top_words = [word for word, freq in sorted_words[:top]]
