@@ -317,13 +317,6 @@ def all_words_capitalized(sentence: str) -> bool:
         bool: True if all words are capitalized, False otherwise
     """
     # student implementation goes here
-    sentence = sentence.split()
-    for word in sentence:
-        if not word == word.capitalize():
-            return False 
-    return True
-
-print(all_words_capitalized("Hello World"))
 
 
 # all_words_capitalized("Hello World") → True
@@ -346,10 +339,6 @@ def is_palindrome(input_string: str) -> bool:
     """
     # student implementation goes here
 
-    if input_string == input_string[::-1]:
-        return True
-    else: return False
-
 
 # is_palindrome("level") → True
 # is_palindrome("hello") → False
@@ -370,10 +359,8 @@ def count_substring_occurrences(text: str, pattern: str) -> int:
         int: Number of times pattern appears in text
     """
     # student implementation goes here
-    amount=text.count(pattern)
-    return amount
-        
-print(count_substring_occurrences("banana", "ana"))
+
+
 # count_substring_occurrences("banana", "ana") → 1
 # count_substring_occurrences("aaaa", "aa") → 2
 
@@ -391,16 +378,7 @@ def reverse_word(sentence: str) -> str:
     """
     # student implementation goes here
 
-    string=sentence.split()
-    new_string=[]
 
-    for element in string:
-        if len(element)>=5:
-            return new_string.append(element[::-1])    
-        else:
-            new_string.append(element)
-    return ' '.join(new_string)
-print(reverse_word("Hey fellow warriors"))
 # reverse_word("Hey fellow warriors") → "Hey wollef sroirraw"
 # reverse_word("This is a test") → "This is a test"
 # reverse_word("This is another test") → "This is rehtona test"
@@ -421,16 +399,6 @@ def generate_hashtag(input_string: str) -> str:
         str | bool: Hashtag string or False
     """
     # student implementation goes here
-    if not input_string:
-        return False
-    words = input_string.split()
-    capitalized_words = [word.capitalize() for word in words if word]
-    hashtag = "#" + "".join(capitalized_words)
-    if len(hashtag) > 140:
-        return False
-    return hashtag
-print(generate_hashtag(" Hello there thanks for trying my quiz"))
-    
 
 
 # " Hello there thanks for trying my quiz" → "#HelloThereThanksForTryingMyQuiz"
@@ -450,13 +418,9 @@ def string_splosion(input_string: str) -> str:
         str: Exploded string
     """
     # student implementation goes here
-    result = ""
-    for i in range(len(input_string) + 1):
-        result += input_string[:i]
-    return result
 
-print(string_splosion('Code'))
-print(string_splosion('abc')) #→ 'CCoCodCode'
+
+# string_splosion('Code') → 'CCoCodCode'
 # string_splosion('abc') → 'aababc'
 # string_splosion('ab') → 'aab'
 # string_splosion('Kitten') → 'KKiKitKittKitteKitten'
