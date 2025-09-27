@@ -261,7 +261,9 @@ def extract_significant_words(
         In case of corrupt input arguments, None is returned.
     """
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if not check_dict(chi_values, str, float, False) or not isinstance(alpha, float) or alpha not in criterion:
+    if not check_dict(chi_values, str, float, False):
+        return None
+    if not isinstance(alpha, float) or alpha not in criterion:
         return None
     critical_value=criterion[alpha]
     return {word: chi_values[word] for word in chi_values if chi_values[word]>critical_value}
