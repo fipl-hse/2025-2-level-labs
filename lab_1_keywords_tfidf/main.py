@@ -88,18 +88,12 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    tokens = []
-    word = []
+    cleaned = []
     for symbol in text.lower():
-        if symbol.isalnum():
-            word.append(symbol)
-        elif word:
-            tokens.append(''.join(word))
-            word = []
-    if word:
-        tokens.append(''.join(word))
-    return tokens
-
+        if symbol.isalnum() or symbol.isspace():
+            cleaned.append(symbol)
+    cleaned_text = ''.join(cleaned)
+    return [token for token in cleaned_text.split() if token]
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
@@ -152,7 +146,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int, float), True) or not check_positive_int(top):
+    if not check_dict(frequencies, str, (int, float), can_be_empty=False):
+        return None
+    if not check_positive_int(top):
         return None
     sorted_words = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
     top_words = [word for word, freq in sorted_words[:top]]
