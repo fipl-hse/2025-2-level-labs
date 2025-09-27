@@ -177,7 +177,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     sorted_tokens = sorted(frequencies.items(), key=lambda pair: pair[1], reverse=True)
     top_tokens = []
     count = 0
-    for token, freq in sorted_tokens:
+    for token, _ in sorted_tokens:
         if count >= top:
             break
         top_tokens.append(token)
