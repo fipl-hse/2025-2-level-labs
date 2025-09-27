@@ -5,15 +5,17 @@ Frequency-driven keyword extraction starter
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
 
-from lab_1_keywords_tfidf.main import calculate_chi_values
-from lab_1_keywords_tfidf.main import calculate_expected_frequency
-from lab_1_keywords_tfidf.main import calculate_frequencies
-from lab_1_keywords_tfidf.main import calculate_tf
-from lab_1_keywords_tfidf.main import calculate_tfidf
-from lab_1_keywords_tfidf.main import clean_and_tokenize
-from lab_1_keywords_tfidf.main import extract_significant_words
-from lab_1_keywords_tfidf.main import get_top_n
-from lab_1_keywords_tfidf.main import remove_stop_words
+from lab_1_keywords_tfidf.main import (
+    calculate_chi_values,
+    calculate_expected_frequency,
+    calculate_frequencies,
+    calculate_tf,
+    calculate_tfidf,
+    clean_and_tokenize,
+    extract_significant_words,
+    get_top_n,
+    remove_stop_words,
+)
 
 
 def main() -> None:
@@ -27,7 +29,7 @@ def main() -> None:
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
-        corpus_freqs = load(file)  
+        corpus_freqs = load(file)
     clean_words = clean_and_tokenize(target_text) or []
     tokens_list = remove_stop_words(clean_words, stop_words) or []
     freq_dict = calculate_frequencies(tokens_list) or {}
