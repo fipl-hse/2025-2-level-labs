@@ -24,12 +24,9 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if not user_input:
-        return can_be_empty
-    for el in elements_type:
-        if not isinstance(el,elements_type):
-            return False
-    return True
+    if not can_be_empty and len(user_input) == 0:
+        return False
+    return all(isinstance(element, elements_type) for element in user_input)
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -50,7 +47,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     if len(user_input) == 0:
         return can_be_empty
     return (all(isinstance(key, key_type) for key in user_input) and
-            all(isinstance(value, value_type) for value in user_input.values()))
+        all(isinstance(value, value_type) for value in user_input.values()))
 
 
 def check_positive_int(user_input: Any) -> bool:
@@ -96,12 +93,12 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    text_lower = text.lower()
     text_isalnum = ""
-    for el in text_lower:
+    for el in text:
         if el.isalnum() or el == " ":
             text_isalnum += el
-    unfilt_tokens = text_isalnum.split()
+    text_lower = text_isalnum.lower()
+    unfilt_tokens = text_lower.split()
     return unfilt_tokens
 
 
@@ -164,7 +161,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance (frequencies, dict):
+    if not check_dict(frequencies, str, int, False):
         return None
     if not isinstance(top, int) or isinstance(top, bool):
         return None
@@ -187,7 +184,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(frequencies, dict):
+    if not check_dict(frequencies, str, int, False):
         return None
     for k, v in frequencies.items():
         if not isinstance(k, str) or not isinstance(v, int):
@@ -216,10 +213,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         return None
     tfidf_dict = {}
     for k, v in term_freq.items():
-        if k not in idf:
-            tfidf_dict[k] = v*math.log(47)
-        else:
-            tfidf_dict[k] = v*idf[k]
+        tfidf_dict[k] = v*idf.get(k, math.log(47))
     return tfidf_dict
 
 
