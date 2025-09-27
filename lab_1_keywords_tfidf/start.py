@@ -51,7 +51,7 @@ def main() -> None:
     if not chi_values:
         return
 
-    significant_words = extract_significant_words(chi_values, 0.01)
+    significant_words = extract_significant_words(chi_values, 0.05)
 
     top_keywords = get_top_n(significant_words, 10)
     result = top_keywords

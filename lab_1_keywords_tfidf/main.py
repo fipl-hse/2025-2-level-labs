@@ -285,7 +285,9 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
-    if not (check_dict(chi_values, str, float, False) or not check_float(alpha)):
+    if not (check_dict(chi_values, str, float, False) or check_dict(chi_values, str, int, False)):
+        return None
+    if not check_float(alpha):
         return None
 
     criterion = {0.05: 3.841458821, 0.01: 6.634896601, 0.001: 10.82756617}
