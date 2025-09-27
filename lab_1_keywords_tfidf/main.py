@@ -174,9 +174,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return None
 
     for word, values in frequencies.items():
-        if not isinstance(word, str):
-            return None
-        if not isinstance(values, (int, float)):
+        if not isinstance(word, str) or not isinstance(values, (int, float)):
             return None
 
     sorted_dictionary=sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
@@ -302,4 +300,4 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
-
+    
