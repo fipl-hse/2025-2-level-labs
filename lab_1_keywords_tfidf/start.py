@@ -16,23 +16,23 @@ def main() -> None:
     """
     Launches an implementation.
     """
+    cleaned_tokens = None
+    frequencies = None
+    result = None
+    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
+        target_text = file.read()
+    tokens = clean_and_tokenize(target_text)
+    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
+        stop_words = file.read().split("\n")
+    if tokens is not None:
+        cleaned_tokens = remove_stop_words(tokens, stop_words)
+    if cleaned_tokens is not None:
+        frequencies = calculate_frequencies(cleaned_tokens)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     result = None
-    cleaned_text = clean_and_tokenize(target_text)
-    if not cleaned_text:
-        return
-    cleaned_text = remove_stop_words(cleaned_text, stop_words)
-    if not cleaned_text:
-        return
-    text_frequencies = calculate_frequencies(cleaned_text)
-    if not text_frequencies:
-        return
-    if not only_key_words:
-        return
-    top_words = get_top_n(only_key_words, 10)
-    result = top_words
+    if result is not None:
+        print(get_top_n(result, 10))
     assert result, "Keywords are not extracted"
-    
 
 
