@@ -22,7 +22,6 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    
     if not can_be_empty and len(user_input) == 0:
         return False
     for el in user_input:
