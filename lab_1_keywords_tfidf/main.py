@@ -126,10 +126,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False):
-        return None
-
-    if not check_list(stop_words, str, False):
+    if not check_list(tokens, str, False) or not check_list(stop_words, str, False):
         return None
 
     cleansed_tokens = [token for token in tokens if token not in stop_words]
@@ -229,7 +226,28 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
+        return None
 
+    doc_wordcount: int = sum(doc_freqs.values())
+    corpus_wordcount: int = sum(corpus_freqs.values())
+    expected_frequency: dict[str,float] = {}
+
+    for token, value in doc_freqs.items():
+        corpus_value = corpus_freqs.get(token,0)
+
+        expected = (
+            (value + corpus_value) * (value + (doc_wordcount - value))
+            /
+            (value
+            + corpus_value
+            + (doc_wordcount - value)
+            + (corpus_wordcount - corpus_value))
+            )
+
+        expected_frequency[token] = expected
+
+    return expected_frequency
 
 
 def calculate_chi_values(
@@ -246,6 +264,11 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
+        return None
+
+    return {token: (observed[token] - value )** 2 / value for token, value in expected.items()}
+
 
 
 def extract_significant_words(
@@ -262,3 +285,12 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(chi_values, str, float, False) or not check_float(alpha):
+        return None
+
+    criterion = {0.05: 3.841458821, 0.01: 6.634896601, 0.001: 10.82756617}
+
+    if not (threshold := criterion.get(alpha)):
+        return None
+
+    return {token: value for token, value in chi_values.items() if value > threshold}
