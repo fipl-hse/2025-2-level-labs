@@ -86,6 +86,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(text, str):
+        return None
     tokens = []
     word = []
     for symbol in text.lower():
