@@ -123,8 +123,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     """
     if not check_list(tokens, str, False) or not check_list(stop_words, str, True):
         return None
-    clean_tokens = [element for element in tokens if element not in stop_words]
-    return clean_tokens
+    return [element for element in tokens if element not in stop_words]
 
 
 
@@ -141,10 +140,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     if not check_list(tokens, str, False):
         return None
-    frequency_stats = {}
-    for element in tokens:
-        frequency_stats[element] = tokens.count(element)
-    return frequency_stats
+    return {element: tokens.count(element) for element in tokens}
 
 
 
@@ -163,8 +159,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not check_dict(frequencies, str, (int, float), False) or not check_positive_int(top):
         return None
-    sorted_list = sorted(frequencies.items(), key = lambda item: item[1], reverse = True)
-    top_n = [i[0] for i in sorted_list]
+    top_n = sorted(frequencies.keys(), key=frequencies.get, reverse=True)
     if len(top_n) > top:
         top_n = top_n[:top]
     return top_n
@@ -183,13 +178,8 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     if not check_dict(frequencies, str, int, False):
         return None
-    tf_dict = {}
     word_amount = sum(frequencies.values())
-    for key, value in frequencies.items():
-        tf = value / word_amount
-        tf_dict[key] = tf
-
-    return tf_dict
+    return {token: freq / word_amount for token, freq in frequencies.items()}
 
 
 
@@ -207,14 +197,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     """
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
-    tfidf_calculated = {}
-    for key in term_freq:
-        if key in idf.keys():
-            tfidf_coefficient = idf[key] * term_freq[key]
-            tfidf_calculated[key] = tfidf_coefficient
-        else:
-            tfidf_calculated[key] = term_freq[key] * log(47/1)
-    return tfidf_calculated
+    return {key: term_freq[key] * idf.get(key, log(47/1)) for key in term_freq}
 
 
 def calculate_expected_frequency(
