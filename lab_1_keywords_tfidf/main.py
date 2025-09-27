@@ -44,10 +44,10 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     Returns:
         bool: True if valid, False otherwise
     """
-    if not user_input:
-        return can_be_empty
     if not isinstance(user_input, dict):
         return False
+    if not user_input:
+        return can_be_empty
     for key, value in user_input.items():
         if not isinstance(key, key_type) or not isinstance(value, value_type):
             return False
