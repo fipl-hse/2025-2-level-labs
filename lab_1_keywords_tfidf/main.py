@@ -67,7 +67,7 @@ def check_positive_int(user_input: Any) -> bool:
         bool: True if valid, False otherwise
     """
     if not isinstance(user_input,int) or user_input<=0:
-        return False 
+        return False
     return True
 
 
