@@ -25,11 +25,9 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     
     if not can_be_empty and len(user_input) == 0:
         return False
-    
     for el in user_input:
         if not isinstance(el, elements_type):
             return False
-    
     return True
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -47,10 +45,8 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-
     if not can_be_empty and not user_input:
         return False
-
     for key, value in user_input.items():
         if not isinstance(key, key_type):
             return False
@@ -60,7 +56,6 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
         else:
             if not isinstance(value, value_type):
                 return False
-
     return True
 
 
@@ -112,7 +107,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     translation_table = str.maketrans({ch: None for ch in punctuation_chars})
     no_punct = stripped.translate(translation_table)
     tokens = no_punct.lower().split()
-
     return tokens
     
 
@@ -132,7 +126,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     """
     if not check_list(tokens, str, True) or not check_list(stop_words, str, True):
         return None
-
     filtered_tokens = [token for token in tokens if token not in stop_words]
     return filtered_tokens
 
@@ -152,11 +145,9 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     for token in tokens:
         if not isinstance(token, str):
             return None
-
     frequencies = {}
     for token in tokens:
         frequencies[token] = frequencies.get(token, 0) + 1
-
     return frequencies
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -174,13 +165,10 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not check_dict(frequencies, str, (int, float), False):  
         return None
-
     if not check_positive_int(top):  
         return None 
-
     sorted_frequencies = sorted(frequencies.items(), key=lambda item: (-item[1], item[0]))
     top_n_tokens = [token for token, frequency in sorted_frequencies[:top]] 
-
     return top_n_tokens
         
         
