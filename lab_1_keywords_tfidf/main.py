@@ -273,9 +273,9 @@ def calculate_chi_values(
         exp_value = expected[token]
         obs_value = observed[token]
         if not (isinstance(exp_value, (int, float)) and exp_value > 0):
-                    return None
+            return None
         if not (isinstance(obs_value, int) and obs_value >= 0):
-                    return None
+            return None
         chi_sq = (obs_value - exp_value) ** 2 / exp_value
         chi_values[token] = chi_sq
     return chi_values
@@ -300,8 +300,8 @@ def extract_significant_words(
     if not check_float(alpha):
         return None
     criterion = {
-        0.05: 3.842, 
-        0.01: 6.635, 
+        0.05: 3.842,
+        0.01: 6.635,
         0.001: 10.828
     }
     if alpha not in criterion:

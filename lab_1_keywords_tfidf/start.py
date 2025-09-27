@@ -34,12 +34,14 @@ def main() -> None:
     frequencies = calculate_frequencies(wo_stop_words) or {}
     term_frequencies = calculate_tf(frequencies) or {}
     tf_idf = calculate_tfidf(term_frequencies, idf) or {}
+    top_key_words = get_top_n(tf_idf, 10) or []
+    print(', '.join(top_key_words))
     expected = calculate_expected_frequency(frequencies, corpus_freqs) or {}
     chi_values = calculate_chi_values(expected, frequencies) or {}
     significant_words = extract_significant_words(chi_values, 0.001) or {}
     top_n_3 = get_top_n(significant_words, 10) or []
-    print(top_n_3)
-    result = None
+    print(', '.join(top_n_3))
+    result = top_n_3
     assert result, "Keywords are not extracted"
 
 
