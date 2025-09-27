@@ -263,9 +263,9 @@ def extract_significant_words(
         return None
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     result_dict = {}
+    if alpha not in criterion:
+        return None
     for k, v in chi_values.items():
-        if alpha not in criterion:
-            return None
         if v > criterion[alpha]:
             result_dict[k] = v
     return result_dict
