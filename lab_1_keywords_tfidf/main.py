@@ -217,11 +217,11 @@ def calculate_expected_frequency(
     sum_in_corpus = sum(corpus_freqs.values())
     exp_freq_dict={}
     for t, t_in_d in doc_freqs.items():
-        t_in_D=corpus_freqs.get(t, 0)
+        t_in_corpus=corpus_freqs.get(t, 0)
         all_words_in_d=sum_in_doc-t_in_d
-        all_word_in_D=sum_in_corpus-t_in_D
-        multi=(t_in_d+t_in_D)*(t_in_d+all_words_in_d)
-        sum_all_words=t_in_d+t_in_D+all_words_in_d+all_word_in_D
+        all_word_in_corpus=sum_in_corpus-t_in_corpus
+        multi=(t_in_d+t_in_corpus)*(t_in_d+all_words_in_d)
+        sum_all_words=t_in_d+t_in_corpus+all_words_in_d+all_word_in_corpus
         if sum_all_words==0:
             exp_freq_dict[t] = 0.0
         else:
