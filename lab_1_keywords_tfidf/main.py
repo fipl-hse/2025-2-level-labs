@@ -284,7 +284,7 @@ def calculate_expected_frequency(
     for token1, value1 in doc_freqs.items():
         if not isinstance(token1, str):
             return None
-        if not isinstance(value1, int):
+        if not isinstance(value1, int) or value1<0:
             return None 
 
     if not isinstance(corpus_freqs, dict):
@@ -292,10 +292,9 @@ def calculate_expected_frequency(
     for token2, value2 in corpus_freqs.items():
         if not isinstance(token2, str):
             return None
-        if not isinstance(value2, int):
+        if not isinstance(value2, int) or value2<0:
             return None 
-
-
+        
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:

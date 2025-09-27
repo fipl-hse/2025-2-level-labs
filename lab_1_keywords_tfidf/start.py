@@ -30,16 +30,18 @@ def main() -> None:
     clean_and_tokenize_text = clean_and_tokenize(target_text)
     text_without_stop_words=remove_stop_words(clean_and_tokenize_text, stop_words)
     calculated_frequencies=calculate_frequencies(text_without_stop_words)
-    top_n_words=get_top_n(calculated_frequencies, 10)
-    calculated_tf=calculate_tf(top_n_words)
+    calculated_tf=calculate_tf(calculated_frequencies)
     calculated_tfidf=calculate_tfidf(calculated_tf, idf)
-    
-    print("Очищенные токены:", clean_and_tokenize_text)
+    top_n_words=get_top_n(calculated_tfidf, 10)
+
+    #print("Очищенные токены:", clean_and_tokenize_text)#
     print("Текст без стоп-слов:", text_without_stop_words)
     print("Частоты слов:", calculated_frequencies)
-    print("Топ-10 ключевых слов:", top_n_words)
     print("Term Frequency для всех слов: ", calculated_tf)
     print("TF-IDF для всех слов: ", calculated_tfidf, idf)
-    assert calculate_tfidf, "Keywords are not extracted"
+    print("Топ-10 ключевых слов:", top_n_words)
+    print(','.join(top_n_words))
+    result=top_n_words
+    assert result, "Keywords are not extracted"
 if __name__ == "__main__":
     main()
