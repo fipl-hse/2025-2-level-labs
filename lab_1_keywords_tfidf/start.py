@@ -13,7 +13,6 @@ from lab_1_keywords_tfidf.main import (
 )
 
 
-
 def main() -> None:
     """
     Launches an implementation.
