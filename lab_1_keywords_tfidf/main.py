@@ -8,8 +8,8 @@ Extract keywords based on frequency related metrics
 # pylint:disable=unused-argument
 
 import math
-from typing import Any
 from operator import itemgetter
+from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
