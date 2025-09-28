@@ -5,51 +5,72 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch seminar 1",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "seminars/practice_1_run_debug.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Launch seminar 2",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "seminars/practice_2_integers.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Launch seminar 3",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "seminars/practice_3_conditions.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Launch seminar 4",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "seminars/practice_4_strings.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Launch LAB 1 start",
+            "name": "[LAB 1] Start",
             "type": "debugpy",
             "request": "launch",
             "program": "start.py",
             "cwd": "${workspaceFolder}/lab_1_keywords_tfidf",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[LAB 2] Start",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "start.py",
+            "cwd": "${workspaceFolder}/lab_2_spellcheck",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 1] Learn debug",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_1_run_debug.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 2] Learn conditions",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_2_conditions.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 3] Learn numbers",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_3_integers.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 4] Learn strings",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_4_strings.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 5] Learn lists",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_5_lists.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
@@ -90,6 +111,17 @@
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "args":[],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Check coverage",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/collect_coverage/coverage_analyzer.py",
+            "args": [],
+            "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }
