@@ -277,10 +277,8 @@ def calculate_chi_values(
         return None
     chi_freqs = {}
     for i, val in expected.items():
-        if i in observed:
-            chi_freqs[i] = (observed[i] - val)**2/val
-        else:
-            chi_freqs[i] = val
+        observed.get(i)
+        chi_freqs[i] = (observed[i] - val)**2/val
     return chi_freqs
 
 def extract_significant_words(
@@ -305,14 +303,13 @@ def extract_significant_words(
         return None
     ii = 0
     for i in chi_values.items():
-        for j, val in criterion.items():
-            if alpha == j:
-                ii += 1
-                crit = val
-                if crit is not None and i[1] > crit:
-                    new_chi_dict.update({i})
-                if crit is None:
-                    return None
+        if alpha in criterion:
+            ii += 1
+            crit = criterion.get(alpha)
+            if crit is not None and i[1] > crit:
+                new_chi_dict.update({i})
+            if crit is None:
+                return None
     if ii == 0:
         return None
     return new_chi_dict
