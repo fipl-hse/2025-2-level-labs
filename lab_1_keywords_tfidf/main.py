@@ -68,7 +68,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return isinstance(user_input, float) and user_input > 0
+    return isinstance(user_input, int) and user_input > 0
 
 def check_float(user_input: Any) -> bool:
     """
@@ -153,15 +153,17 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int, float), True) or not check_positive_int(top):
+    if not isinstance(frequencies, dict) or not frequencies:
+        return None
+    if not isinstance(top, int) or isinstance(top, bool) or top <= 0:
         return None
     
-    if len(frequencies) == 0:
-        return None  
+    for key, value in frequencies.items():
+        if not isinstance(key, str) or not isinstance(value, (int, float)):
+            return None
     
-    sorted_items = sorted(frequencies.items(), key=lambda x: (-x[1], x[0]))
-    return [item[0] for item in sorted_items[:top]]
-
+    sorted_keys = sorted(frequencies, key=lambda x: (-frequencies[x], x))
+    return sorted_keys[:top]
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
@@ -174,18 +176,13 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, True):
+    if not check_dict(frequencies, str, int, False):
         return None
     
     total_tokens = sum(frequencies.values())
-    if total_tokens == 0:
-        return {}
     
     tf_scores = {}
-    for token, count in frequencies.items():
-        tf_scores[token] = count / total_tokens
-    
-    return tf_scores
+    return {token: count / total_tokens for token, count in frequencies.items()}
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -200,10 +197,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(term_freq, str, float, True) or not check_dict(idf, str, float, True):
-        return None
-    
-    if len(term_freq) == 0:
+    if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
     
     tfidf_scores = {}
