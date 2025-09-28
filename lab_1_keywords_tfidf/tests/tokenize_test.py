@@ -23,7 +23,15 @@ class TokenizeTest(unittest.TestCase):
         """
         Ideal tokenize scenario
         """
-        expected = ["the", "weather", "is", "sunny", "the", "man", "is", "happy"]
+        expected = [
+            "the",
+            "weather",
+            "is",
+            "sunny",
+            "the",
+            "man",
+            "is",
+            "happy"]
         actual = clean_and_tokenize("The weather is sunny, the man is happy.")
         self.assertEqual(expected, actual)
 
@@ -36,8 +44,17 @@ class TokenizeTest(unittest.TestCase):
         """
         Tokenize text with different punctuation marks
         """
-        expected = ["the", "first", "part", "nice", "the", "second", "part", "bad"]
-        actual = clean_and_tokenize("The, first part - nice; The second part: bad!")
+        expected = [
+            "the",
+            "first",
+            "part",
+            "nice",
+            "the",
+            "second",
+            "part",
+            "bad"]
+        actual = clean_and_tokenize(
+            "The, first part - nice; The second part: bad!")
         self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf
@@ -76,7 +93,8 @@ class TokenizeTest(unittest.TestCase):
             "6",
             "words",
         ]
-        actual = clean_and_tokenize("The first part with 42; The second part consists of 6 words.")
+        actual = clean_and_tokenize(
+            "The first part with 42; The second part consists of 6 words.")
         self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf

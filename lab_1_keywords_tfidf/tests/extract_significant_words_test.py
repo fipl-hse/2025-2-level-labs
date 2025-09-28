@@ -37,7 +37,12 @@ class ExtractSignificantWordsTest(unittest.TestCase):
 
         alpha = 0.05
 
-        expected = {"parts": 5.08123, "test": 4.02, "text": 3.9, "vale": 7.89123, "yarn": 15.094}
+        expected = {
+            "parts": 5.08123,
+            "test": 4.02,
+            "text": 3.9,
+            "vale": 7.89123,
+            "yarn": 15.094}
 
         actual = extract_significant_words(chi_values, alpha)
         self.assertEqual(expected, actual)
@@ -60,7 +65,11 @@ class ExtractSignificantWordsTest(unittest.TestCase):
         """
         extract significant words, no words with smaller criterion
         """
-        chi_values = {"this": 0.0521, "is": 0.0521, "an": 0.0521, "parts": 0.0275}
+        chi_values = {
+            "this": 0.0521,
+            "is": 0.0521,
+            "an": 0.0521,
+            "parts": 0.0275}
 
         alpha = 0.001
 
@@ -90,7 +99,11 @@ class ExtractSignificantWordsTest(unittest.TestCase):
         """
         extract significant words with no corresponding critical chi value for alpha
         """
-        chi_values = {"this": 0.0521, "is": 0.0521, "an": 0.0521, "parts": 0.0275}
+        chi_values = {
+            "this": 0.0521,
+            "is": 0.0521,
+            "an": 0.0521,
+            "parts": 0.0275}
 
         alpha = 0.12873
 
