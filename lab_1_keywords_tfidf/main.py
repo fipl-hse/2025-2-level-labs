@@ -224,8 +224,7 @@ def calculate_expected_frequency(
     expected_frequency = {}
     for word, word_in_doc in doc_freqs.items():
         word_in_corpus = corpus_freqs.get(word, 0)
-        formula = ((word_in_doc + word_in_corpus) * total_doc) / total
-        expected_frequency[word] = formula
+        expected_frequency[word] = ((word_in_doc + word_in_corpus) * total_doc) / total
     return dict(sorted(expected_frequency.items()))
 
 
