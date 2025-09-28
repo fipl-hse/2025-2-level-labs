@@ -270,6 +270,5 @@ def extract_significant_words(
     if (not check_dict(chi_values, str, float, False) or
         alpha not in criterion):
         return None
-    significant_tokens = {token: value for token, value in chi_values.items()
+    return {token: value for token, value in chi_values.items()
                           if chi_values[token] > criterion[alpha]}
-    return significant_tokens
