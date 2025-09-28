@@ -143,7 +143,6 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return None
     if not check_positive_int(top):
         return None
-    
     sorted_keys = sorted(frequencies, key=lambda k: frequencies[k], reverse=True)
     return sorted_keys[:top] if top < len(sorted_keys) else sorted_keys
 
@@ -162,7 +161,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     if not check_dict(frequencies, str, int, False):
         return None
-    
     total_words = sum(frequencies.values())
     return {k: v / total_words for k, v in frequencies.items()}
 
@@ -181,14 +179,11 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     """
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
-    
     default_idf = math.log(47)
     tfidf_dict = {}
-    
     for word, tf_value in term_freq.items():
         tfidf_value = tf_value * idf.get(word, default_idf)
         tfidf_dict[word] = tfidf_value
-    
     return tfidf_dict
 
 
@@ -208,16 +203,13 @@ def calculate_expected_frequency(
     """
     if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
         return None
-    
     doc_total = sum(doc_freqs.values())
     corpus_total = sum(corpus_freqs.values())
     expected_freqs = {}
-    
     for token, token_doc_freq in doc_freqs.items():
         token_corpus_freq = corpus_freqs.get(token, 0)
         expected = (token_doc_freq + token_corpus_freq) * doc_total / (doc_total + corpus_total)
         expected_freqs[token] = expected
-    
     return expected_freqs
 
 
@@ -237,18 +229,14 @@ def calculate_chi_values(
     """
     if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
         return None
-    
     chi_values = {}
-    
     for token, observed_freq in observed.items():
         expected_freq = expected.get(token, 0.0)
-        
         if expected_freq > 0:
             chi_value = (observed_freq - expected_freq) ** 2 / expected_freq
             chi_values[token] = chi_value
         else:
             chi_values[token] = 0.0
-    
     return chi_values
 
 
@@ -268,17 +256,12 @@ def extract_significant_words(
     """
     if not check_dict(chi_values, str, float, False) or not check_float(alpha):
         return None
-    
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    
     if alpha not in criterion:
         return None
-    
     critical_value = criterion[alpha]
     significant_words = {}
-    
     for token, chi_value in chi_values.items():
         if chi_value > critical_value:
             significant_words[token] = chi_value
-    
     return significant_words
