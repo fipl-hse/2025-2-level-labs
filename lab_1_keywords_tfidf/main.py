@@ -212,9 +212,9 @@ def calculate_expected_frequency(
         corpus_count = corpus_freqs.get(token, 0)
         doc_other = doc_total - doc_count
         corpus_other = corpus_total - corpus_count
-        total_with_token = doc_count + corpus_count
+        total_token = doc_count + corpus_count
         total_all = doc_count + corpus_count + doc_other + corpus_other
-        expected_frequency[token] = (total_with_token * (doc_count + doc_other)) / total_all
+        expected_frequency[token] = (total_token * (doc_count + doc_other)) / total_all
 
     return expected_frequency
 
