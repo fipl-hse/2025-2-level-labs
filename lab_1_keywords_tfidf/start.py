@@ -23,6 +23,9 @@ def main() -> None:
         stop_words = file.read().split("\n")
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
+    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+        corpus_freqs = load(file)
+    result = None
 
     clean_and_tokenize_text = clean_and_tokenize(target_text)
     if not clean_and_tokenize:
@@ -46,7 +49,7 @@ def main() -> None:
     
     calculated_tfidf=calculate_tfidf(calculated_tf, idf)
     if not calculated_tfidf:
-        
+
         return
     
 
@@ -58,6 +61,7 @@ def main() -> None:
     print("TF-IDF для всех слов: ", calculated_tfidf, idf)
     print("Топ-10 ключевых слов:", top_n_words)
     result=top_n_words
+    assert result, "Keywords are not extracted"
     
 if __name__ == "__main__":
     main()
