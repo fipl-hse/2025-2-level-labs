@@ -64,7 +64,8 @@ def check_positive_int(user_input: Any) -> bool:
         bool: True if valid, False otherwise
     """
     if isinstance(user_input, bool) or isinstance(user_input, int):
-        return user_input > 0
+        return False
+    return user_input > 0
 
 def check_float(user_input: Any) -> bool:
     """
@@ -161,7 +162,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     for key, value in frequencies.items():
         if not isinstance(key, str) or not isinstance(value, (int, float)) or isinstance(value, bool):
             return None
-    if not isinstance(top, int) or top <= 0:
+    if (not isinstance(top, int) or isinstance(top, bool) or top <= 0):
         return None
     sorted_t = sorted(frequencies.items(), key=lambda item: (-item[1], item[0]))
     most_frequent = [token for token, freq in sorted_t[:top]]
@@ -216,7 +217,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     if not isinstance(idf, dict):
         return None
     for token, term_value in term_freq.items():
-        if not isinstance(token, str) or not isinstance(term_value, (int, float)) or term_value < 0:
+        if not isinstance(token, str) or not isinstance(term_value, (int, float)):
+            return None
+        if (isinstance(freq, bool) or freq < 0):
             return None
     for token1, idf_value in idf.items():
         if not isinstance(token1, str) or not isinstance(idf_value, (int, float)):
@@ -289,10 +292,14 @@ def calculate_chi_values(
     if not expected or not observed:
         return None
     for token, freq in expected.items():
-        if (not isinstance(token, str) or not isinstance(freq,(int, float)) or isinstance(freq, bool) or freq < 0):
+        if (not isinstance(token, str) or not isinstance(freq,(int, float))):
+            return None
+        if (isinstance(freq, bool) or freq < 0):
             return None
     for token, freq in observed.items():
-        if (not isinstance(token, str) or not isinstance(freq, int) or isinstance(freq, bool) or freq < 0):
+        if (not isinstance(token, str) or not isinstance(freq, int)):
+            return None
+        if (isinstance(freq, bool) or freq < 0):
             return None
     chi_values = {}
     for token, observed_freq in observed.items():

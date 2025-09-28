@@ -25,43 +25,26 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
+    result = None
+    
     cleaned_tokens = clean_and_tokenize(target_text)
-    if not cleaned_tokens:
-        print("Error: No tokens after cleaning")
+    if cleaned_tokens:
+        removed_stop_words = remove_stop_words(cleaned_tokens, stop_words)
+        if removed_stop_words:
+            calculated_frequencies = calculate_frequencies(removed_stop_words)
+            if calculated_frequencies:
+                expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
+                if expected_frequency:
+                    chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
+                    if chi_values:
+                        significant_words = extract_significant_words(chi_values, 0.05)
+                        if significant_words:
+                            result = get_top_n(significant_words, 10)
+
+    if not result:
+        print("Error: Keywords are not extracted")
         return
 
-    removed_stop_words = remove_stop_words(cleaned_tokens, stop_words)
-    if not removed_stop_words:
-        print("Error: No words after stop words removal")
-        return
-
-    calculated_frequencies = calculate_frequencies(removed_stop_words)
-    if not calculated_frequencies:
-        print("Error: Could not calculate frequencies")
-        return
-
-    expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
-    if not expected_frequency:
-        print("Error: Could not calculate expected frequency")
-        return
-
-    chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
-    if not chi_values:
-        print("Error: Could not calculate chi values")
-        return
-
-    significant_words = extract_significant_words(chi_values, 0.05)
-    if not significant_words:
-        print("Error: No significant words found")
-        return
-
-    top_words = get_top_n(significant_words, 10)
-    if not top_words:
-        print("Error: Could not get top words")
-        return
-
-
-    result = top_words
     assert result, "Keywords are not extracted"
     print("Keywords:", result)
 
