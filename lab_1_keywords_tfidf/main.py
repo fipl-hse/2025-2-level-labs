@@ -4,10 +4,9 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 
-import math 
-
 # pylint:disable=unused-argument
 from typing import Any
+import math
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -24,14 +23,11 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    
     if not can_be_empty and len(user_input) == 0:
         return False
-    
     for el in user_input:
         if not isinstance(el, elements_type):
-            return False
-        
+            return False    
     return True
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -49,14 +45,11 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    
     if not user_input and not can_be_empty:
         return False
-    
     for key, value in user_input.items():
         if not isinstance(key, key_type) or not isinstance(value, value_type):
             return False
-        
     return True
 
 def check_positive_int(user_input: Any) -> bool:
@@ -71,7 +64,6 @@ def check_positive_int(user_input: Any) -> bool:
     """
     if not isinstance(user_input, int) or isinstance(user_input, bool) or not user_input > 0:
         return False
-    
     return True
 
 def check_float(user_input: Any) -> bool:
@@ -99,7 +91,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    
     clean_text = ''.join(el for el in text.lower() if el.isalnum() or el.isspace())
     return clean_text.split()
 
@@ -117,10 +108,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     """
     if not check_list(tokens, str, True):
         return None
-    
     if not check_list(stop_words, str, True):
         return None
-    
     return [el for el in tokens if el not in stop_words]
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -136,7 +125,6 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     if not check_list(tokens, str, False):
         return None
-    
     return {token: tokens.count(token) for token in tokens}
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -154,11 +142,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not check_dict(frequencies, str, int, False):
         if not check_dict(frequencies, str, float, False):
-            return None
-        
+            return None  
     if not check_positive_int(top):
         return None
-    
     sorted_frequencies = sorted(frequencies.keys(), key=lambda token: frequencies[token], reverse=True)
     top = min(len(frequencies), top)
     return sorted_frequencies[0:top]
@@ -176,13 +162,10 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     if not check_dict(frequencies, str, int, False):
         return None
-    
     words_total = sum(frequencies.values())
     term_freq = {}
-
     for key, value in frequencies.items():
         term_freq[key] = value / words_total
-
     return term_freq
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -199,13 +182,10 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     """
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
-    
     tfidf_dict = term_freq.copy()
-    
     for key, value in tfidf_dict.items():
         idf_value = idf.get(key, math.log(47))
         tfidf_dict[key] = value * idf_value
-
     return tfidf_dict
 
 def calculate_expected_frequency(
