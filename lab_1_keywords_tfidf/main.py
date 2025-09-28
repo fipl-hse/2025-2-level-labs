@@ -63,9 +63,8 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if user_input > 0 and isinstance(user_input, int):
-        return True
-    return check_positive_int
+    if isinstance(user_input, bool) or isinstance(user_input, int):
+        return user_input > 0
 
 def check_float(user_input: Any) -> bool:
     """
@@ -77,9 +76,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if isinstance(user_input, float):
-        return isinstance(user_input, float)
-    return check_float
+    return isinstance(user_input, float)
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
@@ -162,7 +159,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     if not isinstance(frequencies, dict) or not frequencies:
         return None
     for key, value in frequencies.items():
-        if not isinstance(key, str) or not isinstance(value, (int, float)):
+        if not isinstance(key, str) or not isinstance(value, (int, float)) or isinstance(value, bool):
             return None
     if not isinstance(top, int) or top <= 0:
         return None
@@ -292,10 +289,10 @@ def calculate_chi_values(
     if not expected or not observed:
         return None
     for token, freq in expected.items():
-        if (not isinstance(token, str) or not isinstance(freq,(int, float)) or freq < 0):
+        if (not isinstance(token, str) or not isinstance(freq,(int, float)) or isinstance(freq, bool) or freq < 0):
             return None
     for token, freq in observed.items():
-        if (not isinstance(token, str) or not isinstance(freq,(int, float)) or freq < 0):
+        if (not isinstance(token, str) or not isinstance(freq, int) or isinstance(freq, bool) or freq < 0):
             return None
     chi_values = {}
     for token, observed_freq in observed.items():
