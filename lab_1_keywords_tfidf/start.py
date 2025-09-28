@@ -23,30 +23,19 @@ def main() -> None:
         stop_words = file.read().split("\n")
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
+    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+        corpus_freqs = load(file)
+    tokens = clean_and_tokenize(target_text) or []
+    tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
+    print(tokens_without_stopwords)
+    frequencies = calculate_frequencies(tokens_without_stopwords) or {}
+    term_freq_tf = calculate_tf(frequencies) or {}
+    print(term_freq_tf)
+    term_freq_tfidf = calculate_tfidf(term_freq_tf, idf) or {}
+    print(term_freq_tfidf)
+    top_key_words = get_top_n(term_freq_tfidf, 10) or []
+    print(', '.join(top_key_words))
     
-
-    # Шаг 2: токенизация
-    tokens = clean_and_tokenize(target_text)
-
-    # Шаг 3: убираем стоп-слова
-    tokens_no_stop = remove_stop_words(tokens, stop_words)
-
-    # Шаг 4: частоты
-    freqs = calculate_frequencies(tokens_no_stop)
-
-    # Шаг 5: топ-10 по частоте
-    top_freq = get_top_n(freqs, 10)
-
-    # Шаг 6: TF
-    tf_vals = calculate_tf(freqs)
-
-    # Шаг 7: TF-IDF
-    tfidf_vals = calculate_tfidf(tf_vals, idf)
-    top_tfidf = get_top_n(tfidf_vals, 10)
-
-    print("Топ-10 слов по частоте:", top_freq)
-    print("Топ-10 слов по TF-IDF:", top_tfidf)
-
 
 if __name__ == "__main__":
     main()
