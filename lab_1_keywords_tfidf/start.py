@@ -36,9 +36,10 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    # Получаем путь к директории текущего файла
+    # библиотекой os я пользуюсь тут, получаю путь к директории текущего файла
     current_dir = os.path.dirname(os.path.abspath(__file__))
     assets_dir = os.path.join(current_dir, "assets")
+    
     
     with open(os.path.join(assets_dir, "Дюймовочка.txt"), "r", encoding="utf-8") as file:
         target_text = file.read()
@@ -52,32 +53,49 @@ def main() -> None:
     tokenized_text = clean_and_tokenize(target_text)
     if not tokenized_text:
         return
+    
+    print(tokenized_text)
 
     text_without_stopwords = remove_stop_words(tokenized_text, stop_words)
     if not text_without_stopwords:
         return
+    
+    print(text_without_stopwords)
 
     frequ_dict = calculate_frequencies(text_without_stopwords)
     if not frequ_dict:
         return
+    
+    print(frequ_dict)
 
     tf_dict = calculate_tf(frequ_dict)
     if not tf_dict:
         return
+    
+    print(tf_dict)
 
     tfidf_dict = calculate_tfidf(tf_dict, idf)
     if not tfidf_dict:
         return
+    
+    print(tfidf_dict)
 
     expected_freq = calculate_expected_frequency(frequ_dict, corpus_freqs)
     if not expected_freq:
         return
+    
+    print(expected_freq)
 
     chi_values = calculate_chi_values(expected_freq, frequ_dict) or {}
+
+    print(chi_values)
 
     significant_words = extract_significant_words(chi_values, 0.01) or {}
     top_significant_words = get_top_n(significant_words, 10)
     result = top_significant_words
+
+    print(significant_words)
+    print(top_significant_words)
 
     print(result)
     assert result, "Keywords are not extracted"
