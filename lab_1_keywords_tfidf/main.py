@@ -174,7 +174,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     tf_tokens={}
     for k,v in frequencies.items():
         tf_tokens[k] = v / total
-    return dict(sorted(tf_tokens.items()))
+    return tf_tokens
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -222,11 +222,8 @@ def calculate_expected_frequency(
         all_word_in_corpus=sum_in_corpus-t_in_corpus
         multi=(t_in_d+t_in_corpus)*(t_in_d+all_words_in_d)
         sum_all_words=t_in_d+t_in_corpus+all_words_in_d+all_word_in_corpus
-        if sum_all_words==0:
-            exp_freq_dict[t] = 0.0
-        else:
-            exp_freq_dict[t]=float(multi/sum_all_words)
-    return dict(sorted(exp_freq_dict.items()))
+        exp_freq_dict[t]=multi/sum_all_words
+    return exp_freq_dict
 
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
@@ -263,7 +260,7 @@ def extract_significant_words(
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     if not check_dict(chi_values, str, float, False):
         return None
-    if not isinstance(alpha, float) or alpha not in criterion:
+    if not check_float(alpha) or alpha not in criterion:
         return None
     critical_value=criterion[alpha]
     return {word: chi_values[word] for word in chi_values if chi_values[word]>critical_value}
