@@ -61,10 +61,8 @@ def main() -> None:
 
     top_words = get_top_n(significant_words, 10)
 
-    if top_words is None:
-        raise ValueError("No keywords extracted")
-
-    assert len(top_words) == 10, f"Expected 10 keywords, got {len(top_words)}"
+    assert top_words
+    assert len(top_words) == 10
 
     print(top_words)
 
