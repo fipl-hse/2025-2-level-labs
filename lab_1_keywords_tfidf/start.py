@@ -51,10 +51,10 @@ def main() -> None:
     chi_values = calculate_chi_values(expected, frequencies) or {}
 
     significant_words = extract_significant_words(chi_values, 0.001) or {}
-    get_top_n_3 = get_top_n(significant_words, 10) or [
+    get_top_n_3 = get_top_n(significant_words, 10) or []
     print(get_top_n_3)
 
-    result = get_top_n
+    result = get_top_n_3
     assert result, "Keywords are not extracted"
 
 
