@@ -219,7 +219,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     for token, term_value in term_freq.items():
         if not isinstance(token, str) or not isinstance(term_value, (int, float)):
             return None
-        if (isinstance(freq, bool) or freq < 0):
+        if (isinstance(term_value, bool) or term_value < 0):
             return None
     for token1, idf_value in idf.items():
         if not isinstance(token1, str) or not isinstance(idf_value, (int, float)):
