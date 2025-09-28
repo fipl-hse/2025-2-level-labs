@@ -8,7 +8,6 @@ Extract keywords based on frequency related metrics
 # pylint:disable=unused-argument
 
 import math
-from operator import itemgetter
 from typing import Any
 
 
@@ -107,7 +106,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     lit_txt = text.lower()
     done = ""
     for el in lit_txt:
-        if el.isalnum() or el == " ":
+        if el.isalnum() or el.isspace():
             done += el
     final_tokens = done.split()
     return final_tokens
@@ -170,12 +169,13 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         In case of corrupt input arguments, None is returned.
     """
     if (
-        not check_dict(frequencies, str, int, False)
+        not check_dict(frequencies, str, int, False) and
+        not check_dict(frequencies, str, float, False)
         or not check_positive_int(top)
         or isinstance(top, bool)
     ):
         return None
-    sorted_frequencies = sorted(frequencies.items(), key=itemgetter(1), reverse=True)
+    sorted_frequencies = sorted(frequencies.items(), key = lambda item: item[1], reverse = True)
     if len(sorted_frequencies) < top:
         return [item[0] for item in sorted_frequencies]
     if top > 0:
