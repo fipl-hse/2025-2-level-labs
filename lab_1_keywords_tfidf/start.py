@@ -11,6 +11,7 @@ from lab_1_keywords_tfidf.main import (
     get_top_n,
     remove_stop_words,
 )
+
 def main() -> None:
     """
     Launches an implementation.
