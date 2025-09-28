@@ -22,12 +22,13 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if not user_input and not can_be_empty:  
+    if not user_input and can_be_empty is False:
         return False
     for el in user_input:
         if not isinstance(el, elements_type):
             return False
     return True
+
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
@@ -49,9 +50,14 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     for key, value in user_input.items():
         if not isinstance(key, key_type):
             return False
-        if not isinstance(value, value_type):
+        if isinstance(value_type, tuple): 
+            if not isinstance(value, value_type):
+                return False
+        else:
+            if not isinstance(value, value_type):
                 return False
     return True
+
 
 
 
@@ -96,7 +102,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
     stripped_text = text.strip()
-    
     if not stripped_text: 
         return []
     return stripped_text 
@@ -126,6 +131,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     return filtered_tokens
 
 
+
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     Create a frequency dictionary from the token sequence.
@@ -146,6 +152,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     for token in tokens:
         frequencies[token] = frequencies.get(token, 0) + 1
     return frequencies
+
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
