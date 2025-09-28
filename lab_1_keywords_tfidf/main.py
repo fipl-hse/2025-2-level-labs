@@ -111,7 +111,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True) or (
+    if not check_list(tokens, str, False) or (
         not check_list(stop_words, str, True)
     ):
         return None
@@ -192,10 +192,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         not check_dict(idf, str, float, True)
     ):
         return None
-    tfidf_dict = {}
+    tfidf_dict = term_freq.copy()
     for key, value in tfidf_dict.items():
-        idf_value = idf.get(key, math.log(47))
-        tfidf_dict[key] = value * idf_value
+        tfidf_dict[key] = value * idf.get(key, math.log(47))
     return tfidf_dict
 
 def calculate_expected_frequency(
