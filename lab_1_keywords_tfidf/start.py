@@ -12,7 +12,8 @@ from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     extract_significant_words,
     get_top_n,
-    remove_stop_words)
+    remove_stop_words
+)
 
 
 def main() -> None:
@@ -31,18 +32,16 @@ def main() -> None:
     cleaned_tokens = clean_and_tokenize(target_text)
     if cleaned_tokens:
         removed_stop_words = remove_stop_words(cleaned_tokens, stop_words)
-        if removed_stop_words:
-            calculated_frequencies = calculate_frequencies(removed_stop_words)
-            if calculated_frequencies:
-                expected_frequency = calculate_expected_frequency(
-                    calculated_frequencies, corpus_freqs
-                )
-                if expected_frequency:
-                    chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
-                    if chi_values:
-                        significant_words = extract_significant_words(chi_values, 0.05)
-                        if significant_words:
-                            result = get_top_n(significant_words, 10)
+    if cleaned_tokens and removed_stop_words:
+        calculated_frequencies = calculate_frequencies(removed_stop_words)
+    if cleaned_tokens and removed_stop_words and calculated_frequencies:
+        expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
+    if cleaned_tokens and removed_stop_words and calculated_frequencies and expected_frequency:
+        chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
+    if cleaned_tokens and removed_stop_words and calculated_frequencies and expected_frequency and chi_values:
+        significant_words = extract_significant_words(chi_values, 0.05)
+    if cleaned_tokens and removed_stop_words and calculated_frequencies and expected_frequency and chi_values and significant_words:
+        result = get_top_n(significant_words, 10)
 
     if not result:
         print("Error: Keywords are not extracted")
