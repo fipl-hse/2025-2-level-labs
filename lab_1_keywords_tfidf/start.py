@@ -60,6 +60,9 @@ def main() -> None:
         return
 
     top_words = get_top_n(significant_words, 10)
+
+    assert top_words
+
     print(top_words)
 
 
