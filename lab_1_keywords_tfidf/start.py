@@ -40,6 +40,7 @@ def main() -> None:
     frequencies = calculate_frequencies(wo_stop_words) or {}
 
     get_top_n_1 = get_top_n(cast(dict[str, int | float], frequencies), 10)
+    print(get_top_n_1)
 
     term_frequencies = calculate_tf(frequencies) or {}
     tf_idf = calculate_tfidf(term_frequencies, idf) or {}
