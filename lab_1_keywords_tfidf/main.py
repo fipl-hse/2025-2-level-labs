@@ -92,16 +92,21 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
+    import string
     if not isinstance(text, str):
         return None
     stripped_text = text.strip()
-    if not stripped_text:
+    
+    if not stripped_text: 
         return []
-    punctuation_chars = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
-    translation_table = str.maketrans('', '', punctuation_chars)
-    no_punct = stripped_text.translate(translation_table)
+    return stripped_text 
+    translation_table = str.maketrans({ch: None for ch in punctuation_chars})
+    no_punct = stripped.translate(translation_table)
     tokens = no_punct.lower().split()
     return tokens
+    
+
+
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
