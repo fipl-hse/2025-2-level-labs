@@ -30,26 +30,38 @@ def main() -> None:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
+
     tokenized_text = clean_and_tokenize(target_text)
     if not tokenized_text:
         return
+
     text_without_stopwords = remove_stop_words(tokenized_text, stop_words)
-    if not tokenized_text:
+    if not text_without_stopwords:
         return
+
     frequ_dict = calculate_frequencies(text_without_stopwords)
     if not frequ_dict:
         return
+
     tf_dict = calculate_tf(frequ_dict)
     if not tf_dict:
         return
+
     tfidf_dict = calculate_tfidf(tf_dict, idf)
-    if not tf_dict:
+    if not tfidf_dict:
         return
+
     expected_freq = calculate_expected_frequency(frequ_dict, corpus_freqs)
     if not expected_freq:
         return
-    chi_values = calculate_chi_values(expected_freq, tfidf_dict)
+
+    chi_values = calculate_chi_values(expected_freq, frequ_dict)
+    if not chi_values:
+        return
+
     significant_words = extract_significant_words(chi_values, 0.01)
+    if not significant_words:
+        return
     top_significant_words = get_top_n(significant_words, 10)
     result = top_significant_words
 

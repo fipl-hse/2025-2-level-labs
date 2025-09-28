@@ -232,6 +232,7 @@ def calculate_expected_frequency(
     expexted_freq_dict = {}
     words_in_doc = sum(doc_freqs.values())
     words_in_corpus = sum(corpus_freqs.values())
+
     for word in doc_freqs.keys():
         i = doc_freqs.get(word, 0)
         k = corpus_freqs.get(word, 0)
@@ -288,8 +289,8 @@ def extract_significant_words(
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     if alpha not in criterion:
         return None
-
+    threshold = criterion[alpha]
     return {
-        word: chi_values[word] for word in chi_values
-        if chi_values[word] > criterion.get(alpha)
+        word: chi_values[word] for word, chi_value in chi_values.items()
+        if chi_values[word] > threshold
         }
