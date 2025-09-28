@@ -2,7 +2,8 @@
 Frequency-driven keyword extraction starter
 """
 
-# pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
+# pylint:disable=too-many-locals, unused-argument, unused-variable
+# pylint:disable=invalid-name, duplicate-code
 
 from json import load
 from lab_1_keywords_tfidf.main import (
@@ -15,6 +16,7 @@ from lab_1_keywords_tfidf.main import (
     remove_stop_words,
 )
 
+
 def main() -> None:
     """
     Launches an implementation.
@@ -23,8 +25,6 @@ def main() -> None:
         target_text = file.read()
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open("assets/IDF.json", "r", encoding="utf-8") as file:
-        idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
@@ -40,11 +40,17 @@ def main() -> None:
     if not calculated_frequencies:
         return
 
-    expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
+    expected_frequency = calculate_expected_frequency(
+        calculated_frequencies,
+        corpus_freqs
+    )
     if not expected_frequency:
         return
 
-    chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
+    chi_values = calculate_chi_values(
+        expected_frequency,
+        calculated_frequencies
+    )
     if not chi_values:
         return
 
