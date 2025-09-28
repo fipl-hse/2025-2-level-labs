@@ -26,8 +26,8 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if not can_be_empty and not user_input:
-        return False
+    if not user_input:
+        return can_be_empty
     return all(isinstance(element, elements_type) for element in user_input)
 
 
@@ -76,9 +76,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if isinstance(user_input, float):
-        return True
-    return False
+    return isinstance(user_input, float)
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
