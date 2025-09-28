@@ -21,47 +21,44 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
-        target_text = file.read()
+    try:
+        with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
+            target_text = file.read()
         tokens = clean_and_tokenize(target_text)
-    if not tokens:
-        print("Ошибка на этапе предобработки текста")
-        return
-    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
-        stop_words = file.read().split("\n")
+        if not tokens:
+            raise ValueError("Ошибка на этапе предобработки текста")
+        with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
+            stop_words = file.read().split("\n")
         cleaned_tokens = remove_stop_words(tokens, stop_words)
-    if not cleaned_tokens:
-        print("Ошибка на этапе удаления стоп-слов")
+        if not cleaned_tokens:
+            raise ValueError("Ошибка на этапе удаления стоп-слов")
+        freq_dict = calculate_frequencies(cleaned_tokens)
+        if not freq_dict:
+            raise ValueError("Ошибка на этапе предобработки текста")
+        with open("assets/IDF.json", "r", encoding="utf-8") as file:
+            idf = json.load(file)
+        with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+            corpus_freqs = json.load(file)
+        tf = calculate_tf(freq_dict)
+        if not tf:
+            raise ValueError("Ошибка в расчетах TF")
+        tfidf = calculate_tfidf(tf, idf)
+        if not tfidf:
+            raise ValueError("Ошибка в расчетах TF-IDF")
+        expected_freqs = calculate_expected_frequency(freq_dict, corpus_freqs)
+        if not expected_freqs:
+            raise ValueError("Ошибка в расчетах ожидаемых частот")
+        chi_vals = calculate_chi_values(expected_freqs, freq_dict)
+        if not chi_vals:
+            raise ValueError("Ошибка в расчетах статистик")
+        significant_words = extract_significant_words(chi_vals, 0.05)
+        top_chi = get_top_n(significant_words, 10) if significant_words else []
+        print("Топ-10 ключевых слов по хи-квадрат:", top_chi)
+        result = cleaned_tokens
+        assert result, "Keywords are not extracted"
+    except (ValueError, FileNotFoundError) as e:
+        print(str(e))
         return
-    freq_dict = calculate_frequencies(cleaned_tokens)
-    if not freq_dict:
-        print("Ошибка на этапе предобработки текста")
-        return
-    with open("assets/IDF.json", "r", encoding="utf-8") as file:
-        idf = json.load(file)
-    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
-        corpus_freqs = json.load(file)
-    tf = calculate_tf(freq_dict)
-    if not tf:
-        print("Ошибка в расчетах TF")
-        return
-    tfidf = calculate_tfidf(tf, idf)
-    if not tfidf:
-        print("Ошибка в расчетах TF-IDF")
-        return
-    expected_freqs = calculate_expected_frequency(freq_dict, corpus_freqs)
-    if not expected_freqs:
-        print("Ошибка в расчетах ожидаемых частот")
-        return
-    chi_vals = calculate_chi_values(expected_freqs, freq_dict)
-    if not chi_vals:
-        print("Ошибка в расчетах статистик")
-        return
-    significant_words = extract_significant_words(chi_vals, 0.05)
-    top_chi = get_top_n(significant_words, 10) if significant_words else []
-    print("Топ-10 ключевых слов по хи-квадрат:", top_chi)
-    result = cleaned_tokens
-    assert result, "Keywords are not extracted"
 
 
 if __name__ == "__main__":
