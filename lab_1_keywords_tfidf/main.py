@@ -91,9 +91,9 @@ def clean_and_tokenize(text: str) -> list[str] | None:
 
     low_register=new_text.lower()
 
-    splited_text=low_register.split()
+    split_text=low_register.split()
 
-    return splited_text
+    return split_text
 
 
 
@@ -134,20 +134,12 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False):
+    if not check_list(tokens, str, True):
         return None
-
-    dictionary = {}
-
-    for element in tokens:
-        if not isinstance(element, str):
-            return None
-        if element in dictionary:
-            dictionary[element] += 1
-        else:
-            dictionary[element] = 1
-
-    return dictionary
+    freqs: dict[str, int] = {}
+    for token in tokens:
+        freqs[token] = freqs.get(token, 0) + 1
+    return freqs
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
 
@@ -190,19 +182,12 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, False):
+    if not check_dict(frequencies, str, int, True):
         return None
-
-    quantity_of_words=sum(frequencies.values())
-
-    if quantity_of_words==0:
+    total = sum(frequencies.values())
+    if total == 0:
         return {}
-
-    dictionary={}
-    for word, value in frequencies.items():
-        calculated_frequency=value/quantity_of_words
-        dictionary[word]=calculated_frequency
-    return dictionary
+    return {token: count / total for token, count in frequencies.items()}
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
@@ -217,24 +202,13 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         In case of corrupt input arguments, None is returned.
     """
 
-    if not check_dict(term_freq, str, float, False):
+    if not (check_dict(term_freq, str, float, True) and check_dict(idf, str, float, True)):
         return None
-
-    if not check_dict(idf, str, float, True):
-        return None
-
-    idf_without_entering=math.log(47/1)
-
-    dictionary_tfidf={}
-    for token, value in term_freq.items():
-        if token in idf:
-            dictionary_tfidf_value=idf[token]
-        else:
-            dictionary_tfidf_value=idf_without_entering
-
-        dictionary_tfidf[token]=value*dictionary_tfidf_value
-
-    return dictionary_tfidf
+    result: dict[str, float] = {}
+    for token, tf_val in term_freq.items():
+        idf_val = idf.get(token, math.log(47))
+        result[token] = tf_val * idf_val
+    return result
 
 
 def calculate_expected_frequency(
