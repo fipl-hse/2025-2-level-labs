@@ -5,14 +5,15 @@ Extract keywords based on frequency related metrics
 """
 
 # pylint:disable=unused-argument
+from math import log
 import math
 from typing import Any
-from math import log
 
 
-
-
-def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+def check_list(
+        user_input: Any,
+        elements_type: type,
+        can_be_empty: bool) -> bool:
     """
     Check if the object is a list containing elements of a certain type.
 
