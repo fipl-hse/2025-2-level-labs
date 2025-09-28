@@ -27,7 +27,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         return False
     for el in user_input:
         if not isinstance(el, elements_type):
-            return False    
+            return False
     return True
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -142,10 +142,12 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not check_dict(frequencies, str, int, False):
         if not check_dict(frequencies, str, float, False):
-            return None  
+            return None
     if not check_positive_int(top):
         return None
-    sorted_frequencies = sorted(frequencies.keys(), key=lambda token: frequencies[token], reverse=True)
+    sorted_frequencies = sorted(
+        frequencies.keys(), key=lambda token: frequencies[token], reverse=True
+        )
     top = min(len(frequencies), top)
     return sorted_frequencies[0:top]
 

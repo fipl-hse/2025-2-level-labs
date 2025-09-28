@@ -12,7 +12,7 @@ from lab_1_keywords_tfidf.main import (
     get_top_n,
     calculate_tf,
     calculate_tfidf,
-)
+    )
 
 def main() -> None:
     """
