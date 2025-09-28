@@ -49,7 +49,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     if not isinstance(user_input, dict):  
         return False
     
-    if not can_be_empty and len(user_input) == 0:  
+    if not can_be_empty and not user_input:  
         return False
     
     for key, value in user_input.items():  
@@ -68,7 +68,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
+    return isinstance(user_input, float) and user_input > 0
 
 def check_float(user_input: Any) -> bool:
     """
@@ -115,7 +115,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True) or not check_list(stop_words, str, True):
+    if not check_list(tokens, str, False) or not check_list(stop_words, str, True):
         return None
     
     return [token for token in tokens if token not in stop_words]
@@ -131,7 +131,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True):
+    if not check_list(tokens, str, False):
         return None
     
     frequencies = {}
@@ -230,21 +230,32 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(doc_freqs, str, int, True) or not check_dict(corpus_freqs, str, int, True):
-        return None
-    
-    if len(doc_freqs) == 0:
+    if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
         return None
 
-    if len(corpus_freqs) == 0:
-        return {token: float(freq) for token, freq in doc_freqs.items()}
+    total_doc_words = sum(doc_freqs.values())
+    total_corpus_words = sum(corpus_freqs.values()) if corpus_freqs else 0
 
     result: dict[str, float] = {}
+
     for token, freq in doc_freqs.items():
-        corpus_freq = corpus_freqs.get(token, 0)
-        result[token] = round((freq + corpus_freq) / 5, 1)
+        corpus_freq = corpus_freqs.get(token, 0) if corpus_freqs else 0
+
+        j = freq
+        k = corpus_freq
+        l = total_doc_words - freq
+        m = total_corpus_words - corpus_freq
+
+        denominator = j + k + l + m
+        if denominator == 0:
+            expected = 0.0
+        else:
+            expected = ((j + k) * (j + l)) / denominator
+
+        result[token] = round(expected, 1)
 
     return result
+    
 
 
 def calculate_chi_values(
