@@ -4,9 +4,9 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 
+# pylint:disable=unused-argument
 import math
 from typing import Any
-
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
@@ -21,7 +21,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         bool: True if valid, False otherwise
     """
     if not  isinstance(user_input, list):
-         return False
+        return False
     if not can_be_empty and len(user_input) == 0:
         return False
     return all(isinstance(element, elements_type) for element in user_input)
@@ -90,10 +90,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     for symbol in text:
         if symbol.isalnum() or symbol.isspace():
             filtered_text += symbol
-    return filtered_text.split()       
-    
-    
-
+    return filtered_text.split()
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
@@ -115,8 +112,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
             no_stopwords.append(token)
     return no_stopwords
     
-    
-
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     Create a frequency dictionary from the token sequence.
@@ -138,7 +133,6 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
             frequency_dictionary[token] = 1
     return frequency_dictionary
 
-
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
     Extract the most frequent tokens.
@@ -152,15 +146,13 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int, float), False):
+    if not check_dict(frequencies, str, int, False) and not check_dict(frequencies, str, float, False):
         return None
     if not check_positive_int(top):
         return None
-    sorted_words = sorted(frequencies, key=frequencies.get, reverse=True)
+    sorted_words = sorted(frequencies.keys(), key=lambda x: frequencies[x], reverse=True)
     return sorted_words[:top]
-    
-
-
+  
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     Calculate Term Frequency (TF) for each token.
@@ -178,7 +170,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     for keys, values in frequencies.items():
         tf_dictionary [keys] = round(values / sum(frequencies.values()), 4)
     return tf_dictionary
-
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
@@ -199,7 +190,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         term_idf = idf.get(term, math.log(47 / 1))
         tfidf_dictionary[term] = tf * term_idf
     return tfidf_dictionary
-
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
@@ -230,7 +220,6 @@ def calculate_expected_frequency(
 
     return expected_frequency
 
-
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
@@ -249,9 +238,8 @@ def calculate_chi_values(
         return None
     chi_values = {}
     for token in expected:
-        chi_values [token] = (((observed[token] - expected[token]) ** 2) / expected[token])
+        chi_values [token] = ((observed[token] - expected[token]) ** 2) / expected[token]
     return chi_values
-
 
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float

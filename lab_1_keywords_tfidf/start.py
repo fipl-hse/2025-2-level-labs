@@ -22,7 +22,6 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    
     cleaned_tokens = None
     freq_dict = None
     term_freq = None
@@ -54,15 +53,12 @@ def main() -> None:
             expected_freq = calculate_expected_frequency (freq_dict, corpus_freqs)
         observed = freq_dict
         if expected_freq is not None and observed is not None:
-                chi_values = calculate_chi_values(expected_freq, observed)
+            chi_values = calculate_chi_values(expected_freq, observed)
         if chi_values is not None:
             result = extract_significant_words(chi_values, alpha)
         if result is not None:
             print(get_top_n(result, 10))
         assert result, "Keywords are not extracted"
 
-
 if __name__ == "__main__":
     main()
-
-    
