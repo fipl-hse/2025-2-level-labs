@@ -166,7 +166,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         return None
     tf_dictionary = {}
     for keys, values in frequencies.items():
-        tf_dictionary [keys] = round(values / sum(frequencies.values()), 4)
+        tf_dictionary [keys] = values / sum(frequencies.values())
     return tf_dictionary
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
