@@ -2,6 +2,7 @@
 Frequency-driven keyword extraction starter
 """
 
+# pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
 
 from lab_1_keywords_tfidf.main import (
@@ -24,6 +25,7 @@ def main() -> None:
     cleaned_tokens = None
     frequencies = None
     tf_values = None
+    tfidf_values = None
     alpha = 0.001
     expected_frequency = None
     chi_values = None
@@ -41,6 +43,8 @@ def main() -> None:
         tf_values = calculate_tf(frequencies)
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
+    if tf_values is not None:
+        tfidf_values = calculate_tfidf(tf_values, idf)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     if frequencies is not None:
@@ -53,6 +57,7 @@ def main() -> None:
     if result is not None:
         print(get_top_n(result, 10))
     assert result, "Keywords are not extracted"
+
 
 if __name__ == "__main__":
     main()
