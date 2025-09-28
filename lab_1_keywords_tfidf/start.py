@@ -30,7 +30,7 @@ def main() -> None:
         corpus_freqs = load(file)
 
     cleaned_text=clean_and_tokenize(target_text)
-    if clean_and_tokenize is None:
+    if cleaned_text is None:
         return
     without_stop_words=remove_stop_words(cleaned_text, stop_words)
     if without_stop_words is None:
