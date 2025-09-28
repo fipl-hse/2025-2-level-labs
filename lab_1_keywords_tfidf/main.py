@@ -122,7 +122,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     """
     if not check_list(tokens, str, True) or not check_list(stop_words, str, True):
         return None
-    return [token for token in tokens if token not in stop_words]
+    filtered_tokens = [token for token in tokens if token not in stop_words]
+    return filtered_tokens
+
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
@@ -135,12 +137,16 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True): 
+    if not isinstance(tokens, list):
         return None
+    for token in tokens:
+        if not isinstance(token, str):
+            return None
     frequencies = {}
     for token in tokens:
         frequencies[token] = frequencies.get(token, 0) + 1
     return frequencies
+
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
@@ -155,14 +161,14 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, False) and not check_dict(frequencies, str, float, False):  
+    if not check_dict(frequencies, str, (int, float), False):  
         return None
-    if not check_positive_int(top):
-        return None
-
+    if not check_positive_int(top):  
+        return None 
     sorted_frequencies = sorted(frequencies.items(), key=lambda item: (-item[1], item[0]))
-    return [token for token, frequency in sorted_frequencies[:top]] 
-        
+    top_n_tokens = [token for token, frequency in sorted_frequencies[:top]] 
+    return top_n_tokens
+   
         
 
 
