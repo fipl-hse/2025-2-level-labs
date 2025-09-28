@@ -308,7 +308,7 @@ def extract_significant_words(
     """
     if not check_dict(chi_values, str, float, False):
         return None
-    if not isinstance(alpha, float) or not chi_values:
+    if not isinstance(alpha, float):
         return None
     if not chi_values:
         return None
