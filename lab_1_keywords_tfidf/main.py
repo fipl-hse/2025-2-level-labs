@@ -169,7 +169,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     if not check_dict(frequencies, str, int, False):
         return None
     words_total = sum(frequencies.values())
-    return {token: frequencies.get(token) / sum(frequencies.values()) for token in frequencies}
+    return {token: frequencies.get(token) / words_total for token in frequencies}
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -213,10 +213,10 @@ def calculate_expected_frequency(
     corpus_total = sum(corpus_freqs.values())
     for token in doc_freqs:
         expected = (
-            (doc_freqs[token] + corpus_freqs.get(token, 0)) 
-            * (doc_freqs[token] + (doc_total - doc_freqs[token])) 
-            / (doc_freqs[token]  + (doc_total - doc_freqs[token]) 
-               + corpus_freqs.get(token, 0) 
+            (doc_freqs[token] + corpus_freqs.get(token, 0))
+            * (doc_freqs[token] + (doc_total - doc_freqs[token]))
+            / (doc_freqs[token]  + (doc_total - doc_freqs[token])
+               + corpus_freqs.get(token, 0)
                + (corpus_total - corpus_freqs.get(token, 0)))
         )
         expected_dict[token] = expected
@@ -239,7 +239,10 @@ def calculate_chi_values(
     """
     if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
         return None
-    return {token: (observed.get(token, 0) - expected[token]) ** 2 / expected[token] for token in expected}
+    return {
+        token: (observed.get(token, 0) - expected[token]) ** 2 /
+        expected[token] for token in expected
+    }
 
 
 
