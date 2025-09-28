@@ -47,9 +47,9 @@ def main() -> None:
     if not tfidf_frequencies:
         return
     chi_value_frequency = calculate_chi_values(tfidf_frequencies, corpus_freqs)
-    only_key_words = extract_significant_words(tfidf_frequencies, 0.001)
-    if not only_key_words:
+    if not chi_value_frequency:
         return
+    only_key_words = extract_significant_words(chi_value_frequency, 0.001)
     top_words = get_top_n(only_key_words, 10)
     result = top_words
     assert result, "Keywords are not extracted"
