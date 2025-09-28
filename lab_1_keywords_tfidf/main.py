@@ -273,8 +273,8 @@ Dictionary with chi-squared values
         return None
     critical_value = criterion[alpha]
     significant_words = {
-        token: chi_value 
-        for token, chi_value in chi_values.items() 
+        token: chi_value
+        for token, chi_value in chi_values.items()
         if chi_value > critical_value
     }
     return significant_words
