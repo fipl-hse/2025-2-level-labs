@@ -4,12 +4,9 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 
-
+# pylint:disable=unused-argument
 import math
 from typing import Any
-
-# pylint:disable=unused-argument
-
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -176,8 +173,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     if not check_dict(frequencies, str, int, False):
         return None
     dict_length = sum(frequencies.values())
-    if dict_length == 0:
-        return None
     return {token: word_count / dict_length for token, word_count in frequencies.items()}
 
 
