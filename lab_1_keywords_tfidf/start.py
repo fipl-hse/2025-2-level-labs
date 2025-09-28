@@ -41,7 +41,7 @@ def main() -> None:
     top_tokens = get_top_n(significant_words, 10) or []
 
     print(top_tokens)
-    result = None
+    result = top_tokens
     assert result, "Keywords are not extracted"
 
 
