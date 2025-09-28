@@ -31,11 +31,8 @@ def main() -> None:
         corpus_freqs = load(file)
     
     tokens = clean_and_tokenize(target_text)
-    filtered_tokens = remove_stop_words(tokens, stop_words) if tokens else None
-    frequencies = calculate_frequencies(filtered_tokens) if filtered_tokens else None
-
-    if not frequencies:
-        print("Error: Could not calculate frequencies")
+    if tokens is None:
+        print("Error: Could not tokenize text")
         return
 
     tokens = clean_and_tokenize(target_text)
