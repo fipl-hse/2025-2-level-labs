@@ -38,8 +38,7 @@ def main() -> None:
     get_top_words=get_top_n(significant_words, 10) or []
 
     result=get_top_words
-    if result:
-        print(result)
+    print(result)
     assert result, "Keywords are not extracted"
 
 if __name__ == "__main__":
