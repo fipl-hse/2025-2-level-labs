@@ -3,6 +3,10 @@
         {
             "name": "lab_1_keywords_tfidf",
             "coverage": 100
+        },
+        {
+            "name": "lab_2_spellcheck",
+            "coverage": 63
         }
     ],
     "addons": [

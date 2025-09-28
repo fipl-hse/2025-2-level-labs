@@ -34,6 +34,8 @@ python config/static_checks/check_docstrings.py
 python -m flake8 "${DIRS_TO_CHECK[@]}"
 
 if [[ "$1" != "smoke" ]]; then
+  python config/static_checks/check_doc8.py
+
   sphinx-build -b html -W --keep-going -n . dist -c admin_utils
 
   python -m pytest -m "mark10 and lab_2_spellcheck"
