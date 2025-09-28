@@ -4,7 +4,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 
-# pylint:disable=unused-argument
+import math
 from typing import Any
 
 
@@ -192,6 +192,13 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
+        return None
+    tfidf_dictionary = {}
+    for term, tf in term_freq.items():
+        term_idf = idf.get(term, math.log(47 / 1))
+        tfidf_dictionary[term] = tf * term_idf
+    return tfidf_dictionary
 
 
 def calculate_expected_frequency(
@@ -208,6 +215,20 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
+        return None
+    expected_frequency = {}
+    doc_total = sum(doc_freqs.values())
+    corpus_total = sum(corpus_freqs.values())
+    for token, doc_count in doc_freqs.items():
+        corpus_count = corpus_freqs.get(token, 0)
+        doc_other = doc_total - doc_count
+        corpus_other = corpus_total - corpus_count
+        total_with_token = doc_count + corpus_count
+        total_all = doc_count + corpus_count + doc_other + corpus_other
+        expected_frequency[token] = (total_with_token * (doc_count + doc_other)) / total_all
+
+    return expected_frequency
 
 
 def calculate_chi_values(
@@ -224,6 +245,12 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
+        return None
+    chi_values = {}
+    for token in expected:
+        chi_values [token] = (((observed[token] - expected[token]) ** 2) / expected[token])
+    return chi_values
 
 
 def extract_significant_words(
