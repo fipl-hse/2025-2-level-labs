@@ -3,7 +3,9 @@ Frequency-driven keyword extraction starter
 """
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
+
 import os
+
 from json import load
 
 try:
