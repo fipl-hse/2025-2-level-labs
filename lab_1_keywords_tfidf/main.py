@@ -166,7 +166,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return None
     sorted_freq = sorted(frequencies.keys(), key=lambda word: frequencies[word], reverse=True)
     top = min(len(frequencies), top)
-    return sorted_freq[0:top]
+    return sorted_freq[:top]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -259,11 +259,10 @@ def calculate_chi_values(
     if not check_dict(expected, str, float, False):
         return None
     if not check_dict(observed, str, int, False):
-        if not check_dict(observed, str, float, False):
-            return None
+        return None
     chi_values = {}
-    for word in expected.keys():
-        exp_fr = expected.get(word, 1)
+    for word, value in expected.items():
+        exp_fr = value or 1
         obs_fr = observed.get(word, 0)
         chi = pow(obs_fr - exp_fr, 2) / exp_fr
         chi_values[word] = chi
@@ -289,11 +288,8 @@ def extract_significant_words(
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     if alpha not in criterion:
         return None
-    # for word, chi_value in chi_values.items():
-    if not criterion.get(alpha):
-        return None
-    significant_words = {
+
+    return {
         word: chi_values[word] for word in chi_values
-        if chi_values[word] > criterion.get(alpha, 3.842)
+        if chi_values[word] > criterion.get(alpha)
         }
-    return significant_words
