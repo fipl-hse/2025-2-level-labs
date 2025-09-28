@@ -186,7 +186,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     """
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
-    
     return {token: term_freq[token] * idf.get(token, log(47)) for token in term_freq}
 
 
@@ -207,7 +206,6 @@ def calculate_expected_frequency(
     """
     if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
         return None
-    
     expected_dict = {}
     doc_total = sum(doc_freqs.values())
     corpus_total = sum(corpus_freqs.values())
