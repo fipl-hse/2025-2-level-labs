@@ -24,7 +24,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if can_be_empty is False and not user_input:
+    if not can_be_empty and len(user_input) == 0:
         return False
     for el in user_input:
         if not isinstance(el, elements_type):
@@ -49,9 +49,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     if not user_input and not can_be_empty:
         return False
     for key, value in user_input.items():
-        if not isinstance(key, key_type) or (
-            not isinstance(value, value_type)
-        ):
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
             return False
     return True
 
@@ -65,9 +63,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    if not isinstance(user_input, int) or (
-        isinstance(user_input, bool) or not user_input > 0
-    ):
+    if not isinstance(user_input, int) or isinstance(user_input, bool) or not user_input > 0:
         return False
     return True
 
@@ -111,9 +107,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False) or (
-        not check_list(stop_words, str, True)
-    ):
+    if not check_list(tokens, str, True):
+        return None
+    if not check_list(stop_words, str, True):
         return None
     return [el for el in tokens if el not in stop_words]
 
@@ -145,16 +141,16 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, False) or (
-        not check_dict(frequencies, str, float, False)
-    ):
-        return None
+    if not check_dict(frequencies, str, int, False):
+        if not check_dict(frequencies, str, float, False):
+            return None
     if not check_positive_int(top):
         return None
-    sorted_frequencies = sorted(frequencies.keys(),
-        key=lambda token: frequencies[token], reverse=True)
+    sorted_frequencies = sorted(
+        frequencies.keys(), key=lambda token: frequencies[token], reverse=True
+        )
     top = min(len(frequencies), top)
-    return sorted_frequencies[:top]
+    return sorted_frequencies[0:top]
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
@@ -187,14 +183,12 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(term_freq, str, float, False) or not (
-        check_dict(idf, str, float, True)
-    ):
+    if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
     tfidf_dict = term_freq.copy()
     for key, value in tfidf_dict.items():
-        value_idf = idf.get(key, math.log(47))
-        tfidf_dict[key] = value * value_idf
+        idf_value = idf.get(key, math.log(47))
+        tfidf_dict[key] = value * idf_value
     return tfidf_dict
 
 def calculate_expected_frequency(
