@@ -28,12 +28,9 @@ def main() -> None:
         corpus_freqs = load(file)
     text_tokenized = clean_and_tokenize(target_text) or []
     stopwords_removed = remove_stop_words(text_tokenized, stop_words) or []
-    print(stopwords_removed)
     freq_dict = calculate_frequencies(stopwords_removed) or {}
     tf_dict = calculate_tf(freq_dict) or {}
-    print(tf_dict)
     tfidf_dict = calculate_tfidf(tf_dict, idf) or {}
-    print(tfidf_dict)
     significant_list = get_top_n(tfidf_dict, 10) or []
     print(', '.join(significant_list))
     result = None
