@@ -80,6 +80,9 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
+    if not isinstance(user_input, float):
+        return False
+    return True
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -119,8 +122,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         return None
     if not check_list(stop_words, str, True):
         return None
-    for stop_word in stop_words:
-        tokens = [token for token in tokens if token != stop_word]
+    tokens = [token for token in tokens if token not in stop_words]
     return tokens
 
 
@@ -219,6 +221,15 @@ def calculate_expected_frequency(doc_freqs: dict[str, int],
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
+        return None
+    expected_freq = {}
+    all_tokens_doc = sum(doc_freqs.values())
+    all_tokens_corpus = sum(corpus_freqs.values())
+    for token in doc_freqs.keys():
+        expected_freq[token] =  (doc_freqs[token] + corpus_freqs.get(token, 0)) * \
+            all_tokens_doc /(all_tokens_doc + all_tokens_corpus)
+    return expected_freq
 
 
 def calculate_chi_values(expected: dict[str, float],
@@ -234,6 +245,12 @@ def calculate_chi_values(expected: dict[str, float],
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
+        return None
+    chi_values = {}
+    for token in expected.keys():
+        chi_values[token] = (observed[token] - expected[token]) **  2 / expected[token]
+    return chi_values
 
 
 def extract_significant_words(chi_values: dict[str, float],
@@ -249,3 +266,14 @@ def extract_significant_words(chi_values: dict[str, float],
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(chi_values, str, float, False) or not check_float(alpha):
+        return None
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if alpha not in criterion:
+        return None
+    significant_words = {}
+    bar = criterion[alpha]
+    for key, value in chi_values.items():
+        if value > bar:
+            significant_words[key] = chi_values[key]
+    return significant_words
