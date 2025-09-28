@@ -31,7 +31,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 def check_dict(
     user_input: Any,
     key_type: type,
-    value_type: type | tuple[type, ...],
+    value_type: type,
     can_be_empty: bool
 ) -> bool:
     """
@@ -40,7 +40,7 @@ def check_dict(
     Args:
         user_input (Any): Object to check
         key_type (type): Expected type of dictionary keys
-        value_type (type | tuple): Expected type or tuple of types for dictionary values
+        value_type (type): Expected type of dictionary values
         can_be_empty (bool): Whether an empty dictionary is allowed
 
     Returns:
@@ -50,11 +50,6 @@ def check_dict(
         return False
     if not user_input and not can_be_empty:
         return False
-    if isinstance(value_type, tuple):
-        return all(
-            isinstance(k, key_type) and any(isinstance(v, t) for t in value_type)
-            for k, v in user_input.items()
-        )
     return all(isinstance(k, key_type) and isinstance(v, value_type) for k, v in user_input.items())
 
 
@@ -149,9 +144,15 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int, float), False):
+    if not isinstance(frequencies, dict) or not frequencies:
         return None
     if not check_positive_int(top):
+        return None
+    valid_values = all(isinstance(v, (int, float)) for v in frequencies.values())
+    if not valid_values:
+        return None
+    valid_keys = all(isinstance(k, str) for k in frequencies.keys())
+    if not valid_keys:
         return None
     sorted_keys = sorted(frequencies, key=lambda k: frequencies[k], reverse=True)
     return sorted_keys[:top] if top < len(sorted_keys) else sorted_keys
@@ -257,7 +258,8 @@ def extract_significant_words(
     Select tokens with chi-squared values greater than the critical threshold.
 
     Args:
-        chi_values (dict[str, float]): Dictionary with chi-squared values
+        chi_values (dict[str, float]):
+Dictionary with chi-squared values
         alpha (float): Significance level controlling chi-squared threshold
 
     Returns:
@@ -270,8 +272,9 @@ def extract_significant_words(
     if alpha not in criterion:
         return None
     critical_value = criterion[alpha]
-    significant_words = {}
-    for token, chi_value in chi_values.items():
-        if chi_value > critical_value:
-            significant_words[token] = chi_value
+    significant_words = {
+        token: chi_value 
+        for token, chi_value in chi_values.items() 
+        if chi_value > critical_value
+    }
     return significant_words
