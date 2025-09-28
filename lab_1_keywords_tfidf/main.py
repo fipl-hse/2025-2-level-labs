@@ -160,11 +160,11 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         In case of corrupt input arguments, None is returned.
     """
     if not check_dict(frequencies, str, (int, float), can_be_empty=False):
-        return []
+        return
     if type(top) != int:
-        return []
+        return
     if top <= 0:
-        return []
+        return
     sorted_t = sorted(frequencies.items(), key=lambda item: (-item[1], item[0]))
     most_frequent = [token for token, freq in sorted_t[:top]]
     return most_frequent
@@ -285,15 +285,17 @@ def calculate_chi_values(
         In case of corrupt input arguments, None is returned.
     """
     if not isinstance(expected, dict):
-        return
+        return None
     if not isinstance(observed, dict):
-        return
+        return None
+    if not expected or not observed:
+        return None
     for token, freq in expected.items():
-        if not isinstance(token, str) or not isinstance(freq, (int, float)) or freq < 0:
-            return
+        if (not isinstance(token, str) or type(freq) not in (int, float) or freq < 0):
+            return None
     for token, freq in observed.items():
-        if not isinstance(token, str) or not isinstance(freq, int) or freq < 0:
-            return
+        if (not isinstance(token, str) or type(freq) not in (int, float) or freq < 0):
+            return None
     chi_values = {}
     for token, observed_freq in observed.items():
         if token in expected:
