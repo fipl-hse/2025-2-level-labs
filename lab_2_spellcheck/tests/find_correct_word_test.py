@@ -54,6 +54,7 @@ class FindCorrectWordTest(unittest.TestCase):
         bad_tokens = [None, True, 42, 3.14, (), {}, []]
         bad_vocabularies = [None, True, 42, 3.14, (), "document", [], {}, {"good": "bad"}, {1: 0}]
         bad_methods = ["jacard", None, True, 42, 3.14, (), "", [], {}]
+        bad_alphabets = [True, 42, 3.14, (), {}, ""]
 
         for bad_input in bad_tokens:
             self.assertIsNone(find_correct_word(bad_input, self.vocabulary, self.methods[0]))
@@ -64,7 +65,14 @@ class FindCorrectWordTest(unittest.TestCase):
         for bad_input in bad_methods:
             self.assertIsNone(find_correct_word(good_token, self.vocabulary, bad_input))
 
-        self.assertIsNone(find_correct_word(bad_tokens[0], bad_vocabularies[0], bad_methods[1]))
+        for bad_input in bad_alphabets:
+            self.assertIsNone(
+                find_correct_word(good_token, self.vocabulary, self.methods[2], bad_input)
+            )
+
+        self.assertIsNone(
+            find_correct_word(bad_tokens[0], bad_vocabularies[0], bad_methods[1], bad_alphabets[0])
+        )
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark4
@@ -100,9 +108,11 @@ class FindCorrectWordTest(unittest.TestCase):
         """
         Frequency similarity metric scenario
         """
+        alphabet_en = list("abcdefghijklmnopqrstuvwxyz")
         for misspelled_token, expected_word in zip(self.misspelled, self.expected):
             self.assertEqual(
-                find_correct_word(misspelled_token, self.vocabulary, self.methods[1]), expected_word
+                find_correct_word(misspelled_token, self.vocabulary, self.methods[1], alphabet_en),
+                expected_word,
             )
 
     @pytest.mark.lab_2_spellcheck

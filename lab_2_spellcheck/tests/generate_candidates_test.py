@@ -21,9 +21,8 @@ class GenerateCandidatesTest(unittest.TestCase):
         ) as f:
             self.expected = f.read().splitlines()
 
-        self.candidates_number = 304
-
         self.alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+        self.alphabet_en = list("abcdefghijklmnopqrstuvwxyz")
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
@@ -33,7 +32,7 @@ class GenerateCandidatesTest(unittest.TestCase):
         """
         Ideal scenario
         """
-        self.assertListEqual(sorted(self.expected), sorted(generate_candidates("word")))
+        self.assertListEqual(self.expected, generate_candidates("word", self.alphabet))
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
@@ -43,7 +42,15 @@ class GenerateCandidatesTest(unittest.TestCase):
         """
         Check length of candidates list
         """
-        self.assertEqual(self.candidates_number, len(generate_candidates("word")))
+        number_of_candidates = len(generate_candidates("word", self.alphabet))
+        # Augmentation stats:
+        # 4 candidates via letter deletion
+        # 165 candidates via letter addition
+        # 132 candidates via letter replacement
+        # 3 candidates via letter swapping
+        # Overall new candidates: 304
+        expected_number_of_candidates = 304
+        self.assertEqual(number_of_candidates, expected_number_of_candidates)
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
@@ -53,7 +60,7 @@ class GenerateCandidatesTest(unittest.TestCase):
         """
         Return value check
         """
-        candidates = generate_candidates("word")
+        candidates = generate_candidates("word", [])
         self.assertIsInstance(candidates, list)
         for candidate in candidates:
             self.assertIsInstance(candidate, str)
@@ -66,11 +73,13 @@ class GenerateCandidatesTest(unittest.TestCase):
         """
         Bad input scenario
         """
-        bad_inputs = [None, True, 42, 3.14, (), {}, []]
-        for bad_input in bad_inputs:
-            self.assertIsNone(generate_candidates(bad_input))
-            self.assertIsNone(generate_candidates("word", bad_input))
-            self.assertIsNone(generate_candidates(bad_input, bad_input))
+        bad_words = [None, True, 42, 3.14, (), {}, []]
+        bad_alphabets = [None, True, 42, 3.14, (), {}, ""]
+        for bad_word in bad_words:
+            for bad_alphabet in bad_alphabets:
+                self.assertIsNone(generate_candidates(bad_word, self.alphabet))
+                self.assertIsNone(generate_candidates("word", bad_alphabet))
+                self.assertIsNone(generate_candidates(bad_word, bad_alphabet))
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
@@ -80,15 +89,24 @@ class GenerateCandidatesTest(unittest.TestCase):
         """
         Empty word scenario
         """
-        self.assertSetEqual(set(generate_candidates("")), set(self.alphabet))
+        self.assertSetEqual(set(generate_candidates("", self.alphabet)), set(self.alphabet))
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_generate_candidates_language_en(self):
+    def test_generate_candidates_empty_inputs(self):
+        """
+        Empty word scenario
+        """
+        self.assertListEqual(generate_candidates("", []), [])
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_generate_candidates_alphabet_en(self):
         """
         Ideal scenario
         """
-        alphabet_en = "abcdefghijklmnopqrstuvwxyz"
-        self.assertSetEqual(set(generate_candidates("", "en")), set(alphabet_en))
+        self.assertListEqual(generate_candidates("", self.alphabet_en), self.alphabet_en)

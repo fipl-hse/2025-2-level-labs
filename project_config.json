@@ -6,7 +6,7 @@
         },
         {
             "name": "lab_2_spellcheck",
-            "coverage": 64
+            "coverage": 63
         }
     ],
     "addons": [

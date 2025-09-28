@@ -2,6 +2,8 @@
 Checks the second lab candidate proposal
 """
 
+# pylint: disable=duplicate-code
+
 import unittest
 from pathlib import Path
 
@@ -19,17 +21,20 @@ class ProposeCandidatesTest(unittest.TestCase):
         with open(
             Path(__file__).parent / r"assets/propose_candidates_example.txt", "r", encoding="utf-8"
         ) as f:
-            self.expected = f.read().splitlines()
+            self.expected_en = tuple(f.read().splitlines())
 
         with open(
             Path(__file__).parent / r"assets/propose_permutations_ru.txt", "r", encoding="utf-8"
         ) as f:
-            self.ru_permutations = f.read().splitlines()
+            self.permutations_ru = tuple(f.read().splitlines())
 
         with open(
             Path(__file__).parent / r"assets/propose_permutations_en.txt", "r", encoding="utf-8"
         ) as f:
-            self.en_permutations = f.read().splitlines()
+            self.permutations_en = tuple(f.read().splitlines())
+
+        self.alphabet_ru = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+        self.alphabet_en = list("abcdefghijklmnopqrstuvwxyz")
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
@@ -39,10 +44,7 @@ class ProposeCandidatesTest(unittest.TestCase):
         """
         Ideal scenario
         """
-        actual_set = set(propose_candidates("word"))
-        expected_set = set(self.expected)
-        diff = expected_set.symmetric_difference(actual_set)
-        self.assertSetEqual(diff, set())
+        self.assertTupleEqual(propose_candidates("word", self.alphabet_en), self.expected_en)
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
@@ -52,7 +54,7 @@ class ProposeCandidatesTest(unittest.TestCase):
         """
         Check length of candidates list
         """
-        self.assertEqual(len(propose_candidates("word")), 24_254)
+        self.assertEqual(len(propose_candidates("word", self.alphabet_en)), 24_254)
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
@@ -62,7 +64,7 @@ class ProposeCandidatesTest(unittest.TestCase):
         """
         Return value check
         """
-        candidates = propose_candidates("")
+        candidates = propose_candidates("", self.alphabet_en)
         self.assertIsInstance(candidates, tuple)
         for candidate in candidates:
             self.assertIsInstance(candidate, str)
@@ -75,9 +77,13 @@ class ProposeCandidatesTest(unittest.TestCase):
         """
         Bad input scenario
         """
-        bad_inputs = [None, True, 42, 3.14, (), {}, []]
-        for bad_input in bad_inputs:
-            self.assertIsNone(propose_candidates(bad_input))
+        bad_words = [None, True, 42, 3.14, (), {}, []]
+        bad_alphabets = [None, True, 42, 3.14, (), {}, ""]
+        for bad_word in bad_words:
+            for bad_alphabet in bad_alphabets:
+                self.assertIsNone(propose_candidates(bad_word, self.alphabet_en))
+                self.assertIsNone(propose_candidates("word", bad_alphabet))
+                self.assertIsNone(propose_candidates(bad_word, bad_alphabet))
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
@@ -87,8 +93,9 @@ class ProposeCandidatesTest(unittest.TestCase):
         """
         Russian word scenario
         """
-        actual = propose_candidates("мир")
-        self.assertListEqual(sorted(actual), sorted(self.ru_permutations))
+        self.assertSetEqual(
+            set(propose_candidates("мир", self.alphabet_ru)), set(self.permutations_ru)
+        )
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
@@ -98,5 +105,15 @@ class ProposeCandidatesTest(unittest.TestCase):
         """
         Empty word scenario
         """
-        permutations = propose_candidates("")
-        self.assertListEqual(sorted(permutations), sorted(self.en_permutations))
+        permutations = propose_candidates("", self.alphabet_en)
+        self.assertTupleEqual(permutations, self.permutations_en)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_propose_candidates_empty_inputs(self):
+        """
+        Empty word scenario
+        """
+        self.assertTupleEqual(propose_candidates("", []), ())

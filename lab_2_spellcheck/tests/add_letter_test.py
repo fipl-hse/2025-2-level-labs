@@ -23,7 +23,7 @@ class AddLetterTest(unittest.TestCase):
         ) as f:
             self.expected = f.read().splitlines()
 
-        self.new_words_count = 165  # 33 * 5
+        self.new_words_count = 165  # 33 letters for 5 positions
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6

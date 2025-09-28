@@ -21,9 +21,9 @@ class ReplaceLetterTest(unittest.TestCase):
         with open(
             Path(__file__).parent / r"assets/replace_letter_example.txt", "r", encoding="utf-8"
         ) as f:
-            self.expected = sorted(f.read().splitlines())
+            self.expected = f.read().splitlines()
 
-        self.new_words_count = 132  # 33 * 4
+        self.new_words_count = 132  # 33 letters in place of 4 letters
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6

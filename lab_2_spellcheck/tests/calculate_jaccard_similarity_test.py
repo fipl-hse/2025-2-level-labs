@@ -6,6 +6,7 @@ import unittest
 
 import pytest
 
+from config.constants import FLOAT_TOLERANCE
 from lab_2_spellcheck.main import calculate_jaccard_distance
 
 
@@ -64,6 +65,6 @@ class JaccardSimilarityTest(unittest.TestCase):
         """
         Check return value for the empty string input
         """
-        self.assertEqual(calculate_jaccard_distance("word", ""), 1.0)
-        self.assertEqual(calculate_jaccard_distance("", "word"), 1.0)
-        self.assertEqual(calculate_jaccard_distance("", ""), 1.0)
+        self.assertAlmostEqual(calculate_jaccard_distance("word", ""), 1.0, FLOAT_TOLERANCE)
+        self.assertAlmostEqual(calculate_jaccard_distance("", "word"), 1.0, FLOAT_TOLERANCE)
+        self.assertAlmostEqual(calculate_jaccard_distance("", ""), 1.0, FLOAT_TOLERANCE)

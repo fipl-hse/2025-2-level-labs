@@ -8,6 +8,7 @@ import unittest
 
 import pytest
 
+from config.constants import FLOAT_TOLERANCE
 from lab_2_spellcheck.main import calculate_frequency_distance
 
 
@@ -17,6 +18,8 @@ class CalculateFrequencySimilarityTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        self.alphabet = list("abcdefghijklmnopqrstuvwxyz")
+
         self.vocabulary = {
             "35": 0.04,
             "across": 0.08,
@@ -54,8 +57,12 @@ class CalculateFrequencySimilarityTest(unittest.TestCase):
             expected_dict = dict(self.empty_dict)
             expected_dict[correct_word] = self.vocabulary.get(correct_word, 0.0)
 
-            probable_words = calculate_frequency_distance(misspelled_word, self.vocabulary)
-            self.assertEqual(probable_words, expected_dict)
+            probable_words = calculate_frequency_distance(
+                misspelled_word, self.vocabulary, self.alphabet
+            )
+            self.assertDictEqual(probable_words, expected_dict)
+            for token, score in probable_words.items():
+                self.assertAlmostEqual(score, expected_dict[token], FLOAT_TOLERANCE)
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
@@ -67,12 +74,16 @@ class CalculateFrequencySimilarityTest(unittest.TestCase):
         """
         bad_words = [None, True, 42, 3.14, (), {}, []]
         bad_vocabularies = [None, True, 42, 3.14, (), "document", [], {}, {"good": "bad"}, {1: 0}]
+        bad_alphabets = [None, True, 42, 3.14, (), "", {}]
 
         for bad_word in bad_words:
-            self.assertIsNone(calculate_frequency_distance(bad_word, self.vocabulary))
+            self.assertIsNone(calculate_frequency_distance(bad_word, self.vocabulary, []))
             for bad_vocabulary in bad_vocabularies:
-                self.assertIsNone(calculate_frequency_distance("word", bad_vocabulary))
-                self.assertIsNone(calculate_frequency_distance(bad_word, bad_vocabulary))
+                self.assertIsNone(calculate_frequency_distance("word", bad_vocabulary, []))
+                self.assertIsNone(calculate_frequency_distance(bad_word, bad_vocabulary, []))
+
+        for bad_alphabet in bad_alphabets:
+            self.assertIsNone(calculate_frequency_distance("word", self.vocabulary, bad_alphabet))
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark6
@@ -82,7 +93,7 @@ class CalculateFrequencySimilarityTest(unittest.TestCase):
         """
         Check returned value
         """
-        actual = calculate_frequency_distance("word1", self.vocabulary)
+        actual = calculate_frequency_distance("word1", self.vocabulary, [])
         self.assertIsInstance(actual, dict)
         for key, value in actual.items():
             self.assertIsInstance(key, str)
@@ -96,4 +107,22 @@ class CalculateFrequencySimilarityTest(unittest.TestCase):
         """
         Check return value for the empty string input
         """
-        self.assertDictEqual(calculate_frequency_distance("", self.vocabulary), self.empty_dict)
+        self.assertDictEqual(
+            calculate_frequency_distance("", self.vocabulary, self.alphabet), self.empty_dict
+        )
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_frequency_similarity_empty_alphabet(self):
+        """
+        Check return value for the empty string input
+        """
+
+        actual = calculate_frequency_distance("libbrary", self.vocabulary, [])
+        for token, score in actual.items():
+            if token == "library":
+                self.assertAlmostEqual(score, 0.12, FLOAT_TOLERANCE)
+            else:
+                self.assertAlmostEqual(score, 1.0, FLOAT_TOLERANCE)

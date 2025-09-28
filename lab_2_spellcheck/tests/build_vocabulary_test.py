@@ -8,6 +8,7 @@ import unittest
 
 import pytest
 
+from config.constants import FLOAT_TOLERANCE
 from lab_2_spellcheck.main import build_vocabulary
 
 
@@ -82,9 +83,11 @@ class BuildVocabularyTest(unittest.TestCase):
             "stories101": 0.04,
             "street": 0.08,
         }
-
         actual = build_vocabulary(self.documents["clean_tokens"])
-        self.assertDictEqual(expected, actual)
+
+        self.assertDictEqual(actual, expected)
+        for token, freq in actual.items():
+            self.assertAlmostEqual(freq, expected[token], FLOAT_TOLERANCE)
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark4
