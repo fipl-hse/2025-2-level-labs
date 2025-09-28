@@ -20,7 +20,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if not can_be_empty and len(user_input) is False:
+    if not user_input and can_be_empty is False:
         return False
     return all(isinstance(el, elements_type) for el in user_input)
 
@@ -37,7 +37,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    if not can_be_empty and len(user_input) is False:
+    if not user_input and can_be_empty is False:
         return False
     return all(isinstance(k, key_type) and isinstance(v, value_type) for k, v in user_input.items())
 
