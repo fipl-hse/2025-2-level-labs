@@ -3,7 +3,9 @@ Frequency-driven keyword extraction starter
 """
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
-from json import load    
+
+from json import load
+    
 from lab_1_keywords_tfidf.main import (
     calculate_frequencies,
     calculate_tf,
@@ -60,6 +62,7 @@ def main() -> None:
     print("Term Frequency для всех слов: ", calculated_tf)
     print("TF-IDF для всех слов: ", calculated_tfidf, idf)
     print("Топ-10 ключевых слов:", top_n_words)
+
     result=top_n_words
     assert result, "Keywords are not extracted"
     
