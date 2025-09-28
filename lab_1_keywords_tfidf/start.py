@@ -26,22 +26,27 @@ def main() -> None:
 
     clean_and_tokenize_text = clean_and_tokenize(target_text)
     if not clean_and_tokenize:
+    
         return
     
     text_without_stop_words=remove_stop_words(clean_and_tokenize_text, stop_words)
     if not text_without_stop_words:
+
         return
     
     calculated_frequencies=calculate_frequencies(text_without_stop_words)
     if not calculated_frequencies:
+
         return
     
     calculated_tf=calculate_tf(calculated_frequencies)
     if not calculated_tf:
+
         return
     
     calculated_tfidf=calculate_tfidf(calculated_tf, idf)
     if not calculated_tfidf:
+        
         return
     
 
