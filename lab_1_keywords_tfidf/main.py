@@ -3,11 +3,10 @@ Lab 1
 
 Extract keywords based on frequency related metrics
 """
-
+import math
 # pylint:disable=unused-argument
 from typing import Any
-import string
-import math
+
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -22,11 +21,14 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     Returns:
         bool: True if valid, False otherwise
     """
+    if not user_input:
+        return can_be_empty
     if not isinstance(user_input, list):
         return False
-    if not can_be_empty and len(user_input) == 0:
-        return False
-    return all(isinstance(el, elements_type) for el in user_input)
+    for element in user_input:
+        if not isinstance(element, elements_type):
+            return False
+    return True
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -44,9 +46,12 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    if not can_be_empty and len(user_input) == 0:
-        return False
-    return all(isinstance(k, key_type) and isinstance(v, value_type) for k, v in user_input.items())
+    if not user_input:
+        return can_be_empty
+    for key, value in user_input.items():
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
+            return False
+    return True
 
 
 def check_positive_int(user_input: Any) -> bool:
@@ -86,13 +91,16 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
-
     if not isinstance(text, str):
         return None
-    text = text.lower()
-    text = text.translate(str.maketrans("", "", string.punctuation))
-    tokens = text.split()
-    return tokens
+    cleaned_and_tokenized_text = []
+    for word in text.split():
+        cleaned_word = (''.join(symbol.lower()
+                                        for symbol in word if symbol.isalnum()))
+        if cleaned_word:
+            cleaned_and_tokenized_text.append(cleaned_word)
+    return cleaned_and_tokenized_text
+
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
@@ -106,11 +114,10 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not (check_list(tokens, str, True) and check_list(stop_words, str, True)):
+    if not check_list(tokens, str, False):
         return None
-    stop_set = set(stop_words)
-    return [t for t in tokens if t not in stop_set]
-
+    cleaned_tokens = [token for token in tokens if token not in stop_words]
+    return cleaned_tokens
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
