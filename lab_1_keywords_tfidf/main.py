@@ -4,9 +4,10 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 
+import math
+
 # pylint:disable=unused-argument
 from typing import Any
-import math
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
