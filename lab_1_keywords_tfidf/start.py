@@ -43,7 +43,7 @@ def main() -> None:
         stop_words = file.read().split("\n")
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    with open("corpus_frequencies.json", "r", encoding="utf-8") as file:
+    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
     tokenized_text = clean_and_tokenize(target_text)
@@ -78,14 +78,14 @@ def main() -> None:
 
     chi_values = calculate_chi_values(expected_freq, frequ_dict) or {}
 
-    #print(chi_values)
+    print(chi_values)
 
     significant_words = extract_significant_words(chi_values, 0.01) or {}
     top_significant_words = get_top_n(significant_words, 10)
     result = top_significant_words
 
-    #print(significant_words)
-    #print(top_significant_words)
+    print(significant_words)
+    print(top_significant_words)
 
     print(result)
     assert result, "Keywords are not extracted"
