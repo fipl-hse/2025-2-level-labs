@@ -6,6 +6,7 @@ Extract keywords based on frequency related metrics
 
 # pylint:disable=unused-argument
 import math
+
 from typing import Any
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -111,7 +112,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         if token not in stop_words:
             no_stopwords.append(token)
     return no_stopwords
-    
+
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     Create a frequency dictionary from the token sequence.
@@ -146,13 +147,13 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, False) and not check_dict(frequencies, str, float, False):
+    if (not check_dict(frequencies, str, int, False)) and not check_dict(frequencies, str, float, False):
         return None
     if not check_positive_int(top):
         return None
     sorted_words = sorted(frequencies.keys(), key=lambda x: frequencies[x], reverse=True)
     return sorted_words[:top]
-  
+
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     Calculate Term Frequency (TF) for each token.
