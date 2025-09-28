@@ -174,10 +174,10 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     if not check_dict(frequencies, str, int, False):
         return None
-    new_dictionary = {}
+    tf_dictionary = {}
     for keys, values in frequencies.items():
-        new_dictionary [keys] = round(values / sum(frequencies.values()), 4)
-    return new_dictionary
+        tf_dictionary [keys] = round(values / sum(frequencies.values()), 4)
+    return tf_dictionary
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -267,3 +267,13 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_dict(chi_values, str, float, False) or not check_float(alpha):
+        return None
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if alpha not in criterion:
+        return None
+    significant_chi = {}
+    for token, token_chi in chi_values.items():
+        if token_chi > criterion[alpha]:
+            significant_chi[token] = token_chi
+    return significant_chi
