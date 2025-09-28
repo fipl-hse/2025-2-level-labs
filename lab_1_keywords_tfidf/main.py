@@ -96,13 +96,10 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    text_without_punctuation = ""
-
+    text_cleaned = ""
     for char in text:
         if char.isalnum() or char.isspace():
-            text_without_punctuation += char
-
-    text_cleaned = text_without_punctuation.lower()
+            text_cleaned += char.lower()
     return text_cleaned.split()
 
 
@@ -137,13 +134,10 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     if not check_list(tokens, str, False):
         return None
-    frequencies_dictionary = {}
-    for token in tokens:
-        frequencies_dictionary[token] = tokens.count(token)
-    return frequencies_dictionary
+    return {token: tokens.count(token) for token in tokens}
 
 
-def get_top_n(frequencies: dict[str, (int, float)], top: int) -> [list[str], None]:
+def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
     Extract the most frequent tokens.
 
@@ -158,12 +152,7 @@ def get_top_n(frequencies: dict[str, (int, float)], top: int) -> [list[str], Non
     """
     if not check_dict(frequencies, str, (int, float), False) or not check_positive_int(top):
         return None
-
-    tokens_sorted = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
-    top_tokens = [element[0] for element in tokens_sorted]
-    if len(top_tokens) > top:
-        top_tokens = top_tokens[:top]
-    return top_tokens
+    return sorted(frequencies.keys(), key=frequencies.__getitem__, reverse=True)[:top]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -179,12 +168,8 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     if not check_dict(frequencies, str, int, False):
         return None
-    tf_dict = {}
     words_total = sum(frequencies.values())
-    for key in frequencies:
-        tf = frequencies[key] / words_total
-        tf_dict[key] = tf
-    return tf_dict
+    return {token: frequencies.get(token) / sum(frequencies.values()) for token in frequencies}
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -201,14 +186,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     """
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
-    tfidf = {}
-    for key in term_freq:
-        if key in idf.keys():
-            tfidf_element = idf[key] * term_freq[key]
-            tfidf[key] = tfidf_element
-        else:
-            tfidf[key] = term_freq[key] * log(47/1)
-    return tfidf
+    
+    return {token: term_freq[token] * idf.get(token, log(47)) for token in term_freq}
 
 
 
@@ -228,21 +207,20 @@ def calculate_expected_frequency(
     """
     if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
         return None
-    expected_freqency_dictionary = {}
+    
+    expected_dict = {}
     doc_total = sum(doc_freqs.values())
     corpus_total = sum(corpus_freqs.values())
-    for key in doc_freqs:
-        j = doc_freqs[key]
-        l = doc_total - doc_freqs[key]
-        if key in corpus_freqs:
-            k = corpus_freqs[key]
-            m = corpus_total - corpus_freqs[key]
-            expected_freqency = (j + k) * (j + l) / (j + k + l + m)
-            expected_freqency_dictionary[key] = expected_freqency
-        else:
-            expected_freqency = j * (j + l) / (j + l + corpus_total)
-            expected_freqency_dictionary[key] = expected_freqency
-    return expected_freqency_dictionary
+    for token in doc_freqs:
+        expected = (
+            (doc_freqs[token] + corpus_freqs.get(token, 0)) 
+            * (doc_freqs[token] + (doc_total - doc_freqs[token])) 
+            / (doc_freqs[token]  + (doc_total - doc_freqs[token]) 
+               + corpus_freqs.get(token, 0) 
+               + (corpus_total - corpus_freqs.get(token, 0)))
+        )
+        expected_dict[token] = expected
+    return expected_dict
 
 
 def calculate_chi_values(
@@ -261,15 +239,7 @@ def calculate_chi_values(
     """
     if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
         return None
-    chi_values = {}
-    for key in expected:
-        if key in observed.keys():
-            chi_squared = (observed[key] - expected[key]) ** 2 / expected[key]
-            chi_values[key] = chi_squared
-        else:
-            chi_squared = expected[key] ** 2 / expected[key]
-            chi_values[key] = chi_squared
-    return chi_values
+    return {token: (observed.get(token, 0) - expected[token]) ** 2 / expected[token] for token in expected}
 
 
 
