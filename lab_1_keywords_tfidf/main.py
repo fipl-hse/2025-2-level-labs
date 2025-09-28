@@ -26,7 +26,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if not can_be_empty and len(user_input) == 0:
+    if not can_be_empty and not user_input:
         return False
     return all(isinstance(element, elements_type) for element in user_input)
 
@@ -47,7 +47,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    if len(user_input) == 0:
+    if not user_input:
         return can_be_empty
     return (all(isinstance(key, key_type) for key in user_input) and
         all(isinstance(value, value_type) for value in user_input.values()))
@@ -94,9 +94,15 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    cleaned_text = ''.join(symbol for symbol in text.lower()
-                           if symbol.isalnum() or symbol.isspace())
-    return cleaned_text.split()
+    words = text.lower().split()
+    tokens = []
+    for word in words:
+        cleaned_word = ''.join(
+            symbol for symbol in word 
+            if symbol.isalnum())
+        if cleaned_word:
+            tokens.append(cleaned_word)
+    return tokens
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -114,8 +120,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     if not all([check_list(tokens, str, True),
         check_list(stop_words, str, True)]):
         return None
-    filtered_tokens = [token for token in tokens if token not in set(stop_words)]
-    return filtered_tokens
+    return [token for token in tokens if token not in set(stop_words)]
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -133,10 +138,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         return None
     frequencies = {}
     for token in tokens:
-        if token in frequencies:
-            frequencies[token] += 1
-        else:
-            frequencies[token] = 1
+        frequencies[token] = frequencies.get(token, 0) + 1
     return frequencies
 
 
@@ -158,9 +160,8 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     for key, value in frequencies.items():
         if not isinstance(value, (int, float)) or not isinstance(key, str):
             return None
-    top_n_tokens = [item[0] for item in sorted(frequencies.items(),
-                                       key=lambda item: item[1], reverse=True)[:top]]
-    return top_n_tokens
+    return [item[0] for item in sorted(frequencies.items(),
+                   key=lambda item: item[1], reverse=True)[:top]]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -177,11 +178,8 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     if (not check_dict(frequencies, str, int, False) or
         sum(frequencies.values()) == 0 or not frequencies):
         return None
-    tf_dict = {}
     dict_length = sum(frequencies.values())
-    for token, nt in frequencies.items():
-        tf_dict[token] = nt / dict_length
-    return tf_dict
+    return {token: nt / dict_length for token, nt in frequencies.items()}
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
@@ -222,18 +220,13 @@ def calculate_expected_frequency(
     if not all([check_dict(doc_freqs, str, int, False),
         check_dict(corpus_freqs, str, int, True)]):
         return None
-    expected_frequency = {}
     total_doc = sum(doc_freqs.values())
     total_corpus = sum(corpus_freqs.values())
-    for word in doc_freqs:
-        word_in_doc = doc_freqs[word]
+    total = total_doc + total_corpus
+    expected_frequency = {}
+    for word, word_in_doc in doc_freqs.items():
         word_in_corpus = corpus_freqs.get(word, 0)
-        without_word_doc = total_doc - word_in_doc
-        without_word_corpus = total_corpus - word_in_corpus
-        formula = (((word_in_doc + word_in_corpus) *
-                    (word_in_doc + without_word_doc)) /
-                   (word_in_doc + word_in_corpus +
-                    without_word_doc + without_word_corpus))
+        formula = ((word_in_doc + word_in_corpus) * total_doc) / total
         expected_frequency[word] = formula
     return dict(sorted(expected_frequency.items()))
 
@@ -255,11 +248,8 @@ def calculate_chi_values(
     if (not check_dict(expected, str, float, False) or
         not check_dict(observed, str, int, False)):
         return None
-    chi_values = {}
-    for term in observed:
-        chi_values[term] = (((observed[term] - expected[term]) ** 2) /
-                            expected[term])
-    return chi_values
+    return {term: ((observed[term] - expected[term]) ** 2) /
+            expected[term] for term in observed}
 
 
 def extract_significant_words(
