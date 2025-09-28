@@ -42,7 +42,7 @@ def main() -> None:
 
     print(top_tokens)
     result = None
-#   assert result, "Keywords are not extracted"
+    assert result, "Keywords are not extracted"
 
 
 if __name__ == "__main__":
