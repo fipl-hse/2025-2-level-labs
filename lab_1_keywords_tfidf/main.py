@@ -9,6 +9,7 @@ from typing import Any
 from math import log
 
 
+
 def check_list(
         user_input: Any,
         elements_type: type,
