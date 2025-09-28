@@ -24,11 +24,17 @@ def main() -> None:
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
         tokens = clean_and_tokenize(target_text)
+    if not tokens:
+        print("Ошибка на этапе предобработки текста")
+        return 
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
         cleaned_tokens = remove_stop_words(tokens, stop_words)
-        freq_dict = calculate_frequencies(cleaned_tokens)
-    if not tokens or not cleaned_tokens or not freq_dict:
+    if not cleaned_tokens:
+        print("Ошибка на этапе удаления стоп-слов")
+        return
+    freq_dict = calculate_frequencies(cleaned_tokens)
+    if not freq_dict:
         print("Ошибка на этапе предобработки текста")
         return
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
@@ -36,10 +42,19 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = json.load(file)
     tf = calculate_tf(freq_dict)
+    if not tf:
+        print("Ошибка в расчетах TF")
+        return
     tfidf = calculate_tfidf(tf, idf)
+    if not tfidf:
+        print("Ошибка в расчетах TF-IDF")
+        return
     expected_freqs = calculate_expected_frequency(freq_dict, corpus_freqs)
+    if not expected_freqs:
+        print("Ошибка в расчетах ожидаемых частот")
+        return
     chi_vals = calculate_chi_values(expected_freqs, freq_dict)
-    if not tf or not tfidf or not expected_freqs or not chi_vals:
+    if not chi_vals:
         print("Ошибка в расчетах статистик")
         return
     significant_words = extract_significant_words(chi_vals, 0.05)
