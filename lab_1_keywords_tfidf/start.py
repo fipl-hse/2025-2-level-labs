@@ -24,7 +24,6 @@ def main() -> None:
     cleaned_tokens = None
     frequencies = None
     tf_values = None
-    tfidf_values = None
     alpha = 0.001
     expected_frequency = None
     chi_values = None
@@ -42,8 +41,6 @@ def main() -> None:
         tf_values = calculate_tf(frequencies)
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    if tf_values is not None:
-        tfidf_values = calculate_tfidf(tf_values, idf)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
     if frequencies is not None:
