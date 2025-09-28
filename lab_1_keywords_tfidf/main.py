@@ -114,7 +114,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     if not all([check_list(tokens, str, True),
         check_list(stop_words, str, True)]):
         return None
-    filtered_tokens = [token for token in tokens if token not in stop_words]
+    filtered_tokens = [token for token in tokens if token not in set(stop_words)]
     return filtered_tokens
 
 
