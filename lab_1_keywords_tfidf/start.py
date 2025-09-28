@@ -32,21 +32,21 @@ def main() -> None:
     result = None
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    tokens = clean_and_tokenize(target_text)
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
+    with open("assets/IDF.json", "r", encoding="utf-8") as file:
+        idf = load(file)
+    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+        corpus_freqs = load(file)
+    tokens = clean_and_tokenize(target_text)
     if tokens is not None:
         cleaned_tokens = remove_stop_words(tokens, stop_words)
     if cleaned_tokens is not None:
         frequencies = calculate_frequencies(cleaned_tokens)
     if frequencies is not None:
         tf_values = calculate_tf(frequencies)
-    with open("assets/IDF.json", "r", encoding="utf-8") as file:
-        idf = load(file)
     if tf_values is not None:
         tfidf_values = calculate_tfidf(tf_values, idf)
-    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
-        corpus_freqs = load(file)
     if frequencies is not None:
         expected_frequency = calculate_expected_frequency(frequencies, corpus_freqs)
     observed = frequencies

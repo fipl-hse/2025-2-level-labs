@@ -3,6 +3,7 @@ Lab 1
 
 Extract keywords based on frequency related metrics
 """
+
 # pylint:disable=unused-argument
 import math
 from typing import Any
@@ -109,7 +110,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True):
+    if not check_list(tokens, str, True): #if not True 
         return None
     if not check_list(stop_words, str, True):
         return None
@@ -154,7 +155,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if ((not check_dict(frequencies, str, int, False)
         and not check_dict(frequencies, str, float, False))
-            or not check_positive_int(top)):
+        or not check_positive_int(top)):
         return None
     changed_dict = dict(sorted(frequencies.items(), key=lambda item: item[1], reverse=True))
     result = list(changed_dict.keys())[:top]
@@ -219,8 +220,8 @@ def calculate_expected_frequency(
         k = corpus_freqs.get(key, 0) # t in D
         words_without_t_d = sum(doc_freqs.values()) - value
         words_without_t = sum(corpus_freqs.values()) - k
-        expected[key] = (((value + k)*(value + words_without_t_d))
-            /(value + k + words_without_t_d + words_without_t))
+        expected[key] = (((value + k) * (value + words_without_t_d))/
+        (value + k + words_without_t_d + words_without_t))
     return expected
 
 def calculate_chi_values(
@@ -263,7 +264,7 @@ def extract_significant_words(
         return None
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     result_dict = {}
-    if alpha not in criterion:
+    if alpha not in criterion: #??? это ключ alpha - степень точности
         return None
     for k, v in chi_values.items():
         if v > criterion[alpha]:
