@@ -8,7 +8,6 @@ from typing import Any
 import math
 import string
 
-
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     '''
     Check if the object is a list containing elements of a certain type.
