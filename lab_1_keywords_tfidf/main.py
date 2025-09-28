@@ -112,14 +112,18 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
     if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
+    
+    for element1 in stop_words:
+        if not isinstance(element1, str):
+            return None 
 
     text_without_stop_words=[]
 
-    for element in tokens:
-        if not isinstance(element, str):
+    for element2 in tokens:
+        if not isinstance(element2, str):
             return None
-        if element not in stop_words:
-            text_without_stop_words.append(element)
+        if element2 not in stop_words:
+            text_without_stop_words.append(element2)
 
     return text_without_stop_words
 
@@ -234,7 +238,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     for word, value1 in term_freq.items():
         if not isinstance(word, str) or not isinstance(value1, (int, float)):
             return None
-       
+
     if not isinstance(idf, dict):
         return None
 
@@ -300,4 +304,5 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    
     

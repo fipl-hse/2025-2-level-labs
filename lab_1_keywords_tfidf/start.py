@@ -30,7 +30,7 @@ def main() -> None:
     result = None
 
     clean_and_tokenize_text = clean_and_tokenize(target_text)
-    if not clean_and_tokenize:
+    if not clean_and_tokenize_text:
         return
 
     text_without_stop_words=remove_stop_words(clean_and_tokenize_text, stop_words)
