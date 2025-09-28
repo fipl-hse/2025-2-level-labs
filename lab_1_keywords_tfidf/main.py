@@ -28,7 +28,12 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     return all(isinstance(elem, elements_type) for elem in user_input)
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type | tuple[type, ...], can_be_empty: bool) -> bool:
+def check_dict(
+    user_input: Any,
+    key_type: type,
+    value_type: type | tuple[type, ...],
+    can_be_empty: bool
+) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 

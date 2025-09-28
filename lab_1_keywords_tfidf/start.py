@@ -39,9 +39,22 @@ def main() -> None:
         chi_vals = calculate_chi_values(expected_freqs, freq_dict)
         significant_words = extract_significant_words(chi_vals, 0.05)
         top_chi = get_top_n(significant_words, 10) if significant_words else []
-        if (tokens and cleaned_tokens and freq_dict and tf and tfidf and 
-            expected_freqs and chi_vals and significant_words and top_chi):
+        all_steps_successful = (
+            tokens is not None and
+            cleaned_tokens is not None and
+            freq_dict is not None and
+            tf is not None and
+            tfidf is not None and
+            expected_freqs is not None and
+            chi_vals is not None and
+            significant_words is not None and
+            top_chi is not None
+        )
+        if all_steps_successful:
             print("Топ-10 ключевых слов по хи-квадрат:", top_chi)
+            assert top_chi == ['дюймовочка', 'ласточка', 'крот', 'дюймовочке', 
+                             'дюймовочку', 'мышь', 'норки', 'прощай', 
+                             'дюймовочки', 'лист'], "Результат не соответствует ожидаемому"
         else:
             print("Ошибка в процессе обработки текста")
     except FileNotFoundError as e:
