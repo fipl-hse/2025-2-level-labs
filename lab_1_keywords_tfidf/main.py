@@ -28,14 +28,14 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     return all(isinstance(elem, elements_type) for elem in user_input)
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(user_input: Any, key_type: type, value_type: type | tuple[type, ...], can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
     Args:
         user_input (Any): Object to check
         key_type (type): Expected type of dictionary keys
-        value_type (type): Expected type of dictionary values
+        value_type (type | tuple): Expected type or tuple of types for dictionary values
         can_be_empty (bool): Whether an empty dictionary is allowed
 
     Returns:
