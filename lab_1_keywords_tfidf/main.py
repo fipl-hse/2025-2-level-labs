@@ -117,9 +117,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
     text_without_stop_words=[]
 
-    for element2 in tokens:
-        if element2 not in stop_words:
-            text_without_stop_words.append(element2)
+    for element in tokens:
+        if element not in stop_words:
+            text_without_stop_words.append(element)
 
     return text_without_stop_words
 
@@ -169,9 +169,6 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     if not (check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)):
         return None
 
-    if len(frequencies)==0:
-        return []
-
     sorted_dictionary=sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
 
     top_n_words=[]
@@ -194,9 +191,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         return None
 
     quantity_of_words=sum(frequencies.values())
-
-    if quantity_of_words==0:
-        return {}
 
     dictionary={}
     for word, value in frequencies.items():
