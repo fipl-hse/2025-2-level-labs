@@ -59,7 +59,7 @@ def check_positive_int(user_input: Any) -> bool:
     """
     Check if the object is a positive integer (not bool).
     """
-    return isinstance(user_input, int)
+    return isinstance(user_input, int) and not isinstance(user_input, bool)
 
 def check_float(user_input: Any) -> bool:
 
@@ -175,7 +175,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     sorted_dictionary=sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
 
     top_n_words=[]
-    for word, values in sorted_dictionary[:top]:
+    for word, _ in sorted_dictionary[:top]:
         top_n_words.append(word)
     return top_n_words
 
@@ -220,7 +220,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     if not check_dict(term_freq, str, float, False):
         return None
 
-    if not check_dict(idf, str, float, False):
+    if not check_dict(idf, str, float, True):
         return None
 
     idf_without_entering=math.log(47/1)
@@ -281,4 +281,3 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
-
