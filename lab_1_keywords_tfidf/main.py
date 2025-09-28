@@ -171,6 +171,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     if not check_dict(frequencies, str, int, False):
         return None
+    
     words_total = sum(frequencies.values())
     return {token: frequencies.get(token) / words_total for token in frequencies}
 
