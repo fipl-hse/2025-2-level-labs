@@ -173,10 +173,11 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
-    if (not check_dict(frequencies, str, int, False) or
-        sum(frequencies.values()) == 0 or not frequencies):
+    if not check_dict(frequencies, str, int, False):
         return None
     dict_length = sum(frequencies.values())
+    if dict_length == 0:
+        return None
     return {token: word_count / dict_length for token, word_count in frequencies.items()}
 
 
@@ -242,8 +243,8 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
-    if (not check_dict(expected, str, float, False) or
-        not check_dict(observed, str, int, False)):
+    if not all([check_dict(expected, str, float, False),
+                check_dict(observed, str, int, False)]):
         return None
     return {term: ((observed[term] - expected[term]) ** 2) /
             expected[term] for term in observed}
