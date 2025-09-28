@@ -272,8 +272,8 @@ def extract_significant_words(chi_values: dict[str, float],
     if alpha not in criterion:
         return None
     significant_words = {}
-    bar = criterion[alpha]
+    criterion_alpha = criterion[alpha]
     for key, value in chi_values.items():
-        if value > bar:
+        if value > criterion_alpha:
             significant_words[key] = chi_values[key]
     return significant_words
