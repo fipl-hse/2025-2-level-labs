@@ -9,6 +9,7 @@ Extract keywords based on frequency related metrics
 
 import math
 from typing import Any
+from operator import itemgetter
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -113,8 +114,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     for el in lit_txt:
         if el.isalnum() or el == " ":
             done += el
-    tokens = done.split()
-    return tokens
+    final_tokens = done.split()
+    return final_tokens
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
@@ -179,7 +180,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         or isinstance(top, bool)
     ):
         return None
-    sorted_frequencies = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
+    sorted_frequencies = sorted(frequencies.items(), key=itemgetter(1), reverse=True)
     if len(sorted_frequencies) < top:
         return [item[0] for item in sorted_frequencies]
     if top > 0:
@@ -297,7 +298,7 @@ def calculate_chi_values(
     result_chi_values: dict[str, float] = {}
     for word in expected.keys():
         observed_freqs = observed.get(word, 0)
-        expected_freqs = expected.get(word, 0)
+        expected_freqs = expected[word]
         result_chi_values[word] = round((observed_freqs - expected_freqs) ** 2 / expected_freqs, 1)
     return result_chi_values
 
