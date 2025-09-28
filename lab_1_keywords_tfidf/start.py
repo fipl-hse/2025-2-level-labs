@@ -56,12 +56,7 @@ def main() -> None:
         return
 
     chi_values = calculate_chi_values(expected_freq, frequ_dict)
-    if not chi_values:
-        return
-
     significant_words = extract_significant_words(chi_values, 0.01)
-    if not significant_words:
-        return
     top_significant_words = get_top_n(significant_words, 10)
     result = top_significant_words
 
