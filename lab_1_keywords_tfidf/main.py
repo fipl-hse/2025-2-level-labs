@@ -45,6 +45,8 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
         return False
     if not user_input and not can_be_empty:
         return False
+    if isinstance(value_type, tuple):
+        return all(isinstance(k, key_type) and any(isinstance(v, t) for t in value_type) for k, v in user_input.items())
     return all(isinstance(k, key_type) and isinstance(v, value_type) for k, v in user_input.items())
 
 

@@ -26,7 +26,7 @@ def main() -> None:
         tokens = clean_and_tokenize(target_text)
     if not tokens:
         print("Ошибка на этапе предобработки текста")
-        return 
+        return
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
         cleaned_tokens = remove_stop_words(tokens, stop_words)
