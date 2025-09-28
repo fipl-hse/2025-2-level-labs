@@ -277,8 +277,10 @@ def calculate_chi_values(
         return None
     chi_freqs = {}
     for i, val in expected.items():
-        observed.get(i)
-        chi_freqs[i] = (observed[i] - val)**2/val
+        if observed.get(i):
+            chi_freqs[i] = (observed[i] - val)**2/val
+        else:
+            chi_freqs[i] = val
     return chi_freqs
 
 def extract_significant_words(
