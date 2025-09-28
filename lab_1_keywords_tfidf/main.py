@@ -151,9 +151,8 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         return None
     if not check_positive_int(top):
         return None
-    sorted_frequencies = sorted(
-        frequencies.keys(), key=lambda token: frequencies[token], reverse=True
-        )
+    sorted_frequencies = sorted(frequencies.keys(),
+        key=lambda token: frequencies[token], reverse=True)
     top = min(len(frequencies), top)
     return sorted_frequencies[:top]
 
@@ -188,13 +187,14 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(term_freq, str, float, False) or (
-        not check_dict(idf, str, float, True)
+    if not check_dict(term_freq, str, float, False) or not (
+        check_dict(idf, str, float, True)
     ):
         return None
     tfidf_dict = term_freq.copy()
     for key, value in tfidf_dict.items():
-        tfidf_dict[key] = value * idf.get(key, math.log(47))
+        value_idf = idf.get(key, math.log(47))
+        tfidf_dict[key] = value * value_idf
     return tfidf_dict
 
 def calculate_expected_frequency(
