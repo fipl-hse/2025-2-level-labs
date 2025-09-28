@@ -9,8 +9,6 @@ from lab_1_keywords_tfidf.main import (
     calculate_chi_values,
     calculate_expected_frequency,
     calculate_frequencies,
-    calculate_tf,
-    calculate_tfidf,
     clean_and_tokenize,
     extract_significant_words,
     get_top_n,
@@ -32,12 +30,12 @@ def main() -> None:
         corpus_freqs = load(file)
 
     cleaned_text=clean_and_tokenize(target_text) or []
-    without_stop_words=remove_stop_words(cleaned_text, stop_words)
-    calculated_frequencies = calculate_frequencies(without_stop_words)
-    expected_frequency=calculate_expected_frequency(calculated_frequencies, corpus_freqs)
-    chi_values=calculate_chi_values(expected_frequency, calculated_frequencies)
-    significant_words=extract_significant_words(chi_values, 0.05)
-    get_top_words=get_top_n(significant_words, 10)
+    without_stop_words=remove_stop_words(cleaned_text, stop_words) or []
+    calculated_frequencies = calculate_frequencies(without_stop_words) or {}
+    expected_frequency=calculate_expected_frequency(calculated_frequencies, corpus_freqs) or {}
+    chi_values=calculate_chi_values(expected_frequency, calculated_frequencies) or {}
+    significant_words=extract_significant_words(chi_values, 0.05) or {}
+    get_top_words=get_top_n(significant_words, 10) or []
 
     result=get_top_words
     if result:
