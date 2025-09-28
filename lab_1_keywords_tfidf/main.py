@@ -177,7 +177,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         sum(frequencies.values()) == 0 or not frequencies):
         return None
     dict_length = sum(frequencies.values())
-    return {token: nt / dict_length for token, nt in frequencies.items()}
+    return {token: word_count / dict_length for token, word_count in frequencies.items()}
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
