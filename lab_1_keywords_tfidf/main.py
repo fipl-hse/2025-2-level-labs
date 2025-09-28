@@ -107,11 +107,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     """
     if not check_list(tokens, str, True) or not check_list(stop_words, str, True):
         return None
-    no_stopwords = []
-    for token in tokens:
-        if token not in stop_words:
-            no_stopwords.append(token)
-    return no_stopwords
+    return [token for token in tokens if token not in stop_words]
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
