@@ -33,7 +33,7 @@ def main() -> None:
     tfidf_dict = calculate_tfidf(tf_dict, idf) or {}
     significant_list = get_top_n(tfidf_dict, 10) or []
     print(', '.join(significant_list))
-    result = None
+    result = significant_list
     assert result, "Keywords are not extracted"
 
 
