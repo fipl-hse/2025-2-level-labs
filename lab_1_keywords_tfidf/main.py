@@ -24,7 +24,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if not can_be_empty and len(user_input) == 0:
+    if can_be_empty is False and not user_input:
         return False
     for el in user_input:
         if not isinstance(el, elements_type):
@@ -107,9 +107,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True):
-        return None
-    if not check_list(stop_words, str, True):
+    if not check_list(tokens, str, False) or (
+        not check_list(stop_words, str, True)
+    ):
         return None
     return [el for el in tokens if el not in stop_words]
 
@@ -141,16 +141,17 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, False):
-        if not check_dict(frequencies, str, float, False):
-            return None
+    if not check_dict(frequencies, str, int, False) or (
+        not check_dict(frequencies, str, float, False)
+    ):
+        return None
     if not check_positive_int(top):
         return None
     sorted_frequencies = sorted(
         frequencies.keys(), key=lambda token: frequencies[token], reverse=True
         )
     top = min(len(frequencies), top)
-    return sorted_frequencies[0:top]
+    return sorted_frequencies[:top]
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
