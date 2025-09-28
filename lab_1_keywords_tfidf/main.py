@@ -65,7 +65,7 @@ def check_positive_int(user_input: Any) -> bool:
     """
     if user_input > 0 and isinstance(user_input, int):
         return True
-
+    return check_positive_int
 
 def check_float(user_input: Any) -> bool:
     """
@@ -79,7 +79,7 @@ def check_float(user_input: Any) -> bool:
     """
     if isinstance(user_input, float):
         return isinstance(user_input, float)
-
+    return check_float
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """

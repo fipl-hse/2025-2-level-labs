@@ -5,7 +5,7 @@ Frequency-driven keyword extraction starter
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 from json import load
 
-from  lab_1_keywords_tfidf.main import (
+from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     remove_stop_words,
     calculate_frequencies,
@@ -24,38 +24,48 @@ def main() -> None:
         target_text = file.read()
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open("assets/IDF.json", "r", encoding="utf-8") as file:
-        idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
     cleaned_tokens = clean_and_tokenize(target_text)
     if not cleaned_tokens:
-        return None
+        print("Error: No tokens after cleaning")
+        return
+
     removed_stop_words = remove_stop_words(cleaned_tokens, stop_words)
     if not removed_stop_words:
-        return None
+        print("Error: No words after stop words removal")
+        return
+
     calculated_frequencies = calculate_frequencies(removed_stop_words)
     if not calculated_frequencies:
-        return None
-    expected_frequancy = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
-    if not expected_frequancy:
-        return None
-    chi_values = calculate_chi_values(expected_frequancy, calculated_frequencies)
+        print("Error: Could not calculate frequencies")
+        return
+
+    expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
+    if not expected_frequency:
+        print("Error: Could not calculate expected frequency")
+        return
+
+    chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
     if not chi_values:
-        return None
+        print("Error: Could not calculate chi values")
+        return
+
     significant_words = extract_significant_words(chi_values, 0.05)
     if not significant_words:
-        return None
+        print("Error: No significant words found")
+        return
+
     top_words = get_top_n(significant_words, 10)
     if not top_words:
-        return None
+        print("Error: Could not get top words")
+        return
+
 
     result = top_words
     assert result, "Keywords are not extracted"
-
     print("Keywords:", result)
-
 
 if __name__ == "__main__":
     main()
