@@ -97,12 +97,12 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
     text=text.lower()
-    punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
+    text_new=[]
     for el in text:
-        if el in punctuation:
-            text=text.replace(el, "")
-    text_new=text.split(' ')
-    return [el for el in text_new if el.strip()]
+        if el.isalnum() or el.isspace():
+            text_new.append(el)
+    cleaned_text = "".join(text_new)
+    return cleaned_text.split()
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
