@@ -27,7 +27,13 @@ def main() -> None:
         corpus_freqs = load(file)
 
     result = None
-
+    cleaned_tokens = None
+    removed_stop_words = None
+    calculated_frequencies = None
+    expected_frequency = None
+    chi_values = None
+    significant_words = None
+    
     cleaned_tokens = clean_and_tokenize(target_text)
     if cleaned_tokens:
         removed_stop_words = remove_stop_words(cleaned_tokens, stop_words)
@@ -37,9 +43,13 @@ def main() -> None:
         expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
     if cleaned_tokens and removed_stop_words and calculated_frequencies and expected_frequency:
         chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
-    if cleaned_tokens and removed_stop_words and calculated_frequencies and expected_frequency and chi_values:
+    if (cleaned_tokens and removed_stop_words and 
+        calculated_frequencies and expected_frequency 
+        and chi_values):
         significant_words = extract_significant_words(chi_values, 0.05)
-    if cleaned_tokens and removed_stop_words and calculated_frequencies and expected_frequency and chi_values and significant_words:
+    if (cleaned_tokens and removed_stop_words and 
+        calculated_frequencies and expected_frequency and 
+        chi_values and significant_words):
         result = get_top_n(significant_words, 10)
 
     if not result:

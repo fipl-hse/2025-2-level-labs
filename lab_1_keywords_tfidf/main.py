@@ -157,7 +157,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     if not isinstance(frequencies, dict) or not frequencies:
         return None
     for key, value in frequencies.items():
-      if (not isinstance(key, str) or 
+      if (not isinstance(key, str) or
       not isinstance(value, (int, float)) or 
       isinstance(value, bool)):
             return None
