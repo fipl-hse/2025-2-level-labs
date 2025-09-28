@@ -252,6 +252,5 @@ def extract_significant_words(
     thresholds = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     if alpha not in thresholds:
         return None
-    critical_value = thresholds[alpha]
     crit_value = thresholds[alpha]
     return {token: value for token, value in chi_values.items() if value > crit_value}
