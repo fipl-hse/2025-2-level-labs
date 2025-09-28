@@ -3,14 +3,13 @@ Lab 1
 
 Extract keywords based on frequency related metrics
 """
-
+# pylint:disable=unused-argument
 import math
-import string
 from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
-    '''
+    """
     Check if the object is a list containing elements of a certain type.
     Args:
         user_input (Any): Object to check
@@ -18,7 +17,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         can_be_empty (bool): Whether an empty list is allowed
     Returns:
         bool: True if valid, False otherwise
-    '''
+    """
     if not isinstance(user_input, list):
         return False
     if not can_be_empty and len(user_input) == 0:
@@ -65,10 +64,12 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    text = text.lower()
-    text = text.translate(str.maketrans("", "", string.punctuation))
-    tokens = text.split()
-    return tokens
+    text_clean_and_tokenized = []
+    for word in text.split():
+        clean_word = (''.join(symbol.lower() for symbol in word if symbol.isalnum()))
+        if clean_word:
+            text_clean_and_tokenized.append(clean_word)
+    return text_clean_and_tokenized
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
@@ -80,7 +81,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not (check_list(tokens, str, True) and check_list(stop_words, str, True)):
+    if not check_list(tokens, str, False):
         return None
     stop_set = set(stop_words)
     return [t for t in tokens if t not in stop_set]
@@ -94,7 +95,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True):
+    if not check_list(tokens, str, False):
         return None
     freqs: dict[str, int] = {}
     for token in tokens:
@@ -111,10 +112,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if (not check_dict(frequencies, str, int, False) and
-        not check_dict(frequencies, str, float, False)) or not check_positive_int(top):
+    if not check_dict(frequencies, str, int, False) or not check_positive_int(top):
         return None
-    freq_lst_sorted = sorted(frequencies.items(), key = lambda item: (-item[1], item[0]))
+    freq_lst_sorted = sorted(frequencies.keys(), key = lambda item: (-item[1], item[0]))
     top = min(top, len(freq_lst_sorted))
     top_words = [item[0] for item in freq_lst_sorted[:top]]
     return top_words
