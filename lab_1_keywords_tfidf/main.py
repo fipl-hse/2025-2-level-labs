@@ -119,7 +119,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False) or not check_list(stop_words, str, True):
+    if not check_list(tokens, str, True) or not check_list(stop_words, str, True):
         return None
 
     return [token for token in tokens if token not in stop_words]
@@ -136,7 +136,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False):
+    if not check_list(tokens, str, True):
         return None
 
     frequencies = {}
@@ -229,14 +229,13 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int, True):
-        return None
+    if len(corpus_freqs) == 0:
+       return {token: float(freq) for token, freq in doc_freqs.items()}
 
     total_doc_words = sum(doc_freqs.values())
-    total_corpus_words = sum(corpus_freqs.values()) if corpus_freqs else 0
+    total_corpus_words = sum(corpus_freqs.values())
 
     result: dict[str, float] = {}
-
     for token, freq in doc_freqs.items():
         corpus_freq = corpus_freqs.get(token, 0) if corpus_freqs else 0
 
@@ -254,4 +253,3 @@ def calculate_expected_frequency(
         result[token] = round(expected, 1)
 
     return result
-
