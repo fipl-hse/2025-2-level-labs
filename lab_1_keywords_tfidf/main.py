@@ -110,7 +110,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True): #if not True 
+    if not check_list(tokens, str, True):
         return None
     if not check_list(stop_words, str, True):
         return None
@@ -264,7 +264,7 @@ def extract_significant_words(
         return None
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     result_dict = {}
-    if alpha not in criterion: #??? это ключ alpha - степень точности
+    if alpha not in criterion:
         return None
     for k, v in chi_values.items():
         if v > criterion[alpha]:
