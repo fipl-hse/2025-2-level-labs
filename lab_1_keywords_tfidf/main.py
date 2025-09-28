@@ -8,6 +8,7 @@ import math
 
 # pylint:disable=unused-argument
 from typing import Any
+import string
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -24,12 +25,9 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 
     if not isinstance(user_input, list):
         return False
-    if not can_be_empty and len(user_input)==0:
+    if not can_be_empty and len(user_input) == 0:
         return False
-    for element in user_input:
-        if not isinstance(element, elements_type):
-            return False
-    return True
+    return all(isinstance(el, elements_type) for el in user_input)
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
@@ -45,21 +43,15 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    if not can_be_empty and len(user_input)==0:
+    if not can_be_empty and len(user_input) == 0:
         return False
-    for key in user_input:
-        if not isinstance(key, key_type):
-            return False
-    for value in user_input.values():
-        if not isinstance(value, value_type):
-            return False
-    return True
+    return all(isinstance(k, key_type) and isinstance(v, value_type) for k, v in user_input.items())
 
 def check_positive_int(user_input: Any) -> bool:
     """
     Check if the object is a positive integer (not bool).
     """
-    return isinstance(user_input, int) and not isinstance(user_input, bool)
+    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
 
 def check_float(user_input: Any) -> bool:
 
@@ -81,19 +73,10 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-
-    punctuation='!@#$%^&*(\')"№;:?,./<>`{~}[]+=|№-_'
-
-    new_text=''
-    for element in text:
-        if element not in punctuation:
-            new_text+=element
-
-    low_register=new_text.lower()
-
-    split_text=low_register.split()
-
-    return split_text
+    text = text.lower()
+    text = text.translate(str.maketrans("", "", string.punctuation))
+    tokens = text.split()
+    return tokens
 
 
 
@@ -110,18 +93,10 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         In case of corrupt input arguments, None is returned.
     """
 
-    if not check_list(tokens, str, True):
+    if not (check_list(tokens, str, True) and check_list(stop_words, str, True)):
         return None
-    if not check_list(stop_words, str, True):
-        return None
-
-    text_without_stop_words=[]
-
-    for element2 in tokens:
-        if element2 not in stop_words:
-            text_without_stop_words.append(element2)
-
-    return text_without_stop_words
+    stop_set = set(stop_words)
+    return [t for t in tokens if t not in stop_set]
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
@@ -155,21 +130,13 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_positive_int(top) or top<=0:
+    if (not check_dict(frequencies, str, int, False) and
+        not check_dict(frequencies, str, float, False)) or not check_positive_int(top):
         return None
-
-    if not (check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)):
-        return None
-
-    if len(frequencies)==0:
-        return []
-
-    sorted_dictionary=sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
-
-    top_n_words=[]
-    for word, _ in sorted_dictionary[:top]:
-        top_n_words.append(word)
-    return top_n_words
+    freq_lst_sorted = sorted(frequencies.items(), key = lambda item: (-item[1], item[0]))
+    top = min(top, len(freq_lst_sorted))
+    top_words = [item[0] for item in freq_lst_sorted[:top]]
+    return top_words
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
@@ -202,13 +169,14 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         In case of corrupt input arguments, None is returned.
     """
 
-    if not (check_dict(term_freq, str, float, True) and check_dict(idf, str, float, True)):
+    if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
-    result: dict[str, float] = {}
-    for token, tf_val in term_freq.items():
-        idf_val = idf.get(token, math.log(47))
-        result[token] = tf_val * idf_val
-    return result
+    no_token_idf = math.log(47)
+    tf_idf_dict = {}
+    for token, tf_value in term_freq.items():
+        idf_value = idf.get(token, no_token_idf)
+        tf_idf_dict[token] = tf_value * idf_value
+    return tf_idf_dict
 
 
 def calculate_expected_frequency(
