@@ -9,29 +9,23 @@ import math
 from typing import Any
 
 
-def check_dict(user_input: Any, key_type: type, value_type: Any, can_be_empty: bool) -> bool:
+def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
-    Check if the object is a dictionary with keys and values of given types.
+    Check if the object is a list containing elements of a certain type.
 
     Args:
         user_input (Any): Object to check
-        key_type (type): Expected type of dictionary keys
-        value_type (Any): Expected type or tuple of types for dictionary values
-        can_be_empty (bool): Whether an empty dictionary is allowed
+        elements_type (type): Expected type of list elements
+        can_be_empty (bool): Whether an empty list is allowed
 
     Returns:
         bool: True if valid, False otherwise
     """
-    if not isinstance(user_input, dict):
+    if not isinstance(user_input, list):
         return False
     if not user_input and not can_be_empty:
         return False
-    if isinstance(value_type, tuple):
-        return all(
-            isinstance(k, key_type) and any(isinstance(v, t) for t in value_type)
-            for k, v in user_input.items()
-        )
-    return all(isinstance(k, key_type) and isinstance(v, value_type) for k, v in user_input.items())
+    return all(isinstance(elem, elements_type) for elem in user_input)
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -52,7 +46,10 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     if not user_input and not can_be_empty:
         return False
     if isinstance(value_type, tuple):
-        return all(isinstance(k, key_type) and any(isinstance(v, t) for t in value_type) for k, v in user_input.items())
+        return all(
+            isinstance(k, key_type) and any(isinstance(v, t) for t in value_type)
+            for k, v in user_input.items()
+        )
     return all(isinstance(k, key_type) and isinstance(v, value_type) for k, v in user_input.items())
 
 
