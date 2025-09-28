@@ -227,7 +227,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         else:
             tfidf_dict[i] = val * math.log(47 / 1)
     return tfidf_dict
-
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> dict[str, float] | None:

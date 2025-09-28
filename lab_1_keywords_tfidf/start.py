@@ -3,7 +3,7 @@ Frequency-driven keyword extraction starter
 """
 from json import load
 
-from lab_1_keywords_tfidf.main import (
+from main import (
     calculate_chi_values,
     calculate_expected_frequency,
     calculate_frequencies,
@@ -17,6 +17,7 @@ from lab_1_keywords_tfidf.main import (
 
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
+
 def main() -> None:
     """
     Launches an implementation.
@@ -47,7 +48,7 @@ def main() -> None:
         return
     expected_frequencies = calculate_expected_frequency(text_frequencies, corpus_freqs)
     chi_value_frequency = calculate_chi_values(tfidf_frequencies, corpus_freqs)
-    only_key_words = extract_significant_words(tfidf_frequencies, 0.001)
+    only_key_words = extract_significant_words(chi_value_frequency, 0.001)
     if not only_key_words:
         return
     top_words = get_top_n(only_key_words, 10)
