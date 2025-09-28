@@ -60,12 +60,12 @@ def main() -> None:
         return
 
     top_words = get_top_n(significant_words, 10)
-    
-    assert len(top_words) == 10, (
-        "Invalid number of keywords. Probably you have not passed the lab yet. "
-        "Check your code and try again."
-    )
-    
+
+    if top_words is None:
+        raise ValueError("No keywords extracted")
+
+    assert len(top_words) == 10, f"Expected 10 keywords, got {len(top_words)}"
+
     print(top_words)
 
 
