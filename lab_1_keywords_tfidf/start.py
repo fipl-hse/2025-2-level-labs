@@ -13,7 +13,6 @@ from lab_1_keywords_tfidf.main import (
     remove_stop_words,
 )
 
-
 def main() -> None:
     """
     Launches an implementation.
@@ -24,25 +23,27 @@ def main() -> None:
         stop_words = file.read().split("\n")
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
+
     clean_and_tokenize_text = clean_and_tokenize(target_text)
     if not clean_and_tokenize:
-        return
 
+        return
     text_without_stop_words=remove_stop_words(clean_and_tokenize_text, stop_words)
     if not text_without_stop_words:
-        return
 
+        return
     calculated_frequencies=calculate_frequencies(text_without_stop_words)
     if not calculated_frequencies:
-        return
 
+        return
     calculated_tf=calculate_tf(calculated_frequencies)
     if not calculated_tf:
-        return
 
+        return
     calculated_tfidf=calculate_tfidf(calculated_tf, idf)
     if not calculated_tfidf:
         return
+    
 
     top_n_words=get_top_n(calculated_tfidf, 10)
 
