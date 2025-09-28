@@ -161,7 +161,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not check_dict(frequencies, str, (int, float), can_be_empty=False):
         return None
-    if type(top) != int:
+    if not isinstance(top, int):
         return None
     if top <= 0:
         return None
