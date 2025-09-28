@@ -15,6 +15,7 @@ from lab_1_keywords_tfidf.main import (
     remove_stop_words,
 )
 
+
 def main() -> None:
     """
     Launches an implementation.
@@ -33,13 +34,14 @@ def main() -> None:
     expected_frequency = None
     chi_values = None
     significant_words = None
-    
+
     cleaned_tokens = clean_and_tokenize(target_text)
     if cleaned_tokens:
         removed_stop_words = remove_stop_words(cleaned_tokens, stop_words)
     if cleaned_tokens and removed_stop_words:
         calculated_frequencies = calculate_frequencies(removed_stop_words)
-    if cleaned_tokens and removed_stop_words and calculated_frequencies:
+    if (cleaned_tokens and removed_stop_words and 
+        calculated_frequencies):
         expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
     if cleaned_tokens and removed_stop_words and calculated_frequencies and expected_frequency:
         chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
