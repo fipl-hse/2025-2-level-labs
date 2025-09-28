@@ -34,12 +34,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     return True
 
 
-def check_dict(
-    user_input: Any,
-    key_type: type,
-    value_type: type | tuple[type, ...],
-    can_be_empty: bool
-) -> bool:
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -239,7 +234,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
 
     for key in term_freq.keys():
         if key not in idf:
-            tfidf[key] = term_freq[key] * math.log(47 / 1)
+            tfidf[key] = term_freq.get(key, 0) * math.log(47 / 1)
 
         if key in idf:
             tfidf[key] = term_freq[key] * idf[key]
@@ -261,8 +256,8 @@ def calculate_expected_frequency(
         In case of corrupt input arguments, None is returned.
     """
     if (
-        not check_dict(doc_freqs, str, int, False)
-        or not check_dict(corpus_freqs, str, int, True)
+        not check_dict(doc_freqs, str, int, False) or
+        not check_dict(corpus_freqs, str, int, True)
     ):
         return None
     result: dict[str, float] = {}
