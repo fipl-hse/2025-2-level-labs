@@ -22,11 +22,11 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
+    with open("Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
+    with open("stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+    with open("corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
     cleaned_tokens = clean_and_tokenize(target_text)
@@ -60,10 +60,7 @@ def main() -> None:
         return
 
     top_words = get_top_n(significant_words, 10)
-
-    result = top_words
-    print(result)
-    assert result, "Keywords are not extracted"
+    print(top_words)
 
 
 if __name__ == "__main__":
