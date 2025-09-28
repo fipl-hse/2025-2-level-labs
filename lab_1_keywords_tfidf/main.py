@@ -6,7 +6,6 @@ Extract keywords based on frequency related metrics
 
 # pylint:disable=unused-argument
 from typing import Any
-import string
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -95,7 +94,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return
-    for syb in string.punctuation:
+    punct = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
+    for syb in punct:
         text = text.replace(syb, '')
     new_text = text.lower()
     tokens = new_text.split()
