@@ -17,6 +17,9 @@ def main() -> None:
     """
     Launches an implementation.
     """
+    cleaned_tokens = None
+    frequencies = None
+    result = None
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
     tokens = clean_and_tokenize(target_text)
