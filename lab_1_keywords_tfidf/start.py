@@ -4,7 +4,6 @@ Frequency-driven keyword extraction starter
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 
-import os
 from json import load
 
 try:
@@ -37,18 +36,14 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    # библиотекой os я пользуюсь тут, получаю путь к директории текущего файла
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    assets_dir = os.path.join(current_dir, "assets")
 
-
-    with open(os.path.join(assets_dir, "Дюймовочка.txt"), "r", encoding="utf-8") as file:
+    with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
-    with open(os.path.join(assets_dir, "stop_words.txt"), "r", encoding="utf-8") as file:
+    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
-    with open(os.path.join(assets_dir, "IDF.json"), "r", encoding="utf-8") as file:
+    with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
-    with open(os.path.join(assets_dir, "corpus_frequencies.json"), "r", encoding="utf-8") as file:
+    with open("corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
     tokenized_text = clean_and_tokenize(target_text)
@@ -95,6 +90,5 @@ def main() -> None:
     print(result)
     assert result, "Keywords are not extracted"
 
-
-
-main()
+if __name__ == "__main__":
+    main()
