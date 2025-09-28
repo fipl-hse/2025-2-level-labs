@@ -26,35 +26,39 @@ def main() -> None:
         stop_words = file.read().split("\n")
     with open("assets/IDF.json", "r", encoding="utf-8") as file:
         idf = load(file)
+    with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
+        corpus_freqs = load(file)
+    result = None
 
     clean_and_tokenize_text = clean_and_tokenize(target_text)
-    if not clean_and_tokenize:
+    if not clean_and_tokenize_text:
         return
-    print(clean_and_tokenize_text)
-    
+
     text_without_stop_words=remove_stop_words(clean_and_tokenize_text, stop_words)
     if not text_without_stop_words:
         return
-    print("Text without top words:", text_without_stop_words)
-    
+
     calculated_frequencies=calculate_frequencies(text_without_stop_words)
     if not calculated_frequencies:
         return
-    print("Word frequencies:", calculated_frequencies)
-    
+
     calculated_tf=calculate_tf(calculated_frequencies)
     if not calculated_tf:
         return
-    print("Term Frequency for all words: ", calculated_tf)
-    
+
     calculated_tfidf=calculate_tfidf(calculated_tf, idf)
     if not calculated_tfidf:
         return
-    print("TF-IDF for all words: ", calculated_tfidf, idf)
-    
 
     top_n_words=get_top_n(calculated_tfidf, 10)
+
+    print("Text without stop words:", text_without_stop_words)
+    print("Word frequencies:", calculated_frequencies)
+    print("Term Frequency for all words: ", calculated_tf)
+    print("TF-IDF for all words: ", calculated_tfidf, idf)
+    print("Top 10 keywords:", top_n_words)
     result=top_n_words
+    assert result, "Keywords are not extracted"
     
 if __name__ == "__main__":
     main()

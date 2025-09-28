@@ -20,7 +20,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if not can_be_empty and len(user_input) == 0:
+    if not can_be_empty and len(user_input) is False:
         return False
     return all(isinstance(el, elements_type) for el in user_input)
 
@@ -37,7 +37,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    if not can_be_empty and len(user_input) == 0:
+    if not can_be_empty and len(user_input) is False:
         return False
     return all(isinstance(k, key_type) and isinstance(v, value_type) for k, v in user_input.items())
 
@@ -112,9 +112,11 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, False) or not check_positive_int(top):
+    if check_dict(frequencies, str, int, False)\
+        or not check_positive_int(top)\
+        or not check_dict(frequencies, str, float, False):
         return None
-    freq_lst_sorted = sorted(frequencies.keys(), key = lambda item: (-item[1], item[0]))
+    freq_lst_sorted = sorted(frequencies.items(),key=lambda item: (-item[1], item[0]))
     top = min(top, len(freq_lst_sorted))
     top_words = [item[0] for item in freq_lst_sorted[:top]]
     return top_words
