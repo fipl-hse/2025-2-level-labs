@@ -169,8 +169,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     if not check_dict(frequencies, str, int, False):
         return None
     total = sum(frequencies.values())
-    if total==0:
-        return {}
     tf_tokens={}
     for k,v in frequencies.items():
         tf_tokens[k] = v / total
