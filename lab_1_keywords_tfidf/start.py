@@ -52,7 +52,7 @@ def main() -> None:
     only_key_words = extract_significant_words(chi_value_frequency, 0.001)
     if only_key_words:
         top_words = get_top_n(only_key_words, 10)
-    result = top_words
+        result = top_words
     assert result, "Keywords are not extracted"
 
 
