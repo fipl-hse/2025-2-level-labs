@@ -7,6 +7,7 @@ Extract keywords based on frequency related metrics
 # pylint:disable=unused-argument
 from typing import Any
 
+
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a list containing elements of a certain type.
