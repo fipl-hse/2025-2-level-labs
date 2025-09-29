@@ -62,7 +62,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return isinstance(user_input, (bool, int)) or user_input > 0
+    return isinstance(user_input, int) or user_input > 0
 
 def check_float(user_input: Any) -> bool:
     """
