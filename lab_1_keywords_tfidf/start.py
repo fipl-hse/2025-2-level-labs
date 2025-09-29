@@ -6,6 +6,7 @@ Frequency-driven keyword extraction starter
 import sys
 import os
 from json import load
+
 current_dir_of_start = os.path.abspath(os.path.dirname(__file__))
 path_to_project_root = os.path.abspath(os.path.join(current_dir_of_start, '..'))
 sys.path.append(path_to_project_root)
