@@ -164,7 +164,6 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     top_n_tokens = [token for token, frequency in sorted_frequencies[:top]]
     return top_n_tokens
 
-
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     Calculate Term Frequency (TF) for each token.
@@ -190,7 +189,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         In case of corrupt input arguments, None is returned.
     """
     
-
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> dict[str, float] | None:
@@ -219,8 +217,7 @@ def calculate_chi_values(
     Returns:
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
-    """
-    
+    """   
     
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
