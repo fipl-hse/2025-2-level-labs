@@ -45,7 +45,7 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True) or not check_dict(vocabulary, str, float, True):
+    if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
         return None
 
 
