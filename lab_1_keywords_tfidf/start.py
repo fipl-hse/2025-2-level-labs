@@ -44,12 +44,13 @@ def main() -> None:
     if expected_frequencies:
         chi_value_frequency = calculate_chi_values(expected_frequencies, text_frequencies)
     else:
-        chi_value_frequencies = None
+        chi_value_frequency = None
     if not tf_frequencies:
         return
     tfidf_frequencies = calculate_tfidf(tf_frequencies, idf)
     if not tfidf_frequencies:
         return
+    
     if not chi_value_frequency:
         return
     only_key_words = extract_significant_words(chi_value_frequency, 0.001)
