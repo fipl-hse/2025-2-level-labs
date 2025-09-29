@@ -121,9 +121,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, True):
-        return None
-    if not check_list(stop_words, str, True):
+    if not check_list(tokens, str, True) or not check_list(stop_words, str, True):
         return None
 
     return [word for word in tokens if word not in stop_words]
@@ -206,11 +204,10 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
 
-    tfidf_dict = term_freq.copy()
-    for key, value in tfidf_dict.items():
+    for key, value in term_freq.items():
         idf_value = idf.get(key, math.log(47))
-        tfidf_dict[key] = value * idf_value
-    return tfidf_dict
+        term_freq[key] = value * idf_value
+    return term_freq
 
 
 def calculate_expected_frequency(
@@ -257,9 +254,7 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(expected, str, float, False):
-        return None
-    if not check_dict(observed, str, int, False):
+    if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
         return None
     chi_values = {}
     for word, value in expected.items():
