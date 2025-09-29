@@ -41,12 +41,13 @@ def main() -> None:
         return
     tf_frequencies = calculate_tf(text_frequencies)
     expected_frequencies = calculate_expected_frequency(text_frequencies, corpus_freqs)
+    if expected_frequencies:
+        chi_value_frequency = calculate_chi_values(expected_frequencies, text_frequencies)
     if not tf_frequencies:
         return
     tfidf_frequencies = calculate_tfidf(tf_frequencies, idf)
     if not tfidf_frequencies:
         return
-    chi_value_frequency = calculate_chi_values(expected_frequencies, text_frequencies)
     if not chi_value_frequency:
         return
     only_key_words = extract_significant_words(chi_value_frequency, 0.001)
