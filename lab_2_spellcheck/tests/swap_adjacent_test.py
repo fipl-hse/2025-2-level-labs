@@ -38,6 +38,20 @@ class SwapAdjacentTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
+    def test_swap_adjacent_bad_input(self):
+        """
+        Bad input scenario
+        """
+        bad_inputs = [[], (), {}, None, 9, 9.34, True]
+        expected = []
+        for bad_input in bad_inputs:
+            actual = swap_adjacent(bad_input)
+            self.assertEqual(expected, actual)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
     def test_swap_adjacent_value_check(self):
         """
         Return value check
