@@ -231,7 +231,6 @@ def calculate_expected_frequency(
     """
     if len(corpus_freqs) == 0:
         return {token: float(freq) for token, freq in doc_freqs.items()}
-       
 
     total_doc_words = sum(doc_freqs.values())
     total_corpus_words = sum(corpus_freqs.values())

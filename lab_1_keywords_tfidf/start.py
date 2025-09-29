@@ -5,7 +5,7 @@ Lab 1 start file
 from json import load
 from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
-    remove_stop_words, 
+    remove_stop_words,
     calculate_frequencies,
     get_top_n,
     calculate_tf,
@@ -56,3 +56,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    
+ 
