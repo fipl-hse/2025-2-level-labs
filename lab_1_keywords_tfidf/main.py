@@ -167,10 +167,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     if not check_dict(frequencies, str, int, False):
         return None
     words_total = sum(frequencies.values())
-    term_freq = {}
-    for key, value in frequencies.items():
-        term_freq[key] = value / words_total
-    return term_freq
+    return {key: value / words_total for key, value in frequencies.items()}
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
@@ -186,11 +183,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
     """
     if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float, True):
         return None
-    tfidf_dict = term_freq.copy()
-    for key, value in tfidf_dict.items():
-        idf_value = idf.get(key, math.log(47))
-        tfidf_dict[key] = value * idf_value
-    return tfidf_dict
+    return {key: value * idf.get(key, math.log(47)) for key, value in term_freq.items()}
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
