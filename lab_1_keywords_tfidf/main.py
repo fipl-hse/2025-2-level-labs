@@ -19,7 +19,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     Returns:
         bool: True if valid, False otherwise
     """
-    if user_input is None:  
+    if user_input is None:
         return False
     if not isinstance(user_input, list):
         return False
@@ -51,9 +51,8 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     for key, value in user_input.items():
         if not isinstance(key, key_type):
             return False
-        else:
-            if not isinstance(value, value_type):
-                return False
+        if not isinstance(value, value_type):
+            return False
     return True
 
 def check_positive_int(user_input: Any) -> bool:
@@ -144,22 +143,20 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    is_int_values_valid = check_dict(frequencies, str, int, False)
-    is_float_values_valid = check_dict(frequencies, str, float, False)
     if not check_dict(frequencies, str, int, True):
         return None
-    if not frequencies and not False:
+    if not frequencies:
         return None
-    if not check_dict(frequencies, str, int, True): 
-        return None
-    if not frequencies and not False: 
+    if not check_dict(frequencies, str, int, True):
+       return None
+    if not frequencies: 
         return None
     if not check_dict(frequencies, str, int, True):
         return None
-    if not frequencies and not False:
+    if not frequencies:
         return None
     for key, value in frequencies.items():
-        if not (isinstance(value, int) or isinstance(value, float)):
+        if not (isinstance(value, (float, int))):
             return None
     if not check_positive_int(top):
         return None
@@ -180,9 +177,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         In case of corrupt input arguments, None is returned.
     """
     
-
-
-
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
     Calculate TF-IDF score for tokens.
@@ -212,8 +206,6 @@ def calculate_expected_frequency(
         In case of corrupt input arguments, None is returned.
     """
     
-
-
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
@@ -230,8 +222,6 @@ def calculate_chi_values(
     """
     
     
-
-
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
 ) -> dict[str, float] | None:
@@ -246,4 +236,3 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
-    
