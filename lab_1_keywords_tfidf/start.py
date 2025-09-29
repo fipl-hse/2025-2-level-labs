@@ -3,19 +3,14 @@ Frequency-driven keyword extraction starter
 """
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
-import sys
-import os
 from json import load
+
 from lab_1_keywords_tfidf.main import (
     calculate_frequencies,
     clean_and_tokenize,
     get_top_n,
     remove_stop_words,
 )
-
-current_dir_of_start = os.path.abspath(os.path.dirname(__file__))
-path_to_project_root = os.path.abspath(os.path.join(current_dir_of_start, '..'))
-sys.path.append(path_to_project_root)
 
 def main() -> None:
     """
