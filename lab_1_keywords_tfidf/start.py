@@ -43,6 +43,8 @@ def main() -> None:
     expected_frequencies = calculate_expected_frequency(text_frequencies, corpus_freqs)
     if expected_frequencies:
         chi_value_frequency = calculate_chi_values(expected_frequencies, text_frequencies)
+    else:
+        chi_value_frequencies = None
     if not tf_frequencies:
         return
     tfidf_frequencies = calculate_tfidf(tf_frequencies, idf)
@@ -55,7 +57,6 @@ def main() -> None:
         top_words = get_top_n(only_key_words, 10)
         result = top_words
     assert result, "Keywords are not extracted"
-    return print(top_words)
 
 
 if __name__ == "__main__":
