@@ -4,6 +4,8 @@ Frequency-driven keyword extraction starter
 
 # pylint:disable=too-many-locals, unused-argument, unused-variable, invalid-name, duplicate-code
 
+import sys
+import os
 from json import load
 
 from lab_1_keywords_tfidf.main import (
@@ -13,10 +15,19 @@ from lab_1_keywords_tfidf.main import (
     remove_stop_words,
 )
 
+current_dir_of_start = os.path.abspath(os.path.dirname(__file__))
+path_to_project_root = os.path.abspath(os.path.join(current_dir_of_start, '..'))
+sys.path.append(path_to_project_root)
+
 def main() -> None:
     """
     Launches an implementation.
     """
+    current_file_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path_thumbelina=os.path.join(current_file_dir, 'assets', 'Дюймовочка.txt')
+    file_path_stop_words = os.path.join(current_file_dir, 'assets', 'stop_words.txt')
+    file_path_corpus_freqs = os.path.join(current_file_dir, 'assets', 'corpus_frequencies.json')
+
     try:
         with open(file_path_thumbelina, "r", encoding="utf-8") as file:
             target_text = file.read()
