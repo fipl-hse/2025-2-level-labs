@@ -297,8 +297,9 @@ def calculate_chi_values(
     for word in expected.keys():
         observed_freqs = observed.get(word, 0)
         expected_freqs = expected[word]
-        if expected_freqs !=0:
-            result_chi_values[word] = round((observed_freqs - expected_freqs) ** 2 / expected_freqs, 1)
+        if expected_freqs is None or expected_freqs == 0:
+            continue
+        result_chi_values[word] = round((observed_freqs - expected_freqs) ** 2 / expected_freqs, 1)
     return result_chi_values
 
 
