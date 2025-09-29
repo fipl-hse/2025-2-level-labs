@@ -300,6 +300,7 @@ def calculate_chi_values(
         result_chi_values[word] = round((observed_freqs - expected_freqs) ** 2 / expected_freqs, 1)
     return result_chi_values
 
+#tried to fix
 
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
