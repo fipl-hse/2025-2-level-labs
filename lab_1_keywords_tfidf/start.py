@@ -18,7 +18,6 @@ from lab_1_keywords_tfidf.main import (
     remove_stop_words,
 )
 
-
 BASE_DIR = os.path.dirname(__file__)
 
 
