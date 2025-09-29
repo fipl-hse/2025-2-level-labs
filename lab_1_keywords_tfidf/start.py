@@ -8,10 +8,6 @@ import sys
 import os
 from json import load
 
-current_dir_of_start = os.path.abspath(os.path.dirname(__file__))
-path_to_project_root = os.path.abspath(os.path.join(current_dir_of_start, '..'))
-sys.path.append(path_to_project_root)
-
 from lab_1_keywords_tfidf.main import (
     calculate_frequencies,
     clean_and_tokenize,
@@ -19,6 +15,10 @@ from lab_1_keywords_tfidf.main import (
     remove_stop_words,
 )
 
+
+current_dir_of_start = os.path.abspath(os.path.dirname(__file__))
+path_to_project_root = os.path.abspath(os.path.join(current_dir_of_start, '..'))
+sys.path.append(path_to_project_root)
 
 def main() -> None:
     """
