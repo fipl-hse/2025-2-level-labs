@@ -27,14 +27,6 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
-    result = None
-    cleaned_tokens = None
-    removed_stop_words = None
-    calculated_frequencies = None
-    expected_frequency = None
-    chi_values = None
-    significant_words = None
-
     cleaned_tokens = clean_and_tokenize(target_text)
     if not cleaned_tokens:
         print("Error: No tokens after cleaning")
