@@ -5,6 +5,7 @@ markers = [
     "mark8: tests for level 8",
     "mark10: tests for level 10",
     "lab_1_keywords_tfidf: tests for lab 1",
+    "lab_2_spellcheck: tests for lab 2",
 ]
 norecursedirs = [
     "venv*"
@@ -26,7 +27,8 @@ max-line-length = 100
 ignore = ['D004']
 ignore-path = [
     'venv*',
-    'build/'
+    'build/',
+    "lab_1_keywords_tfidf/assets/Дюймовочка.txt"
 ]
 
 [tool.pydocstyle]
@@ -61,7 +63,8 @@ force_alphabetical_sort_within_sections = true
 src_paths = [
     "core_utils",
     "config",
-    "lab_1_keywords_tfidf"
+    "lab_1_keywords_tfidf",
+    "lab_2_spellcheck"
 ]
 
 [tool.mypy]
@@ -409,7 +412,7 @@ max-parents = 7
 max-public-methods = 20
 
 # Maximum number of return / yield for function / method body.
-max-returns = 6
+max-returns = 9
 
 # Maximum number of statements in function / method body.
 max-statements = 51
