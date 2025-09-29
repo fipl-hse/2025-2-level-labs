@@ -50,7 +50,6 @@ def main() -> None:
     tfidf_frequencies = calculate_tfidf(tf_frequencies, idf)
     if not tfidf_frequencies:
         return
-    
     if not chi_value_frequency:
         return
     only_key_words = extract_significant_words(chi_value_frequency, 0.001)
