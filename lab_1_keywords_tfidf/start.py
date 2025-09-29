@@ -30,10 +30,20 @@ def main() -> None:
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
-    tokens = clean_and_tokenize(target_text)
-    if tokens is None:
-        print("Error: Could not tokenize text")
-        return
+    if tokens is not None:
+        tokens_without_stop_words = remove_stop_words(tokens)
+    else:
+        tokens_without_stop_words = None
+
+    if tokens_without_stop_words is not None:
+       freq = calculate_frequencies(tokens_without_stop_words)
+    else:
+        freq = None
+
+    if freq is not None:
+        top_freq = get_top_n(freq, 10)
+    else:
+        top_freq = None
 
     tokens = clean_and_tokenize(target_text)
     filtered_tokens = remove_stop_words(tokens, stop_words)
