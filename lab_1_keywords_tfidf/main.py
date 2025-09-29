@@ -265,14 +265,13 @@ def calculate_expected_frequency(
         for key, val in doc_freqs.items():
             result[key] = float(val)
         return result
-    doc_total = sum(doc_freqs.values())
-    corpus_total = sum(corpus_freqs.values())
-    expected_freqs = {}
+    doc_all = sum(doc_freqs.values())
+    corpus_all = sum(corpus_freqs.values())
     for term, tf_doc in doc_freqs.items():
         tf_corpus = corpus_freqs.get(term, 0)
-        expected = doc_total * (tf_corpus + tf_doc) / (corpus_total + doc_total)
-        expected_freqs[term] = round(expected, 1)
-    return expected_freqs
+        expected = doc_all * (tf_corpus + tf_doc) / (corpus_all + doc_all)
+        result[term] = round(expected, 1)
+    return result
 
 
 def calculate_chi_values(
