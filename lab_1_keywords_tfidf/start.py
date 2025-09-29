@@ -85,7 +85,6 @@ def main() -> None:
     result = top_significant_words
 
     print(significant_words)
-    print(top_significant_words)
 
     print(result)
     assert result, "Keywords are not extracted"
