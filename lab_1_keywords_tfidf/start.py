@@ -29,7 +29,6 @@ def main() -> None:
 
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    
     tokens = clean_and_tokenize(target_text)
     if tokens is None:
         print("Error: Could not tokenize text")
@@ -56,5 +55,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    
- 
