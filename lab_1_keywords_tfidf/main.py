@@ -21,12 +21,12 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     Returns:
         bool: True if valid, False otherwise
     """
+    if user_input == []:
+        return can_be_empty
     if not isinstance(user_input, list):
         return False
-    if not user_input and not can_be_empty:
-        return False
-    for element in user_input:
-        if not isinstance(element, elements_type):
+    for el in user_input:
+        if not isinstance(el, elements_type):
             return False
     return True
 
@@ -100,11 +100,11 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         if el.isalnum() or el == " ":
             text_isalnum += el
     text_lower = text_isalnum.lower()
-    unfilt_tokens = text_lower.split()
-    return unfilt_tokens
+    tokens = text_lower.split()
+    return tokens
 
 
-def remove_stop_words(unfilt_tokens: list[str], stop_words: list[str]) -> list[str] | None:
+def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
     Exclude stop words from the token sequence.
 
@@ -116,21 +116,15 @@ def remove_stop_words(unfilt_tokens: list[str], stop_words: list[str]) -> list[s
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(unfilt_tokens, list):
+    if not check_list(tokens, str, False):
         return None
-    if not isinstance(stop_words, list):
+    if not check_list(stop_words, str, True):
         return None
-    for el in unfilt_tokens:
-        if not isinstance(el, str):
-            return None
-    for el in stop_words:
-        if not isinstance(el, str):
-            return None
-    tokens = []
-    for el in unfilt_tokens:
+    filt_tokens = []
+    for el in tokens:
         if el not in stop_words:
-            tokens.append(el)
-    return tokens
+            filt_tokens.append(el)
+    return filt_tokens
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -144,11 +138,8 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list):
+    if not check_list(tokens, str, False):
         return None
-    for el in tokens:
-        if not isinstance(el, str):
-            return None
     frequencies = dict.fromkeys(tokens, 0)
     for el in tokens:
         val = tokens.count(el)
@@ -169,11 +160,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, False):
+    if not check_dict(frequencies, str, int, False) and not check_dict(frequencies, str, float, False):
         return None
-    if not isinstance(top, int) or isinstance(top, bool):
-        return None
-    if frequencies == {} or top <=0:
+    if not check_positive_int(top) or isinstance(top, bool):
         return None
     freq_sorted_dict = dict(sorted(frequencies.items(), key=lambda item: item[1], reverse=True))
     freq_keys = list(freq_sorted_dict.keys())
