@@ -6,7 +6,6 @@ Frequency-driven keyword extraction starter
 # pylint:disable=invalid-name, duplicate-code
 
 import os
-
 from json import load
 
 from lab_1_keywords_tfidf.main import (
