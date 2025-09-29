@@ -19,6 +19,7 @@ from lab_1_keywords_tfidf.main import (
     remove_stop_words,
 )
 
+
 def main() -> None:
     """
     Launches an implementation.
