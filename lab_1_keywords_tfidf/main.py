@@ -154,12 +154,10 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(frequencies, dict) or not frequencies:
+    if not check_dict(frequencies, str, object, can_be_empty=False):
         return None
-    for key, value in frequencies.items():
-        if (not isinstance(key, str) or
-            not isinstance(value, (int, float)) or
-      isinstance(value, bool)):
+    for value in frequencies.values():
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
             return None
     if (not isinstance(top, int) or isinstance(top, bool) or top <= 0):
         return None
@@ -184,7 +182,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     if not frequencies:
         return None
     for token, freq in frequencies.items():
-        if not isinstance(token, str) or not isinstance(freq, int) or freq < 0:
+        if not isinstance(token, str) or not isinstance(freq, (int, float)) or freq < 0:
             return None
     words_sum = sum(frequencies.values())
     if words_sum == 0:
@@ -192,7 +190,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     tf_dict = {}
     for token, freq in frequencies.items():
         tf_value = freq / words_sum
-        tf_dict[token] = tf_value
+        tf_dict[token] = tf_value #запись значения в словарь, в квадратных передаем ключ к значению
 
     return tf_dict
 
