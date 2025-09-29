@@ -31,7 +31,6 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     return True
 
 
-
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
@@ -52,9 +51,6 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     for key, value in user_input.items():
         if not isinstance(key, key_type):
             return False
-        if isinstance(value_type, tuple): 
-            if not isinstance(value, value_type):
-                return False
         else:
             if not isinstance(value, value_type):
                 return False
@@ -106,15 +102,13 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
-    import string
     if not isinstance(text, str):
         return None
     stripped = text.strip()
-    if len(stripped) == 0:
+    if not stripped:
         return []
-    punctuation_chars = string.punctuation
-    translation_table = str.maketrans({ch: None for ch in punctuation_chars})
-    no_punct = stripped.translate(translation_table)
+    cleaned_chars = [char for char in stripped if char.isalnum() or char.isspace()]
+    no_punct = "".join(cleaned_chars)
     tokens = no_punct.lower().split()
     return tokens
 
@@ -130,17 +124,12 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list):
+    if not check_list(tokens, str, True):
         return None
-    for token in tokens:
-        if not isinstance(token, str):
-            return None
     frequencies = {}
     for token in tokens:
         frequencies[token] = frequencies.get(token, 0) + 1
     return frequencies
-
-
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
@@ -155,12 +144,27 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int, float), False):  
+    is_int_values_valid = check_dict(frequencies, str, int, False)
+    is_float_values_valid = check_dict(frequencies, str, float, False)
+    if not check_dict(frequencies, str, int, True):
         return None
-    if not check_positive_int(top):  
-        return None 
+    if not frequencies and not False:
+        return None
+    if not check_dict(frequencies, str, int, True): 
+        return None
+    if not frequencies and not False: 
+        return None
+    if not check_dict(frequencies, str, int, True):
+        return None
+    if not frequencies and not False:
+        return None
+    for key, value in frequencies.items():
+        if not (isinstance(value, int) or isinstance(value, float)):
+            return None
+    if not check_positive_int(top):
+        return None
     sorted_frequencies = sorted(frequencies.items(), key=lambda item: (-item[1], item[0]))
-    top_n_tokens = [token for token, frequency in sorted_frequencies[:top]] 
+    top_n_tokens = [token for token, frequency in sorted_frequencies[:top]]
     return top_n_tokens
 
 
