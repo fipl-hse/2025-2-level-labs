@@ -40,18 +40,19 @@ def main() -> None:
         removed_stop_words = remove_stop_words(cleaned_tokens, stop_words)
     if cleaned_tokens and removed_stop_words:
         calculated_frequencies = calculate_frequencies(removed_stop_words)
-    if (cleaned_tokens and removed_stop_words and 
-        calculated_frequencies):
-        expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
-    if cleaned_tokens and removed_stop_words and calculated_frequencies and expected_frequency:
+    conditions = (cleaned_tokens, removed_stop_words, calculated_frequencies)
+    if all(conditions):
+        expected_frequency = calculate_expected_frequency(
+            calculated_frequencies, corpus_freqs
+        )
+    conditions_2 = conditions + (expected_frequency, )
+    if all(conditions_2):
         chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
-    if (cleaned_tokens and removed_stop_words and 
-        calculated_frequencies and expected_frequency 
-        and chi_values):
+    conditions_3 = conditions_2 + (chi_values, )
+    if all(conditions_3):
         significant_words = extract_significant_words(chi_values, 0.05)
-    if (cleaned_tokens and removed_stop_words and 
-        calculated_frequencies and expected_frequency and 
-        chi_values and significant_words):
+    conditions_4 = conditions_3 + (significant_words, )
+    if all(conditions_4):
         result = get_top_n(significant_words, 10)
 
     if not result:
