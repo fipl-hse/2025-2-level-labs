@@ -157,16 +157,10 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         not check_dict(frequencies, str, float, False)) or
         not check_positive_int(top)):
         return None
-    changed_dict = dict(sorted(frequencies.items(), key=lambda item: item[1], reverse=False)) #было True
+    changed_dict = dict(sorted(frequencies.items(), key=lambda item: item[1], reverse=True))
     result = list(changed_dict.keys())[:top]
+    return result
 
-    new_result = {}
-    for i in result:
-        new_result[i] = changed_dict.get(i)
-    #for k,v in changed_dict.items():
-    #    if k in result:
-     #       new_result[k] = v
-    return new_result
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
