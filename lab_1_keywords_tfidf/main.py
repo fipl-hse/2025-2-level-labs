@@ -153,13 +153,20 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if (not check_dict(frequencies, str, int, False)
-        and not check_dict(frequencies, str, float, False)
-        or not check_positive_int(top)):
+    if ((not check_dict(frequencies, str, int, False) and
+        not check_dict(frequencies, str, float, False)) or
+        not check_positive_int(top)):
         return None
-    changed_dict = dict(sorted(frequencies.items(), key=lambda item: item[1], reverse=True))
+    changed_dict = dict(sorted(frequencies.items(), key=lambda item: item[1], reverse=False)) #было True
     result = list(changed_dict.keys())[:top]
-    return result
+
+    new_result = {}
+    for i in result:
+        new_result[i] = changed_dict.get(i)
+    #for k,v in changed_dict.items():
+    #    if k in result:
+     #       new_result[k] = v
+    return new_result
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
@@ -220,7 +227,7 @@ def calculate_expected_frequency(
         k = corpus_freqs.get(key, 0) # t in D
         words_without_t_d = sum(doc_freqs.values()) - value
         words_without_t = sum(corpus_freqs.values()) - k
-        expected[key] = (((value + k) * (value + words_without_t_d))/
+        expected[key] = (((value + k) * (value + words_without_t_d)) /
         (value + k + words_without_t_d + words_without_t))
     return expected
 
