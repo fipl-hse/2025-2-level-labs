@@ -47,7 +47,6 @@ def main() -> None:
         tf_values = calculate_tf(frequencies)
     if tf_values is not None:
         tfidf_values = calculate_tfidf(tf_values, idf)
-    #print(get_top_n(tfidf_values, 10))
     if frequencies is not None:
         expected_frequency = calculate_expected_frequency(frequencies, corpus_freqs)
     observed = frequencies
