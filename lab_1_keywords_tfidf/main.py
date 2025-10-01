@@ -223,7 +223,6 @@ def calculate_expected_frequency(
         expected_frequency[word] = ((word_in_doc + word_in_corpus) * total_doc) / total
     return dict(sorted(expected_frequency.items()))
 
-    return expected_frequency
 
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
