@@ -198,7 +198,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
 
 
 def calculate_expected_frequency(
-        doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
+    doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> dict[str, float] | None:
     """
     Calculate expected frequency for tokens based on document and corpus frequencies.
@@ -225,7 +225,7 @@ def calculate_expected_frequency(
 
 
 def calculate_chi_values(
-        expected: dict[str, float], observed: dict[str, int]
+    expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
     """
     Calculate chi-squared values for tokens.
@@ -246,7 +246,7 @@ def calculate_chi_values(
 
 
 def extract_significant_words(
-        chi_values: dict[str, float], alpha: float
+    chi_values: dict[str, float], alpha: float
 ) -> dict[str, float] | None:
     """
     Select tokens with chi-squared values greater than the critical threshold.
