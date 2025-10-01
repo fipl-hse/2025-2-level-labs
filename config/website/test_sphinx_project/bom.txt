@@ -1,3 +1,6 @@
 /lab_1_keywords_tfidf/README.rst
 /lab_1_keywords_tfidf/lab_1_keywords_tfidf.api.rst
 /lab_1_keywords_tfidf/stub.py
+/lab_2_spellcheck/README.rst
+/lab_2_spellcheck/lab_2_spellcheck.api.rst
+/lab_2_spellcheck/stub.py
