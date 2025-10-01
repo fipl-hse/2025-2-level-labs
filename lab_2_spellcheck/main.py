@@ -19,6 +19,28 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(tokens, list):
+        return None
+
+    for element in tokens:
+        if not isinstance(element, str):
+            return None
+
+    all_tokens=len(tokens)
+
+    count_frequency={}
+    for token in tokens:
+        if token in count_frequency:
+            count_frequency[token]+=1
+        else:
+            count_frequency[token]=1
+
+    dictionary={}
+    for element, value in dictionary.items():
+        dictionary[element]=value/all_tokens
+
+    return dictionary
+
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
