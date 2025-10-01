@@ -29,12 +29,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 
 
 
-def check_dict(
-    user_input: Any,
-    key_type: type,
-    value_type: type,
-    can_be_empty: bool
-) -> bool:
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -147,6 +142,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     Extract the most frequent tokens.
 
     Args:
+
         frequencies (dict[str, int | float]): A dictionary with tokens and their frequencies
         top (int): Number of tokens to extract
 
@@ -256,8 +252,7 @@ def extract_significant_words(
     Select tokens with chi-squared values greater than the critical threshold.
 
     Args:
-        chi_values (dict[str, float]):
-Dictionary with chi-squared values
+        chi_values (dict[str, float]): Dictionary with chi-squared values
         alpha (float): Significance level controlling chi-squared threshold
 
     Returns:
