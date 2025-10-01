@@ -126,6 +126,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
 
     return [word for word in tokens if word not in stop_words]
 
+def extract_bigrams(tokens: list[str]) -> list[str] | None:
+    if not check_list(tokens, str, False):
+        return None
+    bigrams = []
+    for i, token in enumerate(tokens[:-1]):
+        bigram = [token, tokens[i + 1]]
+        bigram = " ".join(bigram)
+        bigrams.append(bigram)
+    return bigrams
+
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """

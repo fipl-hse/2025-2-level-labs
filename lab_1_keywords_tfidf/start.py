@@ -6,6 +6,7 @@ Frequency-driven keyword extraction starter
 from json import load
 
 from lab_1_keywords_tfidf.main import (
+    extract_bigrams,
     calculate_chi_values,
     calculate_expected_frequency,
     calculate_frequencies,
@@ -38,28 +39,33 @@ def main() -> None:
     text_without_stopwords = remove_stop_words(tokenized_text, stop_words)
     if not text_without_stopwords:
         return
+    
+    bigrams = extract_bigrams(text_without_stopwords)
+    if not bigrams:
+        return
 
-    frequ_dict = calculate_frequencies(text_without_stopwords)
+    frequ_dict = calculate_frequencies(bigrams)
     if not frequ_dict:
         return
 
-    tf_dict = calculate_tf(frequ_dict)
-    if not tf_dict:
-        return
+    # tf_dict = calculate_tf(frequ_dict)
+    # if not tf_dict:
+    #     return
 
-    tfidf_dict = calculate_tfidf(tf_dict, idf)
-    if not tfidf_dict:
-        return
+    # tfidf_dict = calculate_tfidf(tf_dict, idf)
+    # if not tfidf_dict:
+    #     return
 
-    expected_freq = calculate_expected_frequency(frequ_dict, corpus_freqs)
-    if not expected_freq:
-        return
+    # expected_freq = calculate_expected_frequency(frequ_dict, corpus_freqs)
+    # if not expected_freq:
+    #     return
 
-    chi_values = calculate_chi_values(expected_freq, frequ_dict) or {}
+    # chi_values = calculate_chi_values(expected_freq, frequ_dict) or {}
 
-    significant_words = extract_significant_words(chi_values, 0.01) or {}
-    top_significant_words = get_top_n(significant_words, 10)
-    result = top_significant_words
+    # significant_words = extract_significant_words(chi_values, 0.01) or {}
+    # top_significant_words = get_top_n(significant_words, 10)
+    # top_bigrams = get_top_n(frequ_dict, 10)
+    result = frequ_dict
 
     print(result)
     assert result, "Keywords are not extracted"
