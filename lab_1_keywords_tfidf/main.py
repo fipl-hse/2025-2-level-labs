@@ -53,8 +53,10 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
 def check_positive_int(user_input: Any) -> bool:
     """
     Check if the object is a positive integer (not bool).
+
     Args:
         user_input (Any): Object to check
+
     Returns:
         bool: True if valid, False otherwise
     """
@@ -64,8 +66,10 @@ def check_positive_int(user_input: Any) -> bool:
 def check_float(user_input: Any) -> bool:
     """
     Check if the object is a float.
+
     Args:
         user_input (Any): Object to check
+
     Returns:
         bool: True if valid, False otherwise
     """
@@ -75,8 +79,10 @@ def check_float(user_input: Any) -> bool:
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
     Remove punctuation, convert to lowercase, and split into tokens.
+
     Args:
         text (str): Original text
+
     Returns:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
