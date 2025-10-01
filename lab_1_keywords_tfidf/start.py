@@ -22,14 +22,6 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    cleaned_tokens = None
-    frequencies = None
-    tf_values = None
-    alpha = 0.001
-    tfidf_values = None
-    expected_frequency = None
-    chi_values = None
-    result = None
     with open("assets/Дюймовочка.txt", "r", encoding="utf-8") as file:
         target_text = file.read()
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
