@@ -196,11 +196,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         tfidf_dict[term] = value * idf.get(term, math.log(47 / 1))
     return tfidf_dict
 
-    result = {}
-    for token, tok_freq_value in term_freq.items():
-        idf_val = idf.get(token, math.log(47))
-        result[token] = tok_freq_value * idf_val
-    return result
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
@@ -228,16 +223,6 @@ def calculate_expected_frequency(
         expected_frequency[word] = ((word_in_doc + word_in_corpus) * total_doc) / total
     return dict(sorted(expected_frequency.items()))
 
-    for token, freq in doc_freqs.items():
-        in_doc_tok_count = freq
-        in_corpus_tok_count = corpus_freqs.get(token, 0)
-        doc_without_tok = total_doc_freqs - in_doc_tok_count
-        corpus_without_tok = total_corpus_freqs - in_corpus_tok_count
-        expected_value = (in_doc_tok_count + in_corpus_tok_count)*(in_doc_tok_count +
-                            doc_without_tok)/(in_doc_tok_count +
-                            in_corpus_tok_count + doc_without_tok + corpus_without_tok)
-        expected_freq[token] = expected_value
-    return expected_freq
 
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
