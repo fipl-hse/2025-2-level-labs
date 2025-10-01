@@ -4,6 +4,17 @@ Spellcheck starter
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
 
+from lab_1_keywords_tfidf.main import (
+    clean_and_tokenize,
+    remove_stop_words
+)
+from lab_2_spellcheck.main import (
+    build_vocabulary,
+    calculate_distance,
+    calculate_jaccard_distance,
+    find_out_of_vocab_words,
+    find_correct_word
+)
 
 def main() -> None:
     """
@@ -21,8 +32,17 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
-    result = None
-    assert result, "Result is None"
+    cleaned_text = clean_and_tokenize(text)
+    text_without_stop_words = remove_stop_words(cleaned_text, stop_words)
+    vocabulary = build_vocabulary(text_without_stop_words)
+    print(vocabulary)
+    absent_words = find_out_of_vocab_words(text_without_stop_words, vocabulary)
+    print(absent_words)
+    for word in absent_words:
+        calculate_distance = (word, vocabulary, "jaccard")
+    if calculate_distance is not None:
+        return calculate_distance
+    assert calculate_distance, "Result is None"
 
 
 if __name__ == "__main__":

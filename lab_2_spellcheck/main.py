@@ -4,6 +4,51 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
+from typing import Any
+
+
+def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+    """
+    Check if the object is a list containing elements of a certain type.
+
+    Args:
+        user_input (Any): Object to check
+        elements_type (type): Expected type of list elements
+        can_be_empty (bool): Whether an empty list is allowed
+
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    if not isinstance(user_input, list):
+        return False
+    if not user_input:
+        return can_be_empty
+    for element in user_input:
+        if not isinstance(element, elements_type):
+            return False
+    return True
+
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    """
+    Check if the object is a dictionary with keys and values of given types.
+
+    Args:
+        user_input (Any): Object to check
+        key_type (type): Expected type of dictionary keys
+        value_type (type): Expected type of dictionary values
+        can_be_empty (bool): Whether an empty dictionary is allowed
+
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    if not isinstance(user_input, dict):
+        return False
+    if not user_input:
+        return can_be_empty
+    for key, value in user_input.items():
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
+            return False
+    return True
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -19,6 +64,12 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False):
+        return None
+    result = {}
+    for element in tokens:
+        result[element] = tokens.count(element)/len(tokens)
+    return result
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
@@ -34,6 +85,14 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
+    if (not check_list(tokens, str, False) or
+    not check_dict(vocabulary, str, float, False)):
+        return None
+    result = []
+    for element in tokens:
+        if element not in vocabulary:
+            result.append(element)
+    return result
 
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
@@ -50,6 +109,13 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    if not token or not candidate:
+        return 1.0
+    set_1 = set(token)
+    set_2 = set(candidate)
+    return (1 - (len(set_1.intersection(set_2))/len(set_1.union(set_2)))) 
 
 
 def calculate_distance(
@@ -72,6 +138,15 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
+    if (not isinstance(first_token, str) or not first_token 
+    or not check_dict(vocabulary, str, float, False) or 
+    method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
+        return None
+    result = {}
+    if method == "jaccard":
+        for el in vocabulary:
+            result[el] = calculate_jaccard_distance(first_token, el)
+    return result
 
 
 def find_correct_word(
@@ -95,6 +170,24 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
+    if (not isinstance(wrong_word, str) or not wrong_word 
+    or not check_dict(vocabulary, str, float, False) or 
+    method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
+        return None
+    result = calculate_distance(wrong_word, vocabulary, method)
+    if result:
+        max_value = min(result.values())
+    else:
+        return None
+    values = []
+    for key, value in result.items():
+        if value == max_value:
+            values.append(key)
+    if len(values) == 0:
+        return values[0]
+    else:
+        values.sort(key=lambda value: (abs(len(value) - len(wrong_word)), value))
+        return values[0]
 
 
 def initialize_levenshtein_matrix(
@@ -151,6 +244,13 @@ def delete_letter(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    result = []
+    for i in range(0, len(word)):
+        result.append(word[:i] + word[i+1:])
+    new_result = sorted(result)
+    return new_result
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -167,6 +267,15 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str) or not check_list(alphabet, str, False):
+        return []
+    res = []
+    for i in range(0, len(word) + 1):
+        for a in alphabet:
+            result = word[:i] + a + word[i:]
+            res.append(result)
+    new_result = sorted(res)
+    return new_result
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -183,6 +292,14 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str) and not check_dict(alphabet, str, False):
+        return []
+    result = []
+    for i in range(len(word)):
+        for a in alphabet:
+            result.append(word[:i] + a + word[i + 1:])
+    actual_result = sorted(result)
+    return actual_result
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -198,6 +315,14 @@ def swap_adjacent(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    actual_result = []
+    for i in range(len(word) - 1):
+        result = word[:i] + word[i + 1] + word[i] + word[i + 2:]
+        actual_result.append(result)
+    res = sorted(actual_result)
+    return res
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
@@ -214,7 +339,20 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-
+    if not isinstance(word, str) or not check_list(alphabet, str, False):
+        return []
+    if not word and not alphabet:
+        return None
+    if word == "":
+        return alphabet
+    criterion_1 = delete_letter(word)
+    criterion_2 = add_letter(word, alphabet)
+    criterion_3 = replace_letter(word, alphabet)
+    criterion_4 = swap_adjacent(word)
+    result = criterion_1 + criterion_2 + criterion_3 + criterion_4
+    if result:
+        return list(set(result))
+    
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
     """
