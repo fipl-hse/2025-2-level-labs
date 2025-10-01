@@ -43,7 +43,8 @@ def main() -> None:
         calculate_distance = (word, vocabulary, "jaccard")
     if calculate_distance is not None:
         return calculate_distance
-    assert calculate_distance, "Result is None"
+    result = calculate_distance
+    assert result, "Result is None"
 
 
 if __name__ == "__main__":
