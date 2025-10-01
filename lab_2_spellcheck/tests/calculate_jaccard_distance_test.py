@@ -1,5 +1,5 @@
 """
-Checks the second lab Jaccard Similarity function
+Checks the second lab Jaccard distance calculation function
 """
 
 import unittest
@@ -10,9 +10,9 @@ from config.constants import FLOAT_TOLERANCE
 from lab_2_spellcheck.main import calculate_jaccard_distance
 
 
-class JaccardSimilarityTest(unittest.TestCase):
+class CalculateJaccardDistanceTest(unittest.TestCase):
     """
-    Tests function for Jaccard Similarity calculation.
+    Tests function for Jaccard distance calculation.
     """
 
     @pytest.mark.lab_2_spellcheck
