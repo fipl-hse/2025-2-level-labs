@@ -2,7 +2,11 @@
     "labs": [
         {
             "name": "lab_1_keywords_tfidf",
-            "coverage": 99
+            "coverage": 100
+        },
+        {
+            "name": "lab_2_spellcheck",
+            "coverage": 94
         }
     ],
     "addons": [
@@ -20,13 +24,13 @@
         "admins": [
             "demid5111",
             "EIzharikov",
+            "NovIrina",
             "Vasilisa-Blyudova",
             "sofianurtdinova",
             "AnPruch",
             "Niko-Zvar",
             "QuietHellsPage",
-            "Evgraff2005",
-            "NovIrina"
+            "Evgraff2005"
         ],
         "pr_name_regex": "Laboratory work #\\d, \\w+ \\w+ - 2\\dFPL\\d",
         "pr_name_example": "Laboratory work #1, Andrei Kashchikhin - 21FPL2"
