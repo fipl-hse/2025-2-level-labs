@@ -48,5 +48,7 @@ def main() -> None:
     print(', '.join(key_words_chi))
     result = key_words_chi
     assert result, "Keywords are not extracted"
+
+
 if __name__ == "__main__":
     main()
