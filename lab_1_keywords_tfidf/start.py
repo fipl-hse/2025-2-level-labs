@@ -6,10 +6,13 @@ Frequency-driven keyword extraction starter
 from json import load
 
 from lab_1_keywords_tfidf.main import (
+    calculate_chi_values,
+    calculate_expected_frequency,
     calculate_frequencies,
     calculate_tf,
     calculate_tfidf,
     clean_and_tokenize,
+    extract_significant_words,
     get_top_n,
     remove_stop_words,
 )
@@ -27,36 +30,23 @@ def main() -> None:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    result = None
-
-    clean_and_tokenize_text = clean_and_tokenize(target_text)
-    if not clean_and_tokenize_text:
-        return
-
-    text_without_stop_words=remove_stop_words(clean_and_tokenize_text, stop_words)
-    if not text_without_stop_words:
-        return
-
-    calculated_frequencies=calculate_frequencies(text_without_stop_words)
-    if not calculated_frequencies:
-        return
-
-    calculated_tf=calculate_tf(calculated_frequencies)
-    if not calculated_tf:
-        return
-
-    calculated_tfidf=calculate_tfidf(calculated_tf, idf)
-    if not calculated_tfidf:
-        return
-
-    top_n_words=get_top_n(calculated_tfidf, 10)
-
-    print("Текст без стоп-слов:", text_without_stop_words)
-    print("Частоты слов:", calculated_frequencies)
-    print("Term Frequency для всех слов: ", calculated_tf)
-    print("TF-IDF для всех слов: ", calculated_tfidf, idf)
-    print("Топ-10 ключевых слов:", top_n_words)
-    result=top_n_words
+    tokens = clean_and_tokenize(target_text) or []
+    tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
+    print(tokens_without_stopwords)
+    frequencies = calculate_frequencies(tokens_without_stopwords) or {}
+    term_freq_tf = calculate_tf(frequencies) or {}
+    print(term_freq_tf)
+    term_freq_tfidf = calculate_tfidf(term_freq_tf, idf) or {}
+    print(term_freq_tfidf)
+    top_key_words = get_top_n(term_freq_tfidf, 10) or []
+    print(', '.join(top_key_words))
+    expected = calculate_expected_frequency(frequencies, corpus_freqs) or {}
+    chi_values = calculate_chi_values(expected, frequencies) or {}
+    significant_words = extract_significant_words(chi_values, alpha=0.001) or {}
+    print(significant_words)
+    key_words_chi = get_top_n(chi_values, 10) or []
+    print(', '.join(key_words_chi))
+    result = key_words_chi
     assert result, "Keywords are not extracted"
 if __name__ == "__main__":
     main()
