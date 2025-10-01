@@ -4,8 +4,6 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 
-import math
-
 # pylint:disable=unused-argument
 import math
 from typing import Any
@@ -14,10 +12,12 @@ from typing import Any
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a list containing elements of a certain type.
+
     Args:
         user_input (Any): Object to check
         elements_type (type): Expected type of list elements
         can_be_empty (bool): Whether an empty list is allowed
+
     Returns:
         bool: True if valid, False otherwise
     """
@@ -32,11 +32,13 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
+
     Args:
         user_input (Any): Object to check
         key_type (type): Expected type of dictionary keys
         value_type (type): Expected type of dictionary values
         can_be_empty (bool): Whether an empty dictionary is allowed
+
     Returns:
         bool: True if valid, False otherwise
     """
@@ -51,8 +53,10 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
 def check_positive_int(user_input: Any) -> bool:
     """
     Check if the object is a positive integer (not bool).
+
     Args:
         user_input (Any): Object to check
+
     Returns:
         bool: True if valid, False otherwise
     """
@@ -62,8 +66,10 @@ def check_positive_int(user_input: Any) -> bool:
 def check_float(user_input: Any) -> bool:
     """
     Check if the object is a float.
+
     Args:
         user_input (Any): Object to check
+
     Returns:
         bool: True if valid, False otherwise
     """
