@@ -99,15 +99,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
             tokens.append(cleaned_word)
     return tokens
 
-    if not isinstance(text, str):
-        return None
-    cleaned_str = ''
-    for char in text:
-        if char.isalnum():
-            cleaned_str += char.lower()
-        elif char.isspace():
-            cleaned_str += ' '
-    return cleaned_str.split()
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
@@ -184,11 +175,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     dict_length = sum(frequencies.values())
     return {token: word_count / dict_length for token, word_count in frequencies.items()}
 
-    tf_values = {}
-    for token in frequencies:
-        tf_values[token] = frequencies[token] / total_count
-
-    return tf_values
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
