@@ -93,7 +93,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_find_correct_word_by_jaccard(self):
         """
-        Jaccard Similarity metric scenario
+        Jaccard distance metric scenario
         """
         for misspelled_token, expected_word in zip(self.misspelled, self.expected):
             self.assertEqual(
@@ -106,7 +106,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_find_correct_word_by_frequency(self):
         """
-        Frequency similarity metric scenario
+        Frequency distance metric scenario
         """
         alphabet_en = list("abcdefghijklmnopqrstuvwxyz")
         for misspelled_token, expected_word in zip(self.misspelled, self.expected):
@@ -120,7 +120,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_find_correct_word_by_levenshtein(self):
         """
-        Levenshtein Distance metric scenario
+        Levenshtein distance metric scenario
         """
         for misspelled_token, expected_word in zip(self.misspelled, self.expected):
             self.assertEqual(
@@ -131,7 +131,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_find_correct_word_by_jaro_winkler(self):
         """
-        Jaro-Winkler Similarity metric scenario
+        Jaro-Winkler distance metric scenario
         """
         for misspelled_token, expected_word in zip(self.misspelled, self.expected):
             self.assertEqual(
