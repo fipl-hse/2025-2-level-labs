@@ -168,6 +168,17 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
+    if not all([check_dict(doc_freqs, str, int, False),
+        check_dict(corpus_freqs, str, int, True)]):
+        return None
+    total_doc = sum(doc_freqs.values())
+    total_corpus = sum(corpus_freqs.values())
+    total = total_doc + total_corpus
+    expected_frequency = {}
+    for word, word_in_doc in doc_freqs.items():
+        word_in_corpus = corpus_freqs.get(word, 0)
+        expected_frequency[word] = ((word_in_doc + word_in_corpus) * total_doc) / total
+    return dict(sorted(expected_frequency.items()))
 
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
@@ -181,6 +192,11 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
+    if not all([check_dict(expected, str, float, False),
+                check_dict(observed, str, int, False)]):
+        return None
+    return {term: ((observed[term] - expected[term]) ** 2) /
+            expected[term] for term in observed}
 
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
@@ -194,3 +210,9 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if (not check_dict(chi_values, str, float, False) or
+        alpha not in criterion):
+        return None
+    return {token: value for token, value in chi_values.items()
+                          if chi_values[token] > criterion[alpha]}
