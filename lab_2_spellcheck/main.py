@@ -309,7 +309,7 @@ def calculate_jaro_distance(
     """
 
 
-def winkler_adjustment_distance(
+def winkler_adjustment(
     token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
 ) -> float | None:
     """
@@ -322,7 +322,9 @@ def winkler_adjustment_distance(
         prefix_scaling (float): Scaling factor for the prefix boost.
 
     Returns:
-        float | None: Jaro-Winkler distance score.
+        float | None: Winkler adjustment score.
+
+    In case of corrupt input arguments, None is returned.
     """
 
 
@@ -339,4 +341,6 @@ def calculate_jaro_winkler_distance(
 
     Returns:
         float | None: Jaro-Winkler distance score.
+
+    In case of corrupt input arguments or corrupt outputs of used functions, None is returned.
     """
