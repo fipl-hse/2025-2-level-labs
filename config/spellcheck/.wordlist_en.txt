@@ -1,3 +1,4 @@
+-
 addons
 apidoc
 arg
@@ -15,6 +16,7 @@ completedprocess
 config
 coverageresults
 ctlr
+damerau
 docstring
 docstrings
 dto
@@ -28,9 +30,13 @@ https
 idf
 init
 iterable
+jaccard
+jaro
 json
 kwargs
 labsettings
+levenshtein
+lexicographically
 macos
 mypy
 namespace
@@ -55,15 +61,19 @@ rst
 stderr
 stdout
 stmt
+stopwords
 str
 subprocess
 sys
+tbd
 tf
 tfidf
 tokenize
+tokenized
 tokenizing
 toml
 unigrams
 utils
 venv
+winkler
 wordlist
