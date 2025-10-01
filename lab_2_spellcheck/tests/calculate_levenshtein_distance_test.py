@@ -9,7 +9,7 @@ import pytest
 from lab_2_spellcheck.main import calculate_levenshtein_distance
 
 
-class LevenshteinDistanceTest(unittest.TestCase):
+class CalculateLevenshteinDistanceTest(unittest.TestCase):
     """
     Tests function for Levenshtein metric calculation.
     """
