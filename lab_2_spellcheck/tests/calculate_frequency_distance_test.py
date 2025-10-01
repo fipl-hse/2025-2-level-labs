@@ -1,5 +1,5 @@
 """
-Checks the second lab frequency distance calculation
+Checks the second lab frequency distance calculation function
 """
 
 # pylint: disable=duplicate-code
@@ -12,9 +12,9 @@ from config.constants import FLOAT_TOLERANCE
 from lab_2_spellcheck.main import calculate_frequency_distance
 
 
-class CalculateFrequencySimilarityTest(unittest.TestCase):
+class CalculateFrequencyDistanceTest(unittest.TestCase):
     """
-    Tests function for frequency similarity calculation.
+    Tests function for frequency distance calculation.
     """
 
     def setUp(self) -> None:
@@ -115,7 +115,7 @@ class CalculateFrequencySimilarityTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_similarity_empty_alphabet(self):
+    def test_calculate_frequency_distance_empty_alphabet(self):
         """
         Check return value for the empty string input
         """

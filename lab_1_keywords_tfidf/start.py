@@ -29,33 +29,23 @@ def main() -> None:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    result = None
-    cleaned_text = clean_and_tokenize(target_text)
-    if not cleaned_text:
-        return
-    cleaned_text = remove_stop_words(cleaned_text, stop_words)
-    if not cleaned_text:
-        return
-    text_frequencies = calculate_frequencies(cleaned_text)
-    if not text_frequencies:
-        return
-    tf_frequencies = calculate_tf(text_frequencies)
-    expected_frequencies = calculate_expected_frequency(text_frequencies, corpus_freqs)
-    if expected_frequencies:
-        chi_value_frequency = calculate_chi_values(expected_frequencies, text_frequencies)
-    else:
-        chi_value_frequency = None
-    if not tf_frequencies:
-        return
-    tfidf_frequencies = calculate_tfidf(tf_frequencies, idf)
-    if not tfidf_frequencies:
-        return
-    if not chi_value_frequency:
-        return
-    only_key_words = extract_significant_words(chi_value_frequency, 0.001)
-    if only_key_words:
-        top_words = get_top_n(only_key_words, 10)
-        result = top_words
+    tokens = clean_and_tokenize(target_text) or []
+    tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
+    print(tokens_without_stopwords)
+    frequencies = calculate_frequencies(tokens_without_stopwords) or {}
+    term_freq_tf = calculate_tf(frequencies) or {}
+    print(term_freq_tf)
+    term_freq_tfidf = calculate_tfidf(term_freq_tf, idf) or {}
+    print(term_freq_tfidf)
+    top_key_words = get_top_n(term_freq_tfidf, 10) or []
+    print(', '.join(top_key_words))
+    expected = calculate_expected_frequency(frequencies, corpus_freqs) or {}
+    chi_values = calculate_chi_values(expected, frequencies) or {}
+    significant_words = extract_significant_words(chi_values, alpha=0.001) or {}
+    print(significant_words)
+    key_words_chi = get_top_n(chi_values, 10) or []
+    print(', '.join(key_words_chi))
+    result = key_words_chi
     assert result, "Keywords are not extracted"
 
 
