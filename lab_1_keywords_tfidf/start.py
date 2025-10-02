@@ -24,41 +24,43 @@ def main() -> None:
         target_text = file.read()
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
+    with open("assets/IDF.json", "r", encoding="utf-8") as file:
+        idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
 
     cleaned_tokens = clean_and_tokenize(target_text)
-    if not cleaned_tokens:
+    if cleaned_tokens is None:
         print("Error: No tokens after cleaning")
         return
 
     removed_stop_words = remove_stop_words(cleaned_tokens, stop_words)
-    if not removed_stop_words:
+    if removed_stop_words is None:
         print("Error: No words after stop words removal")
         return
 
     calculated_frequencies = calculate_frequencies(removed_stop_words)
-    if not calculated_frequencies:
+    if calculated_frequencies is None:
         print("Error: Could not calculate frequencies")
         return
 
     expected_frequency = calculate_expected_frequency(calculated_frequencies, corpus_freqs)
-    if not expected_frequency:
+    if expected_frequency is None:
         print("Error: Could not calculate expected frequency")
         return
 
     chi_values = calculate_chi_values(expected_frequency, calculated_frequencies)
-    if not chi_values:
+    if chi_values is None:
         print("Error: Could not calculate chi values")
         return
 
     significant_words = extract_significant_words(chi_values, 0.05)
-    if not significant_words:
+    if significant_words is None:
         print("Error: No significant words found")
         return
 
     result = get_top_n(significant_words, 10)
-    if not result:
+    if result is None:
         print("Error: Could not get top words")
         return
 
