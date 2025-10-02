@@ -41,8 +41,6 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     return dictionary
 
-
-
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
     """
     Found words out of vocabulary.
@@ -56,6 +54,23 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(tokens, list) or not isinstance(vocabulary, dict):
+        return None
+
+    for element in tokens:
+        if not isinstance(element, str):
+            return None
+
+    for token, value in vocabulary.items():
+        if not isinstance(token, str) or not isinstance(value, float):
+            return None
+
+    list_out_of_vocab_words=[]
+    for words in tokens:
+        if words not in vocabulary:
+            list_out_of_vocab_words.append(words)
+
+    return list_out_of_vocab_words
 
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
@@ -72,7 +87,35 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
+    if not isinstance(token, str):
+        return None
 
+    if not isinstance(candidate, str):
+        return None
+    
+    if not token and not candidate:
+        return 0.0
+
+    tokens_unique=set(token)
+    candidate_unique=set(candidate)
+
+    intersection=set()
+    for element in tokens_unique:
+        if element in candidate_unique:
+            intersection.add(element)
+
+    unification=set()
+    for element in tokens_unique:
+        if element in tokens_unique:
+            unification.add(element)
+
+    for element in candidate_unique:
+        if element not in unification:
+            unification.add(element)
+
+    jaccard_distance=1-(len(intersection)/len(unification))
+
+    return jaccard_distance
 
 def calculate_distance(
     first_token: str,
@@ -94,6 +137,16 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
+
+    if not isinstance(first_token, str) or not isinstance(vocabulary, dict):
+        return None
+    
+    for token, value in vocabulary.items():
+        if not isinstance(token, str) or not isinstance(value, float):
+            return None
+
+    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
+        return None
 
 
 def find_correct_word(

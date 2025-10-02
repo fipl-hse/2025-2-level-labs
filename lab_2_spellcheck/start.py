@@ -6,7 +6,13 @@ Spellcheck starter
 
 from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
-    remove_stop_words
+    remove_stop_words,
+)
+
+from lab_2_spellcheck.main import (
+    build_vocabulary,
+    find_out_of_vocab_words,
+    calculate_jaccard_distance,
 )
 
 def main() -> None:
