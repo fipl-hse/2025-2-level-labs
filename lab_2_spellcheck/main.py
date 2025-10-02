@@ -43,6 +43,9 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
+    if not all([check_list(tokens, str, False), check_dict(vocabulary, str, float, False)]):
+        return None
+    return [token for token in tokens if token not in vocabulary]
 
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
