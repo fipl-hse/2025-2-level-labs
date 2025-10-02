@@ -4,6 +4,10 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
+from lab_1_keywords_tfidf.main import (
+    check_dict,
+    check_list,
+)
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -19,6 +23,11 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False):
+        return None
+    amount_tokens = len(tokens)
+    return {token: tokens.count(token) /
+            amount_tokens for token in tokens}
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
@@ -34,6 +43,9 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
+    if not all([check_list(tokens, str, False), check_dict(vocabulary, str, float, False)]):
+        return None
+    return [token for token in tokens if token not in vocabulary]
 
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
@@ -50,6 +62,16 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
+    if not all([isinstance(token, str), isinstance(candidate, str)]):
+        return None
+    if not token and not candidate:
+        return 0.0
+    if not token or not candidate:
+        return 1.0
+    token_set = set(token)
+    candidate_set = set(candidate)
+    return (1 - (len(token_set & candidate_set)) /
+            len(token_set | candidate_set))
 
 
 def calculate_distance(
@@ -72,6 +94,20 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
+    if not all([isinstance(first_token, str),
+                check_dict(vocabulary, str, float, False),
+                method in ("jaccard",
+                               "frequency-based",
+                               "levenshtein",
+                               "jaro-winkler"),
+                check_list(alphabet, str, False),
+                alphabet is not None]): #too much not, redo
+        return None
+    calculated_distance_score = {}
+    for token in vocabulary:
+        if method == 'jaccard':
+            calculated_distance_score[token] = calculate_jaccard_distance(first_token, token)
+    return calculated_distance_score
 
 
 def find_correct_word(
@@ -95,6 +131,7 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
+    
 
 
 def initialize_levenshtein_matrix(
