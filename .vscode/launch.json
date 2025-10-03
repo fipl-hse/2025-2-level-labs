@@ -1,0 +1,143 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "[LAB 1] Start",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "start.py",
+            "cwd": "${workspaceFolder}/lab_1_keywords_tfidf",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[LAB 2] Start",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "start.py",
+            "cwd": "${workspaceFolder}/lab_2_spellcheck",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 1] Learn debug",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_1_run_debug.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 2] Learn conditions",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_2_conditions.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 3] Learn numbers",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_3_integers.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 4] Learn strings",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_4_strings.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 5] Learn lists",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_5_lists.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Run tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/run_tests.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "args":[
+                "--pr-name", "test",
+                "--pr-author", "test"
+            ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Run spelling",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/spellcheck/check_spelling.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "args":[],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Sort spelling dictionaries",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/spellcheck/sort_wordlist.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "args":[],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Check coverage",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/collect_coverage/coverage_analyzer.py",
+            "args": [],
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Update forks",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/github/update_forks.py",
+            "args": [
+                "--config", "config/github/update_fork_config.json"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        }
+    ]
+}
