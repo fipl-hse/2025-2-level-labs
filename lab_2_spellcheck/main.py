@@ -407,6 +407,10 @@ def calculate_jaro_distance(
     if token == candidate:
         return 0.0
     jaro_distance = ((matches/len(token) + (matches/len(candidate)) + (matches - transpositions/2)/matches) / 3.0)
+    #why does this not work? the formula is correct and when 
+    #I use it with any known examples, it works just fine. 
+    # It's only the tests that are complaining
+    # and at this point I don't know what else I can do
     return round(jaro_distance, 4)
 def winkler_adjustment(
     token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
