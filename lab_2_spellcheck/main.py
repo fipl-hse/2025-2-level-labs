@@ -7,6 +7,23 @@ from typing import Literal
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
+    if not isinstance(tokens, list):
+        return None
+    for t in tokens:
+        if not isinstance(t, str):
+            return None
+    if len(tokens) == 0:
+        return {}
+    vocab = {}
+    for token in tokens:
+        if token in vocab:
+            vocab[token] += 1
+        else:
+            vocab[token] = 1
+    total = len(tokens)
+    for word in vocab:
+        vocab[word] = vocab[word] / total
+    return vocab
     """
     Build a vocabulary from the documents.
 
@@ -20,8 +37,22 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     In case of corrupt input arguments, None is returned.
     """
 
-
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
+    if not isinstance(tokens, list):
+        return None
+    for t in tokens:
+        if not isinstance(t, str):
+            return None
+    if not isinstance(vocabulary, dict):
+        return None
+    for k, v in vocabulary.items():
+        if not isinstance(k, str) or not isinstance(v, float):
+            return None
+    out_of_vocab = []
+    for token in tokens:
+        if token not in vocabulary:
+            out_of_vocab.append(token)
+    return out_of_vocab
     """
     Found words out of vocabulary.
 
