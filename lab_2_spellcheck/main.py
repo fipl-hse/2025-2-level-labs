@@ -4,6 +4,51 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
+from math import floor, ceil
+
+
+def check_list(user_input, elements_type: type, can_be_empty: bool) -> bool:
+    """
+    Check if the object is a list containing elements of a certain type.
+
+    Args:
+        user_input (Any): Object to check
+        elements_type (type): Expected type of list elements
+        can_be_empty (bool): Whether an empty list is allowed
+
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    if not isinstance(user_input, list):
+        return False
+    if can_be_empty:
+        if user_input == []:
+            return True
+    else:
+        if user_input == []:
+            return False
+    return all(isinstance(step1, elements_type) for step1 in user_input)
+
+def check_dict(user_input, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    """
+    Check if the object is a dictionary with keys and values of given types.
+
+    Args:
+        user_input (Any): Object to check
+        key_type (type): Expected type of dictionary keys
+        value_type (type): Expected type of dictionary values
+        can_be_empty (bool): Whether an empty dictionary is allowed
+
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    if not isinstance(user_input, dict):
+        return False
+    if user_input == {}:
+        return can_be_empty
+    if all(isinstance(step1, key_type) for step1 in user_input.keys()):
+        return all(isinstance(step2, value_type) for step2 in user_input.values())
+    return False
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -19,6 +64,14 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
+    dict_frequency = {}
+    if isinstance(tokens, list) and all(isinstance(step1, str) for step1 in tokens):
+        for i in tokens:
+            dict_frequency.update({i : (tokens.count(i))/len(tokens)})
+        if dict_frequency == {}:
+            return None
+        return dict_frequency
+    return None
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
@@ -34,6 +87,15 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
+    if not (check_list(tokens, str, False) and check_dict(vocabulary, str, float, False)):
+        return None
+    incorrect_words_lst = []
+    for i in tokens:
+        if i in vocabulary:
+            continue
+        else:
+            incorrect_words_lst.append(i)
+    return incorrect_words_lst
 
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
@@ -50,6 +112,13 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
+    if not (isinstance(token, str) and isinstance(candidate, str)):
+        return None
+    if token == "" and candidate == "":
+        return 1.0
+    sym = set(token).symmetric_difference(set(candidate))
+    union = set(token).union(set(candidate))
+    return len(sym)/ len(union)
 
 
 def calculate_distance(
@@ -110,6 +179,18 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
+    if not (isinstance(token_length, int) and isinstance(candidate_length, int) and token_length >= 0 and candidate_length >= 0):
+        return None
+    matrix2d = [[0 for i in range(candidate_length+1)] for j in range(token_length+1)]
+    if token_length == 0:
+        for i in range(candidate_length+1):
+            matrix2d[0][i] = i
+    else:
+        for i in range(token_length+1):
+            matrix2d[i][0] = i
+        for j in range(candidate_length+1):
+            matrix2d[0][j] = j
+    return matrix2d
 
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
@@ -123,6 +204,16 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
+    if not (isinstance(token, str) and isinstance(candidate, str)):
+        return None
+    matrix2d = initialize_levenshtein_matrix(len(token), len(candidate))
+    for i in range(1, len(token) + 1):
+        for j in range(1, len(candidate) + 1):
+            if token[i - 1] == candidate[j - 1]:
+                matrix2d[i][j] = matrix2d[i - 1][j - 1]
+            else:
+                matrix2d[i][j] = 1 + min(matrix2d[i][j - 1], matrix2d[i - 1][j], matrix2d[i - 1][j - 1])
+    return matrix2d
 
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
@@ -137,6 +228,10 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
+    if not (isinstance(token, str) and isinstance(candidate, str)):
+        return None
+    matrix2d = fill_levenshtein_matrix(token, candidate)
+    return matrix2d[len(token)][len(candidate)]
 
 
 def delete_letter(word: str) -> list[str]:
@@ -307,8 +402,12 @@ def calculate_jaro_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-
-
+    if matches == 0:
+        return 1.0
+    if token == candidate:
+        return 0.0
+    jaro_distance = ((matches/len(token) + (matches/len(candidate)) + (matches - transpositions/2)/matches) / 3.0)
+    return round(jaro_distance, 4)
 def winkler_adjustment(
     token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
 ) -> float | None:
