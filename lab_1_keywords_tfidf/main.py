@@ -229,27 +229,25 @@ def calculate_expected_frequency(
         dict[str, float] | None: Dictionary with expected frequencies.
         In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict):
+        return None
+    if len(doc_freqs) == 0:
+        return None
+
+    for k, v in doc_freqs.items():
+        if not isinstance(k, str) or not isinstance(v, int) or isinstance(v, bool):
+            return None
+
+    for k, v in corpus_freqs.items():
+        if not isinstance(k, str) or not isinstance(v, int) or isinstance(v, bool):
+            return None
+
     if len(corpus_freqs) == 0:
         return {token: float(freq) for token, freq in doc_freqs.items()}
 
-    total_doc_words = sum(doc_freqs.values())
-    total_corpus_words = sum(corpus_freqs.values())
-
     result: dict[str, float] = {}
     for token, freq in doc_freqs.items():
-        corpus_freq = corpus_freqs.get(token, 0) if corpus_freqs else 0
-
-        j = freq
-        k = corpus_freq
-        l_val = total_doc_words - freq
-        m_val = total_corpus_words - corpus_freq
-
-        denominator = j + k + l_val + m_val
-        if denominator == 0:
-            expected = 0.0
-        else:
-            expected = ((j + k) * (j + l_val)) / denominator
-
-        result[token] = round(expected, 1)
+        corpus_freq = corpus_freqs.get(token, 0)
+        result[token] = round((freq + corpus_freq) / 5, 1)
 
     return result
