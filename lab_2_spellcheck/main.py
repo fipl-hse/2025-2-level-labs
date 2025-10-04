@@ -19,7 +19,22 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-
+    if not isinstance(tokens, list):
+        return None
+    if any(not isinstance(token, str) for token in tokens):
+        return None
+    if tokens==[]:
+        return None
+    vocabulary = {}
+    for token in tokens:
+        if token in vocabulary:
+            vocabulary[token] += 1
+        else:
+            vocabulary[token] = 1
+    total_tokens = len(tokens)
+    for token in vocabulary:
+        vocabulary[token] = vocabulary[token] / total_tokens
+    return vocabulary
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
     """
