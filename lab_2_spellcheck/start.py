@@ -3,6 +3,8 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
+
+
 def main() -> None:
     """
     Launches an implementation.
