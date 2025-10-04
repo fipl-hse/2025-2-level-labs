@@ -5,115 +5,12 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 
-
-def check_list(user_input: any, elements_type: type, can_be_empty: bool) -> bool:
-    """
-    Check if the object is a list containing elements of a certain type.
-
-    Args:
-        user_input (Any): Object to check
-        elements_type (type): Expected type of list elements
-        can_be_empty (bool): Whether an empty list is allowed
-
-    Returns:
-        bool: True if valid, False otherwise
-    """
-    if not isinstance(user_input, list):
-        return False
-    if not user_input:
-        return can_be_empty
-    return all(isinstance(element, elements_type) for element in user_input)
-
-
-
-def check_dict(user_input: any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
-    """
-    Check if the object is a dictionary with keys and values of given types.
-
-    Args:
-        user_input (Any): Object to check
-        key_type (type): Expected type of dictionary keys
-        value_type (type): Expected type of dictionary values
-        can_be_empty (bool): Whether an empty dictionary is allowed
-
-    Returns:
-        bool: True if valid, False otherwise
-    """
-    if not isinstance(user_input, dict):
-        return False
-    if not user_input:
-        return can_be_empty
-    return (all(isinstance(key, key_type) for key in user_input) and
-        all(isinstance(value, value_type) for value in user_input.values()))
-
-
-def check_positive_int(user_input: any) -> bool:
-    """
-    Check if the object is a positive integer (not bool).
-
-    Args:
-        user_input (Any): Object to check
-
-    Returns:
-        bool: True if valid, False otherwise
-    """
-    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
-
-
-def check_float(user_input: any) -> bool:
-    """
-    Check if the object is a float.
-
-    Args:
-        user_input (Any): Object to check
-
-    Returns:
-        bool: True if valid, False otherwise
-    """
-    return isinstance(user_input, float)
-
-
-def clean_and_tokenize(text: str) -> list[str] | None:
-    """
-    Remove punctuation, convert to lowercase, and split into tokens.
-
-    Args:
-        text (str): Original text
-
-    Returns:
-        list[str] | None: A list of lowercase tokens without punctuation.
-        In case of corrupt input arguments, None is returned.
-    """
-    if not isinstance(text, str):
-        return None
-    words = text.lower().split()
-    tokens = []
-    for word in words:
-        cleaned_word = ''.join(
-            symbol for symbol in word
-            if symbol.isalnum())
-        if cleaned_word:
-            tokens.append(cleaned_word)
-    return tokens
-
-
-def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
-    """
-    Exclude stop words from the token sequence.
-
-    Args:
-        tokens (list[str]): Original token sequence
-        stop_words (list[str]): Tokens to exclude
-
-    Returns:
-        list[str] | None: Token sequence without stop words.
-        In case of corrupt input arguments, None is returned.
-    """
-    if not all([check_list(tokens, str, True),
-        check_list(stop_words, str, True)]):
-        return None
-    return [token for token in tokens if token not in set(stop_words)]
-
+from lab_1_keywords_tfidf.main import (
+    check_list,
+    check_dict,
+    clean_and_tokenize,
+    remove_stop_words,
+)
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
@@ -131,10 +28,11 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     if not check_list(tokens, str,  False):
         return None
     vocabulary = {}
+    total_tokens = len(tokens)
     for token in tokens:
         vocabulary[token] = vocabulary.get(token, 0) + 1
     for token in vocabulary:
-        vocabulary[token] = vocabulary[token] / len(tokens)
+        vocabulary[token] /= total_tokens
     return vocabulary
 
 

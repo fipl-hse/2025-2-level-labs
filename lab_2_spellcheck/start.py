@@ -5,6 +5,8 @@ Spellcheck starter
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
 
 
+from lab_2_spellcheck.main import *
+
 def main() -> None:
     """
     Launches an implementation.
