@@ -36,15 +36,12 @@ def main() -> None:
     cleaned_text = clean_and_tokenize(text)
     text_without_stop_words = remove_stop_words(cleaned_text, stop_words)
     vocabulary = build_vocabulary(text_without_stop_words)
-    print(vocabulary)
     absent_words = find_out_of_vocab_words(text_without_stop_words, vocabulary)
-    print(absent_words)
     for word in absent_words:
         calculate_distance = (word, vocabulary, "jaccard")
     if calculate_distance is not None:
-        return calculate_distance
-    result = calculate_distance
-    assert result, "Result is None"
+        print(calculate_distance)
+    assert calculate_distance, "Result is None"
 
 
 if __name__ == "__main__":
