@@ -130,12 +130,12 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
     if not check_list(tokens, str,  False):
         return None
-    vocab = {}
+    vocabulary = {}
     for token in tokens:
-        vocab[token] = vocab.get(token, 0) + 1
-    for token in vocab:
-        vocab[token] = vocab[token] / len(tokens)
-    return vocab
+        vocabulary[token] = vocabulary.get(token, 0) + 1
+    for token in vocabulary:
+        vocabulary[token] = vocabulary[token] / len(tokens)
+    return vocabulary
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
@@ -151,6 +151,11 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False):
+        return None
+    if not check_dict(vocabulary, str, float, False):
+        return None
+    return [token for token in tokens if token not in vocabulary]
 
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
