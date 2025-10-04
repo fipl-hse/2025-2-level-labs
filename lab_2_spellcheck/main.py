@@ -412,6 +412,7 @@ def calculate_jaro_distance(
     # It's only the tests that are complaining
     # and at this point I don't know what else I can do
     return round(jaro_distance, 4)
+
 def winkler_adjustment(
     token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
 ) -> float | None:
@@ -429,7 +430,15 @@ def winkler_adjustment(
 
     In case of corrupt input arguments, None is returned.
     """
-
+    match_prefix = 0
+    max_distance = 4
+    if len(token) <= max_distance or len(candidate) <= max_distance:
+        max_distance = min(len(token), len(candidate))
+    for i in range(max_distance):
+        if token[i] == candidate[i]:
+            match_prefix += 1
+    adjust = jaro_distance + match_prefix * prefix_scaling * (1 - jaro_distance)
+    return round(adjust, 4)
 
 def calculate_jaro_winkler_distance(
     token: str, candidate: str, prefix_scaling: float = 0.1
