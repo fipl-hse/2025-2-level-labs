@@ -20,7 +20,6 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    calculate_distance = None
     first_result = None
     with open("assets/Master_and_Margarita_chapter1.txt", "r", encoding="utf-8") as file:
         text = file.read()
