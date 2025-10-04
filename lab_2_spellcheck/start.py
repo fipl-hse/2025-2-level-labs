@@ -38,10 +38,10 @@ def main() -> None:
     vocabulary = build_vocabulary(text_without_stop_words)
     absent_words = find_out_of_vocab_words(text_without_stop_words, vocabulary)
     for word in absent_words:
-        calculate_distance = (word, vocabulary, "jaccard")
-    if calculate_distance is not None:
-        print(calculate_distance)
-    result = calculate_distance
+        first_result = calculate_distance(word, vocabulary, "jaccard")
+    if first_result is not None:
+        print(first_result)
+    result = first_result
     assert result, "Result is None"
 
 
