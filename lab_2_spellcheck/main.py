@@ -146,7 +146,10 @@ def calculate_distance(
     result = {}
     if method == "jaccard":
         for el in vocabulary:
-            result[el] = calculate_jaccard_distance(first_token, el)
+            distance = calculate_jaccard_distance(first_token, el)
+            if distance is None:
+                return None
+            result[el] = distance
     return result
 
 
@@ -293,7 +296,7 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not isinstance(word, str) and not check_dict(alphabet, str, False):
+    if not isinstance(word, str) and not check_list(alphabet, str, False):
         return []
     result = []
     for i in range(len(word)):
