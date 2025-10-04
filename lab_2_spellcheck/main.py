@@ -402,6 +402,10 @@ def calculate_jaro_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not (isinstance(token, str) and isinstance(candidate, str) 
+            and isinstance(matches, int) and isinstance(transpositions, int)
+            and matches >= 0 and transpositions >= 0):
+        return None
     if matches == 0:
         return 1.0
     if token == candidate:
@@ -430,6 +434,9 @@ def winkler_adjustment(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not (isinstance(token, str) and isinstance(candidate, str) and isinstance(jaro_distance, float) 
+            and isinstance(prefix_scaling, float)):
+        return None
     match_prefix = 0
     max_distance = 4
     if len(token) <= max_distance or len(candidate) <= max_distance:
@@ -437,8 +444,9 @@ def winkler_adjustment(
     for i in range(max_distance):
         if token[i] == candidate[i]:
             match_prefix += 1
-    adjust = jaro_distance + match_prefix * prefix_scaling * (1 - jaro_distance)
-    return round(adjust, 4)
+    adjust = match_prefix * prefix_scaling  * (1 - jaro_distance)
+    #any advice? answer almost correct
+    return adjust
 
 def calculate_jaro_winkler_distance(
     token: str, candidate: str, prefix_scaling: float = 0.1
@@ -456,3 +464,11 @@ def calculate_jaro_winkler_distance(
 
     In case of corrupt input arguments or corrupt outputs of used functions, None is returned.
     """
+    if not (isinstance(token, str) and isinstance(candidate, str) and isinstance(prefix_scaling, float)):
+        return None
+    matches = get_matches(token, candidate)
+    transpositions = count_transpositions(token, candidate)
+    jaro_distance = calculate_jaro_distance(token, candidate, matches, transpositions)
+    winkler_adjust = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
+    jaro_winkler = 1 - winkler_adjust
+    return jaro_winkler
