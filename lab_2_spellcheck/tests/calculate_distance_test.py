@@ -5,6 +5,7 @@ Checks the second lab distance calculation function
 # pylint: disable=duplicate-code
 
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -450,3 +451,68 @@ class CalculateDistanceTest(unittest.TestCase):
             score_dict = calculate_distance(misspelled_token, self.vocabulary, self.methods[3])
             for token, metric_value in score_dict.items():
                 self.assertAlmostEqual(metric_value, expected_dict[token], FLOAT_TOLERANCE)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark4
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_distance_jaccard_none(self):
+        """
+        Jaccard distance metric returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.calculate_jaccard_distance", return_value=None):
+            result = calculate_distance("boi", self.vocabulary, self.methods[0])
+
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_distance_frequency_none(self):
+        """
+        Frequency distance metric returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.calculate_frequency_distance", return_value=None):
+            result = calculate_distance("boi", self.vocabulary, self.methods[1], self.alphabet)
+
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_distance_levenshtein_none(self):
+        """
+        Levenshtein distance returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.calculate_levenshtein_distance", return_value=None):
+            result = calculate_distance("boi", self.vocabulary, self.methods[2])
+
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark10
+    def test_calculate_distance_jaro_winkler_none(self):
+        """
+        Jaro-Winkler distance returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.calculate_jaro_winkler_distance", return_value=None):
+            result = calculate_distance("boi", self.vocabulary, self.methods[3])
+
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_distance_frequency_no_alphabet(self):
+        """
+        Frequency distance metric scenario with no alphabet passed
+        """
+        expected = {token: 1.0 for token in self.vocabulary}
+        result = calculate_distance("word", self.vocabulary, self.methods[1])
+
+        self.assertDictEqual(result, expected)
+        for token, value in result.items():
+            self.assertAlmostEqual(expected[token], value)
