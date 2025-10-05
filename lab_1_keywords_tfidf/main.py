@@ -5,7 +5,6 @@ Extract keywords based on frequency related metrics
 """
 
 import math
-import string
 from typing import Any
 
 
@@ -100,9 +99,14 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
 
-    translator = str.maketrans('', '', string.punctuation)
-    cleaned_text = text.translate(translator).lower()
-
+    punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
+    cleaned_text = ''
+    
+    for char in text:
+        if char not in punctuation:
+            cleaned_text += char
+            
+    cleaned_text = cleaned_text.lower()
     tokens = cleaned_text.split()
     return [token for token in tokens if token]
 
@@ -251,3 +255,4 @@ def calculate_expected_frequency(
         result[token] = round((freq + corpus_freq) / 5, 1)
 
     return result
+    
