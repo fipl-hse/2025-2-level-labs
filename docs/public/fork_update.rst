@@ -16,9 +16,10 @@
 
    .. image:: ../images/fork_update/copy_original_repo_url.png
 
-3. Откройте терминал в среде разработки PyCharm:
+3. Откройте терминал в среде разработки Visual Studio Code:
 
-   .. image:: ../images/fork_update/pycharm_open_terminal.png
+   Терминал можно открыть нажатием кнопки Terminal -> New Terminal
+   в верхней панели или сочетанием клавиш ``Ctrl + ```.
 
 4. В терминале выполните команду
    ``git remote add upstream <ссылка-на-основной-репозиторий>``:
