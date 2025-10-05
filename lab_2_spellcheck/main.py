@@ -4,6 +4,10 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
+from lab_1_keywords_tfidf.main import(
+    check_list,
+    check_dict,
+)
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -19,12 +23,8 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list):
+    if not check_list(tokens, str, False):
         return None
-
-    for element in tokens:
-        if not isinstance(element, str):
-            return None
 
     all_tokens=len(tokens)
 
@@ -54,16 +54,11 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list) or not isinstance(vocabulary, dict):
+    if not check_list(tokens, str, False):
         return None
 
-    for element in tokens:
-        if not isinstance(element, str):
-            return None
-
-    for token, value in vocabulary.items():
-        if not isinstance(token, str) or not isinstance(value, float):
-            return None
+    if not check_dict(vocabulary, str, float, False):
+        return None
 
     list_out_of_vocab_words=[]
     for words in tokens:
@@ -95,6 +90,8 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     
     if not token and not candidate:
         return 0.0
+    if not token or not candidate:
+        return 1.0
 
     tokens_unique=set(token)
     candidate_unique=set(candidate)
@@ -138,16 +135,21 @@ def calculate_distance(
     In case of corrupt input arguments or unsupported method, None is returned.
     """
 
-    if not isinstance(first_token, str) or not isinstance(vocabulary, dict):
+    if not isinstance(first_token, str) or not check_dict(vocabulary, str, float, False):
         return None
-    
-    for token, value in vocabulary.items():
-        if not isinstance(token, str) or not isinstance(value, float):
-            return None
 
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
 
+    if not check_list(alphabet, str, False) or alphabet is not None:
+        return None
+
+    dictionary_jaccard_distance={}
+    for token, _ in vocabulary.items():
+        if method is "jaccard":
+            dictionary_jaccard_distance[token]=calculate_jaccard_distance(first_token, token)
+    
+    return dictionary_jaccard_distance
 
 def find_correct_word(
     wrong_word: str,
@@ -170,7 +172,33 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
+    if not isinstance(wrong_word, str) or not check_dict(vocabulary, str, float, False):
+        return None
 
+    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
+        return None 
+
+    if not check_list(alphabet, str) or alphabet is not None:
+        return None
+
+    correct_word=calculate_distance(wrong_word, vocabulary, method)
+    if not correct_word:
+        return None
+
+    min_result=min(correct_word.values())
+
+    candidates=[]
+    for element, value in correct_word.items():
+        if value==min_result:
+            candidates.append(element)
+
+    for words, _ in candidates():
+        if len(candidates)==1:
+            return words
+
+    candidates.sort()
+    candidates.sort(key=lambda word: abs(len(word))-len(wrong_word))
+    return candidates[0]
 
 def initialize_levenshtein_matrix(
     token_length: int, candidate_length: int
@@ -185,6 +213,9 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
+    if not isinstance(token_length, int) or not isinstance(candidate_length, int):
+        return None
+
 
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
@@ -226,7 +257,14 @@ def delete_letter(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-
+    if not isinstance(word, str):
+        return []
+    
+    list_of_words=[]
+    for i in range(0, len(word)):
+        deleted=word[:i]+word[i+1:]
+        list_of_words.append(deleted)
+    return list_of_words
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
     """
