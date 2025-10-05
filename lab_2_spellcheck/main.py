@@ -262,7 +262,22 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-
+    new_words = []
+    word_lst = list(word)
+    for i in range (len(word), 1, -1):
+        for j in alphabet:
+            word_lst.insert(i, j)
+            new_word = ''.join(word_lst)
+            new_words.append(new_word)
+            new_word = ''
+            word_lst = list(word)
+    #big question. running the code, tests say that ё shouldn't be there, if 
+    # I make it so ё isn't there, 
+    # it starts demanding it
+    #???
+    #can send screenshots
+    return new_words
+print(add_letter("word", ["a", "s", "f", "t"]))
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     """
