@@ -364,7 +364,21 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
-
+    if not (isinstance(token, str) and isinstance(candidate, str) and isinstance(match_distance, int)
+            and match_distance >= 0):
+        return None
+    matches = 0
+    lst_tru1 = [False] * len(token)
+    lst_tru2 = [False] * len(candidate)
+    for i in range(len(token)):
+        for j in range(max(0, i - match_distance), 
+                       min(len(candidate), i + match_distance + 1)):
+            if (token[i] == candidate[j] and lst_tru2[j] == False):
+                lst_tru1[i] = True
+                lst_tru2[j] = True
+                matches += 1
+                break
+    return matches, lst_tru1, lst_tru2
 
 def count_transpositions(
     token: str, candidate: str, token_matches: list[bool], candidate_matches: list[bool]
@@ -383,7 +397,22 @@ def count_transpositions(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not (isinstance(token, str) and isinstance(candidate, str) 
+            and isinstance(token_matches, list) and isinstance(candidate_matches, list) 
+            and check_list(token_matches, bool, False) and check_list(candidate_matches, bool, False)):
+        return None
+    transpositions = 0
+    point = 0
+    for i in range(len(token)):
+        if (token_matches[i]):
+            while (candidate_matches[point] == False):
+                point += 1
 
+            if (token[i] != candidate[point]):
+                transpositions += 1
+            point += 1
+    transpositions = transpositions//2
+    return transpositions
 
 def calculate_jaro_distance(
     token: str, candidate: str, matches: int, transpositions: int
@@ -407,9 +436,9 @@ def calculate_jaro_distance(
             and matches >= 0 and transpositions >= 0):
         return None
     if matches == 0:
-        return 1.0
+        return 1.0 #for some reasons tests ask to return 1 here when no matching
     if token == candidate:
-        return 0.0
+        return 0.0 #for some reasons tests ask to return 0 here when matching
     jaro_distance = ((matches/len(token) + (matches/len(candidate)) + (matches - transpositions/2)/matches) / 3.0)
     #why does this not work? the formula is correct and when 
     #I use it with any known examples, it works just fine. 
@@ -444,8 +473,9 @@ def winkler_adjustment(
     for i in range(max_distance):
         if token[i] == candidate[i]:
             match_prefix += 1
-    adjust = match_prefix * prefix_scaling  * (1 - jaro_distance)
+    adjust = match_prefix * prefix_scaling * prefix_scaling * (1 - jaro_distance)
     #any advice? answer almost correct
+    # I don't know what to do
     return adjust
 
 def calculate_jaro_winkler_distance(
@@ -466,7 +496,7 @@ def calculate_jaro_winkler_distance(
     """
     if not (isinstance(token, str) and isinstance(candidate, str) and isinstance(prefix_scaling, float)):
         return None
-    matches = get_matches(token, candidate)
+    matches = get_matches(token, candidate)[0]
     transpositions = count_transpositions(token, candidate)
     jaro_distance = calculate_jaro_distance(token, candidate, matches, transpositions)
     winkler_adjust = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
