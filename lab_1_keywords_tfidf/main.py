@@ -271,23 +271,6 @@ def calculate_expected_frequency(
 
     return result
 
-    for k, v in doc_freqs.items():
-        if not isinstance(k, str) or not isinstance(v, int):
-            return None
-
-    for k, v in corpus_freqs.items():
-        if not isinstance(k, str) or not isinstance(v, int):
-            return None
-
-    if len(corpus_freqs) == 0:
-        return {token: float(freq) for token, freq in doc_freqs.items()}
-
-    result_chi: dict[str, float] = {}
-    for token, freq in doc_freqs.items():
-        corpus_freq = corpus_freqs.get(token, 0)
-        result_chi[token] = round((freq + corpus_freq) / 5, 1)
-
-    return result_chi
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
@@ -302,6 +285,8 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
+    if not expected or not observed:
+        return None
     return None
 
 def extract_significant_words(
@@ -318,4 +303,7 @@ def extract_significant_words(
         dict[str, float] | None: Dictionary with significant tokens.
         In case of corrupt input arguments, None is returned.
     """
+    if not chi_values or not isinstance(alpha, float):
+        return None
     return None
+
