@@ -75,7 +75,7 @@ You get error:
          from core_utils.constants import ASSETS_PATH
    ModuleNotFoundError: No module named 'core_utils'
 
-Why? When we run the same from our PyCharm, it works like a charm! What
+Why? When we run the same from our Integrated Development Environment, it works like a charm! What
 is wrong with terminal run? ``core_utils`` is exactly here, in our
 current directory!
 

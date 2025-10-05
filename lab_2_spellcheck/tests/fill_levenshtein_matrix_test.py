@@ -4,6 +4,7 @@ Checks the second lab filling of Levenshtein metric matrix
 """
 
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -127,3 +128,15 @@ class FillLevenshteinMatrixTest(unittest.TestCase):
         expected = [[0]]
         for expected_row, actual_row in zip(expected, actual):
             self.assertListEqual(expected_row, actual_row)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_fill_levenshtein_matrix_initialization_none(self):
+        """
+        Matrix initialization function returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.initialize_levenshtein_matrix", return_value=None):
+            result = fill_levenshtein_matrix("ord", "word")
+
+        self.assertIsNone(result)
