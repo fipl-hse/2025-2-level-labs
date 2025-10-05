@@ -16,6 +16,7 @@ completedprocess
 config
 coverageresults
 ctlr
+ctrl
 damerau
 docstring
 docstrings
