@@ -201,7 +201,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
 
     Returns:
         dict[str, float] | None: Dictionary with tokens and TF values.
-        In case of corrupt input arguments, None is returned...
+        In case of corrupt input arguments, None is returned.
     """
     if not check_dict(frequencies, str, int, True):
         return None
@@ -224,7 +224,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         idf (dict[str, float]): Inverse document frequency values
 
     Returns:
-        dict[str, float] | None: Dictionary with tokens and TF-IDF values.
+        dict[str, float] | None: Dictionary with/// tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
     if not check_dict(term_freq, str, float, True) or not check_dict(idf, str, float, True):
