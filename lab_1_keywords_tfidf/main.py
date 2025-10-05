@@ -127,7 +127,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         return None
     if not all(isinstance(token, str) for token in tokens):
         return None
-    
+
     if not isinstance(stop_words, list):
         return None
     if not all(isinstance(word, str) for word in stop_words):
