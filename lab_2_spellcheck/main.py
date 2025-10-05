@@ -246,7 +246,15 @@ def delete_letter(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-
+    if not isinstance(word, str):
+        return []
+    new_word = ''
+    new_words = []
+    for i in range(len(word)):
+        new_word = word[0:i] + word[i+1:]
+        new_words.append(new_word)
+    sorted_words = sorted(new_words)
+    return sorted_words
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
     """
@@ -262,6 +270,8 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not (isinstance(word, str) and isinstance(alphabet, list) and check_list(alphabet, str, False)):
+        return []
     new_words = []
     word_lst = list(word)
     for i in range (len(word), 1, -1):
@@ -277,7 +287,6 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
     #???
     #can send screenshots
     return new_words
-print(add_letter("word", ["a", "s", "f", "t"]))
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     """
@@ -293,8 +302,17 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not (isinstance(word, str) and isinstance(alphabet, list) and check_list(alphabet, str, False)):
+        return []
+    new_word = ''
+    new_words = []
+    for i in range(len(word), 1, -1):
+        for j in alphabet:
+            new_word = word[0:i-1] + j + word[i:]
+            new_words.append(new_word)
+    return new_words
 
-
+print(replace_letter("word", ["f", "d", "g", "r"]))
 def swap_adjacent(word: str) -> list[str]:
     """
     Generate all possible words by swapping each pair of adjacent letters
