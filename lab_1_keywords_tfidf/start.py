@@ -54,11 +54,11 @@ def main() -> None:
         return
 
     result = get_top_n(tfidf_scores, 10)
-    
+
     if not result:
         print("Ошибка: не удалось извлечь ключевые слова")
         return
-    
+
     print("Извлеченные ключевые слова:")
     for i, keyword in enumerate(result, 1):
         tfidf_score = tfidf_scores.get(keyword, 0.0)

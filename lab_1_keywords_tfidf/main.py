@@ -271,6 +271,7 @@ def calculate_expected_frequency(
 
     return result
 
+
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
@@ -289,6 +290,7 @@ def calculate_chi_values(
         return None
     return None
 
+
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
 ) -> dict[str, float] | None:
@@ -306,4 +308,3 @@ def extract_significant_words(
     if not chi_values or not isinstance(alpha, float):
         return None
     return None
-
