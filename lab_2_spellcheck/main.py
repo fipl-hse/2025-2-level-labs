@@ -274,18 +274,14 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
         return []
     new_words = []
     word_lst = list(word)
-    for i in range (len(word), 1, -1):
+    for i in range (len(word)):
         for j in alphabet:
             word_lst.insert(i, j)
             new_word = ''.join(word_lst)
             new_words.append(new_word)
             new_word = ''
             word_lst = list(word)
-    #big question. running the code, tests say that ё shouldn't be there, if 
-    # I make it so ё isn't there, 
-    # it starts demanding it
-    #???
-    #can send screenshots
+    #what's wrong with this?
     return new_words
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -306,13 +302,13 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
         return []
     new_word = ''
     new_words = []
-    for i in range(len(word), 1, -1):
+    for i in range(len(word)):
         for j in alphabet:
-            new_word = word[0:i-1] + j + word[i:]
+            new_word = word.replace(word[i], j)
             new_words.append(new_word)
-    return new_words
+    sorted_words = sorted(new_words)
+    return sorted_words
 
-print(replace_letter("word", ["f", "d", "g", "r"]))
 def swap_adjacent(word: str) -> list[str]:
     """
     Generate all possible words by swapping each pair of adjacent letters
@@ -326,7 +322,28 @@ def swap_adjacent(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-
+    new_word = ''
+    new_words = []
+    # # for i in range(0, len(word), 2):
+    # #     new_word += word[i+1] + word[i]
+    # #     new_words.append(new_word)
+    # for i in range(0, len(word), 2):
+    #     new_word = ''.join([ word[i:i+2][::-1]])
+    #     new_words.append(new_word)
+    # return new_words
+    for i in range(len(word)):
+        one_letter = word[i]
+        if i <= len(word):
+            two_letter = word[i]
+        else:
+            two_letter = ''
+        if i == 0:
+            new_word = two_letter + one_letter + word[2:]
+        else:
+            new_word = word[0:i-1] + two_letter + one_letter + word[i:]
+            new_words.append(new_word)
+    return new_words
+print(swap_adjacent("word"))
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     """
