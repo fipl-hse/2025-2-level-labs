@@ -310,8 +310,3 @@ def extract_significant_words(
     if not chi_values or not isinstance(alpha, float):
         return None
     return None
-
-python -m mypy lab_1_keywords_tfidf --config-file pyproject.toml
-git add lab_1_keywords_tfidf/main.py
-git commit -m "Fix mypy errors: correct return type and variable redefinition"
-git push origin feature/your-feature-nam
