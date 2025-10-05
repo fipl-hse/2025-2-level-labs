@@ -5,6 +5,7 @@ Checks the second lab frequency distance calculation function
 # pylint: disable=duplicate-code
 
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -126,3 +127,19 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
                 self.assertAlmostEqual(score, 0.12, FLOAT_TOLERANCE)
             else:
                 self.assertAlmostEqual(score, 1.0, FLOAT_TOLERANCE)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_frequency_distance_adjustment_none(self):
+        """
+        Case of Winkler adjustment function returning None
+        """
+        with mock.patch("lab_2_spellcheck.main.propose_candidates", return_value=None):
+            result = calculate_frequency_distance("boyi", self.vocabulary, [])
+
+        self.assertDictEqual(self.empty_dict, result)
+
+        for token, value in result.items():
+            self.assertAlmostEqual(self.empty_dict[token], value)

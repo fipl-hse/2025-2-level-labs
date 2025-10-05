@@ -6,6 +6,7 @@ Checks the second lab candidate proposal
 
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import pytest
 
@@ -117,3 +118,30 @@ class ProposeCandidatesTest(unittest.TestCase):
         Empty word scenario
         """
         self.assertTupleEqual(propose_candidates("", []), ())
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_propose_candidates_generate_candidates_none(self):
+        """
+        Candidates generation function returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.generate_candidates", return_value=None):
+            result = propose_candidates("ord", self.alphabet_en)
+
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_propose_candidates_generate_secondary_candidates_none(self):
+        """
+        Candidates generation function returning None for new candidates scenario
+        """
+        with mock.patch(
+            "lab_2_spellcheck.main.generate_candidates", side_effect=[["proper", "candidate"], None]
+        ):
+            result = propose_candidates("", self.alphabet_en)
+        self.assertIsNone(result)
