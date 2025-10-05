@@ -42,15 +42,27 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     return all(isinstance(k, key_type) and isinstance(v, value_type) for k, v in user_input.items())
 
 def check_positive_int(user_input: Any) -> bool:
-    """
+     """
     Check if the object is a positive integer (not bool).
+
+    Args:
+        user_input (Any): Object to check
+
+    Returns:
+        bool: True if valid, False otherwise
     """
-    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
+     return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
 
 def check_float(user_input: Any) -> bool:
     """
     Check if the object is a float.
-       """
+
+    Args:
+        user_input (Any): Object to check
+
+    Returns:
+        bool: True if valid, False otherwise
+    """
     return isinstance(user_input, float)
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -81,10 +93,10 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False):
+    if not all([check_list(tokens, str, True),
+        check_list(stop_words, str, True)]):
         return None
-    cleaned_tokens = [token for token in tokens if token not in stop_words]
-    return cleaned_tokens
+    return [token for token in tokens if token not in set(stop_words)]
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
@@ -115,11 +127,11 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     if (not check_dict(frequencies, str, int, False) and
         not check_dict(frequencies, str, float, False)) or not check_positive_int(top):
         return None
-    freq_lst_sorted = sorted(frequencies.items(), key = lambda item: (-item[1], item[0]))
-    top = min(top, len(freq_lst_sorted))
-    top_words = [item[0] for item in freq_lst_sorted[:top]]
-    return top_words
 
+    freq_lst_sorted = sorted(frequencies.keys(), key=lambda key: (-frequencies[key], key))
+    top = min(top, len(freq_lst_sorted))
+    top_words = freq_lst_sorted[:top]
+    return top_words
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
