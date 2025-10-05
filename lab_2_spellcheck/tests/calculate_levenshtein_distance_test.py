@@ -1,8 +1,9 @@
 """
-Checks the second lab Levenshtein metric function
+Checks the second lab Levenshtein metric calculation function
 """
 
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -61,3 +62,15 @@ class CalculateLevenshteinDistanceTest(unittest.TestCase):
         self.assertEqual(calculate_levenshtein_distance("word", ""), 4)
         self.assertEqual(calculate_levenshtein_distance("", "word"), 4)
         self.assertEqual(calculate_levenshtein_distance("", ""), 0)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_levenshtein_distance_matrix_none(self):
+        """
+        Matrix creation function returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.fill_levenshtein_matrix", return_value=None):
+            result = calculate_levenshtein_distance("ord", "word")
+
+        self.assertIsNone(result)
