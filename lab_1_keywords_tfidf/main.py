@@ -239,11 +239,11 @@ def calculate_expected_frequency(
         return None
 
     for k, v in doc_freqs.items():
-        if not isinstance(k, str) or not isinstance(v, int) or isinstance(v, bool):
+        if not isinstance(k, str) or not isinstance(v, int):
             return None
 
     for k, v in corpus_freqs.items():
-        if not isinstance(k, str) or not isinstance(v, int) or isinstance(v, bool):
+        if not isinstance(k, str) or not isinstance(v, int):
             return None
 
     if len(corpus_freqs) == 0:
