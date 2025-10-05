@@ -23,12 +23,11 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     if not isinstance(user_input, list):
         return False
 
-    if not can_be_empty and len(user_input) == 0:
-        return False
+    if not user_input and can_be_empty is False:
 
-    for element in user_input:
-        if not isinstance(element, elements_type):
-            return False
+        for element in user_input:
+            if not isinstance(element, elements_type):
+                return False
 
     return True
 
@@ -69,7 +68,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return isinstance(user_input, int) and user_input > 0
+    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
 
 
 def check_float(user_input: Any) -> bool:
@@ -82,7 +81,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return isinstance(user_input, float) and not isinstance(user_input, bool)
+    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -124,11 +123,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         list[str] | None: Token sequence without stop words.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list):
+    if not isinstance(tokens, list) or len(tokens) == 0:
         return None
     if not all(isinstance(token, str) for token in tokens):
         return None
-
+    
     if not isinstance(stop_words, list):
         return None
     if not all(isinstance(word, str) for word in stop_words):
@@ -236,7 +235,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         if token in idf:
             tfidf_scores[token] = tf_value * idf[token]
         else:
-            tfidf_scores[token] = tf_value * math.log(47 / 1)
+            tfidf_scores[token] = tf_value * math.log(47)
 
     return tfidf_scores
 
