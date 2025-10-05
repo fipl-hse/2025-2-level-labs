@@ -77,6 +77,16 @@
             }
         },
         {
+            "name": "[SEMINAR 6] Learn dicts",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_6_dicts.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
             "name": "[ADMIN] Run tests",
             "type": "debugpy",
             "request": "launch",
