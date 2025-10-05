@@ -76,7 +76,7 @@ def main() -> None:
         for i, keyword in enumerate(top_expected_keywords, 1):
             print(f"{i}. {keyword} (ожидаемая частота: {expected_freqs[keyword]})")
     else:
-        print("Метод ожидаемых частот не применим для данного текста")
+        print(" Выявлено, что метод ожидаемых частот не применим для данного текста")
     print()
 
     result = top_tfidf_keywords
