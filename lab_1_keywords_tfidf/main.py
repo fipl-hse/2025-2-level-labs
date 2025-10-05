@@ -82,7 +82,7 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return isinstance(user_input, float) and not user_input, bool
+    return isinstance(user_input, float) and not isinstance(user_input, bool)
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -282,7 +282,10 @@ def calculate_expected_frequency(
     if len(corpus_freqs) == 0:
         return {token: float(freq) for token, freq in doc_freqs.items()}
 
-    result: dict[str, float] = {}
+    result_chi: dict[str, float] = {}python -m mypy lab_1_keywords_tfidf --config-file pyproject.toml
+git add lab_1_keywords_tfidf/main.py
+git commit -m "Fix mypy errors: correct return type and variable redefinition"
+git push origin feature/your-feature-nam
     for token, freq in doc_freqs.items():
         corpus_freq = corpus_freqs.get(token, 0)
         result[token] = round((freq + corpus_freq) / 5, 1)
