@@ -201,7 +201,7 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
 
     Returns:
         dict[str, float] | None: Dictionary with tokens and TF values.
-        In case of corrupt input arguments, None is returned.
+        In case of corrupt input arguments, None is returned...
     """
     if not check_dict(frequencies, str, int, True):
         return None
