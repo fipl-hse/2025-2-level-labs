@@ -55,9 +55,14 @@ def main() -> None:
 
     result = get_top_n(tfidf_scores, 10)
     
+    if not result:
+        print("Ошибка: не удалось извлечь ключевые слова")
+        return
+    
     print("Извлеченные ключевые слова:")
     for i, keyword in enumerate(result, 1):
-        print(f"{i}. {keyword} (TF-IDF: {tfidf_scores[keyword]:.4f})")
+        tfidf_score = tfidf_scores.get(keyword, 0.0)
+        print(f"{i}. {keyword} (TF-IDF: {tfidf_score:.4f})")
 
     assert result, "Keywords are not extracted"
 
