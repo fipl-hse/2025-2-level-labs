@@ -117,6 +117,9 @@ def calculate_distance(
         return {candidate: calculate_jaccard_distance(first_token, candidate)
                 for candidate
                 in vocabulary.keys()}
+    elif method == "frequency-based":
+        # Для frequency-based метода используем функцию calculate_frequency_distance
+        return calculate_frequency_distance(first_token, vocabulary, alphabet or [])
 
 
 def find_correct_word(
@@ -216,6 +219,7 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     """
 
 
+
 def delete_letter(word: str) -> list[str]:
     """
     Generate all possible words by deleting one letter from the word.
@@ -228,7 +232,15 @@ def delete_letter(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    if not word:
+        return []
 
+    return sorted([
+        word[:indx] + word[indx+1:]
+        for indx in range(len(word))
+    ])
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
     """
@@ -244,7 +256,17 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str) or not check_list(alphabet, str, False):
+        return []
+    if not word:
+        return []
 
+
+    return sorted([
+        word[:indx] + letter + word[indx:]
+        for indx in range(len(word)+1)
+        for letter in alphabet
+    ])
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     """
@@ -260,6 +282,17 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str) or not check_list(alphabet, str, False):
+        return []
+    if not word:
+        return []
+
+
+    return sorted([
+        word[:indx] + letter + word[indx+1:]
+        for indx in range(len(word))
+        for letter in alphabet
+    ])
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -275,7 +308,15 @@ def swap_adjacent(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    if not word:
+        return []
 
+    return sorted([
+        word[:indx] + word[indx+1] + word[indx] + word[indx+2:]
+        for indx in range(len(word)-1)
+    ])
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     """
@@ -291,6 +332,18 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
+        return None
+    if not word:
+        return sorted(list(alphabet))
+
+
+    return sorted(list(
+        delete_letter(word)
+        + add_letter(word, alphabet)
+        + replace_letter(word, alphabet)
+        + swap_adjacent(word)
+    ))
 
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
@@ -307,6 +360,34 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str):
+        return None
+    # пустой алфавит для непустого слова — ошибка
+    if word != "" and not check_list(alphabet, str, True):
+        return None
+
+    # --- пустое слово ---
+    if word == "":
+        if not check_list(alphabet, str, True) or not alphabet:
+            return ()
+        # возвращаем все односимвольные и двухсимвольные комбинации в порядке alphabet
+        result = []
+        for first_char in alphabet:
+            # добавляем односимвольную комбинацию
+            result.append(first_char)
+            # добавляем двухсимвольные комбинации
+            for second_char in alphabet:
+                result.append(first_char + second_char)
+        return tuple(result)
+
+    level1 = generate_candidates(word, alphabet)
+    if level1 is None:
+        return None
+
+    # двухуровневая генерация: для каждого первого уровня применяем вторую правку
+    level2_set = {candidate for token in level1 for candidate in (generate_candidates(token, alphabet) or [])}
+
+    return tuple(sorted(level2_set))
 
 
 def calculate_frequency_distance(
@@ -325,6 +406,38 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str):
+        return None
+    if not isinstance(frequencies, dict):
+        return None
+    if not check_list(alphabet, str):
+        return None
+
+    # proposed_candidates = propose_candidates(word, alphabet)
+    # if not propose_candidates:
+    #     return None
+
+    # frequency_distances = {}
+    # for candidate in proposed_candidates:
+    #     freq = frequencies.get(candidate, 0.0)
+    #     # Преобразуем частоту в расстояние (чем выше частота, тем меньше расстояние)
+    #     frequency_distances[candidate] = 1.0 - freq
+
+    # return frequency_distances
+        # Для frequency-based метода расстояние = 1 - относительная частота
+    # Если слова нет в словаре, считаем частоту = 0
+    frequency_distances = {}
+    for candidate in frequencies.keys():
+        freq = frequencies.get(candidate, 0.0)
+        # Преобразуем частоту в расстояние (чем выше частота, тем меньше расстояние)
+        frequency_distances[candidate] = 1.0 - freq
+
+    return frequency_distances
+"""
+Функция принимает слово с опечаткой и
+словарь частот, возвращает словарь
+с кандидатами и их растоянием на основе частотности.
+"""
 
 
 def get_matches(
