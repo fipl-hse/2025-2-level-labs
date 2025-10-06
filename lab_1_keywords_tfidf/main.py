@@ -142,11 +142,9 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, True):
+    if not check_dict(frequencies, str, int, False):
         return None
     total = sum(frequencies.values())
-    if total == 0:
-        return {}
     return {token: count / total for token, count in frequencies.items()}
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
