@@ -166,6 +166,7 @@ def initialize_levenshtein_matrix(
     """
 
 
+
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
     """
     Fill a Levenshtein matrix with edit distances between all prefixes.
@@ -205,6 +206,13 @@ def delete_letter(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    words_of_word = []
+    for char in word:
+        new_word = word.replace(char, '')
+        words_of_word.append(new_word)
+    return sorted(words_of_word)
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
