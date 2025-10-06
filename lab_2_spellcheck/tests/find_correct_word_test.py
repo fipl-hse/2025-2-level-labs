@@ -3,6 +3,7 @@ Checks the second lab word search function
 """
 
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -93,7 +94,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_find_correct_word_by_jaccard(self):
         """
-        Jaccard Similarity metric scenario
+        Jaccard distance metric scenario
         """
         for misspelled_token, expected_word in zip(self.misspelled, self.expected):
             self.assertEqual(
@@ -106,7 +107,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_find_correct_word_by_frequency(self):
         """
-        Frequency similarity metric scenario
+        Frequency distance metric scenario
         """
         alphabet_en = list("abcdefghijklmnopqrstuvwxyz")
         for misspelled_token, expected_word in zip(self.misspelled, self.expected):
@@ -120,7 +121,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_find_correct_word_by_levenshtein(self):
         """
-        Levenshtein Distance metric scenario
+        Levenshtein distance metric scenario
         """
         for misspelled_token, expected_word in zip(self.misspelled, self.expected):
             self.assertEqual(
@@ -131,9 +132,23 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_find_correct_word_by_jaro_winkler(self):
         """
-        Jaro-Winkler Similarity metric scenario
+        Jaro-Winkler distance metric scenario
         """
         for misspelled_token, expected_word in zip(self.misspelled, self.expected):
             self.assertEqual(
                 find_correct_word(misspelled_token, self.vocabulary, self.methods[3]), expected_word
             )
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark4
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_find_correct_word_calculate_distance_none(self):
+        """
+        Calculate distance function returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.calculate_distance", return_value=None):
+            result = find_correct_word("word", self.vocabulary, self.methods[0])
+
+        self.assertIsNone(result)

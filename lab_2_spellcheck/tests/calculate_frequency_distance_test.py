@@ -1,10 +1,11 @@
 """
-Checks the second lab frequency distance calculation
+Checks the second lab frequency distance calculation function
 """
 
 # pylint: disable=duplicate-code
 
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -12,9 +13,9 @@ from config.constants import FLOAT_TOLERANCE
 from lab_2_spellcheck.main import calculate_frequency_distance
 
 
-class CalculateFrequencySimilarityTest(unittest.TestCase):
+class CalculateFrequencyDistanceTest(unittest.TestCase):
     """
-    Tests function for frequency similarity calculation.
+    Tests function for frequency distance calculation.
     """
 
     def setUp(self) -> None:
@@ -115,7 +116,7 @@ class CalculateFrequencySimilarityTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_similarity_empty_alphabet(self):
+    def test_calculate_frequency_distance_empty_alphabet(self):
         """
         Check return value for the empty string input
         """
@@ -126,3 +127,19 @@ class CalculateFrequencySimilarityTest(unittest.TestCase):
                 self.assertAlmostEqual(score, 0.12, FLOAT_TOLERANCE)
             else:
                 self.assertAlmostEqual(score, 1.0, FLOAT_TOLERANCE)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_frequency_distance_adjustment_none(self):
+        """
+        Case of Winkler adjustment function returning None
+        """
+        with mock.patch("lab_2_spellcheck.main.propose_candidates", return_value=None):
+            result = calculate_frequency_distance("boyi", self.vocabulary, [])
+
+        self.assertDictEqual(self.empty_dict, result)
+
+        for token, value in result.items():
+            self.assertAlmostEqual(self.empty_dict[token], value)

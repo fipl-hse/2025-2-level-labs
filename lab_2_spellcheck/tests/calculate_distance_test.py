@@ -5,6 +5,7 @@ Checks the second lab distance calculation function
 # pylint: disable=duplicate-code
 
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -93,7 +94,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_calculate_distance_by_jaccard(self):
         """
-        Jaccard Similarity metric scenario
+        Jaccard distance metric scenario
         """
         expected_distances = [
             {  # for the misspelled word "boyi"
@@ -184,7 +185,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_calculate_distance_by_frequency(self):
         """
-        Frequency Similarity metric scenario
+        Frequency distance metric scenario
         """
         expected_values = [
             {
@@ -277,7 +278,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_calculate_distance_by_levenshtein(self):
         """
-        Levenshtein Distance scenario
+        Levenshtein distance scenario
         """
         expected_values = [
             {  # for the misspelled word "boyi"
@@ -366,13 +367,13 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_calculate_distance_by_jaro_winkler(self):
         """
-        Jaro-Winkler Similarity scenario
+        Jaro-Winkler distance scenario
         """
         expected_values = [
-            {
+            {  # for the misspelled word "boyi"
                 "35": 1.0,
                 "across": 0.5278,
-                "boy": 0.0,
+                "boy": 0.0583,
                 "cat": 1.0,
                 "coffee": 0.5278,
                 "friend": 0.5278,
@@ -388,7 +389,7 @@ class CalculateDistanceTest(unittest.TestCase):
                 "stories101": 0.4333,
                 "street": 1.0,
             },
-            {
+            {  # for the misspelled word "streat"
                 "35": 1.0,
                 "across": 0.5556,
                 "boy": 1.0,
@@ -401,18 +402,18 @@ class CalculateDistanceTest(unittest.TestCase):
                 "loved": 0.5444,
                 "named": 0.5444,
                 "opened": 0.5556,
-                "shops": 0.4444,
-                "smart": 0.1611,
-                "stories": 0.054,
-                "stories101": 0.1111,
-                "street": 0.0,
+                "shops": 0.49,
+                "smart": 0.235,
+                "stories": 0.2032,
+                "stories101": 0.2489,
+                "street": 0.0667,
             },
-            {
+            {  # for the misspelled word "coffe"
                 "35": 1.0,
                 "across": 0.4222,
                 "boy": 0.4889,
-                "cat": 0.3889,
-                "coffee": 0.0,
+                "cat": 0.44,
+                "coffee": 0.0333,
                 "friend": 0.4222,
                 "kind": 1.0,
                 "library": 1.0,
@@ -426,12 +427,12 @@ class CalculateDistanceTest(unittest.TestCase):
                 "stories101": 0.4667,
                 "street": 0.5444,
             },
-            {
+            {  # for the misspelled word "cta"
                 "35": 1.0,
                 "across": 0.5,
                 "boy": 1.0,
-                "cat": 0.3444,
-                "coffee": 0.4,
+                "cat": 0.4,
+                "coffee": 0.45,
                 "friend": 1.0,
                 "kind": 1.0,
                 "library": 0.5079,
@@ -450,3 +451,68 @@ class CalculateDistanceTest(unittest.TestCase):
             score_dict = calculate_distance(misspelled_token, self.vocabulary, self.methods[3])
             for token, metric_value in score_dict.items():
                 self.assertAlmostEqual(metric_value, expected_dict[token], FLOAT_TOLERANCE)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark4
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_distance_jaccard_none(self):
+        """
+        Jaccard distance metric returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.calculate_jaccard_distance", return_value=None):
+            result = calculate_distance("boi", self.vocabulary, self.methods[0])
+
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_distance_frequency_none(self):
+        """
+        Frequency distance metric returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.calculate_frequency_distance", return_value=None):
+            result = calculate_distance("boi", self.vocabulary, self.methods[1], self.alphabet)
+
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_distance_levenshtein_none(self):
+        """
+        Levenshtein distance returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.calculate_levenshtein_distance", return_value=None):
+            result = calculate_distance("boi", self.vocabulary, self.methods[2])
+
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark10
+    def test_calculate_distance_jaro_winkler_none(self):
+        """
+        Jaro-Winkler distance returning None scenario
+        """
+        with mock.patch("lab_2_spellcheck.main.calculate_jaro_winkler_distance", return_value=None):
+            result = calculate_distance("boi", self.vocabulary, self.methods[3])
+
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_distance_frequency_no_alphabet(self):
+        """
+        Frequency distance metric scenario with no alphabet passed
+        """
+        expected = {token: 1.0 for token in self.vocabulary}
+        result = calculate_distance("word", self.vocabulary, self.methods[1])
+
+        self.assertDictEqual(result, expected)
+        for token, value in result.items():
+            self.assertAlmostEqual(expected[token], value)
