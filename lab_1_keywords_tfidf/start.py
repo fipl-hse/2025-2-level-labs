@@ -42,6 +42,18 @@ def main() -> None:
     print(', '.join(top_key_words))
     expected = calculate_expected_frequency(frequencies, corpus_freqs) or {}
     chi_values = calculate_chi_values(expected, frequencies) or {}
+
+    significant_words = extract_significant_words(chi_values, 0.001) or {}
+    get_top_n_3 = get_top_n(significant_words, 10) or []
+    print(get_top_n_3)
+
+    two_parts = len(tokens) // 2
+    parts = [tokens [two_parts:], tokens[:two_parts]]
+    get_top_n_4 = get_top_n(parts, 3)
+    print(get_top_n_4)
+
+
+    result = get_top_n_3
     significant_words = extract_significant_words(chi_values, alpha=0.001) or {}
     print(significant_words)
     key_words_chi = get_top_n(chi_values, 10) or []
