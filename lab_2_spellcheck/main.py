@@ -274,15 +274,15 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
         return []
     new_words = []
     word_lst = list(word)
-    for i in range (len(word)):
+    for i in range (len(word) + 1):
         for j in alphabet:
             word_lst.insert(i, j)
             new_word = ''.join(word_lst)
             new_words.append(new_word)
             new_word = ''
             word_lst = list(word)
-    #what's wrong with this?
-    return new_words
+    sorted_words = sorted(new_words)
+    return sorted_words
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     """
