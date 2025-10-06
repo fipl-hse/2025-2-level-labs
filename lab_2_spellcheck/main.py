@@ -229,6 +229,15 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if (not isinstance(word, str) or
+        not check_list(alphabet, str, False)):
+        return []
+    words_of_word = []
+    for i in range(len(word)+1):
+        for letter in alphabet:
+            new_word = word[:i] + letter + word[i:]
+            words_of_word.append(new_word)
+    return sorted(words_of_word)
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
