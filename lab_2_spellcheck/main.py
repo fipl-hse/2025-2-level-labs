@@ -178,7 +178,7 @@ def find_correct_word(
     if alphabet is not None and not check_list(alphabet, str, False):
         return None
     if not all([isinstance(wrong_word, str), check_dict(vocabulary, str, float, False),
-            method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],]):
+            method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]]):
         return None
     if method == 'jaccard':
         jaccard_distance = calculate_distance(wrong_word, vocabulary, method = 'jaccard')
@@ -191,7 +191,7 @@ def find_correct_word(
             min_length_differences = min([len(candidate) - len(wrong_word) for candidate in candidates])
             min_length_candidates = []
             for candidate in candidates:
-                if abs(len(candidate) - len(wrong_word)) == min_length_diff:
+                if len(candidate) - len(wrong_word) == min_length_differences:
                     min_length_candidates.append(candidate)
             return sorted(min_length_candidates)[0]
     return candidates[0]
