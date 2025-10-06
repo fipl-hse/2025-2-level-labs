@@ -55,6 +55,12 @@ def main() -> None:
     get_top_n_3 = get_top_n(significant_words, 10) or []
     print(get_top_n_3)
 
+    two_parts = len(tokens) // 2
+    parts = [tokens [two_parts:], tokens[:two_parts]]
+    get_top_n_4 = get_top_n(parts, 3)
+    print(get_top_n_4)
+
+
     result = get_top_n_3
     assert result, "Keywords are not extracted"
 
