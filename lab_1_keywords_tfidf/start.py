@@ -59,6 +59,6 @@ def main() -> None:
     print("Top 10 keywords:", top_n_words)
     result=top_n_words
     assert result, "Keywords are not extracted"
-    
+
 if __name__ == "__main__":
     main()
