@@ -144,15 +144,9 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(frequencies, dict) or not frequencies:
+    if not check_dict(frequencies, str, (int, float), False):
         return None
     if not check_positive_int(top):
-        return None
-    valid_values = all(isinstance(v, (int, float)) for v in frequencies.values())
-    if not valid_values:
-        return None
-    valid_keys = all(isinstance(k, str) for k in frequencies.keys())
-    if not valid_keys:
         return None
     sorted_keys = sorted(frequencies, key=lambda k: frequencies[k], reverse=True)
     return sorted_keys[:top] if top < len(sorted_keys) else sorted_keys
@@ -278,3 +272,6 @@ Dictionary with chi-squared values
         if chi_value > critical_value
     }
     return significant_words
+
+def generate_ngrams(tokens: list[str], n: int) -> list[str]:
+    return [' '.join(tokens[i:i+n]) for i in range(len(tokens)-n+1)]
