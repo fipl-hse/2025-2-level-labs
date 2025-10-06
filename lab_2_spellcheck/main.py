@@ -207,6 +207,8 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     if not (isinstance(token, str) and isinstance(candidate, str)):
         return None
     matrix2d = initialize_levenshtein_matrix(len(token), len(candidate))
+    if not matrix2d:
+        return None
     for i in range(1, len(token) + 1):
         for j in range(1, len(candidate) + 1):
             if token[i - 1] == candidate[j - 1]:
@@ -231,6 +233,8 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     if not (isinstance(token, str) and isinstance(candidate, str)):
         return None
     matrix2d = fill_levenshtein_matrix(token, candidate)
+    if not matrix2d:
+        return None
     return matrix2d[len(token)][len(candidate)]
 
 
@@ -341,7 +345,6 @@ def swap_adjacent(word: str) -> list[str]:
     new_words.remove(word)
     sorted_words = sorted(new_words)
     return sorted_words
-print(swap_adjacent("word"))
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     """
@@ -357,8 +360,32 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-
-
+    if alphabet == []:
+        return []
+    if not (isinstance(word, str) and isinstance(alphabet, list) and check_list(alphabet, str, False)):
+        return None
+    generated_words = []
+    add_let = []
+    deleted_let = []
+    replace_let = []
+    swapped_let = []
+    if alphabet != []:
+        add_let = add_letter(word, alphabet)
+        replace_let = replace_letter(word, alphabet)
+    if word != "":
+        deleted_let = delete_letter(word)
+        swapped_let = swap_adjacent(word)
+    for i in add_let:
+        generated_words.append(i)
+    for j in replace_let:
+        generated_words.append(j)
+    for b in deleted_let:
+        generated_words.append(b)
+    for c in swapped_let:
+        generated_words.append(c)
+    sorted_words = []
+    sorted_words = sorted(generated_words)
+    return sorted_words
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
     """
     Generate candidate words by applying single-edit operations
@@ -373,8 +400,6 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
-
-
 def calculate_frequency_distance(
     word: str, frequencies: dict, alphabet: list[str]
 ) -> dict[str, float] | None:
@@ -484,14 +509,11 @@ def calculate_jaro_distance(
             and matches >= 0 and transpositions >= 0):
         return None
     if matches == 0:
-        return 1.0 #for some reasons tests ask to return 1 here when no matching
+        return 1.0
     if token == candidate:
-        return 0.0 #for some reasons tests ask to return 0 here when matching
-    jaro_distance = ((matches/len(token) + (matches/len(candidate)) + (matches - transpositions/2)/matches) / 3.0)
-    #why does this not work? the formula is correct and when 
-    #I use it with any known examples, it works just fine. 
-    # It's only the tests that are complaining
-    # and at this point I don't know what else I can do
+        return 0.0
+    jaro_sim = ((matches/len(token) + (matches/len(candidate)) + (matches - transpositions)/matches) / 3.0)
+    jaro_distance = 1 - jaro_sim
     return round(jaro_distance, 4)
 
 def winkler_adjustment(
@@ -521,8 +543,9 @@ def winkler_adjustment(
     for i in range(max_distance):
         if token[i] == candidate[i]:
             match_prefix += 1
-    adjust = match_prefix * prefix_scaling * prefix_scaling * (1 - jaro_distance)
-    #any advice? answer almost correct
+    jaro_sim = 1 - jaro_distance
+    adjust = match_prefix * prefix_scaling * (1 - jaro_sim)
+    #any advice?
     # I don't know what to do
     return adjust
 
