@@ -254,6 +254,15 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if (not isinstance(word, str) or
+        not check_list(alphabet, str, False)):
+        return []
+    words_of_word = []
+    for char in word:
+        for letter in alphabet:
+            new_word = word.replace(char, letter)
+            words_of_word.append(new_word)
+    return sorted(words_of_word)
 
 
 def swap_adjacent(word: str) -> list[str]:
