@@ -42,7 +42,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     return all(isinstance(k, key_type) and isinstance(v, value_type) for k, v in user_input.items())
 
 def check_positive_int(user_input: Any) -> bool:
-     """
+    """
     Check if the object is a positive integer (not bool).
 
     Args:
@@ -51,7 +51,7 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-     return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
+    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
 
 def check_float(user_input: Any) -> bool:
     """
