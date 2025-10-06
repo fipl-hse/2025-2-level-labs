@@ -6,11 +6,10 @@ Lab 2.
 from typing import Literal
 
 from lab_1_keywords_tfidf.main import (
-    check_list,
     check_dict,
-    clean_and_tokenize,
-    remove_stop_words,
+    check_list,
 )
+
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
@@ -70,9 +69,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 1.0 is returned.
     """
-    if not isinstance(token, str):
-        return None
-    if not isinstance(candidate, str):
+    if not isinstance(token, str) or not isinstance(candidate, str):
         return None
     if token == "" and candidate == "":
         return 1.0
@@ -84,8 +81,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return 1.0
 
     intersection = set_token.intersection(set_candidate)
-    jaccard_similarity = len(intersection) / len(union)
-    jaccard_distance = 1 - jaccard_similarity
+    jaccard_distance = 1 - len(intersection) / len(union)
     return jaccard_distance
 
 
@@ -129,6 +125,8 @@ def calculate_distance(
             dist = 1.0 - calculate_jaro_winkler_distance(first_token, word)
         else:
             return None
+        if dist is None:
+            return dist
         distances[word] = dist
     return distances
 
