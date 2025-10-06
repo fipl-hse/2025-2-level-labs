@@ -139,7 +139,8 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         and not check_dict(frequencies, str, float, False)\
         or not check_positive_int(top):
         return None
-    return sorted(frequencies.keys(), key=frequencies.__getitem__, reverse=True)[:top]
+    return sorted(frequencies.keys(), key=lambda key: frequencies[key], reverse=True)[:top]
+#пропис через лямбду
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
@@ -231,6 +232,7 @@ def calculate_chi_values(
         chi = (observed[token] - exp_token_freq)**2 / exp_token_freq
         chi_values[token] = chi
     return chi_values
+
 
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
