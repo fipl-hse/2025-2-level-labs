@@ -67,10 +67,10 @@
             }
         },
         {
-            "name": "[SEMINAR 5] Learn lists",
+            "name": "[SEMINAR 5] Learn lists and tuples",
             "type": "debugpy",
             "request": "launch",
-            "program": "seminars/listing_5_lists.py",
+            "program": "seminars/listing_5_lists_tuples.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
