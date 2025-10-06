@@ -77,8 +77,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     if not isinstance(text, str):
         return None
     text_clean_and_tokenized = []
-    for token in text.split():
-        clean_word = (''.join(symbol.lower() for symbol in token if symbol.isalnum()))
+    for word in text.split():
+        clean_word = (''.join(symbol.lower() for symbol in word if symbol.isalnum()))
         if clean_word:
             text_clean_and_tokenized.append(clean_word)
     return text_clean_and_tokenized
