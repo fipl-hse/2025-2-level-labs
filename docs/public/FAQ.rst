@@ -133,14 +133,14 @@ More about `incompatible re-definitions
 More about `perks of mypy-style static typing
 <https://mypy.readthedocs.io/en/stable/faq.html#why-have-both-dynamic-and-static-typing>`__.
 
-5. During working in PyCharm, interpreter cannot be found
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5. During working in Visual Studio Code, interpreter cannot be found
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In many cases the issue turns out to be wrong opening of the PyCharm.
+In many cases the issue turns out to be wrong opening of the Visual Studio Code.
 Make sure that you open the whole ``202X-2-level-labs`` as a project,
 not just the folder with a particular lab.
 
-More details on correct PyCharm opening can be found in :ref:`starting-guide-label`.
+More details on correct Visual Studio Code opening can be found in :ref:`starting-guide-label`.
 
 Running tests
 -------------
@@ -159,3 +159,46 @@ with infrastructure, call a mentor in the group chat.
 Usually that happens because your fork has conflicts with a
 base repository. Resolve them by merging the upstream, or if it all
 sounds new for you, call a mentor in the group chat.
+
+3. Why does my CI or mentor not like my seminar files?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Seminar files are used to teach you some basic knowledge about Python,
+but they are not part of the laboratory works you submit to the repository.
+So if you accidentally push them to your Pull Request, your mentor
+will ask you to remove them or there might be CI errors.
+
+To undo changes in seminar files, you must first find the commit where
+you changed them. To do so, execute in Visual Studio Code terminal:
+
+.. code:: bash
+
+   git remote -v
+
+You should have two repositories: `origin` and `upstream`, one of which
+is your fork and the other one is the main repository.
+
+.. image:: ../images/FAQ/git_remote.jpg
+
+If you don't have an upstream repository, execute:
+
+.. code:: bash
+
+   git remote add upstream <link-to-the-main-repository>
+   git fetch upstream
+
+Now you need to get the newest state of the main repository via:
+
+.. code:: bash
+
+   git fetch upstream
+
+Once you've done that, you need to replace the current state of
+your local seminar folder with what is available in the main repository.
+
+.. code:: bash
+
+    git checkout upstream/main seminars
+
+The changes will be applied to your current state, and you will be able to
+add, commit, and push the updated changes as usual.
