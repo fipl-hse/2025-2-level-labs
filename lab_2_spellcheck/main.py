@@ -322,6 +322,8 @@ def swap_adjacent(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
     new_word = ''
     new_words = []
     # # for i in range(0, len(word), 2):
@@ -332,17 +334,13 @@ def swap_adjacent(word: str) -> list[str]:
     #     new_words.append(new_word)
     # return new_words
     for i in range(len(word)):
-        one_letter = word[i]
-        if i <= len(word):
-            two_letter = word[i]
-        else:
-            two_letter = ''
-        if i == 0:
-            new_word = two_letter + one_letter + word[2:]
-        else:
-            new_word = word[0:i-1] + two_letter + one_letter + word[i:]
-            new_words.append(new_word)
-    return new_words
+        one_letter = word[i:i+1]
+        two_letter = word[i+1:i+2]
+        new_word = word[0:i] + two_letter + one_letter + word[i+2:]
+        new_words.append(new_word)
+    new_words.remove(word)
+    sorted_words = sorted(new_words)
+    return sorted_words
 print(swap_adjacent("word"))
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
