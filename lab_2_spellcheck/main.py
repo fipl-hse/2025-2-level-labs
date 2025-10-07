@@ -514,7 +514,7 @@ def calculate_jaro_distance(
         return 0.0
     jaro_sim = ((matches/len(token) + (matches/len(candidate)) + (matches - transpositions)/matches) / 3.0)
     jaro_distance = 1 - jaro_sim
-    return round(jaro_distance, 4)
+    return jaro_distance
 
 def winkler_adjustment(
     token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
@@ -538,13 +538,12 @@ def winkler_adjustment(
         return None
     match_prefix = 0
     max_distance = 4
-    if len(token) <= max_distance or len(candidate) <= max_distance:
-        max_distance = min(len(token), len(candidate))
     for i in range(max_distance):
         if token[i] == candidate[i]:
             match_prefix += 1
-    jaro_sim = 1 - jaro_distance
-    adjust = match_prefix * prefix_scaling * (1 - jaro_sim)
+        if token[i] != candidate[i]:
+            break
+    adjust = match_prefix * prefix_scaling * jaro_distance
     #any advice?
     # I don't know what to do
     return adjust
@@ -566,10 +565,23 @@ def calculate_jaro_winkler_distance(
     In case of corrupt input arguments or corrupt outputs of used functions, None is returned.
     """
     if not (isinstance(token, str) and isinstance(candidate, str) and isinstance(prefix_scaling, float)):
+        return 
+    if token == "" or candidate == "":
+        return 1.0
+    if token == candidate:
+        return 0.0
+    matches = get_matches(token, candidate, 10)
+    if matches == None:
+        matches = [0, [], []]
+    transpositions = count_transpositions(token, candidate, matches[1], matches[2])
+    if transpositions == None:
         return None
-    matches = get_matches(token, candidate)[0]
-    transpositions = count_transpositions(token, candidate)
-    jaro_distance = calculate_jaro_distance(token, candidate, matches, transpositions)
+    jaro_distance = calculate_jaro_distance(token, candidate, matches[0], transpositions)
     winkler_adjust = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
-    jaro_winkler = 1 - winkler_adjust
-    return jaro_winkler
+    if winkler_adjust == 0:
+        return jaro_distance
+    if (jaro_distance and winkler_adjust):
+        jaro_winkler = jaro_distance - winkler_adjust 
+        return jaro_winkler
+    return None
+print(calculate_jaro_winkler_distance("", "word"))
