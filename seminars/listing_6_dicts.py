@@ -128,6 +128,7 @@ def find_key(data: dict[str, int]) -> str:
         str: Key with the largest value.
     """
     # student realisation goes here
+    return max(data, key=data.get)
 
 
 # Function calls with expected result:
@@ -147,6 +148,8 @@ def remove_duplicates(data: dict[str, int]) -> dict[str, int]:
         dict[str, int]: Dictionary without duplicates.
     """
     # student realisation goes here
+    
+
 
 
 # Function calls with expected result
@@ -159,6 +162,7 @@ def remove_duplicates(data: dict[str, int]) -> dict[str, int]:
 # Task 5
 # medium level
 def count_letters(sequence: str) -> dict[str, int]:
+
     """
     Count how many times each letter appears in the string.
     Case-insensitive (e.g. 'A' and 'a' are treated the same).

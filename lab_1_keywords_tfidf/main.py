@@ -33,14 +33,14 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     return True
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(user_input: Any, key_type: type, value_type: type | tuple[type, ...], can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
     Args:
         user_input (Any): Object to check
         key_type (type): Expected type of dictionary keys
-        value_type (type): Expected type of dictionary values
+        value_type (type | tuple): Expected type(s) of dictionary values
         can_be_empty (bool): Whether an empty dictionary is allowed
 
     Returns:
@@ -53,7 +53,12 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
         return False
 
     for key, value in user_input.items():
-        if not isinstance(key, key_type) or not isinstance(value, value_type):
+        if not isinstance(key, key_type):
+            return False
+        if isinstance(value_type, tuple):
+            if not any(isinstance(value, vt) for vt in value_type):
+                return False
+        elif not isinstance(value, value_type):
             return False
 
     return True
@@ -147,7 +152,7 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     frequencies = {}
     for token in tokens:
         frequencies[token] = frequencies.get(token, 0) + 1
-    
+
     return frequencies
 
 
@@ -163,14 +168,17 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, int, False) or not check_positive_int(top):
+    if not isinstance(frequencies, dict) or not check_positive_int(top):
         return None
-    
-    if not check_dict(frequencies, str, float, False) or not check_positive_int(top):
+
+    for key, value in frequencies.items():
+        if not isinstance(key, str) or not isinstance(value, (int, float)):
+            return None
+
+    if not frequencies:
         return None
 
     sorted_tokens = sorted(frequencies.keys(), key=lambda x: (-frequencies[x], x))
-
     return sorted_tokens[:top]
 
 
@@ -240,7 +248,7 @@ def calculate_expected_frequency(
         return None
 
     if not corpus_freqs:
-        return doc_freqs 
+        return doc_freqs
 
     result: dict[str, float] = {}
     for token, freq in doc_freqs.items():
