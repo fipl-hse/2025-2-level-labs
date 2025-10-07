@@ -33,14 +33,14 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     return True
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type | tuple[type, ...], can_be_empty: bool) -> bool:
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
     Args:
         user_input (Any): Object to check
         key_type (type): Expected type of dictionary keys
-        value_type (type | tuple): Expected type(s) of dictionary values
+        value_type (type): Expected type of dictionary values
         can_be_empty (bool): Whether an empty dictionary is allowed
 
     Returns:
@@ -53,12 +53,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type | tuple[type, .
         return False
 
     for key, value in user_input.items():
-        if not isinstance(key, key_type):
-            return False
-        if isinstance(value_type, tuple):
-            if not any(isinstance(value, vt) for vt in value_type):
-                return False
-        elif not isinstance(value, value_type):
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
             return False
 
     return True
@@ -159,26 +154,19 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
     Extract the most frequent tokens.
-
-    Args:
-        frequencies (dict[str, int | float]): A dictionary with tokens and their frequencies
-        top (int): Number of tokens to extract
-
-    Returns:
-        list[str] | None: Top-N tokens sorted by frequency.
-        In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(frequencies, dict) or not check_positive_int(top):
+    if not isinstance(frequencies, dict) or not isinstance(top, int) or top <= 0:
         return None
 
+    if not frequencies:
+        return []
+    
     for key, value in frequencies.items():
         if not isinstance(key, str) or not isinstance(value, (int, float)):
             return None
 
-    if not frequencies:
-        return None
-
     sorted_tokens = sorted(frequencies.keys(), key=lambda x: (-frequencies[x], x))
+    
     return sorted_tokens[:top]
 
 

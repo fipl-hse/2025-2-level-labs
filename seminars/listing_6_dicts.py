@@ -128,7 +128,6 @@ def find_key(data: dict[str, int]) -> str:
         str: Key with the largest value.
     """
     # student realisation goes here
-    return max(data, key=data.get)
 
 
 # Function calls with expected result:
