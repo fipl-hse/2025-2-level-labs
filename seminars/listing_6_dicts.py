@@ -89,10 +89,14 @@ def extract_older_people(people: dict[str, int], threshold: int) -> list[str]:
     """
     # student realisation goes here
 
-
+#     result = []
+#     for name, age in people:
+#         if age > threshold:
+#                 result.append(name)
+#     return result
 # Function calls with expected result:
 # assert extract_older_people({'Andrej': 22, 'Alexander': 28, 'Irine': 20},
-#                             20) == ['Andrej', 'Alexander']
+#                              20) == ['Andrej', 'Alexander']
 # assert extract_older_people({'Hera': 45, 'Zagreus': 25, 'Zeus': 48}, 30) == ['Hera', 'Zeus']
 
 
@@ -128,10 +132,20 @@ def find_key(data: dict[str, int]) -> str:
         str: Key with the largest value.
     """
     # student realisation goes here
-
+    max1 = None 
+    max_key = None
+    for key, value in data.items():
+        if max1 == None or value > max1:
+            max1 = value
+            max_key = key
+            continue
+        if value > max1:
+            max1 = value
+            max1 = max_key
+    return max_key
 
 # Function calls with expected result:
-# assert find_key({'Andrej': 10000, 'Artyom': 15000, 'Alexander': 100000}) == 'Alexander'
+assert find_key({'Andrej': 10000, 'Artyom': 15000, 'Alexander': 100000}) == 'Alexander'
 
 
 # Task 4

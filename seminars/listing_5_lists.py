@@ -340,6 +340,11 @@ def find_duplicates(input_list: list) -> list:
     """
     # student implementation goes here
 
+    # duplicates = []
+    # for el in input_list:
+    #     if input_list.count(el)>1 and el not in duplicates:
+    #         duplicates += el
+    #     return duplicates
 
 # Function calls with expected result:
 # find_duplicates([1, 2, 2, 3, 4, 4, 4, 5]) → [2, 4]
@@ -359,9 +364,10 @@ def longest_increasing_subsequence_length(input_list: list) -> int:
     """
     # student implementation goes here
 
+print(longest_increasing_subsequence_length([10, 22, 9]))
 
 # Function calls with expected result:
-# longest_increasing_subsequence_length([10, 22, 9, 33, 21, 50, 41, 60]) → 5
+# longest_increasing_subsequence_length([10, 22, 9, 33, 21, 50, 41, 60]) → 2
 # longest_increasing_subsequence_length([3, 10, 2, 1, 20]) → 3
 
 

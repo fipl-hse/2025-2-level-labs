@@ -28,6 +28,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         if not isinstance(x, elements_type): 
             return False
     return True
+# print(check_list([],int,False))
     
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -103,7 +104,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     word = ''
     t=[]
     for symb in text:
-        if symb in ' ': 
+        if symb == ' ' or symb == '\n':
             if word != '':
                 t.append(word)
             word = ''
@@ -111,19 +112,18 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         word += symb.lower()
     if word != '':
         t.append(word)
-    ans = [] 
-    print(' ')
+    ans = []
     for s in t:
         temp=''
         for symb in s:
-            if symb in '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~':
+            if symb in '!"#$%&\'()*+,./:;<=>?@[\\]^_`{|}~\n':
                 continue
             temp+=symb
-            print(temp)
+        if temp == '-':
+            continue
         if temp != '':
             ans.append(temp)
     return ans
-
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
