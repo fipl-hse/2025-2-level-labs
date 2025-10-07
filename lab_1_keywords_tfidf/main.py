@@ -154,19 +154,26 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
     Extract the most frequent tokens.
+
+    Args:
+        frequencies (dict[str, int | float]): A dictionary with tokens and their frequencies
+        top (int): Number of tokens to extract
+
+    Returns:
+        list[str] | None: Top-N tokens sorted by frequency.
+        In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(frequencies, dict) or not isinstance(top, int) or top <= 0:
+    if not isinstance(frequencies, dict) or not check_positive_int(top):
         return None
 
-    if not frequencies:
-        return []
-    
     for key, value in frequencies.items():
         if not isinstance(key, str) or not isinstance(value, (int, float)):
             return None
 
+    if not frequencies:
+        return None
+
     sorted_tokens = sorted(frequencies.keys(), key=lambda x: (-frequencies[x], x))
-    
     return sorted_tokens[:top]
 
 
