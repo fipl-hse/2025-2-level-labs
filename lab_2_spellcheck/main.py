@@ -96,18 +96,21 @@ def calculate_distance(
     """
     if any([
         not isinstance(first_token, str),
+        not first_token,
         not check_dict(vocabulary, str, float, False),
         method not in ("jaccard",
                        "frequency-based",
                        "levenshtein",
                        "jaro-winkler"),
-        not check_list(alphabet, str, False),
         ]):
         return None
     calculated_distance_score = {}
-    for word in vocabulary:
-        if method == 'jaccard':
-            calculated_distance_score[word] = calculate_jaccard_distance(first_token, word)
+    if method == 'jaccard':
+        for word in vocabulary:
+            distance = calculate_jaccard_distance(first_token, word)
+            if not distance:
+                return None
+            calculated_distance_score[word] = distance
     return calculated_distance_score
 
 
@@ -134,21 +137,22 @@ def find_correct_word(
     """
     if any([
         not isinstance(wrong_word, str),
+        not wrong_word,
         not check_dict(vocabulary, str, float, False),
         method not in ("jaccard",
                        "frequency-based",
                        "levenshtein",
                        "jaro-winkler"),
-        not check_list(alphabet, str, False)
     ]):
         return None
-    candidates = []
-    for candidate in vocabulary:
-        distance_wrong_word = calculate_distance(wrong_word, candidate, method, alphabet)
-        if distance_wrong_word is not None:
-            candidates.append((candidate, distance_wrong_word))
-    candidates.sort(key=lambda x: (x[1], abs(len(wrong_word) - len(x[0])), x[0]))
-    return candidates[0][0]
+    if method == 'frequency-based':
+        if not check_list(alphabet, str, False):
+            return None
+    distance_wrong_word_dict = calculate_distance(wrong_word, vocabulary, method)
+    if not distance_wrong_word_dict:
+        return None
+    return sorted(distance_wrong_word_dict.items(), key=lambda item:
+                  (item[1], abs(len(wrong_word) - len(item[0])), item[0]))[0][0]
 
 
 def initialize_levenshtein_matrix(
@@ -208,11 +212,7 @@ def delete_letter(word: str) -> list[str]:
     """
     if not isinstance(word, str):
         return []
-    words_of_word = []
-    for char in word:
-        new_word = word.replace(char, '')
-        words_of_word.append(new_word)
-    return sorted(words_of_word)
+    return sorted([word[:i] + word[i+1:] for i in range(len(word))])
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -232,12 +232,9 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
     if (not isinstance(word, str) or
         not check_list(alphabet, str, False)):
         return []
-    words_of_word = []
-    for i in range(len(word)+1):
-        for letter in alphabet:
-            new_word = word[:i] + letter + word[i:]
-            words_of_word.append(new_word)
-    return sorted(words_of_word)
+    return sorted([word[:i] + letter + word[i:]
+                   for letter in alphabet
+                   for i in range(len(word)+1)])
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -257,12 +254,10 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if (not isinstance(word, str) or
         not check_list(alphabet, str, False)):
         return []
-    words_of_word = []
-    for char in word:
-        for letter in alphabet:
-            new_word = word.replace(char, letter)
-            words_of_word.append(new_word)
-    return sorted(words_of_word)
+    return sorted([word[:i] + letter + word[i+1:]
+                   for letter in alphabet
+                   for i in range(len(word))
+                   if letter != word[i]])
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -281,10 +276,8 @@ def swap_adjacent(word: str) -> list[str]:
     if not isinstance(word, str):
         return []
     words_of_word = []
-    for i in range(len(word)-1):
-        new_word = word[:i] + word[i+1] + word[i] + word[i+2:]
-        words_of_word.append(new_word)
-    return sorted(words_of_word)
+    return sorted([word[:i] + word[i+1] + word[i] + word[i+2:]
+                   for i in range(len(word)-1)])
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
@@ -304,9 +297,9 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     if (not isinstance(word, str) or
         not check_list(alphabet, str, True)):
         return None
-    candidates = (set(delete_letter(word)) | set(add_letter(word, alphabet)) |
-                  set(replace_letter(word, alphabet)) | set(swap_adjacent(word)))
-    return sorted(list(candidates))
+    #candidates.discard(word)
+    return sorted(set((delete_letter(word) + add_letter(word, alphabet) +
+                  replace_letter(word, alphabet) + swap_adjacent(word))))
 
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
@@ -323,6 +316,15 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
+    if (not isinstance(word, str) or
+        not isinstance(alphabet, dict)):
+        return None
+    elif not word or not alphabet:
+        return None
+    candidates = generate_candidates(word, alphabet)
+    if candidates is None:
+        return tuple()
+    return tuple(candidates)
 
 
 def calculate_frequency_distance(
@@ -341,6 +343,19 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if any([
+        not isinstance(word, str),
+        not word,
+        not isinstance(frequencies, dict),
+        not frequencies,
+        not check_list(alphabet, str, True)
+        ]):
+        return None
+    max_frequency = max(frequencies.values())
+    distance_freq = {}
+    for key, value in frequencies.items():
+        distance_freq[key] = 1 - value / max_frequency
+    return distance_freq
 
 
 def get_matches(
