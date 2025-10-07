@@ -278,6 +278,13 @@ def swap_adjacent(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    words_of_word = []
+    for i in range(len(word)-1):
+        new_word = word[:i] + word[i+1] + word[i] + word[i+2:]
+        words_of_word.append(new_word)
+    return sorted(words_of_word)
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
@@ -294,6 +301,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
+    
 
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
