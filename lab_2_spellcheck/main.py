@@ -400,6 +400,28 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
+    new_words = []
+    add_let = []
+    deleted_let = []
+    replace_let = []
+    swapped_let = []
+    generated_words = []
+    if alphabet != []:
+        add_let = add_letter(word, alphabet)
+        replace_let = replace_letter(word, alphabet)
+    if word != "":
+        deleted_let = delete_letter(word)
+        swapped_let = swap_adjacent(word)
+    for i in add_let:
+        generated_words.append(i)
+    for j in replace_let:
+        generated_words.append(j)
+    for b in deleted_let:
+        generated_words.append(b)
+    for c in swapped_let:
+        generated_words.append(c)
+    return ()
+
 def calculate_frequency_distance(
     word: str, frequencies: dict, alphabet: list[str]
 ) -> dict[str, float] | None:
@@ -584,4 +606,3 @@ def calculate_jaro_winkler_distance(
         jaro_winkler = jaro_distance - winkler_adjust 
         return jaro_winkler
     return None
-print(calculate_jaro_winkler_distance("", "word"))
