@@ -301,7 +301,12 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    
+    if (not isinstance(word, str) or
+        not check_list(alphabet, str, True)):
+        return None
+    candidates = (set(delete_letter(word)) | set(add_letter(word, alphabet)) |
+                  set(replace_letter(word, alphabet)) | set(swap_adjacent(word)))
+    return sorted(list(candidates))
 
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
