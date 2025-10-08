@@ -5,7 +5,6 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 
-
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
     Build a vocabulary from the documents.
@@ -19,7 +18,18 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-
+    if not isinstance(tokens, list) or not all(isinstance(token, str) for token in tokens):
+        return None
+    total_tokens = len(tokens)
+    if total_tokens == 0:
+        return None
+    vocab = {}
+    for token in tokens:
+        if token in vocab:
+            vocab[token] += 1
+        else:
+            vocab[token] = 1
+    return {word: count / total_tokens for word, count in vocab.items()}
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
     """
@@ -34,7 +44,17 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
-
+    if not isinstance(tokens, list) or len(tokens) == 0:
+        return None
+    if not all(isinstance(token, str) for token in tokens):
+        return None
+    if not isinstance(vocabulary, dict) or len(vocabulary) == 0:
+        return None
+    if not all(isinstance(key, str) for key in vocabulary.keys()):
+        return None
+    if not all(isinstance(value, (int, float)) for value in vocabulary.values()):
+        return None
+    return [token for token in tokens if token not in vocabulary]
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     """
