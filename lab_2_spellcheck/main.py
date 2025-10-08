@@ -5,6 +5,28 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 
+def clean_and_tokenize(text: str) -> list[str] | None:
+    
+    if not isinstance(text, str):
+        return
+    string_punct = '«»„“‚‘—–−-….,:;!?()[]""''`'
+    for syb in string_punct:
+        text = text.replace(syb, '')
+    new_text = text.lower()
+    tokens = new_text.split()
+    return tokens
+
+def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
+
+    if not isinstance(tokens, list) or not isinstance(stop_words, list):
+        return
+    if not all(isinstance(el, str) for el in tokens):
+        return
+    if not all(isinstance(el, str) for el in stop_words):
+        return
+    result = [token for token in tokens if token not in stop_words]
+    return result
+
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
@@ -19,7 +41,7 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-
+    
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
     """
