@@ -28,6 +28,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         if not isinstance(x, elements_type): 
             return False
     return True
+# print(check_list([],int,False))
     
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -103,7 +104,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     word = ''
     t=[]
     for symb in text:
-        if symb in ' ': 
+        if symb == ' ' or symb == '\n':
             if word != '':
                 t.append(word)
             word = ''
@@ -111,15 +112,15 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         word += symb.lower()
     if word != '':
         t.append(word)
-    ans = [] 
-    print(' ')
+    ans = []
     for s in t:
         temp=''
         for symb in s:
-            if symb in '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~':
+            if symb in '!"#$%&\'()*+,./:;<=>?@[\\]^_`{|}~\n':
                 continue
             temp+=symb
-            print(temp)
+        if temp == '-':
+            continue
         if temp != '':
             ans.append(temp)
     return ans
@@ -180,6 +181,13 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         In case of corrupt input arguments, None is returned.
     """
 
+    if not all([isinstance(frequencies, dict), check_positive_int(top), frequencies]):
+        return None
+    for key, value in frequencies.items():
+        if not isinstance(value, (int, float)) or not isinstance(key, str):
+            return None
+    return [item[0] for item in sorted(frequencies.items(),
+                   key=lambda item: item[1], reverse=True)[:top]]
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """

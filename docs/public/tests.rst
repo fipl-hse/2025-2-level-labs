@@ -3,8 +3,8 @@
 Working with tests: locally and in CI
 =====================================
 
-Running tests locally with PyCharm
-----------------------------------
+Running tests locally with Visual Studio Code
+---------------------------------------------
 
 To configure tests locally you need to perform several steps:
 
@@ -20,46 +20,55 @@ To configure tests locally you need to perform several steps:
 
 2. Create a new configuration:
 
-   .. image:: ../images/tests/pycharm_create_configuration.jpg
+   To create a new configuration open the Testing tab on the side
+   bar of Visual Studio Code and press the `Configure Python Tests`
+   button.
+
+   .. image:: ../images/tests/vscode_testing_tab.jpg
+
+   Alternatively, you can open configuration settings via command bar.
+   Use `Ctrl + Shift + P` keyboard shortcut to open it and type in
+   `Python: Configure Tests`.
+
+   .. image:: ../images/tests/vscode_command_bar.jpg
 
 3. Choose ``pytest`` as a target:
 
-   .. image:: ../images/tests/pycharm_choose_pytest_template.jpg
+   .. image:: ../images/tests/vscode_tests_configuration_step_1.jpg
 
-4. Fill ``pytest`` configuration and click ``OK``:
+4. Choose the directory to run all tests. You can use root directory to run all
+   tests or a specific lab.
 
-   .. image:: ../images/tests/pycharm_fill_pytest_configuration.jpg
+   .. image:: ../images/tests/vscode_tests_configuration_step_2.jpg
 
-5. Run ``pytest`` configuration:
+   When you are done, the `settings.json` file for the tests will be opened
+   and all the tests will be displayed on the `Testing` tab of the
+   Visual Studio Code.
 
-   .. image:: ../images/tests/pycharm_run_pytest.jpg
+   .. image:: ../images/tests/vscode_configured_tests.jpg
 
-   This should run all the tests in the repository. You can inspect them
-   by clicking through a list at the bottom of a screen.
+   To run the test, press the run button, as indicated in the screenshot above.
 
-   .. image:: ../images/tests/pycharm_tests_report.png
+6. As you have some tests failing, you want to run them separately. You can press
+   a run button next to a test you want to run in the tests files specifically
+   or in the `Testing` tab.
 
-6. As you have some tests failing, you want to debug them. Then, first,
-   you need to limit a scope of running tests and the mark level you
-   want to get for an assignment. For example, you might want to run
-   checks for a crawler configuration. Then you need to return to
-   configuration menu and pass additional parameters, like
-   ``-m stage_2_1_crawler_config_check``.
+   .. image:: ../images/tests/vscode_running_tests.jpg
 
-   .. image:: ../images/tests/pycharm_control_tests_scope.jpg
 
-   You can choose any of the labels that are described in
-   ``../pyproject.toml`` and combine with a mark.
-   For example, running the aforementioned check for configuration
-   for a mark 8 will look like
-   ``-m "mark8 and stage_2_1_crawler_config_check"``.
+7. When you want to debug a test, execute debugging by clicking a run button
+   with a bug on it on a test you want to run in the `Testing` tab or make a
+   right click on the testing button in the test file itself and choose the
+   `Debug Test` option.
 
-.. hint:: To running all tests for first assignment for mark 8:
-          ``-m "mark8 and (stage_2_1_crawler_config_check or stage_2_2_crawler_check or stage_2_3_HTML_parser_check or stage_2_4_dataset_volume_check or stage_2_5_dataset_validation)"``
+   .. image:: ../images/tests/vscode_debugging.jpg
 
-.. hint:: When you want to debug a test, instead of running them, put
-          a breakpoint at the potentially vulnerable place of code and execute
-          debugging by clicking a ‘bug’ button.
+   To debug you should put a breakpoint in your code or in the test itself.
+   Breakpoints are red dots that you can put at the potentially vulnerable place of code.
+   The execution stops at breakpoints and you can debug your code from these lines.
+
+   .. image:: ../images/tests/breakpoints.jpg
+
 
 Running tests in command-line
 -----------------------------
@@ -77,6 +86,15 @@ Running tests in command-line
    .. code:: bash
 
       python -m pytest -m mark8
+
+   To run tests for a specific laboratory work you can add the directory name
+   after `pytest` command. The full terminal output should look like that:
+
+   .. image:: ../images/tests/running_from_command_line.jpg
+
+   .. hint:: Note that if you activated virtual environment and installed
+            requirements properly, you can use `pytest` without calling
+            `python -m` first.
 
 Running tests in CI
 -------------------
