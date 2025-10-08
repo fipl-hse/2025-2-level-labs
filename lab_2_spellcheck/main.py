@@ -93,6 +93,18 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
+    if (
+        not isinstance(first_token, str) or not check_dict(vocabulary, str, float, False)
+        or not isinstance(method, str)
+        or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+    ):
+        return None
+    distance = {}
+    if method == "jaccard":
+        for token in vocabulary:
+            distance[token] = calculate_jaccard_distance(first_token, token)
+    return distance
+
 
 
 def find_correct_word(
