@@ -188,7 +188,7 @@ def find_correct_word(
         if value == max_value:
             values.append(key)
     if len(values) == 0:
-        return values[0]
+        return None
     else:
         values.sort(key=lambda value: (abs(len(value) - len(wrong_word)), value))
         return values[0]
