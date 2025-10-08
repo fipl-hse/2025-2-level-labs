@@ -84,7 +84,6 @@ def check_float(user_input: Any) -> bool:
     return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
 
 
-
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
     Remove punctuation, convert to lowercase, and split into tokens.
@@ -128,7 +127,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         return None
     if not all(isinstance(token, str) for token in tokens):
         return None
-    
+
     if not isinstance(stop_words, list):
         return None
     if not all(isinstance(word, str) for word in stop_words):
@@ -278,14 +277,14 @@ def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
     """
-    Calculate chi-squared values for tokens.
+        Calculate chi-squared values for tokens.
 
-    Args:
-        expected (dict[str, float]): Expected frequencies
-        observed (dict[str, int]): Observed frequencies
-Returns:
-        dict[str, float] | None: Dictionary with chi-squared values.
-        In case of corrupt input arguments, None is returned.
+        Args:
+            expected (dict[str, float]): Expected frequencies
+            observed (dict[str, int]): Observed frequencies
+    Returns:
+            dict[str, float] | None: Dictionary with chi-squared values.
+            In case of corrupt input arguments, None is returned.
     """
     if not expected or not observed:
         return None
