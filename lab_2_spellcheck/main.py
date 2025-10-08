@@ -1,9 +1,10 @@
 """
 Lab 2.
 """
-
 # pylint:disable=unused-argument
 from typing import Literal
+
+from lab_1_keywords_tfidf.main import check_list, check_dict
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -19,6 +20,12 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False):
+        return None
+    relative_frequencies = {}
+    for token in tokens:
+        relative_frequencies[token] = tokens.count(token) / len(tokens)
+    return relative_frequencies
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
@@ -34,6 +41,13 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
+        return None
+    out_of_vocab_words = []
+    for token in tokens:
+        if token not in vocabulary:
+            out_of_vocab_words.append(token)
+    return out_of_vocab_words
 
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
@@ -50,6 +64,13 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    if token == "" and candidate == "":
+        return 1.0
+    jaccard_distance = 1 - len(set(token) & set(candidate)) / len(set(token) | set(candidate))
+    return jaccard_distance
+    
 
 
 def calculate_distance(
