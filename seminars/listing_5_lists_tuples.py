@@ -193,8 +193,23 @@ def is_prime(number: int) -> bool:
         bool: whether the number is a prime number
     """
     # student implementation goes here
+    if not isinstance(number, int):
+        return False 
+    if number <= 1:
+        return False 
+    if number <= 3:
+        return True   
+    if number % 2 == 0 or number % 3 == 0:
+        return False
+    i = 5
+    while i * i <= number:
+        if number % i == 0 or number % (i + 2) == 0:
+            return False
+        i += 6
+    return True
 
-
+print(is_prime(2))
+print(is_prime(15))
 # Function calls with expected result:
 # is_prime(2) → True
 # is_prime(15) → False
@@ -216,7 +231,18 @@ def find_first_vowel(input_string: str) -> int:
         int: index of the first vowel in the string
     """
     # student implementation goes here
-
+    vowels = "aeiouAEIOU"
+    for index, char in enumerate(input_string):
+        if char not in vowels:
+            continue  
+        else:
+            break 
+    else: 
+        return -1 
+    return index
+            
+print(find_first_vowel("rhythm"))
+print(find_first_vowel("cryptography"))
 
 # Function calls with expected result:
 # find_first_vowel("rhythm") → -1
@@ -240,8 +266,20 @@ def sum_until_zero(numbers: list) -> int:
         int: sum of positive numbers in the list
     """
     # student implementation goes here
-
-
+    total_sum = 0
+    for number in numbers:
+        if number < 0:
+            continue
+        if number == 0:
+            break
+        total_sum += number
+    else:
+        total_sum += 10
+    return total_sum
+print(sum_until_zero([1, 2, -3, 4, 0, 5]))
+print(sum_until_zero([2, 3, 4]))
+print(sum_until_zero([0, 5, 7]))
+print(sum_until_zero([-7, 1, -5, 2, 4]))
 # Function calls with expected result:
 # sum_until_zero([1, 2, -3, 4, 0, 5]) → 7
 # sum_until_zero([2, 3, 4]) → 19
@@ -261,7 +299,15 @@ def count_evens(numbers: list) -> int:
         int: the number of even ints
     """
     # student implementation goes here
+    even_count = 0
+    for number in numbers:
+        if number % 2 == 0:
+            even_count += 1
+    return even_count
 
+print(count_evens([2, 1, 2, 3, 4]))
+print(count_evens([2, 2, 0]))
+print(count_evens([1, 3, 5]))
 
 # Function calls with expected result:
 # count_evens([2, 1, 2, 3, 4]) → 3
@@ -286,8 +332,26 @@ def sum_numbers(numbers: list) -> int:
         int: sum of the numbers in the list
     """
     # student implementation goes here
+    total_sum = 0
+    i = 0
+    while i < len(numbers):
+        if numbers[i] == 6:
+            j = i + 1
+            found_seven = False
+            while j < len(numbers):
+                if numbers[j] == 7:
+                    found_seven = True
+                    break  
+                j += 1
+            i = j + 1
+        else:
+            total_sum += numbers[i]
+            i += 1
+    return total_sum
 
-
+print(sum_numbers([1, 2, 2]))
+print(sum_numbers([1, 2, 2, 6, 99, 99, 7]))
+print(sum_numbers([1, 1, 6, 7, 2]))
 # Function calls with expected result:
 # sum_numbers([1, 2, 2]) → 5
 # sum_numbers([1, 2, 2, 6, 99, 99, 7]) → 5
@@ -306,7 +370,10 @@ def create_phone_number(numbers: list) -> str:
         str: string with a phone number
     """
     # student implementation goes here
+    s = ''.join(map(str, numbers))
+    return f"({s[0:3]}) {s[3:6]}-{s[6:10]}"
 
+print(create_phone_number([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]))
 
 # Function calls with expected result:
 # create_phone_number([1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
@@ -326,7 +393,15 @@ def rotate_list(input_list: list, k: int) -> list:
         list: rotated list of numbers
     """
     # student implementation goes here
+    if not input_list:  
+        return []
+    n = len(input_list)
+    k = k % n  
+    rotated_list = input_list[n - k:] + input_list[:n - k]
+    return rotated_list
 
+print(rotate_list([1, 2, 3, 4, 5], 2))
+print(rotate_list([1, 2, 3], 4))
 
 # Function calls with expected result:
 # rotate_list([1, 2, 3, 4, 5], 2) → [4, 5, 1, 2, 3]
@@ -345,7 +420,16 @@ def flatten_list(nested_list: list) -> list:
         list: single list of elements
     """
     # student implementation goes here
+    flattened = []
+    for element in nested_list:
+        if isinstance(element, list):
+            flattened.extend(flatten_list(element))
+        else:
+            flattened.append(element)
+    return flattened
 
+print(flatten_list([1, [2, 3], [[4], 5]]))
+print(flatten_list([['a'], [['b'], 'c']]))
 
 # Function calls with expected result:
 # flatten_list([1, [2, 3], [[4], 5]]) → [1, 2, 3, 4, 5]
@@ -364,8 +448,19 @@ def find_duplicates(input_list: list) -> list:
         list: list of duplicated elements
     """
     # student implementation goes here
+    seen = []
+    duplicates = []
+    for item in input_list:
+        if item in seen:
+            if item not in duplicates:
+                duplicates.append(item)
+        else:
+            seen.append(item)
 
+    return duplicates
 
+print(find_duplicates([1, 2, 2, 3, 4, 4, 4, 5]))
+print(find_duplicates(['a', 'b', 'a', 'c', 'b']))
 # Function calls with expected result:
 # find_duplicates([1, 2, 2, 3, 4, 4, 4, 5]) → [2, 4]
 # find_duplicates(['a', 'b', 'a', 'c', 'b']) → ['a', 'b']

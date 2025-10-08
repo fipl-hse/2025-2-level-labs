@@ -3,7 +3,7 @@ Lab 2.
 """
 
 # pylint:disable=unused-argument
-from typing import Literal
+from typing import Literal, Dict, Optional, List
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -49,7 +49,14 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
-
+    if not isinstance(tokens, list) or not isinstance(vocabulary, dict):
+        return None
+    if not all(isinstance(token, str) for token in tokens):
+        return None
+    if not all(isinstance(word, str) and isinstance(freq, float) for word, freq in vocabulary.items()):
+        return None
+    out_of_vocab_words = [token for token in tokens if token not in vocabulary]
+    return out_of_vocab_words
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     """
@@ -65,7 +72,99 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    if token == "" and candidate == "":
+        return 1.0  
+    set1 = set(token)
+    set2 = set(candidate)
+    intersection = len(set1.intersection(set2))
+    union = len(set1.union(set2))
+    if union == 0:
+        return 1.0
+    jaccard_distance = 1.0 - (float(intersection) / union)
+    return jaccard_distance
 
+def calculate_frequency_based_distance(first_token: str, vocabulary: Dict[str, float]) -> Dict[str, float]:
+    if first_token in vocabulary:
+        return {"frequency-based": 0.0}
+    else:
+        return {"frequency-based": 1.0}
+    
+def calculate_levenshtein_distance(first_token: str, vocabulary: Dict[str, float], alphabet: Optional[List[str]] = None) -> Dict[str, float]:
+    default_alphabet = list("abcdefghijklmnopqrstuvwxyz")  
+    local_alphabet = alphabet if alphabet else default_alphabet
+    
+    def edit_distance(s1: str, s2: str) -> int:
+        n, m = len(s1), len(s2)
+        dp = [[0] * (m + 1) for _ in range(n + 1)]
+        for i in range(n + 1):
+            dp[i][0] = i
+        for j in range(m + 1):
+            dp[0][j] = j
+        for i in range(1, n + 1):
+            for j in range(1, m + 1):
+                if s1[i - 1] == s2[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1]
+                else:
+                    dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
+        return dp[n][m]
+    min_distance = float('inf')
+    for word in vocabulary:
+        distance = edit_distance(first_token, word)
+        min_distance = min(min_distance, distance)
+    return {"levenshtein": float(min_distance)}
+
+def calculate_jaro_winkler_distance(first_token: str, vocabulary: Dict[str, float], alphabet: Optional[List[str]] = None) -> Dict[str, float]:
+    def jaro_distance(s1: str, s2: str) -> float:
+        len_s1, len_s2 = len(s1), len(s2)
+        if len_s1 == 0 and len_s2 == 0:
+            return 1.0
+        match_distance = (max(len_s1, len_s2) // 2) - 1
+        matches = 0
+        transpositions = 0
+        s1_matches = [False] * len_s1
+        s2_matches = [False] * len_s2
+        for i in range(len_s1):
+            start = max(0, i - match_distance)
+            end = min(len_s2, i + match_distance + 1)
+            for j in range(start, end):
+                if s1[i] == s2[j] and not s2_matches[j]:
+                    s1_matches[i] = True
+                    s2_matches[j] = True
+                    matches += 1
+                    break
+        if matches == 0:
+            return 0.0
+        k = 0
+        for i in range(len_s1):
+            if s1_matches[i]:
+                while not s2_matches[k]:
+                    k += 1
+                if s1[i] != s2[k]:
+                    transpositions += 1
+                k += 1
+        return (1/3) * (matches / len_s1 + matches / len_s2 + (matches - transpositions / 2) / matches)
+
+    def jaro_winkler_similarity(s1: str, s2: str) -> float:
+        jaro_sim = jaro_distance(s1, s2)
+        if jaro_sim > 0.7:  
+            prefix_length = 0
+            for i in range(min(len(s1), len(s2))):
+                if s1[i] == s2[i]:
+                    prefix_length += 1
+                else:
+                    break
+            prefix_length = min(4, prefix_length) 
+            jaro_winkler_sim = jaro_sim + (0.1 * prefix_length * (1 - jaro_sim))
+        else:
+            jaro_winkler_sim = jaro_sim
+        return jaro_winkler_sim
+    min_distance = float('inf')
+    for word in vocabulary:
+        distance = 1 - jaro_winkler_similarity(first_token, word) 
+        min_distance = min(min_distance, distance)
+    return {"jaro-winkler": float(min_distance)}
 
 def calculate_distance(
     first_token: str,
@@ -87,6 +186,18 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
+    if not first_token or not vocabulary:
+        return None
+    if method == "jaccard":
+        return calculate_jaccard_distance(first_token, vocabulary)
+    elif method == "frequency-based":
+        return calculate_frequency_based_distance(first_token, vocabulary)
+    elif method == "levenshtein":
+        return calculate_levenshtein_distance(first_token, vocabulary, alphabet)
+    elif method == "jaro-winkler":
+        return calculate_jaro_winkler_distance(first_token, vocabulary, alphabet)
+    else:
+        return None
 
 
 def find_correct_word(
@@ -110,6 +221,31 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
+    if not vocabulary:
+        return None
+    best_match: Optional[str] = None
+    min_score: float = float('inf')
+    best_length = float('inf')
+    best_lex_order: str = "~"
+    for candidate in vocabulary.keys():
+        score = _calculate_single_distance(wrong_word, candidate, method, alphabet)
+        is_tie = (score == min_score)
+        if score < min_score:
+            min_score = score
+            best_match = candidate
+            best_length = len(candidate)
+            best_lex_order = candidate
+        elif is_tie:
+            candidate_length = len(candidate)
+            if candidate_length < best_length:
+                best_match = candidate
+                best_length = candidate_length
+                best_lex_order = candidate  
+            elif candidate_length == best_length:
+                if candidate < best_lex_order:
+                    best_match = candidate
+                    best_lex_order = candidate
+    return best_match
 
 
 def initialize_levenshtein_matrix(
@@ -138,6 +274,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
+    
 
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
