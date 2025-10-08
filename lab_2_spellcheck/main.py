@@ -6,6 +6,7 @@ Lab 2.
 from typing import Literal
 
 
+
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     if not isinstance(tokens, list):
         return None
@@ -13,7 +14,7 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
         if not isinstance(t, str):
             return None
     if len(tokens) == 0:
-        return {}
+        return None
     vocab = {}
     for token in tokens:
         if token in vocab:
@@ -40,10 +41,14 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
     if not isinstance(tokens, list):
         return None
+    if len(tokens) == 0:
+        return None
     for t in tokens:
         if not isinstance(t, str):
             return None
     if not isinstance(vocabulary, dict):
+        return None
+    if len(vocabulary) == 0:
         return None
     for k, v in vocabulary.items():
         if not isinstance(k, str) or not isinstance(v, float):
@@ -68,6 +73,15 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    set_token = set(token)
+    set_candidate = set(candidate)
+    union = set_token | set_candidate
+    intersection = set_token & set_candidate
+    if len(union) == 0 or len(token) == 0 or len(candidate) == 0:
+        return 1.0
+    return 1 - len(intersection) / len(union)
     """
     Calculate Jaccard distance between two strings.
 
@@ -89,6 +103,52 @@ def calculate_distance(
     method: Literal["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
     alphabet: list[str] | None = None,
 ) -> dict[str, float] | None:
+    if not isinstance(first_token, str):
+        return None
+    if not isinstance(vocabulary, dict) or len(vocabulary) == 0:
+        return None
+    for k, v in vocabulary.items():
+        if not isinstance(k, str) or not isinstance(v, (int, float)):
+            return None
+    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
+        return None
+    if alphabet is not None:
+        if not isinstance(alphabet, list) or not all(isinstance(ch, str) for ch in alphabet):
+            return None
+    distances: dict[str, float] = {}
+    if method == "jaccard":
+        for word in vocabulary:
+            dist = calculate_jaccard_distance(first_token, word)
+            if dist is None:
+                return None
+            distances[word] = round(float(dist), 4)
+    elif method == "frequency-based":
+        if alphabet is None:
+            return {word: 1.0 for word in vocabulary}
+        for word in vocabulary:
+            dist = calculate_frequency_distance(first_token, word, alphabet)
+            if dist is None:
+                return None
+            if isinstance(dist, dict):
+                val = dist.get(word)
+                if val is None:
+                    return None
+                distances[word] = round(float(val), 4)
+            else:
+                distances[word] = round(float(dist), 4)
+    elif method == "levenshtein":
+        for word in vocabulary:
+            dist = calculate_levenshtein_distance(first_token, word)
+            if dist is None:
+                return None
+            distances[word] = float(dist)
+    elif method == "jaro-winkler":
+        for word in vocabulary:
+            dist = calculate_jaro_winkler_distance(first_token, word)
+            if dist is None:
+                return None
+            distances[word] = round(float(dist), 4)
+    return distances
     """
     Calculate distance between two strings using the specified method.
 
@@ -111,6 +171,33 @@ def find_correct_word(
     method: Literal["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
     alphabet: list[str] | None = None,
 ) -> str | None:
+    if not isinstance(wrong_word, str):
+        return None
+    if not isinstance(vocabulary, dict) or not vocabulary:
+        return None
+    for w, f in vocabulary.items():
+        if not isinstance(w, str) or not isinstance(f, (int, float)):
+            return None
+    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
+        return None
+    if alphabet is not None:
+        if not isinstance(alphabet, list) or not all(isinstance(ch, str) for ch in alphabet):
+            return None
+    distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
+    if not isinstance(distances, dict) or not distances:
+        return None
+    try:
+        min_distance = min(distances.values())
+    except ValueError:
+        return None
+    candidates = [word for word, dist in distances.items() if dist == min_distance]
+    if not candidates:
+        return None
+    wrong_len = len(wrong_word)
+    min_len_diff = min(abs(len(c) - wrong_len) for c in candidates)
+    filtered = [c for c in candidates if abs(len(c) - wrong_len) == min_len_diff]
+
+    return sorted(filtered)[0] if filtered else None
     """
     Find the most similar word from vocabulary using the specified method.
 
@@ -131,6 +218,18 @@ def find_correct_word(
 def initialize_levenshtein_matrix(
     token_length: int, candidate_length: int
 ) -> list[list[int]] | None:
+    if not isinstance(token_length, int):
+        return None
+    if not isinstance(candidate_length, int):
+        return None
+    if token_length < 0 or candidate_length < 0:
+        return None
+    matrix = [[0] * (candidate_length + 1) for _ in range(token_length + 1)]
+    for i in range(token_length + 1):
+        matrix[i][0] = i
+    for j in range(candidate_length + 1):
+        matrix[0][j] = j
+    return matrix
     """
     Initialize a 2D matrix for Levenshtein distance calculation.
 
@@ -144,6 +243,24 @@ def initialize_levenshtein_matrix(
 
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
+    if not isinstance(token, str):
+        return None
+    if not isinstance(candidate, str):
+        return None
+    token_length = len(token)
+    candidate_length = len(candidate)
+    matrix = initialize_levenshtein_matrix(token_length, candidate_length)
+    if matrix is None:
+        return None
+    for i in range(1, token_length + 1):
+        for j in range(1, candidate_length + 1):
+            cost = 0 if token[i - 1] == candidate[j - 1] else 1
+            matrix[i][j] = min(
+                matrix[i - 1][j] + 1,
+                matrix[i][j - 1] + 1,
+                matrix[i - 1][j - 1] + cost
+            )
+    return matrix
     """
     Fill a Levenshtein matrix with edit distances between all prefixes.
 
@@ -157,6 +274,14 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
 
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
+    if not isinstance(token, str):
+        return None
+    if not isinstance(candidate, str):
+        return None
+    matrix = fill_levenshtein_matrix(token, candidate)
+    if matrix is None:
+        return None
+    return matrix[len(token)][len(candidate)]
     """
     Calculate the Levenshtein edit distance between two strings.
 
