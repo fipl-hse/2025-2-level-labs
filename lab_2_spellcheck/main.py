@@ -251,6 +251,13 @@ def delete_letter(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    candidates_without_letter = []
+    for i in range(len(word)):
+        candidate = word[:i] + word[i+1:]
+        candidates_without_letter.append(candidate)
+    return sorted(candidates_without_letter)
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -267,6 +274,14 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not all([isinstance(word, str), check_list(alphabet, str, False)]):
+        return []
+    candidates_with_letter = []
+    for i in range(len(word) + 1):
+        for letter in alphabet:
+            candidate = word[:i] + letter + word[i:]
+            candidates_with_letter.append(candidate)
+    return sorted(candidates_with_letter)
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -283,6 +298,14 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not all([isinstance(word, str), check_list(alphabet, str, False)]):
+        return []
+    replaced_candidates = []
+    for i in range(len(word)):
+        for letter in alphabet:
+            candidate = word[:i] + letter + word[i+1:]
+            replaced_candidates.append(candidate)
+    return sorted(replaced_candidates)
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -298,6 +321,13 @@ def swap_adjacent(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    swapped_candidates = []
+    for i in range(len(word)-1):
+        candidate = word[:i] + word[i+1] + word[i] + word[i+2:]
+        swapped_candidates.append(candidate)
+    return sorted(swapped_candidates)
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
@@ -314,7 +344,11 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-
+    if not all([isinstance(word, str), check_list(alphabet, str, True)]):
+        return None
+    generated_candidates = (delete_letter(word) + add_letter(word, alphabet) +
+                           replace_letter(word, alphabet) + swap_adjacent(word))
+    return sorted(generated_candidates)
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
     """
@@ -330,6 +364,13 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
+    if not all([isinstance(word, str), check_list(alphabet, str, True)]):
+        return None
+    candidates = generate_candidates(word, alphabet)
+    if candidates is None:
+        return None
+    unique_candidates = sorted(candidates)
+    return tuple(unique_candidates)
 
 
 def calculate_frequency_distance(
