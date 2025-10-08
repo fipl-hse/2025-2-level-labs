@@ -128,6 +128,17 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
+    if (
+        not isinstance(wrong_word, str) or not check_dict(vocabulary, str, float, False)
+        or not isinstance(method, str)
+        or (not check_list(alphabet, str, True) and alphabet is not None)
+        or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+    ):
+        return None
+    correct_word = ""
+    if method == "jaccard":
+        minimum_distance = min(calculate_distance(wrong_word, vocabulary, "jaccard").values())
+    return correct_word
 
 
 def initialize_levenshtein_matrix(
