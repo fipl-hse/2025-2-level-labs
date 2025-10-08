@@ -243,10 +243,10 @@ def sum_until_zero(numbers: list) -> int:
 
 
 # Function calls with expected result:
-print(sum_until_zero([1, 2, -3, 4, 0, 5]))
-print(sum_until_zero([2, 3, 4]))
-print(sum_until_zero([0, 5, 7]))
-print(sum_until_zero([-7, 1, -5, 2, 4]))
+# sum_until_zero([1, 2, -3, 4, 0, 5]) → 7
+# sum_until_zero([2, 3, 4]) → 19
+# sum_until_zero([0, 5, 7]) → 0
+# sum_until_zero([-7, 1, -5, 2, 4]) → 7
 
 
 # Task 6:
