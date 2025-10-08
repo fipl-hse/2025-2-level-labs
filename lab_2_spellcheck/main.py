@@ -4,26 +4,19 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
+from lab_1_keywords_tfidf.main import check_list, check_dict
 
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
-    if not isinstance(tokens, list):
+    if not check_list(tokens, str, True) or len(tokens) == 0:
         return None
-    for t in tokens:
-        if not isinstance(t, str):
-            return None
-    if len(tokens) == 0:
-        return None
-    vocab = {}
-    for token in tokens:
-        if token in vocab:
-            vocab[token] += 1
-        else:
-            vocab[token] = 1
+    vocab: dict[str, float] = {}
     total = len(tokens)
-    for word in vocab:
-        vocab[word] = vocab[word] / total
+    for token in tokens:
+        if not isinstance(token, str):
+            return None
+        vocab[token] = vocab.get(token, 0) + 1 / total
     return vocab
     """
     Build a vocabulary from the documents.
@@ -39,14 +32,14 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
-    if not isinstance(tokens, list):
+    if not check_list(tokens, str, True):
         return None
     if len(tokens) == 0:
         return None
     for t in tokens:
         if not isinstance(t, str):
             return None
-    if not isinstance(vocabulary, dict):
+    if not check_dict(vocabulary, str, float, True):
         return None
     if len(vocabulary) == 0:
         return None
@@ -105,7 +98,7 @@ def calculate_distance(
 ) -> dict[str, float] | None:
     if not isinstance(first_token, str):
         return None
-    if not isinstance(vocabulary, dict) or len(vocabulary) == 0:
+    if not check_dict(vocabulary, str, float, True) or len(vocabulary) == 0:
         return None
     for k, v in vocabulary.items():
         if not isinstance(k, str) or not isinstance(v, (int, float)):
@@ -113,7 +106,7 @@ def calculate_distance(
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
     if alphabet is not None:
-        if not isinstance(alphabet, list) or not all(isinstance(ch, str) for ch in alphabet):
+        if not check_list(alphabet, str, True) or not all(isinstance(ch, str) for ch in alphabet):
             return None
     distances: dict[str, float] = {}
     if method == "jaccard":
@@ -129,7 +122,7 @@ def calculate_distance(
             dist = calculate_frequency_distance(first_token, word, alphabet)
             if dist is None:
                 return None
-            if isinstance(dist, dict):
+            if check_dict(dist, str, float, True):
                 val = dist.get(word)
                 if val is None:
                     return None
@@ -173,7 +166,7 @@ def find_correct_word(
 ) -> str | None:
     if not isinstance(wrong_word, str):
         return None
-    if not isinstance(vocabulary, dict) or not vocabulary:
+    if not check_dict(vocabulary, str, float, True) or not vocabulary:
         return None
     for w, f in vocabulary.items():
         if not isinstance(w, str) or not isinstance(f, (int, float)):
@@ -181,10 +174,10 @@ def find_correct_word(
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
     if alphabet is not None:
-        if not isinstance(alphabet, list) or not all(isinstance(ch, str) for ch in alphabet):
+        if not check_list(alphabet, str, True) or not all(isinstance(ch, str) for ch in alphabet):
             return None
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
-    if not isinstance(distances, dict) or not distances:
+    if not check_dict(distances, str, float, True) or not distances:
         return None
     try:
         min_distance = min(distances.values())
