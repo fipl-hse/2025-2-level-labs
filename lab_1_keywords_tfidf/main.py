@@ -124,7 +124,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
             ans.append(temp)
     return ans
 
-
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
     Exclude stop words from the token sequence.
