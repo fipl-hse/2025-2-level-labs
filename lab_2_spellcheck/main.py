@@ -228,7 +228,7 @@ def find_correct_word(
     best_length = float('inf')
     best_lex_order: str = "~"
     for candidate in vocabulary.keys():
-        score = _calculate_single_distance(wrong_word, candidate, method, alphabet)
+        score = calculate_distance(wrong_word, candidate, method, alphabet)
         is_tie = (score == min_score)
         if score < min_score:
             min_score = score
