@@ -88,14 +88,6 @@ def extract_older_people(people: dict[str, int], threshold: int) -> list[str]:
         list[str]: Names of people with age greater than threshold.
     """
     # student realisation goes here
-    older_people_names = []
-    for name, age in people.items():
-        if age > threshold:
-            older_people_names.append(name)
-    return older_people_names
-
-print(extract_older_people({'Andrej': 22, 'Alexander': 28, 'Irine': 20}, 20))
-print(extract_older_people({'Hera': 45, 'Zagreus': 25, 'Zeus': 48}, 30))
 
 # Function calls with expected result:
 # assert extract_older_people({'Andrej': 22, 'Alexander': 28, 'Irine': 20},
@@ -116,12 +108,7 @@ def sum_values(data: dict[str, int]) -> int | float:
         int | float: Sum of values.
     """
     # student realisation goes here
-    sum_ = 0
-    for strike, num in data.items():
-        sum_+=num
-    return sum_
 
-print( sum_values({'a': 300, 'b': 15, 'c': 430}))
 # Function calls with expected result:
 # assert sum_values({'a': 300, 'b': 15, 'c': 430}) == 745
 
@@ -180,18 +167,7 @@ def count_letters(sequence: str) -> dict[str, int]:
         dict[str, int]: Dictionary with letters as keys and counts as values.
     """
     # student realisation goes here
-    letter_counts = {}
-    lower_sequence = sequence.lower()
-    
-    for letter in lower_sequence:
-        if letter.isalpha():
-            if letter in letter_counts:
-                letter_counts[letter] += 1
-            else:
-                letter_counts[letter] = 1  
-    return letter_counts
 
-print(count_letters('Hello there'))
 # Function calls with expected result:
 # assert count_letters('Hello there') == {'h': 2, 'e': 3, 'l': 2, 'o': 1, 't': 1, 'r': 1}
 
