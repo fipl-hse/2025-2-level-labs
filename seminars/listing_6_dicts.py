@@ -146,9 +146,7 @@ def remove_duplicates(data: dict[str, int]) -> dict[str, int]:
     Returns:
         dict[str, int]: Dictionary without duplicates.
     """
-    # student realisation goes here
-    
-
+    # student realisation goes her
 
 
 # Function calls with expected result
