@@ -239,17 +239,6 @@ def sum_until_zero(numbers: list) -> int:
     Returns:
         int: sum of positive numbers in the list
     """
-    good_numb = 0
-    for i in numbers:
-        if i <0:
-            continue
-        elif i == 0:
-            break
-        else:
-            good_numb += i
-    if 0 not in numbers:
-        good_numb += 10
-    return good_numb
     # student implementation goes here
 
 
@@ -271,11 +260,6 @@ def count_evens(numbers: list) -> int:
     Returns:
         int: the number of even ints
     """
-    count = 0
-    for el in numbers:
-        if el % 2 == 0:
-            count += 1
-    return count
     # student implementation goes here
 
 
