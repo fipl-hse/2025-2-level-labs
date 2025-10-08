@@ -3,7 +3,10 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
-
+from lab_1_keywords_tfidf.main import (
+    clean_and_tokenize,
+    remove_stop_words
+)
 
 def main() -> None:
     """
@@ -21,6 +24,9 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
+    tokens = clean_and_tokenize(text) or []
+    tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
+    print(tokens_without_stopwords)    
     result = None
     assert result, "Result is None"
 
