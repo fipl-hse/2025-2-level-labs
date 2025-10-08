@@ -193,8 +193,7 @@ def is_prime(number: int) -> bool:
         bool: whether the number is a prime number
     """
     # student implementation goes here
-
-
+  
 # Function calls with expected result:
 # is_prime(2) → True
 # is_prime(15) → False
@@ -216,7 +215,6 @@ def find_first_vowel(input_string: str) -> int:
         int: index of the first vowel in the string
     """
     # student implementation goes here
-
 
 # Function calls with expected result:
 # find_first_vowel("rhythm") → -1
@@ -240,8 +238,7 @@ def sum_until_zero(numbers: list) -> int:
         int: sum of positive numbers in the list
     """
     # student implementation goes here
-
-
+    
 # Function calls with expected result:
 # sum_until_zero([1, 2, -3, 4, 0, 5]) → 7
 # sum_until_zero([2, 3, 4]) → 19
@@ -261,7 +258,6 @@ def count_evens(numbers: list) -> int:
         int: the number of even ints
     """
     # student implementation goes here
-
 
 # Function calls with expected result:
 # count_evens([2, 1, 2, 3, 4]) → 3
@@ -286,8 +282,7 @@ def sum_numbers(numbers: list) -> int:
         int: sum of the numbers in the list
     """
     # student implementation goes here
-
-
+  
 # Function calls with expected result:
 # sum_numbers([1, 2, 2]) → 5
 # sum_numbers([1, 2, 2, 6, 99, 99, 7]) → 5
@@ -306,8 +301,7 @@ def create_phone_number(numbers: list) -> str:
         str: string with a phone number
     """
     # student implementation goes here
-
-
+  
 # Function calls with expected result:
 # create_phone_number([1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
 # => returns "(123) 456-7890"
@@ -327,7 +321,6 @@ def rotate_list(input_list: list, k: int) -> list:
     """
     # student implementation goes here
 
-
 # Function calls with expected result:
 # rotate_list([1, 2, 3, 4, 5], 2) → [4, 5, 1, 2, 3]
 # rotate_list([1, 2, 3], 4) → [3, 1, 2]
@@ -346,7 +339,6 @@ def flatten_list(nested_list: list) -> list:
     """
     # student implementation goes here
 
-
 # Function calls with expected result:
 # flatten_list([1, [2, 3], [[4], 5]]) → [1, 2, 3, 4, 5]
 # flatten_list([['a'], [['b'], 'c']]) → ['a', 'b', 'c']
@@ -364,8 +356,7 @@ def find_duplicates(input_list: list) -> list:
         list: list of duplicated elements
     """
     # student implementation goes here
-
-
+  
 # Function calls with expected result:
 # find_duplicates([1, 2, 2, 3, 4, 4, 4, 5]) → [2, 4]
 # find_duplicates(['a', 'b', 'a', 'c', 'b']) → ['a', 'b']
