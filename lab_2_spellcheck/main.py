@@ -175,9 +175,9 @@ def initialize_levenshtein_matrix(
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
     if (not isinstance(token_length, int) or
-        int(token_length) < 0 or
+        token_length < 0 or
         not isinstance(candidate_length, int) or
-        int(candidate_length) < 0):
+        candidate_length < 0):
         return None
     matrix = [[0] * (candidate_length + 1) for _ in range(token_length + 1)]
     for i in range(candidate_length + 1):
