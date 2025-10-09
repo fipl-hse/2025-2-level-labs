@@ -111,6 +111,12 @@ def calculate_distance(
             if not distance:
                 return None
             calculated_distance_score[word] = distance
+    if method == 'frequency-based':
+        for word in vocabulary:
+            distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+            if not distance:
+                return None
+            calculated_distance_score[word] = distance
     return calculated_distance_score
 
 
@@ -168,7 +174,17 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
-
+    if (not isinstance(token_length, int) or
+        int(token_length) < 0 or
+        not isinstance(candidate_length, int) or
+        int(candidate_length) < 0):
+        return None
+    matrix = [[0] * (candidate_length + 1) for _ in range(token_length + 1)]
+    for i in range(candidate_length + 1):
+        matrix[0][i] = i
+    for k in range(token_length + 1):
+        matrix[k][0] = k
+    return matrix
 
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
@@ -323,7 +339,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         return None
     candidates = generate_candidates(word, alphabet)
     if candidates is None:
-        return tuple()
+        return None
     return tuple(candidates)
 
 
@@ -351,11 +367,19 @@ def calculate_frequency_distance(
         not check_list(alphabet, str, True)
         ]):
         return None
+    candidates = generate_candidates(word, alphabet)
+    valid_candidates = [candidate for candidate in candidates if candidate in frequencies]
+    if not valid_candidates:
+        return None
     max_frequency = max(frequencies.values())
-    distance_freq = {}
-    for key, value in frequencies.items():
-        distance_freq[key] = 1 - value / max_frequency
-    return distance_freq
+    best_candidate = None
+    min_distance = 100
+    for candidate in valid_candidates:
+        distance = 1 - frequencies[candidate] / max_frequency
+        if distance < min_distance:
+            min_distance = distance
+            best_candidate = candidate
+    return dict(best_candidate)
 
 
 def get_matches(
