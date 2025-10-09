@@ -164,6 +164,8 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
+    if (not isinstance(vocabulary, dict) or not isinstance(wrong_word, str) or not check_dict(vocabulary, str, float, False) or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
+        return None
     word_dists = {}
     found_freq = 0
     found_word = ""
@@ -176,7 +178,9 @@ def find_correct_word(
             word_dists.update({i : calculate_frequency_distance(wrong_word, i)})
         if method == "jaro-winkler":
             word_dists.update({i : calculate_jaro_winkler_distance(wrong_word, i)})
-        found_freq = min(word_dists.values())
+    if word_dists == {}:
+        return None
+    found_freq = min(word_dists.values())
     for key, val in word_dists.items():
         if val == found_freq:
             found_word = key
