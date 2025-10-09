@@ -164,7 +164,23 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-
+    word_dists = {}
+    found_freq = 0
+    found_word = ""
+    for i in vocabulary.keys():
+        if method == "jaccard":
+            word_dists.update({i : calculate_jaccard_distance(wrong_word, i)})
+        if method == "levenshtein":
+            word_dists.update({i : calculate_levenshtein_distance(wrong_word, i)})
+        if method == "frequency":
+            word_dists.update({i : calculate_frequency_distance(wrong_word, i)})
+        if method == "jaro-winkler":
+            word_dists.update({i : calculate_jaro_winkler_distance(wrong_word, i)})
+        found_freq = min(word_dists.values())
+    for key, val in word_dists.items():
+        if val == found_freq:
+            found_word = key
+    return found_word
 
 def initialize_levenshtein_matrix(
     token_length: int, candidate_length: int
@@ -560,7 +576,7 @@ def winkler_adjustment(
         return None
     match_prefix = 0
     max_distance = 4
-    for i in range(max_distance):
+    for i in range(min(max_distance, len(token), len(candidate))):
         if token[i] == candidate[i]:
             match_prefix += 1
         if token[i] != candidate[i]:
