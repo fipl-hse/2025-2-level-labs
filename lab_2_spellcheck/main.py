@@ -229,6 +229,15 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
+    if (not isinstance(token, str) or
+        len(token) < 0 or
+        not isinstance(candidate, str) or
+        len(candidate) < 0):
+        return None
+    matrix = fill_levenshtein_matrix(token, candidate)
+    if matrix is None:
+        return None
+    return matrix[-1][-1]
 
 
 def delete_letter(word: str) -> list[str]:
