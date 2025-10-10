@@ -182,8 +182,8 @@ def initialize_levenshtein_matrix(
     matrix = [[0] * (candidate_length + 1) for _ in range(token_length + 1)]
     for i in range(candidate_length + 1):
         matrix[0][i] = i
-    for k in range(token_length + 1):
-        matrix[k][0] = k
+    for j in range(token_length + 1):
+        matrix[j][0] = j
     return matrix
 
 
@@ -198,6 +198,23 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
+    if (not isinstance(token, str) or
+        len(token) < 0 or
+        not isinstance(candidate, str) or
+        len(candidate) < 0):
+        return None
+    matrix = initialize_levenshtein_matrix(len(token), len(candidate))
+    if matrix is None:
+        return None
+    cost = 0
+    for i in range(1, len(token) + 1):
+        for j in range(1, len(candidate) + 1):
+            cost = 0 if token[i-1] == candidate[j-1] else 1
+            deleting = matrix[i - 1][j] + 1
+            inserting = matrix[i][j - 1] + 1
+            replacing = matrix[i-1][j-1] + cost
+            matrix[i][j] = min(deleting, inserting, replacing)
+    return matrix
 
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
