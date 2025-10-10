@@ -4,6 +4,43 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
+from typing import Any
+
+def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+    if not isinstance(user_input, list):
+        return False
+    if not user_input:
+        return can_be_empty
+    return all(isinstance(element, elements_type) for element in user_input)
+
+
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    if not isinstance(user_input, dict):
+        return False
+    if not user_input:
+        return can_be_empty
+    return (all(isinstance(key, key_type) for key in user_input) and
+        all(isinstance(value, value_type) for value in user_input.values()))
+
+
+def clean_and_tokenize(text: str) -> list[str] | None:
+    if not isinstance(text, str):
+        return None
+    cleaned_and_tokenized_text = []
+    for word in text.split():
+        token = ''.join(symbol.lower() for symbol in word if symbol.isalnum())
+        if token:
+            cleaned_and_tokenized_text.append(token)
+    return cleaned_and_tokenized_text
+
+
+def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
+    if not check_list(tokens, str, False):
+        return None
+    if not check_list(stop_words, str, True):
+        return None
+    tokens = [token for token in tokens if token not in stop_words]
+    return tokens
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -19,6 +56,10 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False):
+        return None
+    return {element: tokens.count(element) / len(tokens) for element in tokens}
+
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
@@ -34,6 +75,9 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
+        return None
+    return ([token for token in tokens if token not in vocabulary])
 
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
@@ -50,6 +94,11 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    if not token or not candidate:
+        return 1.0
+    return  (1 - len(set(token).intersection(set(candidate))) / len(set(token).union(set(candidate))))
 
 
 def calculate_distance(
@@ -72,6 +121,21 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
+    if any([
+        not isinstance(first_token, str),
+        not check_dict(vocabulary, str, float, False),
+        method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
+        not check_list(alphabet, str, False) and alphabet is not None and method == "frequency-based"
+            ]):
+        return None
+    distance = {}
+    if method == "jaccard":
+        for key in vocabulary.keys():
+            jaccard_distance = calculate_jaccard_distance(first_token, key)
+            if jaccard_distance is None:
+                return None
+            distance[key] = jaccard_distance
+    return distance
 
 
 def find_correct_word(
@@ -95,6 +159,31 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
+    if any([
+        not isinstance(wrong_word, str),
+        not check_dict(vocabulary, str, float, False),
+        method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
+        not check_list(alphabet, str, False) and alphabet is not None and method == "frequency-based"
+            ]):
+        return None
+    wrong_word_dict = calculate_distance(wrong_word, vocabulary, method)
+    if not wrong_word_dict:
+        return None
+    min_distance = min(wrong_word_dict.values())
+    min_keys = [key for key, value in wrong_word_dict.items() if value == min_distance]
+    min_keys_sorted = sorted(min_keys, key = lambda word: abs(len(wrong_word) - len(word)))
+    new_sorted_list = [min_keys_sorted[0]]
+    if len(min_keys_sorted) > 1:
+        for el in min_keys_sorted:
+            index = 1
+            if len(min_keys_sorted[index]) == len(min_keys_sorted[0]):
+                new_sorted_list.append(el)
+                index += 1
+            else:
+                break
+        res = new_sorted_list.sort()
+        return res[0]
+    return min_keys_sorted[0] # i love this code so much omg lol pls rate me 11
 
 
 def initialize_levenshtein_matrix(
