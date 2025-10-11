@@ -139,7 +139,7 @@ def find_correct_word(
             correct_word = min(correct_word, candidate_word)
         elif abs(len(wrong_word) - len(candidate_word)) < abs(len(wrong_word) - len(correct_word)):
             correct_word = candidate_word
-        return correct_word
+    return correct_word
 
 
 def initialize_levenshtein_matrix(
