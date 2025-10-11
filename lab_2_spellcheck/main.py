@@ -108,15 +108,22 @@ def calculate_distance(
     if method == 'jaccard':
         for word in vocabulary:
             distance = calculate_jaccard_distance(first_token, word)
-            if not distance:
+            if distance is None:
                 return None
             calculated_distance_score[word] = distance
-    if method == 'frequency-based':
+    elif method == 'frequency-based':
         for word in vocabulary:
             distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
-            if not distance:
+            if distance is None:
                 return None
             calculated_distance_score[word] = distance
+    elif method == 'levenshtein':
+        for word in vocabulary:
+            distance = calculate_levenshtein_distance(first_token, word)
+            if distance is None:
+                return None
+            calculated_distance_score[word] = distance
+    #elif method == 'jaro-winkler':
     return calculated_distance_score
 
 
@@ -151,12 +158,20 @@ def find_correct_word(
                        "jaro-winkler"),
     ]):
         return None
-    if method == 'frequency-based':
+    if method == 'jaccard':
+        distance_wrong_word_dict = calculate_distance(wrong_word, vocabulary, 'jaccard', None)
+        if distance_wrong_word_dict is None:
+            return None
+    elif method == 'frequency-based':
         if not check_list(alphabet, str, False):
             return None
-    distance_wrong_word_dict = calculate_distance(wrong_word, vocabulary, method)
-    if not distance_wrong_word_dict:
-        return None
+        distance_wrong_word_dict = calculate_distance(wrong_word, vocabulary, 'frequency-based', alphabet)
+        if distance_wrong_word_dict is None:
+            return None
+    elif method == 'levenshtein':
+        distance_wrong_word_dict = calculate_distance(wrong_word, vocabulary, 'levenshtein', None)
+        if distance_wrong_word_dict is None:
+            return None
     return sorted(distance_wrong_word_dict.items(), key=lambda item:
                   (item[1], abs(len(wrong_word) - len(item[0])), item[0]))[0][0]
 
@@ -339,7 +354,6 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     if (not isinstance(word, str) or
         not check_list(alphabet, str, True)):
         return None
-    #candidates.discard(word)
     return sorted(set((delete_letter(word) + add_letter(word, alphabet) +
                   replace_letter(word, alphabet) + swap_adjacent(word))))
 
@@ -427,6 +441,26 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
+    if (
+        not isinstance(token, str) or
+        not isinstance(candidate, str) or
+        not isinstance(match_distance, int) or
+        match_distance < 0
+    ):
+        return None
+    matching_letters = 0
+    token_matches = [False] * len(token)
+    candidate_matches = [False] * len(candidate)
+    for index, token_char in enumerate(token):
+        start = max(0, index - match_distance)
+        end = min(len(candidate) - 1, index + match_distance)
+        for k in range(start, end + 1):
+            if not candidate_matches[k] and candidate[k] == token_char:
+                matching_letters += 1
+                token_matches[index] = True
+                candidate_matches[k] = True
+                break
+    return (matching_letters, token_matches, candidate_matches)
 
 
 def count_transpositions(
