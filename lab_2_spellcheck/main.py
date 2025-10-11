@@ -67,7 +67,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     if not isinstance(token, str) or not isinstance(candidate, str):
         return
     if token == "" and candidate == "":
-        return 1.0
+        return 0.0
     jaccard_distance = 1 - len(set(token) & set(candidate)) / len(set(token) | set(candidate))
     return jaccard_distance
 
@@ -93,7 +93,8 @@ def calculate_distance(
     In case of corrupt input arguments or unsupported method, None is returned.
     """
     if (
-        not isinstance(first_token, str) or not check_dict(vocabulary, str, float, False)
+        not isinstance(first_token, str)
+        or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
         or not alphabet is None and not check_list(alphabet, str, False) 
     ):
