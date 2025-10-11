@@ -4,10 +4,13 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
+
 from lab_1_keywords_tfidf.main import (
     check_list,
     check_dict
 )
+
+Alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
@@ -95,14 +98,19 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if not check_dict(vocabulary, str, float, False) or not isinstance(first_token, str):
+    if not (
+        check_dict(vocabulary, str, float, False) and
+        (alphabet is None or check_list(alphabet, str, False)) and
+        isinstance(first_token, str) and
+        method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+    ):
         return None
 
     if method == "jaccard":
         jaccard = {}
         for key in vocabulary:
             value = calculate_jaccard_distance(key, first_token)
-            if value == None:
+            if value is None:
                 return None
             jaccard[key] = value
         return jaccard
@@ -130,6 +138,33 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
+    if not (
+        isinstance(wrong_word, str) and
+        check_dict(vocabulary, str, float, False) and
+        method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"] and
+        (alphabet is None or check_list(alphabet, str, False)) 
+    ):
+        return None
+    distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
+    if not distances:
+        return None
+
+    min_value = float("inf")
+    closest_word = None
+    for word, distance in distances.items():
+        if distance < min_value:
+            min_value = distance
+            closest_word = word
+        elif distance == min_value and closest_word is not None:
+            if abs(len(wrong_word) - len(word)) < abs(len(wrong_word) - len(closest_word)):
+                closest_word = word
+            elif len(word) == len(closest_word):
+                if word < closest_word:
+                    closest_word = word
+    return closest_word
+
+    
+
 
 
 def initialize_levenshtein_matrix(
