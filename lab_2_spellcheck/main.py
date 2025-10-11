@@ -95,6 +95,7 @@ def calculate_distance(
     if (
         not isinstance(first_token, str) or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        or not alphabet is None and not check_list(alphabet, str, False) 
     ):
         return
     distance = {}
