@@ -513,6 +513,18 @@ def calculate_jaro_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if (not isinstance(token, str) or
+        not isinstance(candidate, str) or
+        not isinstance(matches, int) or
+        matches < 0 or
+        not isinstance(transpositions, int) or
+        transpositions < 0):
+        return None
+    if matches == 0:
+        return 1.0
+    return (1 - ((matches / len(token) +
+                       matches / len(candidate) +
+                       (matches - transpositions) / matches) / 3))
 
 
 def winkler_adjustment(
