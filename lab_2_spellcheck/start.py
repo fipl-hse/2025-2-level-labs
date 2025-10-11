@@ -11,8 +11,11 @@ from lab_1_keywords_tfidf.main import (
 from lab_2_spellcheck.main import (
     build_vocabulary,
     find_out_of_vocab_words,
-    calculate_distance
+    find_correct_word
 )
+
+
+Alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
 
 def main() -> None:
     """
@@ -37,12 +40,11 @@ def main() -> None:
     tokenized_sentences = clean_and_tokenize(''.join(sentences))
     sentences_without_stopwords = remove_stop_words(tokenized_sentences, stop_words)
     tokens_out_of_voc = find_out_of_vocab_words(sentences_without_stopwords, vocabulary)
-    for token in tokens_out_of_voc:
-        print(calculate_distance(token, vocabulary, "jaccard"))
     
-    # result = jaccard_distance
-    # print(result)
-    # assert result, "Result is None"
+    
+    result = {find_correct_word(token, vocabulary, "jaccard", Alphabet): token for token in tokens_out_of_voc}
+    print(result)
+    assert result, "Result is None"
 
 
 if __name__ == "__main__":
