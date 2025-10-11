@@ -70,7 +70,6 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return 1.0
     jaccard_distance = 1 - len(set(token) & set(candidate)) / len(set(token) | set(candidate))
     return jaccard_distance
-    
 
 
 def calculate_distance(
@@ -95,7 +94,6 @@ def calculate_distance(
     """
     if (
         not isinstance(first_token, str) or not check_dict(vocabulary, str, float, False)
-        or not isinstance(method, str)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
     ):
         return None
@@ -104,7 +102,6 @@ def calculate_distance(
         for token in vocabulary:
             distance[token] = calculate_jaccard_distance(first_token, token)
     return distance
-
 
 
 def find_correct_word(
