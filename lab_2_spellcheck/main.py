@@ -21,7 +21,7 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     In case of corrupt input arguments, None is returned.
     """
     if not check_list(tokens, str, False):
-        return None
+        return
     relative_frequencies = {}
     for token in tokens:
         relative_frequencies[token] = tokens.count(token) / len(tokens)
@@ -42,7 +42,7 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
     In case of corrupt input arguments, None is returned.
     """
     if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
-        return None
+        return
     out_of_vocab_words = []
     for token in tokens:
         if token not in vocabulary:
@@ -65,7 +65,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of both strings being empty, 0.0 is returned.
     """
     if not isinstance(token, str) or not isinstance(candidate, str):
-        return None
+        return
     if token == "" and candidate == "":
         return 1.0
     jaccard_distance = 1 - len(set(token) & set(candidate)) / len(set(token) | set(candidate))
@@ -96,7 +96,7 @@ def calculate_distance(
         not isinstance(first_token, str) or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
     ):
-        return None
+        return
     distance = {}
     if method == "jaccard":
         for token in vocabulary:
@@ -126,16 +126,18 @@ def find_correct_word(
     In case of empty vocabulary, None is returned.
     """
     if vocabulary == {}:
-        return None
+        return
     if not calculate_distance(wrong_word, vocabulary, method):
-        return None
+        return
     minimum_distance = min(calculate_distance(wrong_word, vocabulary, method).values())
-    correct_words = [key for key, value in calculate_distance(wrong_word, vocabulary, method).items() if value == minimum_distance]
-    correct_word = correct_words[0]
-    for candidate_word in correct_words:
+    maybe_correct_words = [key for key, value in calculate_distance(wrong_word, vocabulary, method).items() if value == minimum_distance]
+    correct_word = maybe_correct_words[0]
+    if method == 'jaccard' and minimum_distance is None:
+        return
+    for candidate_word in maybe_correct_words:
         if abs(len(wrong_word) - len(candidate_word)) == abs(len(wrong_word) - len(correct_word)):
             correct_word = min(correct_word, candidate_word)
-        elif abs(len(wrong_word) - len(candidate_word)) > abs(len(wrong_word) - len(correct_word)):
+        elif abs(len(wrong_word) - len(candidate_word)) < abs(len(wrong_word) - len(correct_word)):
             correct_word = candidate_word
         return correct_word
 
