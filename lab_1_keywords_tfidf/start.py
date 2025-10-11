@@ -29,22 +29,19 @@ def main() -> None:
     tokens = clean_and_tokenize(target_text)
     if not tokens:
         return
-    #print(tokens)
     removed_stop_words = remove_stop_words(tokens,stop_words)
     if not removed_stop_words:
         return
-    #print(removed_stop_words)
     frequencies = calculate_frequencies(removed_stop_words)
     if not frequencies:
         return
-    #print(frequencies)
     top_n = get_top_n(frequencies, 10)
-    #print(top_n)
 
     result = top_n
     assert result, "Keywords are not extracted"
     
 if __name__ == "__main__":
     main()
+
 
  
