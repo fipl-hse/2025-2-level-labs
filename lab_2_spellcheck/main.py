@@ -67,7 +67,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     if not isinstance(token, str) or not isinstance(candidate, str):
         return
     if token == "" and candidate == "":
-        return 0.0
+        return 1.0
     jaccard_distance = 1 - len(set(token) & set(candidate)) / len(set(token) | set(candidate))
     return jaccard_distance
 
