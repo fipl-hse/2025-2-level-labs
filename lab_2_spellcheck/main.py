@@ -103,6 +103,8 @@ def calculate_distance(
     if method == "jaccard":
         for token in vocabulary:
             distance[token] = calculate_jaccard_distance(first_token, token)
+            if calculate_jaccard_distance(first_token, token) is None:
+                return
     return distance
 
 
@@ -129,11 +131,13 @@ def find_correct_word(
     """
     if vocabulary == {}:
         return
-    if not calculate_distance(wrong_word, vocabulary, method):
+    if not calculate_distance(wrong_word, vocabulary, method, alphabet):
         return
-    if method == 'jaccard':
-        minimum_distance = min(calculate_distance(wrong_word, vocabulary, "jaccard").values())
-        maybe_correct_words = [key for key, value in calculate_distance(wrong_word, vocabulary, "jaccard").items() if value == minimum_distance]
+    minimum_distance = min(calculate_distance(wrong_word, vocabulary, method, alphabet).values())
+    maybe_correct_words = [
+    key for key, value in calculate_distance(wrong_word, vocabulary, method, alphabet).items()
+    if value == minimum_distance
+    ]
     correct_word = maybe_correct_words[0]
     for candidate_word in maybe_correct_words:
         if abs(len(wrong_word) - len(candidate_word)) == abs(len(wrong_word) - len(correct_word)):
