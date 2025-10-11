@@ -480,6 +480,20 @@ def count_transpositions(
 
     In case of corrupt input arguments, None is returned.
     """
+    if (not isinstance(token, str) or
+        not isinstance(candidate, str) or
+        not check_list(token_matches, bool, False) or
+        not check_list(candidate_matches, bool, False)):
+        return None
+    mismatches = 0
+    token_chars = [token[index] for index, char
+                   in enumerate(token_matches) if char]
+    candidate_chars = [candidate[index] for index, char
+                       in enumerate(candidate_matches) if char]
+    for i in range(len(token_chars)):
+        if token_chars[i] != candidate_chars[i]:
+            mismatches += 1
+    return mismatches // 2
 
 
 def calculate_jaro_distance(
