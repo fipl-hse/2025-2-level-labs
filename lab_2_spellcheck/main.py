@@ -544,6 +544,22 @@ def winkler_adjustment(
 
     In case of corrupt input arguments, None is returned.
     """
+    if (not isinstance(token, str) or
+        not isinstance(candidate, str) or
+        not isinstance(jaro_distance, float) or
+        not isinstance(prefix_scaling, float) or
+        not prefix_scaling):
+        return None
+    if jaro_distance == 0:
+        return 0.0
+    max_prefix_length = min(len(token), len(candidate), 4)
+    prefix_length = 0
+    for i in range(max_prefix_length):
+        if token[i] == candidate[i]:
+            prefix_length += 1
+        else:
+            break
+    return prefix_length * prefix_scaling * jaro_distance
 
 
 def calculate_jaro_winkler_distance(
