@@ -3,6 +3,7 @@ Checks the second lab Jaro distance calculation function
 """
 
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -27,7 +28,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_winkler_adjustment_whole_word(self):
+    def test_calculate_jaro_winkler_distance_whole_word(self):
         """
         Ideal scenario
         """
@@ -37,7 +38,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_winkler_adjustment_no_prefix(self):
+    def test_calculate_jaro_winkler_distance_no_prefix(self):
         """
         Ideal scenario
         """
@@ -85,8 +86,48 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_distance_zero_matches(self):
+    def test_calculate_jaro_winkler_distance_zero_matches(self):
         """
         Zero matches scenario
         """
         self.assertAlmostEqual(calculate_jaro_winkler_distance("ant", "fir"), 1.0, FLOAT_TOLERANCE)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark10
+    def test_calculate_jaro_winkler_distance_matches_none(self):
+        """
+        Case of matches function returning None
+        """
+        with mock.patch("lab_2_spellcheck.main.get_matches", return_value=None):
+            result = calculate_jaro_winkler_distance("word", "ord")
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark10
+    def test_calculate_jaro_winkler_distance_transpositions_none(self):
+        """
+        Case of transpositions count function returning None
+        """
+        with mock.patch("lab_2_spellcheck.main.count_transpositions", return_value=None):
+            result = calculate_jaro_winkler_distance("word", "ord")
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark10
+    def test_calculate_jaro_winkler_distance_jaro_distance_none(self):
+        """
+        Case of jaro distance function returning None
+        """
+        with mock.patch("lab_2_spellcheck.main.calculate_jaro_distance", return_value=None):
+            result = calculate_jaro_winkler_distance("word", "ord")
+        self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark10
+    def test_calculate_jaro_winkler_distance_adjustment_none(self):
+        """
+        Case of Winkler adjustment function returning None
+        """
+        with mock.patch("lab_2_spellcheck.main.winkler_adjustment", return_value=None):
+            result = calculate_jaro_winkler_distance("word", "ord")
+        self.assertIsNone(result)
