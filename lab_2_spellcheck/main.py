@@ -129,11 +129,10 @@ def find_correct_word(
         return
     if not calculate_distance(wrong_word, vocabulary, method):
         return
-    minimum_distance = min(calculate_distance(wrong_word, vocabulary, method).values())
-    maybe_correct_words = [key for key, value in calculate_distance(wrong_word, vocabulary, method).items() if value == minimum_distance]
+    if method == 'jaccard':
+        minimum_distance = min(calculate_distance(wrong_word, vocabulary, "jaccard").values())
+        maybe_correct_words = [key for key, value in calculate_distance(wrong_word, vocabulary, "jaccard").items() if value == minimum_distance]
     correct_word = maybe_correct_words[0]
-    if method == 'jaccard' and minimum_distance is None:
-        return
     for candidate_word in maybe_correct_words:
         if abs(len(wrong_word) - len(candidate_word)) == abs(len(wrong_word) - len(correct_word)):
             correct_word = min(correct_word, candidate_word)
