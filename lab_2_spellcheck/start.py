@@ -30,7 +30,6 @@ def main() -> None:
     distance = calculate_distance("утрым", relative_frequencies, 'jaccard')
     result = distance
     assert result, "Result is None"
-    #print(relative_frequencies)
 
 
 if __name__ == "__main__":
