@@ -22,7 +22,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if len(user_input) == 0 and can_be_empty == False:
+    if len(user_input) == 0 and not can_be_empty:
         return False
     for individual_item in user_input:
         if not isinstance(individual_item, elements_type): 
@@ -44,7 +44,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    if len(user_input) == 0 and can_be_empty == False:
+    if len(user_input) == 0 and not can_be_empty:
         return False
     for key, value in user_input.items():
         if not isinstance(key, key_type):
@@ -112,7 +112,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     for s in t:
         temp=''
         for symb in s:
-            if symb in '!"#$%&\'()*+,./:;<=>?@[\\]^_`{|}~\n':
+            if symb in '!"#$%&\'()*+,./:;<=>?'\
+            '@[\\]^_`{|}~\n':
                 continue
             temp+=symb
         if temp == '-':
