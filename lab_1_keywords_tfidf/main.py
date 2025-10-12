@@ -71,7 +71,6 @@ def check_positive_int(user_input: Any) -> bool:
         return False
     return True
 
-
 def check_float(user_input: Any) -> bool:
     """
     Check if the object is a float.
@@ -84,7 +83,6 @@ def check_float(user_input: Any) -> bool:
     """
     if isinstance(user_input, float):
         return False
-
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
@@ -102,7 +100,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     word = ''
     t=[]
     for symb in text:
-        if symb == ' ' or symb == '\n':
+        if symb in (' ', '\n'):
             if word != '':
                 t.append(word)
             word = ''
@@ -122,8 +120,6 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         if temp != '':
             ans.append(temp)
     return ans
-
-
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
@@ -182,7 +178,6 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     return [item[0] for item in sorted(frequencies.items(), 
                    key=lambda item: item[1], reverse=True)[:top]]
 
-
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     """
     Calculate Term Frequency (TF) for each token.
@@ -194,7 +189,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
         dict[str, float] | None: Dictionary with tokens and TF values.
         In case of corrupt input arguments, None is returned.
     """
-
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
     """
@@ -208,7 +202,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         dict[str, float] | None: Dictionary with tokens and TF-IDF values.
         In case of corrupt input arguments, None is returned.
     """
-
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
@@ -225,7 +218,6 @@ def calculate_expected_frequency(
         In case of corrupt input arguments, None is returned.
     """
 
-
 def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
@@ -240,7 +232,6 @@ def calculate_chi_values(
         dict[str, float] | None: Dictionary with chi-squared values.
         In case of corrupt input arguments, None is returned.
     """
-
 
 def extract_significant_words(
     chi_values: dict[str, float], alpha: float
