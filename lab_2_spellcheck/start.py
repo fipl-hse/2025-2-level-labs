@@ -4,11 +4,11 @@ Spellcheck starter
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
 
-#from ..lab_1_keywords_tfidf.main import (
-#    clean_and_tokenize,
- #   remove_stop_words
-#)
-#lab_2...
+from lab_1_keywords_tfidf.main import (
+    clean_and_tokenize,
+    remove_stop_words
+)
+
 from lab_2_spellcheck.main import (
     build_vocabulary,
     clean_and_tokenize,
