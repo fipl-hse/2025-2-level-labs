@@ -90,28 +90,17 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return None
     
     if not token and not candidate:
-        return 0.0
+        return 1.0
     if not token or not candidate:
         return 1.0
 
     tokens_unique=set(token)
     candidate_unique=set(candidate)
 
-    intersection=set()
-    for element in tokens_unique:
-        if element in candidate_unique:
-            intersection.add(element)
+    intersection=len(tokens_unique & candidate_unique)
+    unification=len(tokens_unique | candidate_unique)
 
-    unification=set()
-    for element in tokens_unique:
-        if element in tokens_unique:
-            unification.add(element)
-
-    for element in candidate_unique:
-        if element not in unification:
-            unification.add(element)
-
-    jaccard_distance=1-(len(intersection)/len(unification))
+    jaccard_distance=1.0-(intersection / unification)
 
     return jaccard_distance
 
@@ -146,11 +135,12 @@ def calculate_distance(
         return None
 
     dictionary={}
+
     for token in vocabulary:
         if method == "jaccard":
             distance=calculate_jaccard_distance(first_token, token)
         elif method == "frequency-based":
-            dictionary[token]= 1.0
+            dictionary[token]= 1.0-vocabulary[token]
         elif method == "levenshtein":
             distance = calculate_levenshtein_distance(first_token, token)
         elif method == "jaro-winkler":
@@ -188,10 +178,13 @@ def find_correct_word(
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None 
 
-    if not check_list(alphabet, str) or alphabet is not None:
+    if alphabet is not None and not check_list(alphabet, str, True):
+        return None
+    
+    if not vocabulary:
         return None
 
-    correct_word=calculate_distance(wrong_word, vocabulary, method)
+    correct_word=calculate_distance(wrong_word, vocabulary, method, alphabet)
     if not correct_word:
         return None
 
@@ -202,12 +195,12 @@ def find_correct_word(
         if value==min_result:
             candidates.append(element)
 
-    for words, _ in candidates():
-        if len(candidates)==1:
-            return words
+    if len(candidates)==1:
+        return candidates[0]
 
     candidates.sort()
-    candidates.sort(key=lambda word: abs(len(word))-len(wrong_word))
+    candidates.sort(key=lambda word: abs(len(word)-len(wrong_word)))
+
     return candidates[0]
 
 def initialize_levenshtein_matrix(
@@ -226,7 +219,20 @@ def initialize_levenshtein_matrix(
     if not isinstance(token_length, int) or not isinstance(candidate_length, int):
         return None
 
+    if token_length<0 or candidate_length<0:
+        return None 
 
+    n=token_length+1
+    m=candidate_length+1
+    matrix=[[0 for _ in range(m)] for _ in range(n)]
+
+    for j in range(m):
+        matrix[0][j]= j
+
+    for i in range(n):
+            matrix[i][0]= i
+
+    return matrix
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
     """
@@ -239,6 +245,30 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+
+    token_length=len(token)
+    candidate_length=len(candidate)
+
+    matrix=initialize_levenshtein_matrix(token_length, candidate_length)
+    if matrix is None:
+        return None
+
+    for i in range(1, token_length+1):
+        for j in range(1, candidate_length+1):
+            if token[i-1] == candidate[j-1]:
+                cost=0
+            else:
+                cost=1
+
+            deleted=matrix[i-1][j]+1
+            insertion=matrix[i][j-1]+1
+            rechange=matrix[i-1][j-1]+cost
+
+            matrix[i][j]=min(deleted, insertion, rechange)
+
+    return matrix
 
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
@@ -253,6 +283,19 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    
+    token_length=len(token)
+    candidate_length=len(candidate)
+
+    matrix=fill_levenshtein_matrix(token, candidate)
+    if matrix is None:
+        return None
+
+    final_levenshtein_distance=matrix[token_length][candidate_length]
+
+    return final_levenshtein_distance
 
 
 def delete_letter(word: str) -> list[str]:
@@ -399,6 +442,21 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
 
+    if word == "":
+        candidates = set()
+
+    if alphabet:
+        candidates.add("")
+
+    for letter in alphabet:
+        candidates.add(letter)
+
+    for letter1 in alphabet:
+        for letter2 in alphabet:
+            candidates.add(letter1 + letter2)
+            
+        return tuple(sorted(candidates))
+
     generated_candidates=generate_candidates(word, alphabet)
     if generated_candidates is None:
         return None 
@@ -458,6 +516,8 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str) or not isinstance(match_distance, str):
+        return None 
 
 
 def count_transpositions(
