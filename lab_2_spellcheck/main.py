@@ -5,51 +5,7 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 from math import floor, ceil
-
-
-def check_list(user_input, elements_type: type, can_be_empty: bool) -> bool:
-    """
-    Check if the object is a list containing elements of a certain type.
-
-    Args:
-        user_input (Any): Object to check
-        elements_type (type): Expected type of list elements
-        can_be_empty (bool): Whether an empty list is allowed
-
-    Returns:
-        bool: True if valid, False otherwise
-    """
-    if not isinstance(user_input, list):
-        return False
-    if can_be_empty:
-        if user_input == []:
-            return True
-    else:
-        if user_input == []:
-            return False
-    return all(isinstance(step1, elements_type) for step1 in user_input)
-
-def check_dict(user_input, key_type: type, value_type: type, can_be_empty: bool) -> bool:
-    """
-    Check if the object is a dictionary with keys and values of given types.
-
-    Args:
-        user_input (Any): Object to check
-        key_type (type): Expected type of dictionary keys
-        value_type (type): Expected type of dictionary values
-        can_be_empty (bool): Whether an empty dictionary is allowed
-
-    Returns:
-        bool: True if valid, False otherwise
-    """
-    if not isinstance(user_input, dict):
-        return False
-    if user_input == {}:
-        return can_be_empty
-    if all(isinstance(step1, key_type) for step1 in user_input.keys()):
-        return all(isinstance(step2, value_type) for step2 in user_input.values())
-    return False
-
+from lab_1_keywords_tfidf.main import check_list, check_dict
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
@@ -65,7 +21,7 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     In case of corrupt input arguments, None is returned.
     """
     dict_frequency = {}
-    if isinstance(tokens, list) and all(isinstance(step1, str) for step1 in tokens):
+    if isinstance(tokens, list) and check_list(tokens, str, False):
         for i in tokens:
             dict_frequency.update({i : (tokens.count(i))/len(tokens)})
         if dict_frequency == {}:
@@ -141,7 +97,43 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-
+    if (not isinstance(vocabulary, dict) or not isinstance(first_token, str) or not check_dict(vocabulary, str, float, False) or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
+        return None
+    word_dists = {}
+    found_freq = 0
+    if method == "jaccard":
+        for i in vocabulary.keys():
+            if calculate_jaccard_distance(first_token, i) == None:
+                return None
+            word_dists.update({i : calculate_jaccard_distance(first_token, i)})
+            if word_dists == {}:
+                return None
+        return word_dists
+    if method == "levenshtein":
+        for i in vocabulary.keys():
+            if calculate_levenshtein_distance(first_token, i) == None:
+                return None
+            word_dists.update({i : calculate_levenshtein_distance(first_token, i)})
+        if word_dists == {}:
+            return None
+        return word_dists
+    if method == "frequency":
+        for i in vocabulary.keys():
+            if calculate_frequency_distance(first_token, i) == None:
+                return None
+            if alphabet:
+                word_dists.update({i : calculate_frequency_distance(first_token, i, alphabet)})
+            if word_dists == {}:
+                return None
+            return word_dists
+    if method == "jaro-winkler":
+        for i in vocabulary.keys():
+            if calculate_jaro_winkler_distance(first_token, i) == None:
+                return None
+            word_dists.update({i : calculate_jaro_winkler_distance(first_token, i)})
+            if word_dists == {}:
+                return None
+            return word_dists
 
 def find_correct_word(
     wrong_word: str,
@@ -168,22 +160,24 @@ def find_correct_word(
         return None
     word_dists = {}
     found_freq = 0
-    found_word = ""
-    for i in vocabulary.keys():
-        if method == "jaccard":
-            word_dists.update({i : calculate_jaccard_distance(wrong_word, i)})
-        if method == "levenshtein":
-            word_dists.update({i : calculate_levenshtein_distance(wrong_word, i)})
-        if method == "frequency":
-            word_dists.update({i : calculate_frequency_distance(wrong_word, i)})
-        if method == "jaro-winkler":
+    if method == "jaro-winkler":
+        for i in vocabulary.keys():
             word_dists.update({i : calculate_jaro_winkler_distance(wrong_word, i)})
-    if word_dists == {}:
+        if word_dists == {}:
+            return None
+        found_word = 0
+        found_freq = min(word_dists.values())
+        for key, val in word_dists.items():
+            if val == found_freq:
+                found_word = key
+        return found_word
+    wrong_dists = calculate_distance(wrong_word, vocabulary, method)
+    if not wrong_dists:
         return None
-    found_freq = min(word_dists.values())
-    for key, val in word_dists.items():
-        if val == found_freq:
-            found_word = key
+    found_dist = min(wrong_dists.values())
+    found_words = [key for key, val in wrong_dists.items() if val == found_dist]
+    sorted_words = sorted(found_words)
+    found_word = sorted_words[0]
     return found_word
 
 def initialize_levenshtein_matrix(
@@ -350,13 +344,6 @@ def swap_adjacent(word: str) -> list[str]:
         return []
     new_word = ''
     new_words = []
-    # # for i in range(0, len(word), 2):
-    # #     new_word += word[i+1] + word[i]
-    # #     new_words.append(new_word)
-    # for i in range(0, len(word), 2):
-    #     new_word = ''.join([ word[i:i+2][::-1]])
-    #     new_words.append(new_word)
-    # return new_words
     for i in range(len(word)):
         one_letter = word[i:i+1]
         two_letter = word[i+1:i+2]
@@ -395,14 +382,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     if word != "":
         deleted_let = delete_letter(word)
         swapped_let = swap_adjacent(word)
-    for i in add_let:
-        generated_words.append(i)
-    for j in replace_let:
-        generated_words.append(j)
-    for b in deleted_let:
-        generated_words.append(b)
-    for c in swapped_let:
-        generated_words.append(c)
+    generated_words = add_let + deleted_let + replace_let + swapped_let
     sorted_words = []
     sorted_words = sorted(generated_words)
     return sorted_words
@@ -420,27 +400,6 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
-    new_words = []
-    add_let = []
-    deleted_let = []
-    replace_let = []
-    swapped_let = []
-    generated_words = []
-    if alphabet != []:
-        add_let = add_letter(word, alphabet)
-        replace_let = replace_letter(word, alphabet)
-    if word != "":
-        deleted_let = delete_letter(word)
-        swapped_let = swap_adjacent(word)
-    for i in add_let:
-        generated_words.append(i)
-    for j in replace_let:
-        generated_words.append(j)
-    for b in deleted_let:
-        generated_words.append(b)
-    for c in swapped_let:
-        generated_words.append(c)
-    return ()
 
 def calculate_frequency_distance(
     word: str, frequencies: dict, alphabet: list[str]
@@ -458,7 +417,13 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-
+    if not (isinstance(word, str) and isinstance(frequencies, dict) and check_list(alphabet, str, False)):
+        return None
+    correct_words = {}
+    for key, val in frequencies.items():
+        distance_freq = 1 - val / max(frequencies.values())
+        correct_words.update({key : distance_freq})
+    return correct_words
 
 def get_matches(
     token: str, candidate: str, match_distance: int

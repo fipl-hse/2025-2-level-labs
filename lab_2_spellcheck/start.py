@@ -3,7 +3,10 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
+from lab_2_spellcheck.main import (
+    build_vocabulary, calculate_distance, find_out_of_vocab_words, find_correct_word
 
+)
 
 def main() -> None:
     """
@@ -21,6 +24,8 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
+        jaccard_word = calculate_distance("кот", {"кот": 0.5, "пёс": 0.5}, method="jaccard")
+        print(jaccard_word)
     result = None
     assert result, "Result is None"
 
