@@ -5,7 +5,10 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 from typing import Any
-
+#from lab_1_keywords_tfidf.main import (
+#    check_list,
+ #   check_dict
+#)
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
@@ -23,10 +26,8 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         return False
     if not user_input:
         return can_be_empty
-    for element in user_input:
-        if not isinstance(element, elements_type):
-            return False
-    return True
+    return all(isinstance(element, elements_type) for element in user_input)
+
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -46,10 +47,49 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
         return False
     if not user_input:
         return can_be_empty
-    for key, value in user_input.items():
-        if not isinstance(key, key_type) or not isinstance(value, value_type):
-            return False
-    return True
+    return (all(isinstance(key, key_type) for key in user_input) and
+        all(isinstance(value, value_type) for value in user_input.values()))
+
+
+def clean_and_tokenize(text: str) -> list[str] | None:
+    """
+    Remove punctuation, convert to lowercase, and split into tokens.
+
+    Args:
+        text (str): Original text
+
+    Returns:
+        list[str] | None: A list of lowercase tokens without punctuation.
+        In case of corrupt input arguments, None is returned.
+    """
+    if not isinstance(text, str):
+        return None
+    words = text.lower().split()
+    tokens = []
+    for word in words:
+        cleaned_word = ''.join(
+            symbol for symbol in word
+            if symbol.isalnum())
+        if cleaned_word:
+            tokens.append(cleaned_word)
+    return tokens
+
+def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
+    """
+    Exclude stop words from the token sequence.
+
+    Args:
+        tokens (list[str]): Original token sequence
+        stop_words (list[str]): Tokens to exclude
+
+    Returns:
+        list[str] | None: Token sequence without stop words.
+        In case of corrupt input arguments, None is returned.
+    """
+    if not all([check_list(tokens, str, True),
+        check_list(stop_words, str, True)]):
+        return None
+    return [token for token in tokens if token not in set(stop_words)]
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -188,7 +228,7 @@ def find_correct_word(
         if value == max_value:
             values.append(key)
     if len(values) == 0:
-        return None
+        return values[0]
     else:
         values.sort(key=lambda value: (abs(len(value) - len(wrong_word)), value))
         return values[0]
@@ -271,7 +311,9 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not isinstance(word, str) or not check_list(alphabet, str, False):
+    if not isinstance(word, str) or not isinstance(alphabet, list):
+        return []
+    if alphabet and not all(isinstance(letter, str) for letter in alphabet):
         return []
     res = []
     for i in range(0, len(word) + 1):
@@ -296,7 +338,9 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not isinstance(word, str) and not check_list(alphabet, str, False):
+    if not isinstance(word, str) or not isinstance(alphabet, list):
+        return []
+    if alphabet and not all(isinstance(letter, str) for letter in alphabet):
         return []
     result = []
     for i in range(len(word)):
@@ -343,20 +387,19 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(word, str) or not check_list(alphabet, str, False):
-        return []
-    if not word and not alphabet:
+    if not isinstance(word, str) or not isinstance(alphabet, list):
         return None
-    if word == "":
-        return alphabet
-    criterion_1 = delete_letter(word)
-    criterion_2 = add_letter(word, alphabet)
-    criterion_3 = replace_letter(word, alphabet)
-    criterion_4 = swap_adjacent(word)
-    result = criterion_1 + criterion_2 + criterion_3 + criterion_4
-    if result:
-        return list(set(result))
-    
+    if alphabet and not all(isinstance(letter, str) for letter in alphabet):
+        return None
+    set_1 = set(delete_letter(word)) 
+    set_2 = set(add_letter(word, alphabet))
+    set_3 = set(replace_letter(word, alphabet))
+    set_4 = set(swap_adjacent(word))
+    result = set_1.union(set_2)
+    result_2 = result.union(set_3)
+    result_3 = result_2.union(set_4)
+    return sorted(list(result_3))
+
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
     """
