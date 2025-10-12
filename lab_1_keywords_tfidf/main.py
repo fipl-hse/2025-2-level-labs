@@ -83,6 +83,8 @@ def check_float(user_input: Any) -> bool:
     """
     if isinstance(user_input, float):
         return False
+    else:
+        return True
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
@@ -174,7 +176,8 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int, float), True) or not check_positive_int(top) or not frequencies:
+    if not check_dict(frequencies, str, (int, float), True) \
+        or not check_positive_int(top) or not frequencies:
         return None
     return [item[0] for item in sorted(frequencies.items(),
                    key=lambda item: item[1], reverse=True)[:top]]
