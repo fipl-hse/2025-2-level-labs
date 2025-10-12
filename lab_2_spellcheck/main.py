@@ -331,6 +331,10 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str) or not check_list(alphabet, str, False):
+        return None
+    result = generate_candidates(word, alphabet)
+    return tuple(result)
 
 
 def calculate_frequency_distance(
@@ -445,4 +449,3 @@ def calculate_jaro_winkler_distance(
 
     In case of corrupt input arguments or corrupt outputs of used functions, None is returned.
     """
-    
