@@ -11,8 +11,6 @@ from lab_1_keywords_tfidf.main import (
 
 from lab_2_spellcheck.main import (
     build_vocabulary,
-    clean_and_tokenize,
-    remove_stop_words,
     calculate_distance,
     calculate_jaccard_distance,
     find_out_of_vocab_words,
