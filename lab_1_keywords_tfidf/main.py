@@ -25,7 +25,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     if len(user_input) == 0 and not can_be_empty:
         return False
     for individual_item in user_input:
-        if not isinstance(individual_item, elements_type): 
+        if not isinstance(individual_item, elements_type):
             return False
     return True
 
@@ -176,7 +176,7 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not check_dict(frequencies, str, (int, float), True) or not check_positive_int(top) or not frequencies:
         return None
-    return [item[0] for item in sorted(frequencies.items(), 
+    return [item[0] for item in sorted(frequencies.items(),
                    key=lambda item: item[1], reverse=True)[:top]]
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
