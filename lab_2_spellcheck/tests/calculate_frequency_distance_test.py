@@ -56,7 +56,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
         """
         for misspelled_word, correct_word in zip(self.misspelled, self.correct_words):
             expected_dict = dict(self.empty_dict)
-            expected_dict[correct_word] = self.vocabulary.get(correct_word, 0.0)
+            expected_dict[correct_word] = 1 - self.vocabulary.get(correct_word, 0.0)
 
             probable_words = calculate_frequency_distance(
                 misspelled_word, self.vocabulary, self.alphabet
@@ -124,7 +124,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
         actual = calculate_frequency_distance("libbrary", self.vocabulary, [])
         for token, score in actual.items():
             if token == "library":
-                self.assertAlmostEqual(score, 0.12, FLOAT_TOLERANCE)
+                self.assertAlmostEqual(score, 0.88, FLOAT_TOLERANCE)
             else:
                 self.assertAlmostEqual(score, 1.0, FLOAT_TOLERANCE)
 
@@ -143,3 +143,34 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
 
         for token, value in result.items():
             self.assertAlmostEqual(self.empty_dict[token], value)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_frequency_distance_several_candidates(self):
+        """
+        Case of several candidates being close
+        """
+        expected = {
+            "35": 1.0,
+            "across": 1.0,
+            "boy": 1.0,
+            "cat": 1.0,
+            "coffee": 1.0,
+            "friend": 1.0,
+            "kind": 1.0,
+            "library": 1.0,
+            "lived": 0.96,
+            "loved": 0.92,
+            "named": 0.96,
+            "opened": 1.0,
+            "shops": 1.0,
+            "smart": 1.0,
+            "stories": 1.0,
+            "stories101": 1.0,
+            "street": 1.0,
+        }
+        actual = calculate_frequency_distance("laved", self.vocabulary, self.alphabet)
+        for token, freq in actual.items():
+            self.assertAlmostEqual(expected[token], freq, FLOAT_TOLERANCE)
