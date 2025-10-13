@@ -226,6 +226,13 @@ def delete_letter(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    changed_words = []
+    for letter in range(len(word)):
+        new_word = word[:letter] + word[letter+1:]
+        changed_words.append(new_word)
+    return sorted(changed_words)
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -242,6 +249,18 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    if not check_list(alphabet, str, False):
+        return []
+    if any(not isinstance(ch, str) or len(ch) != 1 for ch in alphabet):
+        return []
+    changed_words = []
+    for i in range(len(word) + 1):
+        for letter in alphabet:
+            new_word = word[:i] + letter + word[i:]
+            changed_words.append(new_word)
+    return changed_words
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -258,6 +277,17 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    if not check_list(alphabet, str, False):
+        return []
+    changed_words = set()
+    for i in range(len(word)):
+        for letter in alphabet:
+            if letter != word[i]:
+                new_word = word[:i] + letter + word[i+1:]
+                changed_words.add(new_word)
+    return sorted(changed_words)
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -273,6 +303,14 @@ def swap_adjacent(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    changed_words = []
+    length = len(word)
+    for i in range(length - 1):
+        new_word = word[:i] + word[i+1] + word[i] + word[i+2:]
+        changed_words.append(new_word)
+    return sorted(changed_words)
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
@@ -289,6 +327,16 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str):
+        return None
+    if not check_list(alphabet, str, True):
+        return None
+    candidates = set()
+    candidates.update(swap_adjacent(word))
+    candidates.update(replace_letter(word, alphabet))
+    candidates.update(add_letter(word, alphabet))
+    candidates.update(delete_letter(word))
+    return sorted(candidates)
 
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
@@ -305,6 +353,18 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
+    first_level = generate_candidates(word, alphabet)
+    if first_level is None:
+        return None
+    all_candidates = set(first_level)
+    for candidate in first_level:
+        second_level = generate_candidates(candidate, alphabet)
+        if second_level:
+            all_candidates.update(second_level)
+    if word != "":
+        all_candidates.discard(word)
+    all_candidates.discard(word)
+    return tuple(sorted(all_candidates))
 
 
 def calculate_frequency_distance(
@@ -323,6 +383,25 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str):
+        return None
+    if not check_list(alphabet, str, False):
+        return None
+    if not isinstance(frequencies, dict):
+        return None
+    candidates = generate_candidates(word, alphabet)
+    if candidates is None:
+        return None
+    distances = {}
+    epsilon = 1e-9
+    for candidate in candidates:
+        freq = frequencies.get(candidate, 0.0)
+        if freq > 0:
+            distance = 1.0 / (freq + epsilon)
+            distances[candidate] = distance
+    if not distances:
+        return None
+    return distances
 
 
 def get_matches(
