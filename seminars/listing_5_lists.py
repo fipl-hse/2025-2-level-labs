@@ -3,7 +3,7 @@ Programming 2025.
 
 Seminar 5.
 
-Data Type: str. loops. list.
+Data Type: str. loops. list. tuple.
 """
 
 # pylint: disable=duplicate-code, unused-argument, invalid-name
@@ -96,8 +96,8 @@ test_deepcopy = copy.deepcopy(first_test)
 test_deepcopy[3].append(4)
 print(first_test, test_deepcopy)
 
-# List methods (some of them)
-# .insert(index, item) -> inserts the given item on the mentioned index
+# List methods
+# .insert(index, item) - inserts the given item on the mentioned index
 # .remove(item) - removes the first occurrence of the given item from the list
 # .pop() or .pop(index) – removes the item from the given index
 # (or the last item) and returns that item
@@ -105,6 +105,31 @@ print(first_test, test_deepcopy)
 # .sort() – sorts the list in place i.e modifies the original list
 # .reverse() – reverses the list in place
 # .copy() – returns a shallow copy of the list
+
+
+# Common information about tuples
+#
+# tuples are typically defined using parentheses, with elements separated by commas
+# tuples are immutable, i.e. their elements cannot be changed after creation
+# tuples can contain items of different data types
+# tuples support indexing and slicing, but do not support item assignment
+
+# Create a tuple
+example_tuple = (1, 2, 3)
+print(example_tuple)
+
+# Tuple concatenation: the original tuple doesn't change, and a new tuple is created
+first_tuple = example_tuple + (2, 3, 4)
+print(example_tuple)
+print(first_tuple)
+
+# "Modifying" a tuple requires creating a new one
+modified_tuple = example_tuple + (9,)
+print(modified_tuple)
+
+# Tuple methods
+# .count(item) – returns the number of occurrences of the item
+# .index(item) – returns the index of the first occurrence of the item
 
 
 # TASKS
@@ -478,3 +503,102 @@ def find_anagrams(word: str) -> list:
 # Function calls with expected result:
 # find_anagrams('abba') => ['aabb', 'bbaa']
 # find_anagrams('racer') => ['carer', 'racer', ...]
+
+
+# Task 18:
+def reverse_tuple(t: tuple) -> tuple:
+    """
+    Reverse the elements of the tuple.
+
+    Args:
+        t (tuple): input tuple
+
+    Returns:
+        tuple: tuple with the order of elements reversed
+    """
+    # student implementation goes here
+
+
+# Function calls with expected result:
+# reverse_tuple((1, 2, 3)) => (3, 2, 1)
+# reverse_tuple(('a', 'b', 'c')) => ('c', 'b', 'a')
+
+
+# Task 19:
+def extract_even_numbers(t: tuple) -> tuple:
+    """
+    Extract all even numbers from a tuple of integers.
+
+    Args:
+        t (tuple): input tuple
+
+    Returns:
+        tuple: tuple containing only even numbers from the input tuple
+    """
+    # student implementation goes here
+
+
+# Function calls with expected result:
+# extract_even_numbers((1, 2, 3, 4, 5, 6)) => (2, 4, 6)
+# extract_even_numbers((7, 9, 11)) => ()
+
+
+# Task 20:
+def swap_elements(t: tuple, index1: int, index2: int) -> tuple:
+    """
+    Swap the elements in the tuple at the given indices.
+
+    Args:
+        t (tuple): input tuple
+        index1 (int): the index of the first element
+        index2 (int): the index of the second element
+
+    Returns:
+        tuple: tuple with the elements at index1 and index2 swapped
+    """
+    # student implementation goes here
+
+
+# Function calls with expected result:
+# swap_elements((10, 20, 30, 40), 1, 3) => (10, 40, 30, 20)
+# swap_elements(('a', 'b', 'c'), 0, 2) => ('c', 'b', 'a')
+
+
+# Task 21:
+def tuple_intersection(t1: tuple, t2: tuple) -> tuple:
+    """
+    Find the intersection of two tuples.
+
+    Args:
+        t1 (tuple): the first input tuple
+        t2 (tuple): the second input tuple
+
+    Returns:
+        tuple: tuple containing the common elements between t1 and t2
+    """
+    # student implementation goes here
+
+
+# Function calls with expected result:
+# tuple_intersection((1, 2, 3, 4), (3, 4, 5, 6)) => (3, 4)
+# tuple_intersection(('a', 'b', 'c'), ('b', 'd', 'a')) => ('a', 'b')
+
+
+# Task 22:
+def count_occurrences(t: tuple, element: int | str) -> int:
+    """
+    Count the number of times an element appears in the tuple.
+
+    Args:
+        t (tuple): input tuple
+        element: the element whose occurrences need to be counted
+
+    Returns:
+        int: the number of times element appears in the tuple
+    """
+    # student implementation goes here
+
+
+# Function calls with expected result:
+# count_occurrences((1, 2, 3, 2, 2, 4), 2) => 3
+# count_occurrences(('apple', 'banana', 'apple'), 'apple') => 2
