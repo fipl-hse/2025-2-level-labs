@@ -70,7 +70,7 @@
             "name": "[SEMINAR 5] Learn lists and tuples",
             "type": "debugpy",
             "request": "launch",
-            "program": "seminars/listing_5_lists_tuples.py",
+            "program": "seminars/listing_5_lists.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
@@ -81,6 +81,16 @@
             "type": "debugpy",
             "request": "launch",
             "program": "seminars/listing_6_dicts.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 7] Learn functions",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_7_functions.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"

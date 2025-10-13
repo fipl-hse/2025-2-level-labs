@@ -28,7 +28,6 @@ ignore = ['D004']
 ignore-path = [
     'venv*',
     'build/',
-    "lab_1_keywords_tfidf/assets/Дюймовочка.txt"
 ]
 
 [tool.pydocstyle]
@@ -113,11 +112,6 @@ disable_error_code = [
     'empty-body'
 ]
 
-[[tool.mypy.overrides]]
-module = ['config.lab_settings', ]
-disable_error_code = [
-    'assignment'
-]
 
 [[tool.mypy.overrides]]
 module = [
