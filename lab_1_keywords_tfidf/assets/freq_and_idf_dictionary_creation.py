@@ -1,6 +1,6 @@
 # mypy: ignore-errors
-# pylint: skip-file
 
+# pylint:disable=redefined-outer-name, missing-function-docstring, import-error, missing-module-docstring, duplicate-code
 import json
 import shutil
 import zipfile
