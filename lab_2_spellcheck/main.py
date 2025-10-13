@@ -253,14 +253,12 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
         return []
     if not check_list(alphabet, str, False):
         return []
-    if any(not isinstance(ch, str) or len(ch) != 1 for ch in alphabet):
-        return []
     changed_words = []
     for i in range(len(word) + 1):
         for letter in alphabet:
             new_word = word[:i] + letter + word[i:]
             changed_words.append(new_word)
-    return changed_words
+    return sorted(changed_words)
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
