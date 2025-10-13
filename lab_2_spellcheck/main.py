@@ -58,6 +58,31 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
     In case of corrupt input arguments, None is returned.
     """
 
+    if not isinstance(tokens, list):
+        return None
+
+    if not tokens:
+        return None
+
+    if not all(isinstance(token, str) for token in tokens):
+        return None
+
+    if not isinstance(vocabulary, dict):
+        return None
+
+    if not vocabulary:
+        return None
+
+    if not all(isinstance(key, str) and isinstance(value, float) for key, value in vocabulary.items()):
+        return None
+
+    out_of_vocab_words = []
+    for token in tokens:
+        if token not in vocabulary:
+            out_of_vocab_words.append(token)
+    
+    return out_of_vocab_words
+
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     """
@@ -73,6 +98,26 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+
+    if token == "" and candidate == "":
+        return 1.0
+
+    set1 = set(token)
+    set2 = set(candidate)
+
+    intersection = set1.intersection(set2)
+    union = set1.union(set2)
+
+    if not union:
+        return 1.0
+    
+    jaccard_similarity = len(intersection) / len(union)
+
+    jaccard_distance = 1.0 - jaccard_similarity
+    
+    return jaccard_distance
 
 
 def calculate_distance(
