@@ -84,8 +84,6 @@ def check_float(user_input: Any) -> bool:
     """
     if isinstance(user_input, float):
         return False
-    else:
-        return True
 
 def clean_and_tokenize(text: str) -> list[str] | None:
     """
