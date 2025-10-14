@@ -107,18 +107,18 @@ def calculate_distance(
     if method == 'frequency-based':
         if not check_list(alphabet, str, True):
             return {word: 1.0 for word in vocabulary}
-        distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        distance = calculate_frequency_distance(first_token, vocabulary, alphabet) or {}
         if distance is None:
             return None
         return distance
-    calculated_distance_score = {}
+    calculated_distance_score: dict[str, float] = {}
     for word in vocabulary:
         if method == 'jaccard':
-            distance = calculate_jaccard_distance(first_token, word)
+            distance = calculate_jaccard_distance(first_token, word) or 0.0
         elif method == 'levenshtein':
-            distance = calculate_levenshtein_distance(first_token, word)
+            distance = calculate_levenshtein_distance(first_token, word) or 0
         elif method == 'jaro-winkler':
-            distance = calculate_jaro_winkler_distance(first_token, word)
+            distance = calculate_jaro_winkler_distance(first_token, word) or 0.0
         if distance is None:
             return None
         calculated_distance_score[word] = distance
@@ -372,8 +372,8 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     if first_step_candidates is None:
         return None
     candidates.update(first_step_candidates)
-    for word in first_step_candidates:
-        second_step_candidates = generate_candidates(word, alphabet)
+    for token in first_step_candidates:
+        second_step_candidates = generate_candidates(token, alphabet)
         if second_step_candidates is None:
             return None
         candidates.update(second_step_candidates)
@@ -482,8 +482,8 @@ def count_transpositions(
                    in enumerate(token_matches) if char]
     candidate_chars = [candidate[index] for index, char
                        in enumerate(candidate_matches) if char]
-    for index, token in enumerate(token_chars):
-        if token != candidate_chars[index]:
+    for index, word in enumerate(token_chars):
+        if word != candidate_chars[index]:
             mismatches += 1
     return mismatches // 2
 
