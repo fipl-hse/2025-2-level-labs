@@ -106,11 +106,6 @@ def calculate_distance(
             if distance is None:
                 return None
             result[el] = distance
-    elif method == "frequency-based":
-        distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        if distance is None:
-            return None
-        result = distance
     return result
 
 
@@ -366,6 +361,14 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str) or not isinstance(frequencies, dict):
+        return None
+    candidates = propose_candidates(word, alphabet)
+    result = {}
+    for element in candidates:
+        if element in frequencies:
+            result[element] = 1 - (frequencies.get(element)/max(frequencies.values()))
+    return result
 
 
 def get_matches(
