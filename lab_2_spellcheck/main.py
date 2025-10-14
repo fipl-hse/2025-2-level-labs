@@ -106,30 +106,18 @@ def calculate_distance(
         ]):
         return None
     calculated_distance_score = {}
-    if method == 'jaccard':
-        for word in vocabulary:
+    for word in vocabulary:
+        if method == 'jaccard':
             distance = calculate_jaccard_distance(first_token, word)
-            if distance is None:
-                return None
-            calculated_distance_score[word] = distance
-    elif method == 'frequency-based':
-        for word in vocabulary:
-            distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
-            if distance is None:
-                return None
-            calculated_distance_score[word] = distance
-    elif method == 'levenshtein':
-        for word in vocabulary:
+        elif method == 'levenshtein':
             distance = calculate_levenshtein_distance(first_token, word)
-            if distance is None:
-                return None
-            calculated_distance_score[word] = distance
-    elif method == 'jaro-winkler':
-        for word in vocabulary:
+        elif method == 'jaro-winkler':
             distance = calculate_jaro_winkler_distance(first_token, word)
-            if distance is None:
-                return None
-            calculated_distance_score[word] = distance
+        else:
+            distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if distance is None:
+            return None
+        calculated_distance_score[word] = distance
     return calculated_distance_score
 
 
@@ -557,8 +545,6 @@ def winkler_adjustment(
         not isinstance(jaro_distance, float) or
         not isinstance(prefix_scaling, float)):
         return None
-    if jaro_distance == 0:
-        return 0.0
     max_prefix_length = min(len(token), len(candidate), 4)
     prefix_length = 0
     for i in range(max_prefix_length):
@@ -586,31 +572,27 @@ def calculate_jaro_winkler_distance(
     In case of corrupt input arguments or corrupt outputs of used functions, None is returned.
     """
     if (not isinstance(token, str) or
-        not isinstance(candidate, str) or
-        not isinstance(prefix_scaling, float) or
-        prefix_scaling < 0):
+        not isinstance(candidate, str)):
         return None
-    if len(token) == 0 and len(candidate) == 0:
-        return 1.0
-    if len(token) == 0 or len(candidate) == 0:
-        return 0.0
+    if (not isinstance(prefix_scaling, float) or
+        prefix_scaling < 0 or
+        prefix_scaling > 1):
+        return None
     match_distance = max(len(token), len(candidate)) // 2 - 1
-    if match_distance < 0:
-        match_distance = 0
+    match_distance = max(match_distance, 0)
     matches = get_matches(token, candidate, match_distance)
     if matches is None:
         return None
-    matches_count, token_matches, candidate_matches = matches
-    if matches_count == 0:
-        return 0.0
+    amount_matches, token_matches, candidate_matches = matches
+    if amount_matches == 0:
+        return 1.0
     transpositions = count_transpositions(token, candidate, token_matches, candidate_matches)
     if transpositions is None:
         return None
-    jaro_distance = calculate_jaro_distance(token, candidate, matches, transpositions)
+    jaro_distance = calculate_jaro_distance(token, candidate, amount_matches, transpositions)
     if jaro_distance is None:
         return None
     adjustment = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
     if adjustment is None:
         return None
-    jaro_winkler_distance = jaro_distance + adjustment
-    return jaro_winkler_distance
+    return jaro_distance - adjustment
