@@ -10,10 +10,9 @@ from lab_1_keywords_tfidf.main import (
 from lab_2_spellcheck.main import (
     build_vocabulary,
     calculate_distance,
-    calculate_jaccard_distance,
-    find_correct_word,
-    find_out_of_vocab_words
+    find_out_of_vocab_words,
 )
+
 
 def main() -> None:
     """
@@ -31,13 +30,13 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
-    tokens = clean_and_tokenize(text)
-    tokens_without_stop_words = remove_stop_words(tokens, stop_words)
-    vocabulary = build_vocabulary(tokens_without_stop_words)
-    out_of_vocab_words = find_out_of_vocab_words(tokens_without_stop_words, vocabulary)
+    tokens = clean_and_tokenize(text) or []
+    tokens_without_stop_words = remove_stop_words(tokens, stop_words) or []
+    vocabulary = build_vocabulary(tokens_without_stop_words) or {}
+    out_of_vocab_words = find_out_of_vocab_words(tokens_without_stop_words, vocabulary) or []
     distance_dict = {}
     for word in out_of_vocab_words:
-        distance_dict[word] = calculate_distance(word, vocabulary, 'jaccard', None)
+        distance_dict[word] = calculate_distance(word, vocabulary, 'jaccard', None) or {}
     result = distance_dict
     assert result, "Result is None"
 
