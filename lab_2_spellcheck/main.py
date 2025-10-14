@@ -95,7 +95,7 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if (not isinstance(first_token, str) or not first_token 
+    if (not (isinstance(first_token, str) and first_token) 
     or not check_dict(vocabulary, str, float, False) or 
     method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
@@ -106,6 +106,11 @@ def calculate_distance(
             if distance is None:
                 return None
             result[el] = distance
+    elif method == "frequency-based":
+        distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if distance is None:
+            return None
+        result = distance
     return result
 
 
@@ -130,18 +135,18 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if (not isinstance(wrong_word, str) or not wrong_word 
+    if (not (isinstance(wrong_word, str) and wrong_word) 
     or not check_dict(vocabulary, str, float, False) or 
     method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
     result = calculate_distance(wrong_word, vocabulary, method)
     if result:
-        max_value = min(result.values())
+        min_value = min(result.values())
     else:
         return None
     values = []
     for key, value in result.items():
-        if value == max_value:
+        if value == min_value:
             values.append(key)
     if len(values) == 0:
         return values[0]
@@ -207,7 +212,7 @@ def delete_letter(word: str) -> list[str]:
     if not isinstance(word, str):
         return []
     result = []
-    for i in range(0, len(word)):
+    for i, _ in enumerate(word):
         result.append(word[:i] + word[i+1:])
     new_result = sorted(result)
     return new_result
@@ -232,9 +237,9 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
     if alphabet and not all(isinstance(letter, str) for letter in alphabet):
         return []
     res = []
-    for i in range(0, len(word) + 1):
-        for a in alphabet:
-            result = word[:i] + a + word[i:]
+    for i in range(len(word) + 1):
+        for letter in alphabet:
+            result = word[:i] + letter + word[i:]
             res.append(result)
     new_result = sorted(res)
     return new_result
@@ -260,8 +265,8 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
         return []
     result = []
     for i in range(len(word)):
-        for a in alphabet:
-            result.append(word[:i] + a + word[i + 1:])
+        for letter in alphabet:
+            result.append(word[:i] + letter + word[i + 1:])
     actual_result = sorted(result)
     return actual_result
 
@@ -331,10 +336,18 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(word, str) or not check_list(alphabet, str, False):
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
     result = generate_candidates(word, alphabet)
-    return tuple(result)
+    if result is None:
+        return None
+    all_candidates = set(result)
+    for word in list(all_candidates):
+        second_level_candidates = generate_candidates(word, alphabet)
+        if second_level_candidates is None:
+            return None
+        all_candidates.update(second_level_candidates)
+    return tuple(sorted(set(all_candidates)))
 
 
 def calculate_frequency_distance(
