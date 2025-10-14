@@ -38,11 +38,18 @@ def main() -> None:
     alphabet = [chr(i) for i in range(1072, 1104)]
     methods = ("jaccard", "frequency-based", "levenshtein", "jaro-winkler")
     result_ = {}
+    word_result = {}
     for word in out_of_vocab_words:
-        word_result = {}
         candidates = propose_candidates(word, alphabet) or tuple()
         for method in methods:
-            correction = find_correct_word(word, vocabulary, method, alphabet)
+            if method == 'jaccard':
+                correction = find_correct_word(word, vocabulary, 'jaccard', alphabet)
+            elif method == 'frequency-based':
+                correction = find_correct_word(word, vocabulary, 'frequency-based', alphabet)
+            elif method == 'jaro-winkler':
+                correction = find_correct_word(word, vocabulary, 'jaro-winkler', alphabet)
+            elif method == 'levenshtein':
+                correction = find_correct_word(word, vocabulary, 'levenshtein', alphabet)
         word_result[method] = correction
     result_[word] = word_result
     print(result_)
