@@ -52,7 +52,7 @@ def main() -> None:
             elif method == 'levenshtein':
                 correction = find_correct_word(word, vocabulary, 'levenshtein', alphabet)
             word_result[method] = correction
-    result_[word] = word_result
+        result_[word] = word_result
     print(result_)
     result = result_
     assert result, "Result is None"
