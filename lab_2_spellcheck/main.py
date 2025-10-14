@@ -95,16 +95,22 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if any([
-        not isinstance(first_token, str),
-        not first_token,
-        not check_dict(vocabulary, str, float, False),
+    if (not isinstance(first_token, str) or
+        not first_token or
+        not check_dict(vocabulary, str, float, False) or
+        not isinstance(method, str) or
         method not in ("jaccard",
                        "frequency-based",
                        "levenshtein",
-                       "jaro-winkler"),
-        ]):
+                       "jaro-winkler")):
         return None
+    if method == 'frequency-based':
+        if not check_list(alphabet, str, True):
+            return {word: 1.0 for word in vocabulary}
+        distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if distance is None:
+            return None
+        return distance
     calculated_distance_score = {}
     for word in vocabulary:
         if method == 'jaccard':
@@ -113,8 +119,6 @@ def calculate_distance(
             distance = calculate_levenshtein_distance(first_token, word)
         elif method == 'jaro-winkler':
             distance = calculate_jaro_winkler_distance(first_token, word)
-        else:
-            distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
         if distance is None:
             return None
         calculated_distance_score[word] = distance
@@ -142,23 +146,21 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if any([
-        not isinstance(wrong_word, str),
-        not wrong_word,
-        not check_dict(vocabulary, str, float, False),
+    if alphabet is None:
+        alphabet = []
+    if (not isinstance(wrong_word, str) or
+        not check_dict(vocabulary, str, float, False) or
+        not isinstance(method, str) or
         method not in ("jaccard",
                        "frequency-based",
                        "levenshtein",
-                       "jaro-winkler"),
-    ]):
+                       "jaro-winkler") or
+        not check_list(alphabet, str, True)):
         return None
-    if method == 'frequency-based':
-        if not check_list(alphabet, str, False):
-            return None
-        distance_wrong_word_dict = calculate_distance(wrong_word, vocabulary,
-                                                      'frequency-based', alphabet)
-    else:
-        distance_wrong_word_dict = calculate_distance(wrong_word, vocabulary, method, None)
+    distance_wrong_word_dict = calculate_distance(wrong_word, vocabulary,
+                                                      method, alphabet)
+    if distance_wrong_word_dict is None:
+        return None
     return sorted(distance_wrong_word_dict.items(), key=lambda item:
                   (item[1], abs(len(wrong_word) - len(item[0])), item[0]))[0][0]
 
