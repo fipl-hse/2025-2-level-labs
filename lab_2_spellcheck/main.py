@@ -105,23 +105,23 @@ def calculate_distance(
                        "jaro-winkler")):
         return None
     if method == 'frequency-based':
-        if not check_list(alphabet, str, True):
+        if not check_list(alphabet, str, True) or alphabet is None:
             return {word: 1.0 for word in vocabulary}
-        distance = calculate_frequency_distance(first_token, vocabulary, alphabet) or {}
+        distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
         if distance is None:
             return None
         return distance
-    calculated_distance_score: dict[str, float] = {}
+    calculated_distance_score = {}
     for word in vocabulary:
         if method == 'jaccard':
-            distance = calculate_jaccard_distance(first_token, word) or 0.0
+            distance_value = calculate_jaccard_distance(first_token, word)
         elif method == 'levenshtein':
-            distance = calculate_levenshtein_distance(first_token, word) or 0
+            distance_value = calculate_levenshtein_distance(first_token, word)
         elif method == 'jaro-winkler':
-            distance = calculate_jaro_winkler_distance(first_token, word) or 0.0
-        if distance is None:
+            distance_value = calculate_jaro_winkler_distance(first_token, word)
+        if distance_value is None:
             return None
-        calculated_distance_score[word] = distance
+        calculated_distance_score[word] = distance_value
     return calculated_distance_score
 
 
