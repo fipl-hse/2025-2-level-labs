@@ -160,6 +160,7 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
+    
 
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
@@ -201,6 +202,13 @@ def delete_letter(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    del_letter_candidates = []
+    if not isinstance(word, str):
+        return del_letter_candidates
+    for i in range(len(word)):
+        del_letter_candidates.append(word[:i] + word[i+1:])
+    del_letter_candidates.sort()
+    return del_letter_candidates
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -217,6 +225,14 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    add_letter_candidates = []
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
+        return add_letter_candidates
+    for i in range(len(word) + 1):
+        for letter in alphabet:
+            add_letter_candidates.append(word[:i] + letter + word[i:])
+    add_letter_candidates.sort()
+    return add_letter_candidates
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -233,6 +249,14 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    replace_letter_candidates = []
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
+        return replace_letter_candidates
+    for i in range(len(word)):
+        for letter in alphabet:
+            replace_letter_candidates.append(word[:i] + letter + word[i+1:])
+    replace_letter_candidates.sort()
+    return replace_letter_candidates
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -248,6 +272,13 @@ def swap_adjacent(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    swap_adjacent_candidates = []
+    if not isinstance(word, str):
+        return swap_adjacent_candidates
+    for i in range(len(word) - 1):
+        swap_adjacent_candidates.append(word[:i] + word[i+1] + word[i] + word[i+2:])
+    swap_adjacent_candidates.sort()
+    return swap_adjacent_candidates
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
@@ -264,6 +295,14 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
+        return
+    candidates_list = []
+    candidates_list.extend(delete_letter(word))
+    candidates_list.extend(add_letter(word, alphabet))
+    candidates_list.extend(swap_adjacent(word))
+    candidates_list.extend(replace_letter(word, alphabet))
+    return sorted(list(set(candidates_list)))
 
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
@@ -280,6 +319,14 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
+        return
+    candidates_list = []
+    if not generate_candidates(word, alphabet):
+        return
+    for operated_word in generate_candidates(word, alphabet):
+        candidates_list.extend(generate_candidates(operated_word, alphabet))
+    return tuple(sorted(list(set(candidates_list))))
 
 
 def calculate_frequency_distance(
