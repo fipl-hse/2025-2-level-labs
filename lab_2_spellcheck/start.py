@@ -4,7 +4,7 @@ Spellcheck starter
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
 from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
-from lab_2_spellcheck.main import build_vocabulary, calculate_distance, find_out_of_vocab_words
+from lab_2_spellcheck.main import build_vocabulary, calculate_distance, calculate_frequency_distance, find_out_of_vocab_words
 
 
 def main() -> None:
@@ -31,7 +31,10 @@ def main() -> None:
     print(tokens_not_in_vocab)
     tokens_jaccard_distance = calculate_distance("кот", {"кот": 0.5, "пёс": 0.5}, method = "jaccard") or {}
     print(tokens_jaccard_distance)
-    result = tokens_jaccard_distance
+    alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+    freq_distances = calculate_frequency_distance("маладой", tokens_vocab, alphabet) or {}
+    print(freq_distances)
+    result = freq_distances
     assert result, "Result is None"
 
 

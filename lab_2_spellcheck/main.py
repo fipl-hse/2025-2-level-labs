@@ -104,6 +104,8 @@ def calculate_distance(
             if token_jaccard_distance is None:
                 return None
             distance[token] = token_jaccard_distance
+    if method == 'frequency-based':
+        distance = calculate_frequency_distance(first_token, vocabulary)
     return distance
 
 
@@ -306,12 +308,14 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
-    if not alphabet:
-        return []
     if word == "":
         return add_letter(word, alphabet)
-    generated_candidates = (delete_letter(word) + add_letter(word, alphabet) +
-                           replace_letter(word, alphabet) + swap_adjacent(word))
+    generated_candidates = []
+    generated_candidates.extend(delete_letter(word))
+    generated_candidates.extend(swap_adjacent(word))
+    if alphabet:
+        generated_candidates.extend(add_letter(word, alphabet))
+        generated_candidates.extend(replace_letter(word, alphabet))
     return sorted(generated_candidates)
 
 
@@ -331,7 +335,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     """
     if not all([isinstance(word, str), check_list(alphabet, str, True)]):
         return None
-    if not alphabet:
+    if word == "" and not alphabet:
         return ()
     second_level_candidates = []
     all_candidates = set()
@@ -364,6 +368,19 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str) or not check_dict(frequencies, str, float, False):
+        return None
+    if not check_list(alphabet, str, True):
+        return None
+    if not frequencies:
+        return {}
+    candidates = propose_candidates(word, alphabet)
+    frequency_distances = {token: 1.0 for token in frequencies.keys()}
+    if candidates:
+        exist_candidates = set(candidates) & set(frequencies.keys())
+        for candidate in exist_candidates:
+            frequency_distances[candidate] = 1.0 - frequencies[candidate]
+    return frequency_distances
 
 
 def get_matches(
