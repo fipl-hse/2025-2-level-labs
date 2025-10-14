@@ -156,7 +156,8 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if (not isinstance(vocabulary, dict) or not isinstance(wrong_word, str) or not check_dict(vocabulary, str, float, False) or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
+    if (not isinstance(vocabulary, dict) or not isinstance(wrong_word, str) or not check_dict(vocabulary, str, float, False) 
+        or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
     word_dists = {}
     found_freq = 0
@@ -171,7 +172,7 @@ def find_correct_word(
             if val == found_freq:
                 found_word = key
         return found_word
-    wrong_dists = calculate_distance(wrong_word, vocabulary, method)
+    wrong_dists = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if not wrong_dists:
         return None
     found_dist = min(wrong_dists.values())
@@ -400,6 +401,15 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
+    if (not isinstance(word, str) or not isinstance(alphabet, list)):
+        return None
+    first_gen = []
+    first_gen = generate_candidates(word, alphabet)
+    second_gen = []
+    for i in first_gen:
+        second_gen += generate_candidates(i, alphabet)
+    all_gen = second_gen + first_gen
+    return tuple(all_gen)
 
 def calculate_frequency_distance(
     word: str, frequencies: dict, alphabet: list[str]
