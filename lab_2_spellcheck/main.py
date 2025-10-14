@@ -113,6 +113,7 @@ def calculate_distance(
         return distance
     calculated_distance_score = {}
     for word in vocabulary:
+        distance_value = None
         if method == 'jaccard':
             distance_value = calculate_jaccard_distance(first_token, word)
         elif method == 'levenshtein':
