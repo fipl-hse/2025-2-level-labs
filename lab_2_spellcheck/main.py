@@ -105,6 +105,8 @@ def calculate_distance(
                 return None
             distance[token] = token_jaccard_distance
     if method == 'frequency-based':
+        if alphabet is None:
+            return {token: 1.0 for token in vocabulary}
         distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
     return distance
 
