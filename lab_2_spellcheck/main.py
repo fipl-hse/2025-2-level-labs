@@ -394,27 +394,22 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if any([
-        not isinstance(word, str),
-        not word,
-        not isinstance(frequencies, dict),
-        not frequencies,
-        not check_list(alphabet, str, True)
-        ]):
+    if (not isinstance(word, str) or
+        not isinstance(frequencies, dict) or
+        not frequencies or
+        not check_list(alphabet, str, True)):
         return None
-    candidates = generate_candidates(word, alphabet)
-    valid_candidates = [candidate for candidate in candidates if candidate in frequencies]
-    if not valid_candidates:
-        return None
-    max_frequency = max(frequencies.values())
-    best_candidate = None
-    min_distance = 100
-    for candidate in valid_candidates:
-        distance = 1 - frequencies[candidate] / max_frequency
-        if distance < min_distance:
-            min_distance = distance
-            best_candidate = candidate
-    return dict(best_candidate)
+    for token, freq in frequencies.items():
+        if not isinstance(token, str) or not isinstance(freq, (int, float)):
+            return None
+    result = {token: 1.0 for token in frequencies}
+    candidates = propose_candidates(word, alphabet)
+    if candidates is None or not candidates:
+        return result
+    for candidate in candidates:
+        if candidate in frequencies:
+            result[candidate] = 1 - frequencies[candidate]
+    return result
 
 
 def get_matches(
