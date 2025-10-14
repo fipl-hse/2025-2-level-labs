@@ -40,10 +40,19 @@ def main() -> None:
     result_ = {}
     for word in out_of_vocab_words:
         word_result = {}
-        for method in ("jaccard", "frequency-based", "levenshtein", "jaro-winkler"):
-            correction = find_correct_word(word, vocabulary, method, alphabet)
+        candidates = propose_candidates(word, alphabet) or tuple()
+        for method in methods:
+            correction = None
+            if method == 'jaccard':
+                correction = find_correct_word(word, vocabulary, 'jaccard', alphabet)
+            elif method == 'frequency-based':
+                correction = find_correct_word(word, vocabulary, 'frequency-based', alphabet)
+            elif method == 'jaro-winkler':
+                correction = find_correct_word(word, vocabulary, 'jaro-winkler', alphabet)
+            elif method == 'levenshtein':
+                correction = find_correct_word(word, vocabulary, 'levenshtein', alphabet)
             word_result[method] = correction
-        result_[word] = word_result
+    result_[word] = word_result
     print(result_)
     result = result_
     assert result, "Result is None"
