@@ -9,8 +9,9 @@ from lab_1_keywords_tfidf.main import (
 )
 from lab_2_spellcheck.main import (
     build_vocabulary,
-    calculate_distance,
+    find_correct_word,
     find_out_of_vocab_words,
+    propose_candidates,
 )
 
 
@@ -34,10 +35,18 @@ def main() -> None:
     tokens_without_stop_words = remove_stop_words(tokens, stop_words) or []
     vocabulary = build_vocabulary(tokens_without_stop_words) or {}
     out_of_vocab_words = find_out_of_vocab_words(tokens_without_stop_words, vocabulary) or []
-    distance_dict = {}
+    alphabet = [chr(i) for i in range(1072, 1104)]
+    methods = ("jaccard", "frequency-based", "levenshtein", "jaro-winkler")
+    result_ = {}
     for word in out_of_vocab_words:
-        distance_dict[word] = calculate_distance(word, vocabulary, 'jaccard', None) or {}
-    result = distance_dict
+        word_result = {}
+        candidates = propose_candidates(word, alphabet) or tuple()
+        for method in methods:
+            correction = find_correct_word(word, vocabulary, method, alphabet)
+        word_result[method] = correction
+    result_[word] = word_result
+    print(result_)
+    result = result_
     assert result, "Result is None"
 
 
