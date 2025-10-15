@@ -132,7 +132,7 @@ def calculate_distance(
     func = method_funcs[method]
     result: dict[str, float] = {}
     for word in vocabulary:
-        dist = method_funcs[method](first_token, word)
+        dist = func[method](first_token, word)
         if dist is None:
             return None
         result[word] = float(dist)
