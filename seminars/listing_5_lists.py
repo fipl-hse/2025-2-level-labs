@@ -239,22 +239,13 @@ def sum_until_zero(numbers: list) -> int:
     Returns:
         int: sum of positive numbers in the list
     """
-    good_numb = 0
-    for i in numbers:
-        if i <0:
-            continue
-        elif i == 0:
-            break
-        else:
-            good_numb += i
-    return good_numb
     # student implementation goes here
 
 
 # Function calls with expected result:
-print(sum_until_zero([1, 2, -3, 4, 0, 5]))
-print(sum_until_zero([2, 3, 4]))
-print(sum_until_zero([0, 5, 7]))
+# sum_until_zero([1, 2, -3, 4, 0, 5]) → 7
+# sum_until_zero([2, 3, 4]) → 19
+# sum_until_zero([0, 5, 7]) → 0
 # sum_until_zero([-7, 1, -5, 2, 4]) → 7
 
 
