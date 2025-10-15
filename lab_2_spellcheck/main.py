@@ -78,8 +78,8 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return 1.0
     intersected = tokenized1.intersection(tokenized2)
     united = tokenized1.union(tokenized2)
-    j = 1 - len(intersected) / len(united)
-    return j
+    jaccard_dictance = 1 - len(intersected) / len(united)
+    return jaccard_dictance
 
 
 def calculate_distance(
@@ -165,15 +165,15 @@ def initialize_levenshtein_matrix(
     if token_length < 0 or candidate_length < 0:
         return None
     matrix = []
-    for i in range(token_length + 1):
+    for token_index in range(token_length + 1):
         row = []
-        for j in range(candidate_length + 1):
+        for cand_index in range(candidate_length + 1):
             row.append(0)
         matrix.append(row)
-    for i in range(token_length + 1):
-        matrix[i][0] = i
+    for token_index in range(token_length + 1):
+        matrix[token_index][0] = token_index
     for j in range(candidate_length + 1):
-        matrix[0][j] = j
+        matrix[0][cand_index] = cand_index
     return matrix
 
 
@@ -253,8 +253,7 @@ def delete_letter(word: str) -> list[str]:
     for i in range(len(word)):
         new_word = word[:i] + word[i+1:]
         result.append(new_word)
-    result.sort()
-    return result
+    return sorted(result)
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
