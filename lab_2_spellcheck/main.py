@@ -25,10 +25,7 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     tokenized = {}
     all_words = len(tokens)
     for word in tokens:
-        if word not in tokenized:
-            tokenized[word] = 1
-        else:
-            tokenized[word] += 1
+        tokenized[word] = tokenized.get(word, 0) + 1
     for word in tokenized:
         tokenized[word] /= all_words
     return tokenized
@@ -111,7 +108,6 @@ def calculate_distance(
             distance = calculate_jaccard_distance(first_token, word)
             result[word] = distance
         return result
-
 
 
 def find_correct_word(
