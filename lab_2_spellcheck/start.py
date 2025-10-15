@@ -4,8 +4,6 @@ Spellcheck starter
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
 
-from typing import Literal
-
 from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 from lab_2_spellcheck.main import build_vocabulary, find_correct_word, find_out_of_vocab_words
 
@@ -26,7 +24,7 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
-        
+   
     main_tokens = clean_and_tokenize(text) or []
     filtered_main_tokens = remove_stop_words(main_tokens, stop_words) or []
     vocabulary_map = build_vocabulary(filtered_main_tokens) or {}
@@ -47,15 +45,11 @@ def main() -> None:
         print(f'\nВозможные исправления слова: {unknown}')
         word_corrections = {}
         for method_name in ['jaccard', 'frequency-based', 'levenshtein', 'jaro-winkler']:
-            method: Literal['jaccard',
-                            'frequency-based',
-                            'levenshtein',
-                            'jaro-winkler'] = method_name
             correction = find_correct_word(unknown,
                                            vocabulary_map,
                                            method_name,
                                            rus_alphabet) or None
-            word_corrections[method] = correction
+            word_corrections[method_name] = correction
             print(f"  {method_name.capitalize()}: {correction}")
         corrections_result[unknown] = word_corrections
 
