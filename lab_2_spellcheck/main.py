@@ -318,10 +318,14 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return
     candidates_list = []
-    if not generate_candidates(word, alphabet):
+    first_operation_candidates = generate_candidates(word, alphabet)
+    if first_operation_candidates is None:
         return
-    for operated_word in generate_candidates(word, alphabet):
-        candidates_list.extend(generate_candidates(operated_word, alphabet))
+    for operated_word in first_operation_candidates:
+        second_operation_candidates = generate_candidates(operated_word, alphabet)
+        if second_operation_candidates is None:
+            return
+        candidates_list.extend(second_operation_candidates)
     return tuple(sorted(list(set(candidates_list))))
 
 
@@ -341,6 +345,19 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if (not isinstance(word, str)
+        or not check_dict(frequencies, str, float, False)
+        or not check_list(alphabet, str, True)
+    ):
+        return
+    frequency_distances = {}
+    candidates_tuple = propose_candidates(word, alphabet) or {}
+    for candidate in frequencies:
+        if candidate in candidates_tuple:
+            frequency_distances[candidate] = 1.0 - frequencies[candidate]
+        else:
+            frequency_distances[candidate] = 1.0
+    return frequency_distances
 
 
 def get_matches(
