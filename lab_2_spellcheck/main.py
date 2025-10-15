@@ -106,7 +106,10 @@ def calculate_distance(
     elif method == "frequency-based":
         if alphabet is None:
             return {key: 1.0 for key in vocabulary.keys()}
-        distance | None = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        freq_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if freq_distance is None:
+            return None
+        distance = freq_distance
     elif method == "levenshtein":
         for key in vocabulary.keys():
             levenshtein_distance = calculate_levenshtein_distance(first_token, key)
