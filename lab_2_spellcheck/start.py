@@ -45,26 +45,27 @@ def main() -> None:
     vocabulary=build_vocabulary(text_without_stop_words)
     if vocabulary is None:
         return
-    print(vocabulary)
+    print("vocabulary",vocabulary)
 
     finded_out_of_vocab_words=find_out_of_vocab_words(text_without_stop_words, vocabulary)
     if finded_out_of_vocab_words is None:
         return
+    print("yhghyt", finded_out_of_vocab_words)
 
-    jaccard_distance=calculate_jaccard_distance(finded_out_of_vocab_words)
+    '''jaccard_distance=calculate_jaccard_distance(finded_out_of_vocab_words, candidate)
     if jaccard_distance is None:
         return
 
     calculated_distance=calculate_distance(jaccard_distance)
     if calculated_distance is None:
         return 
-    print (calculated_distance)
+    print ("Distance: ", calculated_distance)
 
     finded_correct_word=find_correct_word(calculate_distance)
     if finded_correct_word is None:
-        return
+        return'''
 
-    result=finded_correct_word
+    result=finded_out_of_vocab_words
     assert result, "Result is None"
 
 
