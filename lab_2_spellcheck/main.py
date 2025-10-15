@@ -112,6 +112,12 @@ def calculate_distance(
                 return None
             jaccard[key] = value
         return jaccard
+
+    if method == "frequency-based":
+        freq_dist = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if alphabet is None:
+            return {token: 1.0 for token in vocabulary}
+        return freq_dist
     return None
 
 
