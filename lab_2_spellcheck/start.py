@@ -8,8 +8,8 @@ from lab_2_spellcheck.main import (
     build_vocabulary,
     calculate_distance,
     find_correct_word,
-    find_out_of_vocab_words
-    )
+    find_out_of_vocab_words,
+)
 
 
 def main() -> None:
@@ -40,7 +40,6 @@ def main() -> None:
     jaccard_distance = []
     for word in out_of_vocab_words:
         jaccard_distance.append(calculate_distance(word, tokens_dict, "jaccard"))
-    print(jaccard_distance)
 
     frequency_based_correct_word = []
     for word in out_of_vocab_words:
@@ -51,8 +50,8 @@ def main() -> None:
     levenshtein_correct_word = []
     for word in out_of_vocab_words:
         levenshtein_correct_word.append(find_correct_word(word, tokens_dict, "levenshtein"))
-        
-    result = jaccard_distance
+
+    result = levenshtein_correct_word
     assert result, "Result is None"
 
 

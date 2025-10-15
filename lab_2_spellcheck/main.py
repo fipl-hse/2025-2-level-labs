@@ -63,7 +63,8 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return None
     if not token or not candidate:
         return 1.0
-    return  (1 - len(set(token).intersection(set(candidate))) / len(set(token).union(set(candidate))))
+    return  (1 - len(set(token).intersection(set(candidate))) / 
+            len(set(token).union(set(candidate))))
 
 
 def calculate_distance(
@@ -90,7 +91,9 @@ def calculate_distance(
         not isinstance(first_token, str),
         not check_dict(vocabulary, str, float, False),
         method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
-        not check_list(alphabet, str, False) and alphabet is not None and method == "frequency-based"
+        not check_list(alphabet, str, False) 
+        and alphabet is not None 
+        and method == "frequency-based"
             ]):
         return None
     distance = {}
@@ -103,7 +106,7 @@ def calculate_distance(
     elif method == "frequency-based":
         if alphabet is None:
             return {key: 1.0 for key in vocabulary.keys()}
-        distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        distance = calculate_frequency_distance(first_token, vocabulary, alphabet) or None
     elif method == "levenshtein":
         for key in vocabulary.keys():
             levenshtein_distance = calculate_levenshtein_distance(first_token, key)
@@ -140,7 +143,7 @@ def find_correct_word(
         method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
         all([not check_list(alphabet, str, False),
             alphabet is not None,
-            method == "frequency-based" or method == "levenshtein"
+            method in ('frequency-based', 'levenshtein')
             ])]):
         return None
     wrong_word_dict = calculate_distance(wrong_word, vocabulary, method, alphabet)
@@ -158,8 +161,7 @@ def find_correct_word(
                 index += 1
             else:
                 break
-        res = new_sorted_list.sort()
-        return res[0]
+        return new_sorted_list.sort()[0]
     return min_keys_sorted[0] # i love this code so much omg lol pls rate me 11
 
 
@@ -377,17 +379,18 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     ]):
         return None
     first_gen_candidates = generate_candidates(word, alphabet)
-    if not check_list(first_gen_candidates, str, True):
+    if not check_list(first_gen_candidates, str, True) or first_gen_candidates is None:
         return None
     all_second_gen_candidates =  []
     for element in first_gen_candidates:
         second_gen_candidates = generate_candidates(element, alphabet)
-        if second_gen_candidates == None:
+        if second_gen_candidates is None:
             return None
         all_second_gen_candidates.append(second_gen_candidates)
     second_gen_candidates = [element for list in all_second_gen_candidates for element in list]
     first_gen_candidates += second_gen_candidates
-    return tuple(sorted(list(set(first_gen_candidates)))) # omg i don't love this code at all but pls rate me 11
+    return tuple(sorted(list(set(first_gen_candidates)))) 
+    # omg i don't love this code at all but pls rate me 11
 
 
 def calculate_frequency_distance(
