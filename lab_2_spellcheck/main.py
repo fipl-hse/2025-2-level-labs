@@ -70,9 +70,9 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     if not token or not candidate:
         return 1.0
 
-    token = set(token)
-    candidate = set(candidate)
-    jaccard_distance = 1 - len(token & candidate)/len(token | candidate)
+    tok = set(token)
+    cand = set(candidate)
+    jaccard_distance = 1 - len(tok & cand)/len(tok | cand)
     return jaccard_distance
 
 
@@ -98,6 +98,7 @@ def calculate_distance(
     """
     if not (
         check_dict(vocabulary, str, float, False) and
+        vocabulary and
         (alphabet is None or check_list(alphabet, str, False)) and
         isinstance(first_token, str) and
         method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
@@ -125,7 +126,7 @@ def calculate_distance(
             distance = calculate_levenshtein_distance(first_token, word)
             if distance is None:
                 return None
-            levenstein_dist[word] = distance
+            levenstein_dist[word] = float(distance)
         return levenstein_dist
     return None
 
@@ -153,7 +154,7 @@ def find_correct_word(
     """
     if not (
         isinstance(wrong_word, str) and
-        check_dict(vocabulary, str, int | float, False) and
+        check_dict(vocabulary, str, float, False) and
         method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"] and
         (alphabet is None or check_list(alphabet, str, False))
     ):

@@ -7,17 +7,12 @@ from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     remove_stop_words
     )
+
 from lab_2_spellcheck.main import (
     build_vocabulary,
-    calculate_distance,
-    calculate_jaccard_distance,
-    calculate_levenshtein_distance,
-    fill_levenshtein_matrix,
     find_correct_word,
     find_out_of_vocab_words,
-    initialize_levenshtein_matrix   
 )
-
 
 Alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
 
@@ -39,12 +34,23 @@ def main() -> None:
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
     
     tokenized_corpus = clean_and_tokenize(text)
+    if not tokenized_corpus:
+        return
     corpus_without_stopwords = remove_stop_words(tokenized_corpus, stop_words)
+    if not corpus_without_stopwords:
+        return
     vocabulary = build_vocabulary(corpus_without_stopwords)
+    if not vocabulary:
+        return
     tokenized_sentences = clean_and_tokenize(''.join(sentences))
+    if not tokenized_sentences:
+        return
     sentences_without_stopwords = remove_stop_words(tokenized_sentences, stop_words)
+    if not sentences_without_stopwords:
+        return
     tokens_out_of_voc = find_out_of_vocab_words(sentences_without_stopwords, vocabulary)
-    
+    if not tokens_out_of_voc:
+        return
     
     result = {find_correct_word(token, vocabulary, "levenshtein", Alphabet): token for token in tokens_out_of_voc}
     print(result)
