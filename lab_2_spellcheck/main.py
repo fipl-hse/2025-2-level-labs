@@ -2,12 +2,13 @@
 Lab 2.
 """
 
+from typing import Literal
+
 # pylint:disable=unused-argument
 from lab_1_keywords_tfidf.main import (
     check_dict,
     check_list,
 )
-from typing import Literal
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
