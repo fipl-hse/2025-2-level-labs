@@ -63,7 +63,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return None
     if not token or not candidate:
         return 1.0
-    return  (1 - len(set(token).intersection(set(candidate))) / 
+    return  (1 - len(set(token).intersection(set(candidate))) /
             len(set(token).union(set(candidate))))
 
 
@@ -91,8 +91,8 @@ def calculate_distance(
         not isinstance(first_token, str),
         not check_dict(vocabulary, str, float, False),
         method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
-        not check_list(alphabet, str, False) 
-        and alphabet is not None 
+        not check_list(alphabet, str, False)
+        and alphabet is not None
         and method == "frequency-based"
             ]):
         return None
@@ -161,7 +161,8 @@ def find_correct_word(
                 index += 1
             else:
                 break
-        return new_sorted_list.sort()[0]
+        res = sorted(new_sorted_list)
+        return res[0]
     return min_keys_sorted[0] # i love this code so much omg lol pls rate me 11
 
 
@@ -203,7 +204,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
     matrix = initialize_levenshtein_matrix(len(token), len(candidate))
-    if matrix == None:
+    if matrix is None:
         return None
     for i in range(1, len(token) + 1):
         for j in range(1, len(candidate) + 1):
@@ -389,7 +390,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         all_second_gen_candidates.append(second_gen_candidates)
     second_gen_candidates = [element for list in all_second_gen_candidates for element in list]
     first_gen_candidates += second_gen_candidates
-    return tuple(sorted(list(set(first_gen_candidates)))) 
+    return tuple(sorted(list(set(first_gen_candidates))))
     # omg i don't love this code at all but pls rate me 11
 
 
