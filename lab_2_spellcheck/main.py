@@ -156,10 +156,8 @@ def find_correct_word(
         return None
     if len(candidates) > 1:
         min_length_differences = min([len(candidate) - len(wrong_word) for candidate in candidates])
-        min_length_candidates = []
-        for candidate in candidates:
-            if len(candidate) - len(wrong_word) == min_length_differences:
-                min_length_candidates.append(candidate)
+        min_length_candidates = [candidate for candidate in candidates
+                                 if len(candidate) - len(wrong_word) == min_length_differences]
         return sorted(min_length_candidates)[0]
     return candidates[0]
 
