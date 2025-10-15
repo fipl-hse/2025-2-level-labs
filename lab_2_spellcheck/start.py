@@ -48,7 +48,6 @@ def main() -> None:
                                                'jaccard', alphabet) or {}
         levenshtein_correction = find_correct_word(wrong_word, vocabulary,
                                                    'levenshtein', alphabet) or {}
- 
         print(f"  Jaccard: {jaccard_correction}")
         print(f"  Levenshtein: {levenshtein_correction}")
         all_results[wrong_word] = {
