@@ -1,6 +1,8 @@
 """
 Spellcheck starter
 """
+from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words)
+from lab_2_spellcheck.main import (build_vocabulary, find_out_of_vocab_words, calculate_jaccard_distance, calculate_distance)
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
 
@@ -22,6 +24,14 @@ def main() -> None:
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
     result = None
+    tokens = clean_and_tokenize(text) or []
+    tokens_without_stop_words = remove_stop_words(tokens, stop_words) or []
+    vocabulary = build_vocabulary(tokens_without_stop_words) or {}
+    out_of_vocab_words = find_out_of_vocab_words(tokens_without_stop_words, vocabulary)
+    distance = {}
+    for word in out_of_vocab_words:
+        distance [word] = calculate_distance(word, vocabulary, 'jaccard', None)
+    result = distance
     assert result, "Result is None"
 
 
