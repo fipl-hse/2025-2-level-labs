@@ -4,7 +4,7 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 
-from lab_1_keywords_tfidf.main import (check_list, check_dict)
+from lab_1_keywords_tfidf.main import check_dict, check_list
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -22,9 +22,17 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
     if not check_list(tokens, str, False):
         return None
-    relative_frequencies = {}
+    total_tokens = len(tokens)
+    if total_tokens == 0:
+        return {}
+    frequency_dict = {}
     for token in tokens:
-        relative_frequencies[token] = tokens.count(token) / len(tokens)
+        frequency_dict[token] = frequency_dict.get(token, 0) + 1
+    relative_frequencies = {
+        word: count / total_tokens 
+        for word, count in frequency_dict.items()
+    }
+    
     return relative_frequencies
 
 
@@ -136,7 +144,7 @@ def find_correct_word(
     if not (
         check_dict(vocabulary, str, float, False) and
         (alphabet is None or check_list(alphabet, str, False) and isinstance(wrong_word, str) and
-        method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]) 
+        method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"])
     ):
         return None
     all_distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
@@ -154,8 +162,7 @@ def find_correct_word(
     min_length_differences = float('inf')
     for candidate in candidates:
         length_differences = abs(len(candidate) - len(wrong_word))
-        if length_differences < min_length_differences:
-            min_length_differences = length_differences
+        min_length_differences = min(min_length_differences, length_differences)
     min_length_candidates = []
     for candidate in candidates:
         if abs(len(candidate) - len(wrong_word)) == min_length_differences:
