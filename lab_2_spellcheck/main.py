@@ -106,6 +106,13 @@ def calculate_distance(
             if distance is None:
                 return None
             result[el] = distance
+    elif method == "frequency-based":
+        if alphabet is None:
+            return {token: 1.0 for token in vocabulary}
+        frequency_result = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if frequency_result is None:
+            return None
+        result = frequency_result
     return result
 
 
@@ -134,20 +141,19 @@ def find_correct_word(
     or not check_dict(vocabulary, str, float, False) or 
     method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
-    result = calculate_distance(wrong_word, vocabulary, method)
+    result = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if result:
         min_value = min(result.values())
     else:
         return None
-    values = []
+    candidates = []
     for key, value in result.items():
         if value == min_value:
-            values.append(key)
-    if len(values) == 0:
-        return values[0]
-    else:
-        values.sort(key=lambda value: (abs(len(value) - len(wrong_word)), value))
-        return values[0]
+            candidates.append(key)
+    if len(candidates) == 1:
+        return candidates[0]
+    candidates.sort(key=lambda word: (vocabulary.get(word, 0), word), reverse=True)
+    return candidates[0]
 
 
 def initialize_levenshtein_matrix(
