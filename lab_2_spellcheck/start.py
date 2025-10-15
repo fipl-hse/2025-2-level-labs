@@ -6,6 +6,7 @@ from main import (
     build_vocabulary,
     calculate_distance,
     calculate_jaccard_distance,
+    find_correct_word,
     find_out_of_vocab_words,
 )
 
@@ -32,8 +33,10 @@ def main() -> None:
     tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
     relative_frequencies = build_vocabulary(tokens_without_stopwords) or {}
     #out_of_vocab_words = find_out_of_vocab_words(tokens_without_stopwords, vocabulary)
-    distance = calculate_distance("утрым", relative_frequencies, 'jaccard')
-    result = distance
+    result = find_correct_word(
+         "утрым", relative_frequencies, 'frequency-based', list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+    )
+    print(result)
     assert result, "Result is None"
 
 

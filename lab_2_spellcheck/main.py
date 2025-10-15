@@ -105,6 +105,8 @@ def calculate_distance(
             distance[token] = calculate_jaccard_distance(first_token, token)
             if calculate_jaccard_distance(first_token, token) is None:
                 return
+    if method == "frequency-based":
+        distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
     return distance
 
 
@@ -318,13 +320,9 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return
     candidates_list = []
-    first_operation_candidates = generate_candidates(word, alphabet)
-    if first_operation_candidates is None:
-        return
+    first_operation_candidates = generate_candidates(word, alphabet) or None
     for operated_word in first_operation_candidates:
-        second_operation_candidates = generate_candidates(operated_word, alphabet)
-        if second_operation_candidates is None:
-            return
+        second_operation_candidates = generate_candidates(operated_word, alphabet) or None
         candidates_list.extend(second_operation_candidates)
     return tuple(sorted(list(set(candidates_list))))
 
@@ -351,7 +349,7 @@ def calculate_frequency_distance(
     ):
         return
     frequency_distances = {}
-    candidates_tuple = propose_candidates(word, alphabet) or {}
+    candidates_tuple = propose_candidates(word, alphabet) or ()
     for candidate in frequencies:
         if candidate in candidates_tuple:
             frequency_distances[candidate] = 1.0 - frequencies[candidate]
