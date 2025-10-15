@@ -29,10 +29,9 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     for token in tokens:
         frequency_dict[token] = frequency_dict.get(token, 0) + 1
     relative_frequencies = {
-        word: count / total_tokens 
+        word: count / total_tokens
         for word, count in frequency_dict.items()
     }
-    
     return relative_frequencies
 
 
