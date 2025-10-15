@@ -8,6 +8,7 @@ from lab_2_spellcheck.main import (
     build_vocabulary,
     calculate_distance,
     calculate_frequency_distance,
+    calculate_jaro_winkler_distance,
     calculate_levenshtein_distance,
     find_out_of_vocab_words,
 )
@@ -43,7 +44,9 @@ def main() -> None:
     print(freq_distances)
     levenshtein_distance = calculate_levenshtein_distance("кот", "кто")
     print(levenshtein_distance)
-    result = levenshtein_distance
+    jaro_winkler_distance = calculate_jaro_winkler_distance("кот", "кто")
+    print(jaro_winkler_distance)
+    result = jaro_winkler_distance
     assert result, "Result is None"
 
 
