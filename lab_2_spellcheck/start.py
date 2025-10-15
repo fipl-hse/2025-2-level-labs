@@ -57,7 +57,7 @@ def main() -> None:
             method = cast(Literal['jaccard', 'frequency-based', 'levenshtein', 'jaro-winkler'], method_name)
             correction = find_correct_word(unknown,
                                            vocabulary_map,
-                                           method_name,
+                                           method,
                                            rus_alphabet) or None
             word_corrections[method] = correction
             print(f"  {method_name.capitalize()}: {correction}")
