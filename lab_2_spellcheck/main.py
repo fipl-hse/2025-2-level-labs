@@ -386,19 +386,16 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     if (not isinstance(word, str)
         or not check_list(alphabet, str, True)):
         return None
-    if not alphabet:
-        return ()
     all_candidates = set()
-    all_candidates.add(word)
-    first_level_candidates = generate_candidates(word, alphabet)
-    if first_level_candidates is None:
+    first_step_candidates = generate_candidates(word, alphabet)
+    if first_step_candidates is None:
         return None
-    all_candidates.update(first_level_candidates)
-    for candidate in first_level_candidates:
-        second_level_candidates = generate_candidates(candidate, alphabet)
-        if second_level_candidates is None:
+    all_candidates.update(first_step_candidates)
+    for candidate in first_step_candidates:
+        second_step_candidates = generate_candidates(candidate, alphabet)
+        if second_step_candidates is None:
             return None
-        all_candidates.update(second_level_candidates)
+        all_candidates.update(second_step_candidates)
     return tuple(sorted(all_candidates))
 
 
@@ -419,18 +416,19 @@ def calculate_frequency_distance(
     In case of corrupt input arguments, None is returned.
     """
     if (not isinstance(word, str)
-        or not isinstance(frequencies, dict)
-        or not frequencies
         or not check_dict(frequencies, str, float, False)
         or not check_list(alphabet, str, True)):
         return None
     candidates = propose_candidates(word, alphabet)
-    frequency_distances = {token: 1.0 for token in frequencies}
-    if candidates:
-        exist_candidates = set(candidates) & set(frequencies)
-        for candidate in exist_candidates:
-            frequency_distances[candidate] = 1.0 - frequencies[candidate]
-    return frequency_distances
+    if not candidates:
+        return {token: 1.0 for token in frequencies}
+    distance = {}
+    for token in frequencies:
+        if token in candidates:
+            distance[token] = 1.0 - float(frequencies[token])
+        else:
+            distance[token] = 1.0
+    return distance
 
 
 def get_matches(
