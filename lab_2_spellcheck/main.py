@@ -121,7 +121,7 @@ def calculate_distance(
         for i in vocabulary.keys():
             if calculate_frequency_distance(first_token, i) == None:
                 return None
-            if alphabet:
+            if not alphabet:
                 word_dists.update({i : calculate_frequency_distance(first_token, i, alphabet)})
             if word_dists == {}:
                 return None
@@ -409,7 +409,8 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     for i in first_gen:
         second_gen += generate_candidates(i, alphabet)
     all_gen = second_gen + first_gen
-    return tuple(all_gen)
+    all_prop = list(set(all_gen)).sort()
+    return tuple(all_prop) #what's wrong?
 
 def calculate_frequency_distance(
     word: str, frequencies: dict, alphabet: list[str]
