@@ -98,12 +98,9 @@ def calculate_distance(
             method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]]):
         return None
     distance = {}
-    if method == "jaccard":
-        for token in vocabulary.keys():
-            token_jaccard_distance = calculate_jaccard_distance(first_token, token)
-            if token_jaccard_distance is None:
-                return None
-            distance[token] = token_jaccard_distance
+    methods = {"jaccard": calculate_jaccard_distance,
+        "levenshtein": calculate_levenshtein_distance,
+        "jaro-winkler": calculate_jaro_winkler_distance,}
     if method == "frequency-based":
         if alphabet is None:
             return {token: 1.0 for token in vocabulary}
@@ -111,18 +108,15 @@ def calculate_distance(
         if freq_distance is None:
             return None
         distance = freq_distance
-    if method == "levenshtein":
-        for token in vocabulary.keys():
-            token_lev_distance = calculate_levenshtein_distance(first_token, token)
-            if token_lev_distance is None:
+    else:
+        methods_call_function = methods.get(method)
+        if not methods_call_function:
+            return None
+        for token in vocabulary: 
+            token_distance = methods_call_function(first_token, token)
+            if token_distance is None:
                 return None
-            distance[token] = token_lev_distance
-    if method == "jaro-winkler":
-        for token in vocabulary.keys():
-            token_jw_distance = calculate_jaro_winkler_distance(first_token, token)
-            if token_jw_distance is None:
-                return None
-            distance[token] = token_jw_distance
+            distance[token] = token_distance
     return distance
 
 
