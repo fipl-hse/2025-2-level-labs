@@ -124,15 +124,16 @@ def calculate_distance(
         if distances is None:
             return None
         return distances
-    method_funcs = {
-        "jaccard": calculate_jaccard_distance,
-        "levenshtein": calculate_levenshtein_distance,
-        "jaro-winkler": calculate_jaro_winkler_distance,
-    }
-    func = method_funcs[method]
     result: dict[str, float] = {}
     for word in vocabulary:
-        dist = func(first_token, word)
+        if method == "jaccard":
+            dist = calculate_jaccard_distance(first_token, word)
+        elif method == "levenshtein":
+            dist = calculate_levenshtein_distance(first_token, word)
+        elif method == "jaro-winkler":
+            dist = calculate_jaro_winkler_distance(first_token, word)
+        else:
+            return None
         if dist is None:
             return None
         result[word] = float(dist)
