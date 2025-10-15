@@ -5,10 +5,8 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 
-from lab_1_keywords_tfidf.main import (
-    check_list,
-    check_dict,
-    )
+from lab_1_keywords_tfidf.main import check_dict, check_list
+
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
@@ -102,6 +100,16 @@ def calculate_distance(
             if jaccard_distance is None:
                 return None
             distance[key] = jaccard_distance
+    elif method == "frequency-based":
+        if alphabet is None:
+            return {key: 1.0 for key in vocabulary.keys()}
+        distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+    elif method == "levenshtein":
+        for key in vocabulary.keys():
+            levenshtein_distance = calculate_levenshtein_distance(first_token, key)
+            if levenshtein_distance is None:
+                return None
+            distance[key] = levenshtein_distance
     return distance
 
 
@@ -130,10 +138,12 @@ def find_correct_word(
         not isinstance(wrong_word, str),
         not check_dict(vocabulary, str, float, False),
         method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
-        not check_list(alphabet, str, False) and alphabet is not None and method == "frequency-based"
-            ]):
+        all([not check_list(alphabet, str, False),
+            alphabet is not None,
+            method == "frequency-based" or method == "levenshtein"
+            ])]):
         return None
-    wrong_word_dict = calculate_distance(wrong_word, vocabulary, method)
+    wrong_word_dict = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if not wrong_word_dict:
         return None
     min_distance = min(wrong_word_dict.values())
@@ -188,6 +198,22 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    matrix = initialize_levenshtein_matrix(len(token), len(candidate))
+    if matrix == None:
+        return None
+    for i in range(1, len(token) + 1):
+        for j in range(1, len(candidate) + 1):
+            if token[i - 1] == candidate[j - 1]:
+                cost = 0
+            else:
+                cost = 1
+            del_symbol = matrix[i - 1][j] + 1
+            add_symbol = matrix[i][j - 1] + 1
+            replace_symbol = matrix[i - 1][j - 1] + cost
+            matrix[i][j] = min(del_symbol, add_symbol, replace_symbol)
+    return matrix
 
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
@@ -202,6 +228,12 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    matrix = fill_levenshtein_matrix(token, candidate)
+    if matrix is None:
+        return None
+    return matrix[-1][-1]
 
 
 def delete_letter(word: str) -> list[str]:
@@ -377,14 +409,20 @@ def calculate_frequency_distance(
     if any([
         not isinstance(word, str),
         not check_dict(frequencies, str, float, False),
-        not check_list(alphabet, str, True)
+        not check_list(alphabet, str, True),
     ]):
         return None
-    probable_corrected_words = {}
-    for key, value in frequencies.items():
-        distance_freq = 1 - value / max(frequencies.values())
-        probable_corrected_words[key] = distance_freq
-    return probable_corrected_words
+    candidates = propose_candidates(word, alphabet)
+    suitable_candidates = set()
+    if candidates:
+        suitable_candidates = set(frequencies.keys()).intersection(set(candidates))
+    probable_corrected_words = {key: 1.0 for key in frequencies.keys()}
+    for candidate in suitable_candidates:
+        if candidate in frequencies:
+            probable_corrected_words[candidate] = 1.0 - frequencies[candidate]
+        else:
+            probable_corrected_words[candidate] = 1.0
+    return probable_corrected_words #lmao
 
 
 def get_matches(
