@@ -3,7 +3,8 @@ Lab 2.
 """
 
 # pylint:disable=unused-argument
-from typing import Literal, cast
+from typing import Literal
+
 from lab_1_keywords_tfidf.main import check_list, check_dict
 
 
@@ -53,7 +54,8 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
     if not check_dict(vocabulary, str, float, False):
         return None
     for k, v in vocabulary.items():
-        if not isinstance(k, str) or not isinstance(v, float):
+        if (not isinstance(k, str)
+        or not isinstance(v, float)):
             return None
     out_of_vocab = []
     for token in tokens:
