@@ -130,9 +130,10 @@ def calculate_distance(
         "levenshtein": calculate_levenshtein_distance,
         "jaro-winkler": calculate_jaro_winkler_distance,
     }
+    func = method_funcs[method]
     distances: dict[str, float] = {}
     for word in vocabulary:
-        dist = method_funcs[method](first_token, word)
+        dist = func(first_token, word)
         if dist is None:
             return None
         distances[word] = float(dist)
