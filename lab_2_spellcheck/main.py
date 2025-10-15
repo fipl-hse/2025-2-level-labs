@@ -107,9 +107,10 @@ def calculate_distance(
     if method == "frequency-based":
         if alphabet is None:
             return {token: 1.0 for token in vocabulary}
-        distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        if distance is None:
+        freq_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if freq_distance is None:
             return None
+        distance = freq_distance
     if method == "levenshtein":
         for token in vocabulary.keys():
             token_lev_distance = calculate_levenshtein_distance(first_token, token)
@@ -149,7 +150,7 @@ def find_correct_word(
     if distances is None or not distances:
         return None
     min_distance = min(distances.values())
-    candidates = [token for token, token_distance in distances.items() 
+    candidates = [token for token, token_distance in distances.items()
                     if token_distance == min_distance]
     if not candidates:
         return None
@@ -180,7 +181,7 @@ def initialize_levenshtein_matrix(
         return None
     if not all([token_length >= 0, candidate_length >= 0]):
         return None
-    n, m = token_length + 1, candidate_length + 1 
+    n, m = token_length + 1, candidate_length + 1
     levenshtein_matrix = [[0 for _ in range(m)] for _ in range(n)]
     for i in range(n):
         levenshtein_matrix[i][0] = i
