@@ -3,11 +3,11 @@ Lab 2.
 """
 
 # pylint:disable=unused-argument
-from typing import Literal
 from lab_1_keywords_tfidf.main import (
-    check_dict, 
+    check_dict,
     check_list,
 )
+from typing import Literal
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -69,7 +69,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return 1.0
     token_set = set(token)
     candidate_set = set(candidate)
-    return (1 - (len(token_set & candidate_set)) / 
+    return (1 - (len(token_set & candidate_set)) /
             len(token_set | candidate_set))
 
 
@@ -97,7 +97,7 @@ def calculate_distance(
         not isinstance(first_token, str)
         or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-        or not alphabet is None and not check_list(alphabet, str, False) 
+        or not alphabet is None and not check_list(alphabet, str, False)
     ):
         return None
     calculated_distance = {}
@@ -148,19 +148,19 @@ def find_correct_word(
         not isinstance(wrong_word, str)
         or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-        or not alphabet is None and not check_list(alphabet, str, False) 
+        or not alphabet is None and not check_list(alphabet, str, False)
     ):
         return None
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if distances is None or not distances:
         return None
     min_distance = min(distances.values())
-    candidates = [token for token, token_distance in distances.items() 
+    candidates = [token for token, token_distance in distances.items()
                    if token_distance == min_distance]
     if not candidates:
         return None
     if len(candidates) > 1:
-        min_length_differences = min([len(candidate) - len(wrong_word) for candidate in candidates])
+        min_length_differences = min(len(candidate) - len(wrong_word) for candidate in candidates)
         min_length_candidates = []
         for candidate in candidates:
             if len(candidate) - len(wrong_word) == min_length_differences:
@@ -184,7 +184,7 @@ def initialize_levenshtein_matrix(
     """
     if (not isinstance(token_length, int)
         or not isinstance(candidate_length, int)
-        or token_length < 0 
+        or token_length < 0
         or candidate_length < 0):
         return None
     matrix = []
@@ -290,7 +290,7 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
         or not check_list(alphabet, str, False)):
         return []
     result = []
-    for i in range(len(word) + 1): 
+    for i in range(len(word) + 1):
         for letter in alphabet:
             candidate = word[:i] + letter + word[i:]
             result.append(candidate)
@@ -315,9 +315,9 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
         or not check_list(alphabet, str, False)):
         return []
     result = []
-    for i in range(len(word)):
+    for i, char in enumerate(word):
         for letter in alphabet:
-            if letter == word[i]:
+            if letter == char:
                 continue
             candidate = word[:i] + letter + word[i+1:]
             result.append(candidate)
@@ -363,7 +363,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     if (not isinstance(word, str)
         or not check_list(alphabet, str, True)):
         return None
-    candidates = (delete_letter(word) + add_letter(word, alphabet) 
+    candidates = (delete_letter(word) + add_letter(word, alphabet)
                          + replace_letter(word, alphabet) + swap_adjacent(word))
     return sorted(set(candidates))
 
@@ -417,14 +417,14 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if (not isinstance(word, str) 
+    if (not isinstance(word, str)
         or not isinstance(frequencies, dict)
         or not frequencies
         or not check_dict(frequencies, str, float, False)
         or not check_list(alphabet, str, True)):
         return None
     candidates = propose_candidates(word, alphabet)
-    frequency_distances = {token: 1.0 for token in frequencies}    
+    frequency_distances = {token: 1.0 for token in frequencies}
     if candidates:
         exist_candidates = set(candidates) & set(frequencies)
         for candidate in exist_candidates:
