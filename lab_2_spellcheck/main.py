@@ -110,10 +110,12 @@ def calculate_distance(
     if (
         not isinstance(first_token, str)
         or not check_dict(vocabulary, str, float, False)
-        or any(not isinstance(k, str) or not isinstance(v, (int, float)) for k, v in vocabulary.items())
+        or any(not isinstance(k, str)
+        or not isinstance(v, (int, float)) for k, v in vocabulary.items())
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-        or (alphabet is not None and not check_list(alphabet, str, False))
-    ):
+        ):
+        return None
+    if (alphabet is not None and not check_list(alphabet, str, False)):
         return None
     if method == "frequency-based":
         if alphabet is None:
