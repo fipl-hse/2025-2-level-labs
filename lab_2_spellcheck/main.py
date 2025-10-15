@@ -115,9 +115,9 @@ def calculate_distance(
         return jaccard
 
     if method == "frequency-based":
-        freq_dist = calculate_frequency_distance(first_token, vocabulary, alphabet)
         if alphabet is None:
             return {token: 1.0 for token in vocabulary}
+        freq_dist = calculate_frequency_distance(first_token, vocabulary, alphabet)
         return freq_dist
 
     if method == "levenshtein":
@@ -454,6 +454,28 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
+    if (
+        not isinstance(token, str) or
+        not isinstance(candidate, str) or
+        not isinstance(match_distance, int)
+        or match_distance < 0
+        ):
+        return None
+    match_count = 0
+    if_token_letter_match = [False] * len(token)
+    if_candidate_letter_match = [False] * len(candidate)
+    for i, el in enumerate(token):
+        start = max(0, i - match_distance)
+        end = min(len(candidate), i + match_distance + 1)
+        for j in range(start, end):
+            if not if_candidate_letter_match[j] and el == candidate[j]:
+                if_token_letter_match[i] = True
+                if_candidate_letter_match[j] = True
+                match_count += 1
+                break
+    
+    return (match_count, if_token_letter_match, if_candidate_letter_match)
+
 
 
 def count_transpositions(
@@ -473,6 +495,39 @@ def count_transpositions(
 
     In case of corrupt input arguments, None is returned.
     """
+    if (
+        not isinstance(token, str) or
+        not isinstance(candidate, str) or
+        not check_list(token_matches, bool, True) or
+        not check_list(candidate_matches, bool, True) or
+        len(token_matches) != len(token) or
+        len(candidate_matches) != len(candidate)
+        ):
+        return None
+
+    transpositions = 0
+    token_match_els = []
+    for i in range(len(token)):
+        if token_matches[i]:
+            token_match_els.append(token[i])
+    if not token_match_els:
+        return 0
+
+    candidate_match_els = []
+    for j in range(len(candidate)):
+        if candidate_matches[j]:
+            candidate_match_els.append(candidate[j])
+    if not candidate_match_els:
+        return 0
+
+    if len(token_match_els) != len(candidate_match_els):
+        return 0
+
+    for i in range(len(token_match_els)):
+        if token_match_els[i] != candidate_match_els[i]:
+            transpositions += 1
+    return transpositions // 2
+
 
 
 def calculate_jaro_distance(

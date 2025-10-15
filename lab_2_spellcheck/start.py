@@ -32,7 +32,7 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
-    
+
     tokenized_corpus = clean_and_tokenize(text)
     if not tokenized_corpus:
         return
@@ -51,8 +51,9 @@ def main() -> None:
     tokens_out_of_voc = find_out_of_vocab_words(sentences_without_stopwords, vocabulary)
     if not tokens_out_of_voc:
         return
-    
-    result = {find_correct_word(token, vocabulary, "levenshtein", Alphabet): token for token in tokens_out_of_voc}
+
+    result = {find_correct_word(token, vocabulary, "levenshtein", Alphabet): token
+              for token in tokens_out_of_voc}
     print(result)
     assert result, "Result is None"
 
