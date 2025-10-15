@@ -42,7 +42,7 @@ def main() -> None:
     tokens_out_of_voc = find_out_of_vocab_words(sentences_without_stopwords, vocabulary)
     
     
-    result = {find_correct_word(token, vocabulary, "frequency-based", Alphabet): token for token in tokens_out_of_voc}
+    result = {find_correct_word(token, vocabulary, "levenshtein", Alphabet): token for token in tokens_out_of_voc}
     print(result)
     assert result, "Result is None"
 
