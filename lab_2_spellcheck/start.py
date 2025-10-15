@@ -50,7 +50,6 @@ def main() -> None:
     finded_out_of_vocab_words=find_out_of_vocab_words(text_without_stop_words, vocabulary)
     if finded_out_of_vocab_words is None:
         return
-    print("yhghyt", finded_out_of_vocab_words)
 
     '''jaccard_distance=calculate_jaccard_distance(finded_out_of_vocab_words, candidate)
     if jaccard_distance is None:
