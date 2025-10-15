@@ -361,20 +361,23 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not (
-        isinstance(word, str) and
-        isinstance(frequencies, dict) and
-        check_list(alphabet, str, True)
-    ):
+    if not isinstance(word, str) or not check_dict(frequencies, str, float, False):
         return None
-    frequency_distance = {}
-    for token in frequencies:
-        candidates = propose_candidates(word, alphabet)
-        if candidates is None:
-            return None
-        
-        distance_freq = 1 - (frequencies[token]/max(frequencies.values()))
-    return distance_freq
+    if not frequencies:
+        return {}
+    if not check_list(alphabet, str, True):
+        return None
+    candidates = propose_candidates(word, alphabet)
+    candidate_frequencies = {token: 1.0 for token in frequencies.keys()}
+    valid_candidates = set()
+    if candidates:
+        valid_candidates = set(candidates) & set(frequencies.keys())
+    for candidate in valid_candidates:
+        if candidate in frequencies:
+            distance_freq = 1 - frequencies[candidate]
+        else: distance_freq = 1.0
+        candidate_frequencies[candidate] = distance_freq
+    return candidate_frequencies
 
 
 
