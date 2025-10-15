@@ -3,7 +3,7 @@ Lab 2.
 """
 
 # pylint:disable=unused-argument
-from typing import Literal
+from typing import Literal, cast
 from lab_1_keywords_tfidf.main import check_list, check_dict
 
 
@@ -130,13 +130,13 @@ def calculate_distance(
         "jaro-winkler": calculate_jaro_winkler_distance,
     }
     func = method_funcs[method]
-    distances: dict[str, float] = {}
+    result: dict[str, float] = {}
     for word in vocabulary:
-        dist = func(first_token, word)
+        dist = method_funcs[method](first_token, word)
         if dist is None:
             return None
-        distances[word] = float(dist)
-    return distances
+        result[word] = float(dist)
+    return result
 
 
 def find_correct_word(

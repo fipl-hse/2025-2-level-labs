@@ -4,7 +4,7 @@ Spellcheck starter
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
 
-from typing import Literal
+from typing import Literal, cast
 
 from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
@@ -54,11 +54,12 @@ def main() -> None:
         print(f'\nВозможные исправления слова: {unknown}')
         word_corrections = {}
         for method_name in ['jaccard', 'frequency-based', 'levenshtein', 'jaro-winkler']:
+            method = cast(Literal['jaccard', 'frequency-based', 'levenshtein', 'jaro-winkler'], method_name)
             correction = find_correct_word(unknown,
                                            vocabulary_map,
                                            method_name,
                                            rus_alphabet) or None
-            word_corrections[method_name] = correction
+            word_corrections[method] = correction
             print(f"  {method_name.capitalize()}: {correction}")
         corrections_result[unknown] = word_corrections
 
