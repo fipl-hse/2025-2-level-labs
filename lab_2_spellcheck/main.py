@@ -4,7 +4,7 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 
-from lab_1_keywords_tfidf.main import check_list, check_dict
+from lab_1_keywords_tfidf.main import check_dict, check_list
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -207,8 +207,7 @@ def delete_letter(word: str) -> list[str]:
         return del_letter_candidates
     for i in range(len(word)):
         del_letter_candidates.append(word[:i] + word[i+1:])
-    del_letter_candidates.sort()
-    return del_letter_candidates
+    return sorted(del_letter_candidates)
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -231,8 +230,7 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
     for i in range(len(word) + 1):
         for letter in alphabet:
             add_letter_candidates.append(word[:i] + letter + word[i:])
-    add_letter_candidates.sort()
-    return add_letter_candidates
+    return sorted(add_letter_candidates)
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -255,8 +253,7 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     for i in range(len(word)):
         for letter in alphabet:
             replace_letter_candidates.append(word[:i] + letter + word[i+1:])
-    replace_letter_candidates.sort()
-    return replace_letter_candidates
+    return sorted(replace_letter_candidates)
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -277,8 +274,7 @@ def swap_adjacent(word: str) -> list[str]:
         return swap_adjacent_candidates
     for i in range(len(word) - 1):
         swap_adjacent_candidates.append(word[:i] + word[i+1] + word[i] + word[i+2:])
-    swap_adjacent_candidates.sort()
-    return swap_adjacent_candidates
+    return sorted(swap_adjacent_candidates)
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:

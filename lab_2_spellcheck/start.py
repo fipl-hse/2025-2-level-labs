@@ -2,7 +2,12 @@
 Spellcheck starter
 """
 from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
-from main import build_vocabulary, find_out_of_vocab_words, calculate_jaccard_distance, calculate_distance
+from main import (
+    build_vocabulary,
+    calculate_distance,
+    calculate_jaccard_distance,
+    find_out_of_vocab_words,
+)
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
 
