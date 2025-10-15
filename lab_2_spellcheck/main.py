@@ -181,6 +181,20 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
+    if (not isinstance(token_length, int) or
+        not isinstance(candidate_length, int) or
+        token_length < 0 or
+        candidate_length < 0):
+        return None
+    matrix = []
+    for i in range(token_length + 1):
+        if i == 0:
+            matrix_line = [i for i in range(candidate_length + 1)]
+            matrix.append(matrix_line)
+        else:
+            matrix_line = [i if ii == 0 else 0 for ii in range(candidate_length + 1)]
+            matrix.append(matrix_line)
+    return matrix
 
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
@@ -194,6 +208,22 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    matrix = initialize_levenshtein_matrix(len(token), len(candidate))
+    if not matrix:
+        return None
+    for i in range(1, len(token) + 1):
+        for j in range(1, len(candidate) + 1):
+            if token[i - 1] == candidate[j - 1]:
+                matrix[i][j] = matrix[i - 1][j - 1]
+            else:
+                delete_cost = matrix[i - 1][j] + 1     
+                insert_cost = matrix[i][j - 1] + 1      
+                replace_cost = matrix[i - 1][j - 1] + 1 
+                matrix[i][j] = min(delete_cost, insert_cost, replace_cost)
+    return matrix
+
 
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
