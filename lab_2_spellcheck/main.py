@@ -111,13 +111,13 @@ def calculate_distance(
         if freq_distance is None:
             return None
         distance = freq_distance
-    elif method == "levenshtein":
+    if method == "levenshtein":
         for token in vocabulary.keys():
             token_lev_distance = calculate_levenshtein_distance(first_token, token)
             if token_lev_distance is None:
                 return None
             distance[token] = token_lev_distance
-    elif method == "jaro-winkler":
+    if method == "jaro-winkler":
         for token in vocabulary.keys():
             token_jw_distance = calculate_jaro_winkler_distance(first_token, token)
             if token_jw_distance is None:
