@@ -257,6 +257,12 @@ def delete_letter(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not(isinstance(word,str)):
+        return []
+    
+    variant = [word[:i] + word[i+1:] for i in range(len(word))]
+
+    return sorted(variant)
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -486,3 +492,7 @@ if __name__ == "__main__":
     for a,b, expected in tests_levenshtein:
         result = calculate_levenshtein_distance(a,b)
         print(f"Levenshtein('{a}','{b}') = {result} (expected {expected})")
+
+    word = "код"
+    variant = delete_letter(word)
+    print(f"variant w/delete letter '{word}':", variant)
