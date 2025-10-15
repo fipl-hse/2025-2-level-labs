@@ -5,7 +5,7 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 
-from lab_1_keywords_tfidf.main import check_dict, check_list, clean_and_tokenize, remove_stop_words
+from lab_1_keywords_tfidf.main import check_dict, check_list
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -108,6 +108,8 @@ def calculate_distance(
         if alphabet is None:
             return {token: 1.0 for token in vocabulary}
         distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if distance is None:
+            return None
     if method == "levenshtein":
         for token in vocabulary.keys():
             token_lev_distance = calculate_levenshtein_distance(first_token, token)
@@ -379,7 +381,6 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         return None
     if word == "" and not alphabet:
         return ()
-    second_level_candidates = []
     all_candidates = set()
     all_candidates.add(word)
     first_level_candidates = generate_candidates(word, alphabet)
