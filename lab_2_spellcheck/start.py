@@ -9,9 +9,9 @@ from lab_1_keywords_tfidf.main import (
 )
 from lab_2_spellcheck.main import (
     build_vocabulary,
+    calculate_distance,
     find_correct_word,
     find_out_of_vocab_words,
-    propose_candidates,
 )
 
 
@@ -31,30 +31,38 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
-    tokens = clean_and_tokenize(text) or []
-    tokens_without_stop_words = remove_stop_words(tokens, stop_words) or []
-    vocabulary = build_vocabulary(tokens_without_stop_words) or {}
-    out_of_vocab_words = find_out_of_vocab_words(tokens_without_stop_words, vocabulary) or []
+    tokens_text = clean_and_tokenize(text) or []
+    tokens_text_without_stop_words = remove_stop_words(tokens_text, stop_words) or []
+    vocabulary = build_vocabulary(tokens_text_without_stop_words) or {}
+
+    all_sentence_tokens = []
+    for sentence in sentences:
+        sentence_tokens = clean_and_tokenize(sentence) or []
+        sentence_tokens_without_stop_words = remove_stop_words(sentence_tokens, stop_words) or []
+        all_sentence_tokens.extend(sentence_tokens_without_stop_words)
+    
+    error_words = find_out_of_vocab_words(all_sentence_tokens, vocabulary) or []
+    print(error_words)
+
     alphabet = [chr(i) for i in range(1072, 1104)]
-    methods = ("jaccard", "frequency-based", "levenshtein", "jaro-winkler")
-    result_ = {}
-    for word in out_of_vocab_words:
-        word_result = {}
-        candidates = propose_candidates(word, alphabet) or tuple()
-        for method in methods:
-            correction = None
-            if method == 'jaccard':
-                correction = find_correct_word(word, vocabulary, 'jaccard', alphabet)
-            elif method == 'frequency-based':
-                correction = find_correct_word(word, vocabulary, 'frequency-based', alphabet)
-            elif method == 'jaro-winkler':
-                correction = find_correct_word(word, vocabulary, 'jaro-winkler', alphabet)
-            elif method == 'levenshtein':
-                correction = find_correct_word(word, vocabulary, 'levenshtein', alphabet)
-            word_result[method] = correction
-        result_[word] = word_result
-    print(result_)
-    result = result_
+    all_results = {}
+    for error_word in error_words:
+        print(f"\nИсправление для '{error_word}':")
+        jaccard_correction = find_correct_word(error_word, vocabulary, 'jaccard', alphabet) or {}
+        frequency_correction = find_correct_word(error_word, vocabulary, 'frequency-based', alphabet) or {}
+        levenshtein_correction = find_correct_word(error_word, vocabulary, 'levenshtein', alphabet) or {}
+        jaro_winkler_correction = find_correct_word(error_word, vocabulary, 'jaro-winkler', alphabet) or {}
+        print(f"  Jaccard: {jaccard_correction}")
+        print(f"  Frequency-based: {frequency_correction}")
+        print(f"  Levenshtein: {levenshtein_correction}")
+        print(f"  Jaro-Winkler: {jaro_winkler_correction}")
+        all_results[error_word] = {
+            'jaccard': jaccard_correction,
+            'frequency-based': frequency_correction,
+            'levenshtein': levenshtein_correction,
+            'jaro-winkler': jaro_winkler_correction
+        }
+    result = all_results
     assert result, "Result is None"
 
 
