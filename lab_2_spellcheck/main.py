@@ -214,7 +214,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
                 cost = 0
             else:
                 cost = 1
-            operation_del = matrix[i - 1][j] + 1  
+            operation_del = matrix[i - 1][j] + 1
             operation_add = matrix[i][j - 1] + 1
             operation_change = matrix[i - 1][j - 1] + cost
             matrix[i][j] = min(operation_del, operation_add, operation_change)
@@ -410,8 +410,8 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if (not isinstance(word, str) 
-    or not check_dict(frequencies, str, float, False) 
+    if (not isinstance(word, str)
+    or not check_dict(frequencies, str, float, False)
     or not check_list(alphabet, str, True)):
         return None
     result = {}
@@ -429,7 +429,6 @@ def calculate_frequency_distance(
         result = {token: 1.0 for token in frequencies}
     return result
 
-    
 def get_matches(
     token: str, candidate: str, match_distance: int
 ) -> tuple[int, list[bool], list[bool]] | None:

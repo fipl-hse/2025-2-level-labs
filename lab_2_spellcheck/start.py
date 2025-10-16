@@ -37,13 +37,12 @@ def main() -> None:
         text_without_stop_words = remove_stop_words(cleaned_text, stop_words)
     if text_without_stop_words is not None:
         vocabulary = build_vocabulary(sentences)
-    if (vocabulary is not None
-        and find_out_of_vocab_words is not None):
-        absent_words = find_out_of_vocab_words(text_without_stop_words, vocabulary)
-    if absent_words is not None:
+        if vocabulary is not None:
+            absent_words = find_out_of_vocab_words(text_without_stop_words, vocabulary)
+    if (absent_words is not None 
+    and vocabulary is not None):
         for word in absent_words:
-            if calculate_distance is not None:
-                first_result = calculate_distance(word, vocabulary, "levenshtein")
+            first_result = calculate_distance(word, vocabulary, "levenshtein")
     if first_result is not None:
         print(first_result)
     result = first_result
