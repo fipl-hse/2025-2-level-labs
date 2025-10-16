@@ -143,5 +143,9 @@ def main() -> None:
             print(f"  {word}: {dist:.4f}")
 
 
+    assert vocabulary, "Vocabulary is not built"
+    assert filtered_tokens, "Tokens are not processed"
+
+
 if __name__ == "__main__":
     main()
