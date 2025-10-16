@@ -75,7 +75,6 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return 1.0
     set_token = set(token)
     set_candidate = set(candidate)
-
     union = set_token.union(set_candidate)
     if not union:
         return 1.0
@@ -111,25 +110,24 @@ def calculate_distance(
         return None
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
-    if method == "frequency-based" and not check_list(alphabet, str, False):
-        return None
     if method == "frequency-based":
+        if not check_list(alphabet, str, True) or alphabet is None:
+            return {word: 1.0 for word in vocabulary}
         return calculate_frequency_distance(first_token, vocabulary, alphabet)
     distances = {}
-    for word in vocabulary.keys():
+    for word in vocabulary:
+        dist = None
         if method == "jaccard":
             dist = calculate_jaccard_distance(first_token, word)
         elif method == "levenshtein":
             dist = calculate_levenshtein_distance(first_token, word)
         elif method == "jaro-winkler":
-            sim = calculate_jaro_winkler_distance(first_token, word)
-            dist = 1.0 - sim if sim is not None else None
-        else:
-            return None
+            dist = calculate_jaro_winkler_distance(first_token, word)
         if dist is None:
-            continue
-        distances[word] = float(dist)
+            return None
+        distances[word] = dist
     return distances
+
 
 def find_correct_word(
     wrong_word: str,
@@ -152,24 +150,27 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
+    if alphabet is None:
+        alphabet = []
     if not isinstance(wrong_word, str):
         return None
     if not check_dict(vocabulary, str, float, False):
         return None
-    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
+    if not isinstance(method, str):
         return None
-    if method == "frequency-based" and not check_list(alphabet, str, False):
+    if method not in ("jaccard", "frequency-based", "levenshtein", "jaro-winkler"):
         return None
+    if not check_list(alphabet, str, True):
+        return None
+    if wrong_word in vocabulary and method != "frequency-based":
+        return wrong_word
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if distances is None:
-        return None
-    distances = {k: v for k, v in distances.items() if v is not None}
-    if not distances:
         return None
     min_distance = min(distances.values())
     candidates = [word for word, dist in distances.items() if dist == min_distance]
     candidates.sort(key=lambda w: (abs(len(w) - len(wrong_word)), w))
-    return candidates[0] if candidates else None
+    return candidates[0]
 
 
 def initialize_levenshtein_matrix(
@@ -380,17 +381,20 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str):
+        return None
+    if not check_list(alphabet, str, True):
+        return None
+    all_candidates = set()
     first_level = generate_candidates(word, alphabet)
     if first_level is None:
         return None
-    all_candidates = set(first_level)
+    all_candidates.update(first_level)
     for candidate in first_level:
         second_level = generate_candidates(candidate, alphabet)
-        if second_level:
-            all_candidates.update(second_level)
-    if word != "":
-        all_candidates.discard(word)
-    all_candidates.discard(word)
+        if second_level is None:
+            return None
+        all_candidates.update(second_level)
     return tuple(sorted(all_candidates))
 
 
@@ -412,24 +416,21 @@ def calculate_frequency_distance(
     """
     if not isinstance(word, str):
         return None
-    if not check_list(alphabet, str, False):
+    if not isinstance(frequencies, dict) or not frequencies:
         return None
-    if not check_dict(frequencies, str, float, False):
+    if not check_list(alphabet, str, True):
         return None
-    distances: dict[str, float] = {}
-    epsilon = 1e-9
-    freq_word = frequencies.get(word, 0.0)
-    if freq_word > 0:
-        distances[word] = 0.0
-    candidates = generate_candidates(word, alphabet)
-    if candidates is None:
-        return distances if distances else None
+    for token, freq in frequencies.items():
+        if not isinstance(token, str) or not isinstance(freq, (int, float)):
+            return None
+    distances = {token: 1.0 for token in frequencies}
+    candidates = propose_candidates(word, alphabet)
+    if candidates is None or not candidates:
+        return distances
     for candidate in candidates:
-        freq = frequencies.get(candidate, 0.0)
-        if freq > 0:
-            distance = 1.0 / (freq + epsilon)
-            distances[candidate] = distance
-    return distances if distances else None
+        if candidate in frequencies:
+            distances[candidate] = 1 - frequencies[candidate]
+    return distances
 
 
 def get_matches(
