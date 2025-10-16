@@ -17,30 +17,30 @@ Data Type: dict.
 
 # Create a dict
 example = {"brand": "Ford", "model": "Mustang", "year": 1964}
-print(example)
-print("*" * 30)
+# print(example)
+# print("*" * 30)
 
 # Create a dict (second way)
 pair_example = dict([(1, "Hello"), (2, "there")])
-print("\nDictionary with each item as a pair: ")
-print(pair_example)
-print("*" * 30)
+# print("\nDictionary with each item as a pair: ")
+# print(pair_example)
+# print("*" * 30)
 
 # Add a key:value pair
 example = {"brand": "Ford", "model": "Mustang", "year": 1964}
 example["colour"] = "black"
-print(example)
-print("*" * 30)
+# print(example)
+# print("*" * 30)
 
 # Remove a key:value pair
 example.pop("colour")
-print(example)
-print("*" * 30)
+# print(example)
+# print("*" * 30)
 
 # Change the value of the given key
 example["year"] = 2000
-print(example)
-print("*" * 30)
+# print(example)
+# print("*" * 30)
 
 # Dict methods (some of them)
 # .get(key, default) -> get the value by the given key
@@ -57,18 +57,18 @@ print("*" * 30)
 
 # Create a set
 example_set = {1, 2, 3, 4, 4, 2}
-print("Example set (duplicates removed):", example_set)
+# print("Example set (duplicates removed):", example_set)
 
 # Basic operations
 a = {1, 2, 3, 4}
 b = {3, 4, 5, 6}
 
-print("Union:", a | b)  # {1, 2, 3, 4, 5, 6}
-print("Intersection:", a & b)  # {3, 4}
-print("Difference:", a - b)  # {1, 2}
-print("Symmetric diff:", a ^ b)  # {1, 2, 5, 6}
+# print("Union:", a | b)  # {1, 2, 3, 4, 5, 6}
+# print("Intersection:", a & b)  # {3, 4}
+# print("Difference:", a - b)  # {1, 2}
+# print("Symmetric diff:", a ^ b)  # {1, 2, 5, 6}
 
-print("*" * 15 + " TASKS " + "*" * 15)
+# print("*" * 15 + " TASKS " + "*" * 15)
 
 
 # TASKS
@@ -146,8 +146,12 @@ def remove_duplicates(data: dict[str, int]) -> dict[str, int]:
     Returns:
         dict[str, int]: Dictionary without duplicates.
     """
-    # student realisation goes here
+    
 
+# assert remove_duplicates({
+#     'Marat': 10000,
+#     'Yaroslav': 15000,
+#     'Sasha': 10000})
 
 # Function calls with expected result
 # assert remove_duplicates({
@@ -169,11 +173,17 @@ def count_letters(sequence: str) -> dict[str, int]:
     Returns:
         dict[str, int]: Dictionary with letters as keys and counts as values.
     """
-    # student realisation goes here
+    letters = {}
+    sequence = sequence.lower()
+    for letter in sequence:
+        if letter.isalpha():
+            letters.update({letter: sequence.count(letter)})
+    return letters
 
 
 # Function calls with expected result:
-# assert count_letters('Hello there') == {'h': 2, 'e': 3, 'l': 2, 'o': 1, 't': 1, 'r': 1}
+print(count_letters('Hello there'))
+#  == {'h': 2, 'e': 3, 'l': 2, 'o': 1, 't': 1, 'r': 1}
 
 
 # Task 6
@@ -239,11 +249,13 @@ def common_elements(original_list: list[int], secondary_list: list[int]) -> set[
     Returns:
         set[int]: Elements that are present in both lists.
     """
-    # student realisation goes here
+    commons = set(original_list).intersection(set(secondary_list))
+    return commons
 
 
 # Function calls with expected result:
-# assert common_elements([1, 2, 3, 4], [3, 4, 5]) == {3, 4}
+# assert common_elements([1, 2, 3, 4], [3, 4, 5])
+#  == {3, 4}
 # assert common_elements([10, 20], [30, 40]) == set()
 
 
@@ -259,7 +271,7 @@ def unique_letters(word: str) -> set[str]:
     Returns:
         set[str]: Unique lowercase letters.
     """
-    # student realisation goes here
+    return set(word.lower())
 
 
 # Function calls with expected result:
