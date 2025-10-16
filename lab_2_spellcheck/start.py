@@ -50,39 +50,40 @@ def main() -> None:
     print("Top-5 words with relative frequency:")
     for word, freq in sorted(vocabulary.items(), key=lambda x: x[1], reverse=True)[:5]:
         print(f"{word}: {freq:.4f}")
-    for i, sentence in enumerate(sentences[:2], 1):
-        print(f"\nSentence {i}")
-        print(f"Original: {sentence}")
-        sentence_tokens = clean_and_tokenize(sentence)
-        if sentence_tokens is None:
-            continue
-        sentence_tokens_without_stopwords = remove_stop_words(sentence_tokens, stop_words)
-        if sentence_tokens_without_stopwords is None:
-            continue
-        oov_words = find_out_of_vocab_words(sentence_tokens_without_stopwords, vocabulary)
-        if oov_words is None:
-            continue
-        print(f"Out-of-vocabulary words: {oov_words}")
-        for wrong_word in oov_words:
-            print(f"\nProcessing word: '{wrong_word}'")
-            methods = ("jaccard", "frequency-based", "levenshtein", "jaro-winkler")
-            for method in ("jaccard", "frequency-based", "levenshtein", "jaro-winkler"):
-                distances = calculate_distance(wrong_word, vocabulary, method, russian_alphabet)
-                correction = find_correct_word(wrong_word, vocabulary, method, russian_alphabet)
-                if distances:
-                    top_candidates = sorted(distances.items(), key=lambda x: x[1])[:3]
-                    print(f"{method}: '{wrong_word}' -> '{correction}'")
-                    print(f"Top 3 candidates: {top_candidates}")
-                    if method == "levenshtein" and correction:
-                        print(f"Levenshtein matrix for '{wrong_word}' and '{correction}':")
-                        filled_matrix = fill_levenshtein_matrix(wrong_word, correction)
-                        if filled_matrix:
-                            for row in filled_matrix:
-                                print(f"      {row}")
-                        distance = calculate_levenshtein_distance(wrong_word, correction)
-                        print(f"Final distance: {distance}")
-                else:
-                    print(f"{method}: Failed to calculate distances")
+    if not sentences:
+        return
+    sentence = sentences[0]
+    print("\nSentence 1")
+    print(f"Original: {sentence}")
+    sentence_tokens = clean_and_tokenize(sentence)
+    if sentence_tokens is None:
+        return
+    sentence_tokens_without_stopwords = remove_stop_words(sentence_tokens, stop_words)
+    if sentence_tokens_without_stopwords is None:
+        return
+    oov_words = find_out_of_vocab_words(sentence_tokens_without_stopwords, vocabulary)
+    if oov_words is None:
+        return
+    print(f"Out-of-vocabulary words: {oov_words}")
+    for wrong_word in oov_words:
+        print(f"\nProcessing word: '{wrong_word}'")
+        for method in ("jaccard", "frequency-based", "levenshtein", "jaro-winkler"):
+            distances = calculate_distance(wrong_word, vocabulary, method, russian_alphabet)
+            correction = find_correct_word(wrong_word, vocabulary, method, russian_alphabet)
+            if distances:
+                top_candidates = sorted(distances.items(), key=lambda x: x[1])[:3]
+                print(f"{method}: '{wrong_word}' -> '{correction}'")
+                print(f"Top 3 candidates: {top_candidates}")
+                if method == "levenshtein" and correction:
+                    print(f"Levenshtein matrix for '{wrong_word}' and '{correction}':")
+                    filled_matrix = fill_levenshtein_matrix(wrong_word, correction)
+                    if filled_matrix:
+                        for row in filled_matrix:
+                            print(f"      {row}")
+                    distance = calculate_levenshtein_distance(wrong_word, correction)
+                    print(f"Final distance: {distance}")
+            else:
+                print(f"{method}: Failed to calculate distances")
     result = distance
     assert result, "Result is None"
 
