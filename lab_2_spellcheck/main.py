@@ -72,7 +72,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return 1.0
     set_1 = set(token)
     set_2 = set(candidate)
-    return (1 - (len(set_1.intersection(set_2))/len(set_1.union(set_2)))) 
+    return (1 - (len(set_1.intersection(set_2))/len(set_1.union(set_2))))
 
 
 def calculate_distance(
@@ -95,8 +95,8 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if (not (isinstance(first_token, str) and first_token) 
-    or not check_dict(vocabulary, str, float, False) or 
+    if (not (isinstance(first_token, str) and first_token)
+    or not check_dict(vocabulary, str, float, False) or
     method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
     result = {}
@@ -143,10 +143,15 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if (not (isinstance(wrong_word, str) and wrong_word) 
-    or not check_dict(vocabulary, str, float, False) or 
+    if (not (isinstance(wrong_word, str) and wrong_word)
+    or not check_dict(vocabulary, str, float, False) or
     method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
+    if alphabet is not None:
+        if not isinstance(alphabet, list) or not alphabet:
+            return None
+        if not all(isinstance(item, str) for item in alphabet):
+            return None
     result = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if result:
         min_value = min(result.values())

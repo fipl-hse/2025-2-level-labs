@@ -32,11 +32,15 @@ def main() -> None:
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
     cleaned_text = clean_and_tokenize(text)
-    text_without_stop_words = remove_stop_words(cleaned_text, stop_words)
-    vocabulary = build_vocabulary(sentences)
-    absent_words = find_out_of_vocab_words(text_without_stop_words, vocabulary)
-    for word in absent_words:
-        first_result = calculate_distance(word, vocabulary, "levenshtein")
+    if cleaned_text is not None:
+        text_without_stop_words = remove_stop_words(cleaned_text, stop_words) 
+    if text_without_stop_words is not None:    
+        vocabulary = build_vocabulary(sentences)
+    if vocabulary is not None:
+        absent_words = find_out_of_vocab_words(text_without_stop_words, vocabulary)
+    if absent_words is not None:
+        for word in absent_words:
+            first_result = calculate_distance(word, vocabulary, "levenshtein")
     if first_result is not None:
         print(first_result)
     result = first_result
