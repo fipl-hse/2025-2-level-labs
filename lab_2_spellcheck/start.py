@@ -10,6 +10,7 @@ from lab_1_keywords_tfidf.main import (
 
 from lab_2_spellcheck.main import (
     build_vocabulary,
+    calculate_distance,
     find_correct_word,
     find_out_of_vocab_words,
 )
@@ -39,23 +40,74 @@ def main() -> None:
     corpus_without_stopwords = remove_stop_words(tokenized_corpus, stop_words)
     if not corpus_without_stopwords:
         return
-    vocabulary = build_vocabulary(corpus_without_stopwords)
-    if not vocabulary:
-        return
+
     tokenized_sentences = clean_and_tokenize(''.join(sentences))
     if not tokenized_sentences:
         return
     sentences_without_stopwords = remove_stop_words(tokenized_sentences, stop_words)
     if not sentences_without_stopwords:
         return
+
+    vocabulary = build_vocabulary(corpus_without_stopwords)
+    if not vocabulary:
+        return
+    print("Vocabulary: ", vocabulary, "\n")
+
     tokens_out_of_voc = find_out_of_vocab_words(sentences_without_stopwords, vocabulary)
     if not tokens_out_of_voc:
         return
+    print("Tokens out of vocabulary: ", tokens_out_of_voc, "\n")
+
+    jaccard_distances = {token: calculate_distance(
+        token, vocabulary, "jaccard", Alphabet)
+        for token in tokens_out_of_voc}
+    if not jaccard_distances:
+        return
+    print("Jaccard distances: ", jaccard_distances, "\n")
+
+    correct_words_by_jacc = {token: find_correct_word(
+        token, vocabulary, "jaccard", Alphabet)
+        for token in tokens_out_of_voc}
+    if not correct_words_by_jacc:
+        return
+    print("Correct words by jaccard method: ", correct_words_by_jacc, "\n")
+
+    frequency_distances = {token: calculate_distance(
+        token, vocabulary, "frequency-based", Alphabet)
+        for token in tokens_out_of_voc}
+    if not frequency_distances:
+        return
+    print("Frequensy distances: ", frequency_distances, "\n")
+
+    correct_words_by_freq = {token: find_correct_word(
+        token, vocabulary, "frequency-based", Alphabet)
+        for token in tokens_out_of_voc}
+    if not correct_words_by_freq:
+        return
+    print("Correct words by frequensy based method: ", correct_words_by_freq, "\n")
+
+    levenshtein_distances = {token: calculate_distance(
+        token, vocabulary, "levenshtein", Alphabet)
+        for token in tokens_out_of_voc}
+    if not levenshtein_distances:
+        return
+    print("Levenshtein distances: ", levenshtein_distances, "\n")
+
+    correct_words_by_lev = {token: find_correct_word(
+        token, vocabulary, "levenshtein", Alphabet)
+        for token in tokens_out_of_voc}
+    if not correct_words_by_lev:
+        return
+    print("Correct words by levenshtein method: ", correct_words_by_lev, "\n")
+
+    
 
     result = {find_correct_word(token, vocabulary, "levenshtein", Alphabet): token
               for token in tokens_out_of_voc}
-    print(result)
+    # print(result)
     assert result, "Result is None"
+
+    
 
 
 if __name__ == "__main__":
