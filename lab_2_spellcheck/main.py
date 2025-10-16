@@ -112,24 +112,24 @@ def calculate_distance(
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
     if method == "frequency-based" and not check_list(alphabet, str, False):
-            return None
+        return None
+    if method == "frequency-based":
+        return calculate_frequency_distance(first_token, vocabulary, alphabet)
     distances = {}
     for word in vocabulary.keys():
         if method == "jaccard":
             dist = calculate_jaccard_distance(first_token, word)
-        elif method == "frequency-based":
-            dist = calculate_frequency_distance(first_token, word, alphabet)
         elif method == "levenshtein":
             dist = calculate_levenshtein_distance(first_token, word)
         elif method == "jaro-winkler":
-            dist = 1.0 - calculate_jaro_winkler_distance(first_token, word)
+            sim = calculate_jaro_winkler_distance(first_token, word)
+            dist = 1.0 - sim if sim is not None else None
         else:
             return None
         if dist is None:
-            return dist
-        distances[word] = dist
+            continue
+        distances[word] = float(dist)
     return distances
-
 
 def find_correct_word(
     wrong_word: str,
@@ -159,7 +159,7 @@ def find_correct_word(
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
     if method == "frequency-based" and not check_list(alphabet, str, False):
-            return None
+        return None
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if distances is None:
         return None
@@ -185,6 +185,14 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
+    if not isinstance(token_length, int) or token_length < 0 or not isinstance(candidate_length, int) or candidate_length < 0:
+        return None
+    matrix = [[0] * (candidate_length + 1) for _ in range(token_length + 1)]
+    for i in range(token_length + 1):
+        matrix[i][0] = i
+    for j in range(1, candidate_length + 1):
+        matrix[0][j] = j
+    return matrix
 
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
@@ -198,6 +206,21 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    m, n = len(token), len(candidate)
+    matrix = initialize_levenshtein_matrix(m, n)
+    if matrix is None:
+        return None
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            cost = 0 if token[i - 1] == candidate[j - 1] else 1
+            matrix[i][j] = min(
+                matrix[i - 1][j] + 1,
+                matrix[i][j - 1] + 1,
+                matrix[i - 1][j - 1] + cost
+            )
+    return matrix
 
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
@@ -212,6 +235,12 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    matrix = fill_levenshtein_matrix(token, candidate)
+    if matrix is None:
+        return None
+    return matrix[-1][-1]
 
 
 def delete_letter(word: str) -> list[str]:
@@ -385,21 +414,22 @@ def calculate_frequency_distance(
         return None
     if not check_list(alphabet, str, False):
         return None
-    if not isinstance(frequencies, dict):
+    if not check_dict(frequencies, str, float, False):
         return None
+    distances: dict[str, float] = {}
+    epsilon = 1e-9
+    freq_word = frequencies.get(word, 0.0)
+    if freq_word > 0:
+        distances[word] = 0.0
     candidates = generate_candidates(word, alphabet)
     if candidates is None:
-        return None
-    distances = {}
-    epsilon = 1e-9
+        return distances if distances else None
     for candidate in candidates:
         freq = frequencies.get(candidate, 0.0)
         if freq > 0:
             distance = 1.0 / (freq + epsilon)
             distances[candidate] = distance
-    if not distances:
-        return None
-    return distances
+    return distances if distances else None
 
 
 def get_matches(
@@ -421,6 +451,25 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    if not isinstance(match_distance, int) or match_distance < 0:
+        return None
+    len_token = len(token)
+    len_candidate = len(candidate)
+    token_matches = [False] * len_token
+    candidate_matches = [False] * len_candidate
+    matches_count = 0
+    for i in range(len_token):
+        start = max(0, i - match_distance)
+        end = min(len_candidate, i + match_distance + 1)
+        for j in range(start, end):
+            if not candidate_matches[j] and token[i] == candidate[j]:
+                token_matches[i] = True
+                candidate_matches[j] = True
+                matches_count += 1
+                break
+    return matches_count, token_matches, candidate_matches
 
 
 def count_transpositions(
@@ -440,6 +489,21 @@ def count_transpositions(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not check_list(token_matches, bool, False) or len(token_matches) != len(token):
+        return None
+    if not check_list(candidate_matches, bool, False) or len(candidate_matches) != len(candidate):
+        return None
+    transpositions = 0
+    k = 0
+    for i in range(len(token)):
+        if token_matches[i]:
+            while k < len(candidate) and not candidate_matches[k]:
+                k += 1
+            if k < len(candidate):
+                if token[i] != candidate[k]:
+                    transpositions += 1
+                k += 1
+    return transpositions // 2
 
 
 def calculate_jaro_distance(
