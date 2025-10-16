@@ -65,7 +65,7 @@ def main() -> None:
         print(f"Out-of-vocabulary words: {oov_words}")
         for wrong_word in oov_words:
             print(f"\nProcessing word: '{wrong_word}'")
-            methods = ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+            methods = ("jaccard", "frequency-based", "levenshtein", "jaro-winkler")
             for method in methods:
                 distances = calculate_distance(wrong_word, vocabulary, method, russian_alphabet)
                 correction = find_correct_word(wrong_word, vocabulary, method, russian_alphabet)
