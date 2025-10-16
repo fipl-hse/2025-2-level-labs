@@ -103,9 +103,11 @@ def calculate_distance(
     if method == "jaccard":
         for token in vocabulary:
             distance[token] = calculate_jaccard_distance(first_token, token)
-            if calculate_jaccard_distance(first_token, token) is None:
+            if distance[token] is None:
                 return
     if method == "frequency-based":
+        if alphabet is None:
+            alphabet = []
         distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
     return distance
 
@@ -133,11 +135,12 @@ def find_correct_word(
     """
     if vocabulary == {}:
         return
-    if not calculate_distance(wrong_word, vocabulary, method, alphabet):
+    distance_dict = calculate_distance(wrong_word, vocabulary, method, alphabet)
+    if distance_dict is None:
         return
-    minimum_distance = min(calculate_distance(wrong_word, vocabulary, method, alphabet).values())
+    minimum_distance = min(distance_dict.values())
     maybe_correct_words = [
-    key for key, value in calculate_distance(wrong_word, vocabulary, method, alphabet).items()
+    key for key, value in distance_dict.items()
     if value == minimum_distance
     ]
     correct_word = maybe_correct_words[0]
@@ -320,9 +323,13 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return
     candidates_list = []
-    first_operation_candidates = generate_candidates(word, alphabet) or None
+    first_operation_candidates = generate_candidates(word, alphabet)
+    if first_operation_candidates is None:
+        return
     for operated_word in first_operation_candidates:
-        second_operation_candidates = generate_candidates(operated_word, alphabet) or None
+        second_operation_candidates = generate_candidates(operated_word, alphabet)
+        if second_operation_candidates is None:
+            return
         candidates_list.extend(second_operation_candidates)
     return tuple(sorted(list(set(candidates_list))))
 

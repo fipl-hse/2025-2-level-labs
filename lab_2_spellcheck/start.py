@@ -34,7 +34,7 @@ def main() -> None:
     relative_frequencies = build_vocabulary(tokens_without_stopwords) or {}
     #out_of_vocab_words = find_out_of_vocab_words(tokens_without_stopwords, vocabulary)
     result = find_correct_word(
-         "утрым", relative_frequencies, 'frequency-based', list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+         "висною", relative_frequencies, 'frequency-based', list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
     )
     print(result)
     assert result, "Result is None"
