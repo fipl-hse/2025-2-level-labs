@@ -106,13 +106,13 @@ def calculate_distance(
         return None
 
     if method == "jaccard":
-        jaccard = {}
+        jaccard_dist = {}
         for key in vocabulary:
             value = calculate_jaccard_distance(key, first_token)
             if value is None:
                 return None
-            jaccard[key] = value
-        return jaccard
+            jaccard_dist[key] = value
+        return jaccard_dist
 
     if method == "frequency-based":
         if alphabet is None:
@@ -121,13 +121,22 @@ def calculate_distance(
         return freq_dist
 
     if method == "levenshtein":
-        levenstein_dist = {}
+        levenshtein_dist = {}
         for word in vocabulary:
             distance = calculate_levenshtein_distance(first_token, word)
             if distance is None:
                 return None
-            levenstein_dist[word] = float(distance)
-        return levenstein_dist
+            levenshtein_dist[word] = float(distance)
+        return levenshtein_dist
+    
+    if method == "jaro-winkler":
+        jaro_winkler_dist = {}
+        for word in vocabulary:
+            distance = calculate_jaro_winkler_distance(first_token, word)
+            if distance is None:
+                return None
+            jaro_winkler_dist[word] = max(0.0, min(1.0, distance))
+        return jaro_winkler_dist
     return None
 
 
@@ -554,11 +563,12 @@ def calculate_jaro_distance(
         return None
 
     if matches == 0:
-        jaro_sim = 0
+        return 1.0
     else:
-        jaro_sim = 1/3 * (matches / len(token) + matches / len(candidate) + (matches - transpositions) / matches)
-        if not jaro_sim:
-            return None
+        jaro_sim = 1/3 * (matches / len(token) +
+                          matches / len(candidate) +
+                          (matches - transpositions) / matches
+                          )
     jaro_distance = 1 - jaro_sim
     return jaro_distance
 
@@ -611,13 +621,16 @@ def calculate_jaro_winkler_distance(
 
     In case of corrupt input arguments or corrupt outputs of used functions, None is returned.
     """
-    if (not isinstance(token, str) or token is None or
-        not isinstance(candidate, str) or candidate is None or
+    if (not isinstance(token, str) or
+        not isinstance(candidate, str) or
         not isinstance(prefix_scaling, float) or prefix_scaling < 0 or prefix_scaling is None
         ):
         return None
-    
-    matches = get_matches(token, candidate, match_distance = 4)
+    if len(token) == 0 or len(candidate) == 0:
+        return 1.0
+    max_len = max(len(token), len(candidate))
+    match_distance = (max_len // 2) - 1
+    matches = get_matches(token, candidate, match_distance)
     if matches is None:
         return None
     if (not isinstance(matches, tuple) or len(matches) != 3 or

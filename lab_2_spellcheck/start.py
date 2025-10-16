@@ -100,14 +100,22 @@ def main() -> None:
         return
     print("Correct words by levenshtein method: ", correct_words_by_lev, "\n")
 
-    
+    jaro_winkler_distances = {token: calculate_distance(
+        token, vocabulary, "jaro-winkler", Alphabet)
+        for token in tokens_out_of_voc}
+    if not jaro_winkler_distances:
+        return
+    print("Jaro-winkler distances: ", jaro_winkler_distances, "\n")
 
-    result = {find_correct_word(token, vocabulary, "levenshtein", Alphabet): token
-              for token in tokens_out_of_voc}
-    # print(result)
+    correct_words_by_jaro = {token: find_correct_word(
+        token, vocabulary, "jaro-winkler", Alphabet)
+        for token in tokens_out_of_voc}
+    if not correct_words_by_jaro:
+        return
+    print("Correct words by jaro-winkler method: ", correct_words_by_jaro, "\n")
+
+    result = correct_words_by_jaro
     assert result, "Result is None"
-
-    
 
 
 if __name__ == "__main__":
