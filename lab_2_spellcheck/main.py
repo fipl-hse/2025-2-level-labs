@@ -4,7 +4,7 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
-from lab_1_keywords_tfidf.main import (check_dict, check_list) 
+from lab_1_keywords_tfidf.main import (check_dict, check_list, check_positive_int) 
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -20,7 +20,7 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if check_list(tokens, str, False) is False:
+    if not check_list(tokens, str, False):
         return None
     return {token: tokens.count(token) / len(tokens) for token in tokens}
 
@@ -37,7 +37,7 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
-    if check_list(tokens, str, False) is False or check_dict(vocabulary, str, float, False) is False:
+    if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
         return None
     return [token for token in tokens if token not in vocabulary]
 
@@ -89,14 +89,21 @@ def calculate_distance(
     """
     if not isinstance(first_token, str) or not isinstance(method, str):
         return None
-    if check_list(alphabet, str, False) is False:
+    if not check_dict(vocabulary, str, float, False):
         return None
-    if check_dict(vocabulary, str, float, False) is False:
-        return None
-    for vocab in vocabulary:
-        if method=="jaccard":
-            return {vocab: calculate_jaccard_distance(vocab, first_token)}
-
+    words_distances={}
+    if method=="jaccard":
+        for vocab in vocabulary:
+            distance = calculate_jaccard_distance(first_token, vocab)
+            if distance is None:
+                return None
+            words_distances[vocab]=distance
+        return words_distances
+    if method == "frequency-based":
+        if not alphabet:
+            return {token: 1.0 for token in vocabulary}
+        frequency_distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        return frequency_distances
 
 def find_correct_word(
     wrong_word: str,
@@ -121,11 +128,37 @@ def find_correct_word(
     """
     if not isinstance(wrong_word, str):
         return None
-    if check_list(alphabet, str) is False:
+    if not check_dict(vocabulary, str, float, False):
         return None
-    if check_dict(vocabulary, str, float, False):
-        return None
-    
+    if method == "frequency-based":
+        if not check_list(alphabet, str, True):
+            return None
+        frequencies=calculate_frequency_distance(wrong_word, vocabulary, alphabet)
+        if not frequencies:
+            return None
+        min_frequency=[word for word, freq in frequencies.items() if min(frequencies.values())==freq]
+        if len(min_frequency)==1:
+            return min_frequency[0]
+        min_len_frequency = [word for word in min_frequency if len(word) == len(wrong_word)]
+        if len(min_len_frequency)==1:
+            return min_len_frequency[0]
+        min_len_frequency.sort()
+        return min_len_frequency[0]
+        
+    if method == "jaccard":
+        distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
+        if not distances:
+            return None
+        min_distances = min(distances.values())
+        min_candidates = [candidate for candidate, distance in distances.items() if distance == min_distances]
+        if len(min_candidates) == 1:
+            return min_candidates[0]
+        length_candidates = [candidate for candidate in min_candidates if len(candidate)==len(wrong_word)]
+        if len(length_candidates)==1:
+            return length_candidates[0]
+        name_candidates=sorted(length_candidates)
+        return name_candidates[0]
+        
 
 def initialize_levenshtein_matrix(
     token_length: int, candidate_length: int
@@ -140,6 +173,16 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
+    if not isinstance(token_length, int) or token_length < 0:
+        return None
+    if not isinstance(candidate_length, int) or candidate_length < 0:
+        return None
+    matrix = [[0] * (candidate_length + 1) for _ in range (token_length + 1)]
+    for j in range(candidate_length + 1):
+        matrix[0][j] = j
+    for i in range(token_length +1):
+        matrix[i][0] = i
+    return matrix
 
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
@@ -153,7 +196,22 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
-
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    token_len = len(token)
+    candidate_len = len(candidate)
+    matrix = initialize_levenshtein_matrix(token_len, candidate_len)
+    for i in range(1, candidate_len + 1):
+        for j in range(1, token_len + 1):
+            if candidate[i - 1] == token[j - 1]:
+                cost=0
+            else:
+                cost=1
+            delete_symbol = matrix[i-1][j] + 1
+            int_symbol = matrix[i][j-1] + 1
+            replace_symbol = matrix[i-1][j-1] + cost
+            matrix[i][j] = min(delete_symbol, int_symbol, replace_symbol)
+    return matrix
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     """
@@ -181,6 +239,11 @@ def delete_letter(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    removed_letter_words=[word[:i] + word[i+1:] for i in range(len(word))]
+    removed_letter_words.sort()
+    return removed_letter_words
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -197,6 +260,15 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
+        return []
+    add_words=[
+        word[:i] + letter + word[i:] 
+        for i in range(len(word)+1) 
+        for letter in alphabet
+        ]
+    add_words.sort()
+    return add_words
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -213,6 +285,15 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
+        return []
+    replaced_words=[
+        word[:i] + letter + word[i+1:] 
+        for i in range(len(word)) 
+        for letter in alphabet
+        ]
+    replaced_words.sort()
+    return replaced_words
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -228,6 +309,11 @@ def swap_adjacent(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
+    if not isinstance(word, str):
+        return []
+    swapped_letters_words=[word[:i] + word[i+1] + word[i] + word[i+2:] for i in range(len(word)-1)]
+    swapped_letters_words.sort()
+    return swapped_letters_words
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
@@ -244,6 +330,15 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
+        return None
+    deleted_letters=set(delete_letter(word))
+    add_letters=set(add_letter(word, alphabet))
+    replaced_letters=set(replace_letter(word, alphabet))
+    swapped_letters=set(swap_adjacent(word))
+    all_canidates=list(deleted_letters.union(add_letters,replaced_letters, swapped_letters))
+    all_canidates.sort()
+    return all_canidates
 
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
@@ -260,7 +355,19 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
-
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
+        return None
+    candidates = generate_candidates(word, alphabet)
+    if candidates==None:
+        return None
+    all_candidates=set()
+    for candidate in candidates: 
+        new_candidates=generate_candidates(candidate, alphabet)
+        if not new_candidates:
+            return None
+        all_candidates.update(new_candidates)
+    return tuple(sorted(all_candidates))
+    
 
 def calculate_frequency_distance(
     word: str, frequencies: dict, alphabet: list[str]
@@ -278,6 +385,18 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not isinstance(word, str) or not check_dict(frequencies, str, float, False) or not check_list(alphabet, str, True):
+        return None
+    candidates=propose_candidates(word, alphabet)
+    candidate_frequencies = {token: 1.0 for token in frequencies}
+    if not candidates:
+        return candidate_frequencies
+    for candidate in candidates:
+        if candidate in frequencies:
+            candidate_frequencies[candidate] = 1.0 - frequencies[candidate]
+    return candidate_frequencies
+
+
 
 
 def get_matches(
