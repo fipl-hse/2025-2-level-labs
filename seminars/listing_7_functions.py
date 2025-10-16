@@ -167,22 +167,22 @@ def calculate_power() -> int:
 # calculate_power(1589329, 0) -> 1
 
 
-# # Task 3:
-# def calculate_factorial(number) -> int:
-#     """
-#     Calculate factorial of the received number.
+# Task 3:
+def calculate_factorial() -> int:
+    """
+    Calculate factorial of the received number.
 
-#     Args:
-#         number (int): number
+    Args:
+        number (int): number
 
-#     Returns:
-#         int: factorial of the received number
-#     """
+    Returns:
+        int: factorial of the received number
+    """
     # student implementation goes here
 
 
 # Function calls with expected result:
-# print(calculate_factorial(3)) #-> 6
+# calculate_factorial(3) -> 6
 # calculate_power(2) -> 2
 # calculate_power(0) -> 1
 
@@ -248,36 +248,26 @@ def is_allowed_to_drive() -> bool:
 
 
 # Task 7
-def get_fibonacci_sequence(number: int) -> list:
+def get_fibonacci_sequence() -> list:
     """
     Return Fibonacci sequence of the specified length.
 
     Args:
-        number (int): length of Fibonacci sequence
+        length (int): length of Fibonacci sequence
 
     Returns:
         list: Fibonacci sequence
     """
-    if number <= 0:
-        return []
-    if number == 1:
-        return [1]
-    if number == 2:
-        return [1, 1]
-
-    fib = [1, 1]
-    for _ in range(2, number):
-        fib.append(fib[-1] + fib[-2])
-    return fib
+    # student implementation goes here
 
 
 # Function calls with expected result:
-print(get_fibonacci_sequence(7))# -> [1, 1, 2, 3, 5, 8, 13]
+# get_fibonacci_sequence(7) -> [1, 1, 2, 3, 5, 8, 13]
 # get_fibonacci_sequence(2) -> [1, 1]
 
 
 # Task 8
-def add_numbers(*numbers) -> int:
+def add_numbers() -> int:
     """
     Sum all the provided numbers.
 
@@ -288,15 +278,15 @@ def add_numbers(*numbers) -> int:
         int: sum of the provided numbers
     """
     # student implementation goes here
-    return sum(numbers)
+
 
 # Function calls with expected result:
-# print(add_numbers(1, 2, 3))# -> 6
+# add_numbers(1, 2, 3) -> 6
 # add_numbers(5, 10, 15) -> 30
 
 
 # Task 9
-def print_student_info(**kwargs) -> None:
+def print_student_info() -> None:
     """
     Print provided student information.
 
@@ -307,15 +297,14 @@ def print_student_info(**kwargs) -> None:
         none: function doesn't return anything
     """
     # student implementation goes here
-    for key, value in kwargs.items():
-        print(f"{key} - {value}")
+
 
 # Function calls with expected result:
-# print_student_info(name="Alice", grade="A", age=20)# -> None
+# print_student_info(name="Alice", grade="A", age=20) -> None
 
 
 # Task 10
-def process_data(*performance, **personal_info) -> dict:
+def process_data() -> dict:
     """
     Process personal information about student and its performance.
 
@@ -327,11 +316,8 @@ def process_data(*performance, **personal_info) -> dict:
         dict: dictionary in the form of {"performance": ..., "personal_info": ...}
     """
     # student implementation goes here
-    return {
-        "performance": performance,
-        "personal_info": personal_info
-    }
+
 
 # Function calls with expected result
-print(process_data(10, 8, 4, name="Alice", age=25))
+# process_data(10, 8, 4, name="Alice", age=25)
 # -> {"performance": (10, 8, 4), "personal_info": {"name": "Alice", "age"s: 25}}
