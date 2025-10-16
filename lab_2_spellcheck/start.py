@@ -8,6 +8,10 @@ from lab_1_keywords_tfidf.main import (
     remove_stop_words
 )
 
+from lab_2_spellcheck.main import (
+    build_vocabulary
+)
+
 def main() -> None:
     """
     Launches an implementation.
@@ -26,7 +30,9 @@ def main() -> None:
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
     tokens = clean_and_tokenize(text) or []
     tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
-    print(tokens_without_stopwords)    
+    print(tokens_without_stopwords)
+    vocab = build_vocabulary(tokens_without_stopwords)
+        
     result = None
     assert result, "Result is None"
 
