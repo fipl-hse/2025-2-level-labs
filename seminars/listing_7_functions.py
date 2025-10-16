@@ -126,7 +126,7 @@ def who_loves_whom(who: str, whom: str) -> None:
 
 
 # Task 1:
-def calculate_sum() -> int:
+def calculate_sum(arg1: int, arg2: int, arg3: int) -> int:
     """
     Return sum of received numbers.
 
@@ -138,6 +138,7 @@ def calculate_sum() -> int:
     Returns:
         int: sum of received numbers
     """
+    return arg1+arg2+arg3
     # student implementation goes here
 
 
@@ -147,7 +148,7 @@ def calculate_sum() -> int:
 
 
 # Task 2:
-def calculate_power() -> int:
+def calculate_power(nimber:int, power:int) -> int:
     """
     Raise the number to the required power.
 
@@ -188,7 +189,7 @@ def calculate_factorial() -> int:
 
 
 # Task 4:
-def encode_message() -> list:
+def encode_message(message: str, encode_dict:dict) -> list:
     """
     Encode the message.
 
@@ -199,16 +200,21 @@ def encode_message() -> list:
     Returns:
         list: list of digits as an encoded message
     """
-    # student implementation goes here
+    sypher = []
+    for letter in message:
+        sypher.append(encode_dict.get(letter))
+    return sypher
 
 
 # Function calls with expected result:
-# encode_message("hello", {"h": 1, "e": 2, "l": 3, "o": 4}) -> [1, 2, 3, 3, 4]
-# encode_message("abba", {"a": 1, "b": 2, "c": 3, "d": 4}) -> [1, 2, 2, 1]
+print(encode_message("hello", {"h": 1, "e": 2, "l": 3, "o": 4}))
+#  -> [1, 2, 3, 3, 4]
+print(encode_message("abba", {"a": 1, "b": 2, "c": 3, "d": 4}))
+#  -> [1, 2, 2, 1]
 
 
 # Task 5:
-def capitalize_string() -> str:
+def scream(input_string:str) -> str:
     """
     Return capitalized version of the string.
 
@@ -218,16 +224,19 @@ def capitalize_string() -> str:
     Returns:
         str: capitalized string
     """
+    capitalized_string = input_string.upper()
+    return capitalized_string
     # student implementation goes here
 
 
 # Function calls with expected result:
-# scream("I love programming on Python") -> I LOVE PROGRAMMING ON PYTHON
+print(scream("I love programming on Python"))
+# -> I LOVE PROGRAMMING ON PYTHON
 # scream("Functions are amazing") -> FUNCTIONS ARE AMAZING
 
 
 # Task 6
-def is_allowed_to_drive() -> bool:
+def is_allowed_to_drive(personal_info:dict, threshold:int) -> bool:
     """
     Check, whether it is allowed to drive.
     By default, 18 is the age when it is allowed to drive a car.
@@ -239,16 +248,19 @@ def is_allowed_to_drive() -> bool:
     Returns:
         bool: whether it is allowed to drive
     """
-    # student implementation goes here
+    if personal_info.get('age') >= threshold:
+        return True
+    return False
 
 
 # Function calls with expected result:
-# is_allowed_to_drive({"name": "Kath", "eyes": "blue", "age": 20}, 21) -> False
+print(is_allowed_to_drive({"name": "Kath", "eyes": "blue", "age": 20}, 21))
+# -> False
 # is_allowed_to_drive({"name": "Dean", "height": 178, "age": 20}) -> True
 
 
 # Task 7
-def get_fibonacci_sequence() -> list:
+def get_fibonacci_sequence(length:int) -> list:
     """
     Return Fibonacci sequence of the specified length.
 
@@ -258,11 +270,17 @@ def get_fibonacci_sequence() -> list:
     Returns:
         list: Fibonacci sequence
     """
+    fibonacci_sequence = [1, 1]
+    #for index, number in enumerate(range(2, length+1)):
+    #    first_fibonacci_number = fibonacci_sequence[index-1]
+    #    second_fibonacci_number = 
+    return False
     # student implementation goes here
 
 
 # Function calls with expected result:
-# get_fibonacci_sequence(7) -> [1, 1, 2, 3, 5, 8, 13]
+print(get_fibonacci_sequence(7))
+# # -> [1, 1, 2, 3, 5, 8, 13]
 # get_fibonacci_sequence(2) -> [1, 1]
 
 
