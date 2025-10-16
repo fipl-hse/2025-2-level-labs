@@ -4,7 +4,8 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
-from lab_1_keywords_tfidf.main import(
+
+from lab_1_keywords_tfidf.main import (
     check_dict,
     check_float,
     check_list,
@@ -545,14 +546,16 @@ def get_matches(
         end = token_index + match_distance + 1
         candidate_slice = candidate[start:end]
 
-        if token_char in candidate_slice:
+        for offset, candidate_char in enumerate(candidate_slice):
 
-            candidate_index = start + candidate_slice.index(token_char)
+            candidate_index = start + offset
 
-            if not candidate_matches[candidate_index]:
+            if candidate_char == token_char and not candidate_matches[candidate_index]:
+
                 total_matches_counter += 1
                 token_matches[token_index] = True
                 candidate_matches[candidate_index] = True
+                break
 
     return total_matches_counter, token_matches, candidate_matches
 
@@ -691,10 +694,14 @@ def calculate_jaro_winkler_distance(
         return 1.0
 
     match_distance = max(len(token), len(candidate)) // 2 - 1
+    match_distance = max(match_distance, 0)
+
     matches = get_matches(token, candidate, match_distance)
     if matches is None:
         return None
     total_matches, token_matches, candidate_matches = matches
+    if total_matches == 0:
+        return 1.0
 
     transpositions = count_transpositions(token, candidate, token_matches, candidate_matches)
     if transpositions is None:
@@ -709,4 +716,3 @@ def calculate_jaro_winkler_distance(
         return None
 
     return jaro_distance - adjustment
-

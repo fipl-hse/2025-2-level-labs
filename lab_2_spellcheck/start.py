@@ -4,19 +4,13 @@ Spellcheck starter
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
 from lab_1_keywords_tfidf.main import (
-    calculate_frequencies,
-    remove_stop_words,
     clean_and_tokenize,
+    remove_stop_words,
 )
-
 from lab_2_spellcheck.main import (
     build_vocabulary,
+    find_correct_word,
     find_out_of_vocab_words,
-    calculate_jaccard_distance,
-    calculate_distance,
-    propose_candidates,
-    initialize_levenshtein_matrix,
-    fill_levenshtein_matrix,
 )
 
 
@@ -37,21 +31,42 @@ def main() -> None:
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
 
-    tokenized_text = clean_and_tokenize(text)
+    cleaned_tokens = clean_and_tokenize(text) or []
 
-    removed_stop_words = remove_stop_words(tokenized_text, stop_words)
+    removed_stop_words = remove_stop_words(cleaned_tokens, stop_words) or []
 
-    built_vocabulary = build_vocabulary(removed_stop_words)
+    vocabulary = build_vocabulary(removed_stop_words) or {}
 
-    # понять понтом зачем это вообще требуется
-    out_of_vocab_words = find_out_of_vocab_words(removed_stop_words, built_vocabulary)
+    sentences_cleaned_tokens = list(set(
+        token
+        for sentence in sentences
+        for token in remove_stop_words(clean_and_tokenize(sentence) or [], stop_words)
+    ))
+    out_of_vocab_words = find_out_of_vocab_words(sentences_cleaned_tokens, vocabulary)
+    print("Words out of vocabulary:", out_of_vocab_words, sep="\n")
 
-    # alphabet = "abcdefghijklmnopqrstuvwxyz"
-    # result = propose_candidates("", list(alphabet))
-    # print(len(result), result, sep="\n")
-    # result = None
-    # assert result, "Result is None"
+    alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+    jaccard_corrections = {}
+    frequency_based_corrections = {}
+    levenshtein_corrections = {}
+    jaro_winkler_corrections= {}
+    for word in out_of_vocab_words:
+        jaccard_corrections[word] = find_correct_word(word, vocabulary, "jaccard", alphabet)
 
+        frequency_based_corrections[word] = find_correct_word(word, vocabulary, "frequency-based", alphabet)
+
+        levenshtein_corrections[word] = find_correct_word(word, vocabulary, "levenshtein", alphabet)
+
+        jaro_winkler_corrections[word] = find_correct_word(word, vocabulary, "jaro-winkler", alphabet)
+
+
+    result = [jaccard_corrections,
+            frequency_based_corrections,
+            levenshtein_corrections,
+            jaro_winkler_corrections
+    ]
+    print(result)
+    assert result, "Result is None"
 
 if __name__ == "__main__":
     main()
