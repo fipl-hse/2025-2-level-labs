@@ -13,7 +13,9 @@ from lab_2_spellcheck.main import (
     calculate_levenshtein_distance,
     fill_levenshtein_matrix,
     find_correct_word,
-    find_out_of_vocab_words)
+    find_out_of_vocab_words,
+)
+
 
 def main() -> None:
     """
@@ -37,9 +39,15 @@ def main() -> None:
         'ы', 'ь', 'э', 'ю', 'я'
     ]
     tokens = clean_and_tokenize(text)
+    if tokens is None:
+        return
     tokens_without_stopwords = remove_stop_words(tokens, stop_words)
+    if tokens_without_stopwords is None:
+        return
     vocabulary = build_vocabulary(tokens_without_stopwords)
-    print("Top-5 most frequent words:")
+    if vocabulary is None:
+        return
+    print("Top-5 words with relative frequency:")
     for word, freq in sorted(vocabulary.items(), key=lambda x: x[1], reverse=True)[:5]:
         print(f"{word}: {freq:.4f}")
     for i, sentence in enumerate(sentences[:2], 1):

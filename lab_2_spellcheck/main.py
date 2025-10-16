@@ -10,6 +10,7 @@ from lab_1_keywords_tfidf.main import (
     check_list,
 )
 
+
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
     Build a vocabulary from the documents.
@@ -117,9 +118,9 @@ def calculate_distance(
         if alphabet is None:
             return {word: 1.0 for word in vocabulary}
         if not check_list(alphabet, str, True):
-            return None 
+            return None
         distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        return distances     
+        return distances
     elif method == "levenshtein":
         for vocab_word in vocabulary:
             distance = calculate_levenshtein_distance(first_token, vocab_word)
@@ -161,8 +162,8 @@ def find_correct_word(
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if not distances:
         return None
-    sorted_items = sorted(distances.items(), 
-                         key=lambda item: (item[1], abs(len(item[0]) - len(wrong_word)), item[0]))
+    sorted_items = sorted(distances.items(),
+                        key=lambda item: (item[1], abs(len(item[0]) - len(wrong_word)), item[0]))
     best_word = sorted_items[0][0]
     return best_word
 
@@ -307,9 +308,9 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return []
     candidates = []
-    for i in range(len(word)):
+    for i, char in enumerate(word):
         for letter in alphabet:
-            if letter != word[i]:
+            if letter != char:
                 candidate = word[:i] + letter + word[i+1:]
                 candidates.append(candidate)
     return sorted(list(set(candidates)))
@@ -382,7 +383,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         return None
     candidates_primary_set = generate_candidates(word, alphabet)
     if candidates_primary_set is None:
-        return None 
+        return None
     all_candidates = set(candidates_primary_set)
     if alphabet:
         all_candidates.add(word)
@@ -390,7 +391,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     for primary in candidates_primary_set:
         secondary_results = generate_candidates(primary, alphabet)
         if secondary_results is None:
-            return None 
+            return None
         for secondary in secondary_results:
             if secondary != word:
                 candidates_secondary_set.add(secondary)
