@@ -7,15 +7,13 @@ from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     remove_stop_words,
 )
-
 from lab_2_spellcheck.main import (
     build_vocabulary,
-    find_out_of_vocab_words,
     calculate_distance,
-    find_correct_word,
-    initialize_levenshtein_matrix,
+    calculate_levenshtein_distance,
     fill_levenshtein_matrix,
-    calculate_levenshtein_distance)
+    find_correct_word,
+    find_out_of_vocab_words)
 
 def main() -> None:
     """

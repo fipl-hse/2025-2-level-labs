@@ -112,14 +112,14 @@ def calculate_distance(
             if distance is not None:
                 distances[vocab_word] = distance
         if not distances and vocabulary:
-            return None               
+            return None
     elif method == "frequency-based":
-            if alphabet is None:
-                return {word: 1.0 for word in vocabulary}
-            if not check_list(alphabet, str, True):
-                return None 
-            distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
-            return distances     
+        if alphabet is None:
+            return {word: 1.0 for word in vocabulary}
+        if not check_list(alphabet, str, True):
+            return None 
+        distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        return distances     
     elif method == "levenshtein":
         for vocab_word in vocabulary:
             distance = calculate_levenshtein_distance(first_token, vocab_word)
@@ -127,7 +127,7 @@ def calculate_distance(
                 return None
             distances[vocab_word] = distance
     elif method == "jaro-winkler":
-        return None  
+        return None
     return distances
 
 
@@ -161,7 +161,8 @@ def find_correct_word(
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if not distances:
         return None
-    sorted_items = sorted(distances.items(), key=lambda item: (item[1], abs(len(item[0]) - len(wrong_word)), item[0]))
+    sorted_items = sorted(distances.items(), 
+                         key=lambda item: (item[1], abs(len(item[0]) - len(wrong_word)), item[0]))
     best_word = sorted_items[0][0]
     return best_word
 
@@ -233,7 +234,7 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
              substitutions) required to transform token into candidate.
     """
     if not isinstance(token, str) or not isinstance(candidate, str):
-        return None  
+        return None
     if token == candidate:
         return 0
     if not token:
@@ -379,15 +380,15 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
-    candidates_primary_set = generate_candidates(word, alphabet) 
+    candidates_primary_set = generate_candidates(word, alphabet)
     if candidates_primary_set is None:
         return None 
     all_candidates = set(candidates_primary_set)
     if alphabet:
-        all_candidates.add(word) 
+        all_candidates.add(word)
     candidates_secondary_set = set()
     for primary in candidates_primary_set:
-        secondary_results = generate_candidates(primary, alphabet) 
+        secondary_results = generate_candidates(primary, alphabet)
         if secondary_results is None:
             return None 
         for secondary in secondary_results:
@@ -413,14 +414,16 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(word, str) or not check_dict(frequencies, str, float, False) or not check_list(alphabet, str, True):
+    if not isinstance(word, str) or not check_dict(frequencies, str, float, False):
+        return None
+    if not check_list(alphabet, str, True):
         return None
     if not frequencies:
         return None
     distances = {vocab_word: 1.0 for vocab_word in frequencies}
-    candidates = propose_candidates(word, alphabet) 
+    candidates = propose_candidates(word, alphabet)
     if candidates is None and not candidates:
-        return distances 
+        return distances
     for candidate in candidates:
         if candidate in frequencies:
             distances[candidate] = 1.0 - frequencies[candidate]
