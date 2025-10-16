@@ -186,9 +186,9 @@ def initialize_levenshtein_matrix(
         return None
     matrix = [[0 for _ in range(candidate_length + 1)] for _ in range(token_length + 1)]
     for i in range(token_length + 1):
-        matrix[i][0] = i 
+        matrix[i][0] = i
     for j in range(candidate_length + 1):
-        matrix[0][j] = j  
+        matrix[0][j] = j
     return matrix
 
 
@@ -214,9 +214,9 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
                 cost = 0
             else:
                 cost = 1
-            operation_del = matrix[i - 1][j] + 1      
-            operation_add = matrix[i][j - 1] + 1     
-            operation_change = matrix[i - 1][j - 1] + cost  
+            operation_del = matrix[i - 1][j] + 1  
+            operation_add = matrix[i][j - 1] + 1
+            operation_change = matrix[i - 1][j - 1] + cost
             matrix[i][j] = min(operation_del, operation_add, operation_change)
     return matrix
 
@@ -356,7 +356,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
         return None
     if alphabet and not all(isinstance(letter, str) for letter in alphabet):
         return None
-    set_1 = set(delete_letter(word)) 
+    set_1 = set(delete_letter(word))
     set_2 = set(add_letter(word, alphabet))
     set_3 = set(replace_letter(word, alphabet))
     set_4 = set(swap_adjacent(word))
@@ -386,8 +386,8 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     if result is None:
         return None
     all_candidates = set(result)
-    for word in list(all_candidates):
-        second_level_candidates = generate_candidates(word, alphabet)
+    for element in list(all_candidates):
+        second_level_candidates = generate_candidates(element, alphabet)
         if second_level_candidates is None:
             return None
         all_candidates.update(second_level_candidates)
@@ -410,7 +410,9 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(word, str) or not check_dict(frequencies, str, float, False) or not check_list(alphabet, str, True):
+    if (not isinstance(word, str) 
+    or not check_dict(frequencies, str, float, False) 
+    or not check_list(alphabet, str, True)):
         return None
     result = {}
     if word == "":
@@ -427,7 +429,7 @@ def calculate_frequency_distance(
         result = {token: 1.0 for token in frequencies}
     return result
 
-       
+    
 def get_matches(
     token: str, candidate: str, match_distance: int
 ) -> tuple[int, list[bool], list[bool]] | None:

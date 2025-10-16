@@ -8,8 +8,6 @@ from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 from lab_2_spellcheck.main import (
     build_vocabulary,
     calculate_distance,
-    calculate_jaccard_distance,
-    find_correct_word,
     find_out_of_vocab_words,
 )
 
@@ -18,6 +16,9 @@ def main() -> None:
     """
     Launches an implementation.
     """
+    text_without_stop_words = None
+    vocabulary = None
+    absent_words = None
     first_result = None
     with open("assets/Master_and_Margarita_chapter1.txt", "r", encoding="utf-8") as file:
         text = file.read()
@@ -33,14 +34,16 @@ def main() -> None:
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
     cleaned_text = clean_and_tokenize(text)
     if cleaned_text is not None:
-        text_without_stop_words = remove_stop_words(cleaned_text, stop_words) 
-    if text_without_stop_words is not None:    
+        text_without_stop_words = remove_stop_words(cleaned_text, stop_words)
+    if text_without_stop_words is not None:
         vocabulary = build_vocabulary(sentences)
-    if vocabulary is not None:
+    if (vocabulary is not None
+        and find_out_of_vocab_words is not None):
         absent_words = find_out_of_vocab_words(text_without_stop_words, vocabulary)
     if absent_words is not None:
         for word in absent_words:
-            first_result = calculate_distance(word, vocabulary, "levenshtein")
+            if calculate_distance is not None:
+                first_result = calculate_distance(word, vocabulary, "levenshtein")
     if first_result is not None:
         print(first_result)
     result = first_result
