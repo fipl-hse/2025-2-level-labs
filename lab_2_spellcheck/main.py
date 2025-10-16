@@ -143,7 +143,7 @@ def find_correct_word(
         if len(min_len_frequency)==1:
             return min_len_frequency[0]
         min_len_frequency.sort()
-        return min_len_frequency[0]
+        return min_len_frequency[0] if min_len_frequency else ''
         
     if method == "jaccard":
         distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
@@ -157,7 +157,7 @@ def find_correct_word(
         if len(length_candidates)==1:
             return length_candidates[0]
         name_candidates=sorted(length_candidates)
-        return name_candidates[0]
+        return name_candidates[0] if name_candidates else ''
         
 
 def initialize_levenshtein_matrix(

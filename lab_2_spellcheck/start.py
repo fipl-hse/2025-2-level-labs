@@ -3,6 +3,15 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
+from lab_1_keywords_tfidf.main import (
+    clean_and_tokenize,
+    remove_stop_words,
+)
+from lab_2_spellcheck.main import (
+    build_vocabulary,
+    find_out_of_vocab_words,
+    find_correct_word,
+)
 
 
 def main() -> None:
@@ -21,9 +30,26 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
-    result = None
+        senten_words = ''.join(sentences)
+    cleaned_text = clean_and_tokenize(text)
+    removed_stop_words = remove_stop_words(cleaned_text, stop_words)
+    cleaned_sentences = clean_and_tokenize(senten_words)
+    removed_sentences_stop_words = remove_stop_words(cleaned_sentences, stop_words)
+    freq_vocab = build_vocabulary(removed_stop_words)
+    incorrect_words = find_out_of_vocab_words(removed_sentences_stop_words, freq_vocab)
+    print(incorrect_words)
+    alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+    jaccard=[]
+    frequency_based=[]
+    for incorrect_word in incorrect_words:
+        jaccard_correct_words = find_correct_word(incorrect_word, freq_vocab, "jaccard", alphabet)
+        jaccard.append(jaccard_correct_words)
+        frequency_based_correct_words = find_correct_word(incorrect_word, freq_vocab, "frequency-based", alphabet)
+        frequency_based.append(frequency_based_correct_words)
+    correct_words = {"jaccard": jaccard, "frequency_based": frequency_based}
+    print (correct_words)
+    result = correct_words
     assert result, "Result is None"
-
-
+    
 if __name__ == "__main__":
     main()
