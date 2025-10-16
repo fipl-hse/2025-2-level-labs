@@ -35,7 +35,8 @@ class CalculateFrequenciesTest(unittest.TestCase):
         Calculate frequencies with several same tokens
         """
         expected = {"weather": 2, "sunny": 1, "man": 2, "happy": 1}
-        actual = calculate_frequencies(["weather", "sunny", "man", "happy", "weather", "man"])
+        actual = calculate_frequencies(
+            ["weather", "sunny", "man", "happy", "weather", "man"])
         self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf

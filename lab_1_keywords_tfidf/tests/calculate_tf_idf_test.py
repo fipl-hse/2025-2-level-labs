@@ -58,7 +58,8 @@ class CalculateTFIDFTest(unittest.TestCase):
             "sense": math.log(3 / 1),
             "parts": math.log(3 / 1),
         }
-        expected = {term: term_freq * idf[term] for term, term_freq in term_f.items()}
+        expected = {term: term_freq * idf[term]
+                    for term, term_freq in term_f.items()}
 
         actual = calculate_tfidf(term_f, idf)
         self.assertEqual(expected, actual)
@@ -122,7 +123,12 @@ class CalculateTFIDFTest(unittest.TestCase):
         }
 
         idf = {}
-        expected = {term: term_freq * math.log(47 / 1) for term, term_freq in term_f.items()}
+        expected = {
+            term: term_freq *
+            math.log(
+                47 /
+                1) for term,
+            term_freq in term_f.items()}
 
         actual = calculate_tfidf(term_f, idf)
         self.assertEqual(expected, actual)
@@ -237,7 +243,12 @@ class CalculateTFIDFTest(unittest.TestCase):
         }
 
         max_idf = math.log(47 / 1)
-        expected = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_f.items()}
+        expected = {
+            term: term_freq *
+            idf.get(
+                term,
+                max_idf) for term,
+            term_freq in term_f.items()}
 
         actual = calculate_tfidf(term_f, idf)
         self.assertEqual(expected, actual)

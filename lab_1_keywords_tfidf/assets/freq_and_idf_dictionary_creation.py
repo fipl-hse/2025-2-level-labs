@@ -56,7 +56,8 @@ with open(FREQUENCY_PATH, "w", encoding="utf-8") as file:
 unique_tokens = [list(set(tokens)) for tokens in tokenized_texts]
 unique_occurrences = reduce(extend_tokens, unique_tokens)
 n_including_docs = Counter(unique_occurrences)
-idf = {key: log(len(texts) / (value + 1)) for key, value in n_including_docs.items()}
+idf = {key: log(len(texts) / (value + 1))
+       for key, value in n_including_docs.items()}
 with open(IDF_PATH, "w", encoding="utf-8") as file:
     json.dump(idf, file, ensure_ascii=False)
 

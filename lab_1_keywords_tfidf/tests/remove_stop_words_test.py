@@ -45,7 +45,9 @@ class RemoveStopWordsTest(unittest.TestCase):
         bad_inputs_second = [{}, (), None, 9, 9.34, True]
         expected = None
         for bad_input in range(0, 5):
-            actual_1 = remove_stop_words(bad_inputs_first[bad_input], bad_inputs_second[bad_input])
+            actual_1 = remove_stop_words(
+                bad_inputs_first[bad_input],
+                bad_inputs_second[bad_input])
             actual_2 = remove_stop_words([], bad_inputs_second[bad_input])
             actual_3 = remove_stop_words(bad_inputs_first[bad_input], [])
             self.assertEqual(expected, actual_1)
@@ -75,5 +77,6 @@ class RemoveStopWordsTest(unittest.TestCase):
         Remove stop words as the whole text scenario
         """
         expected = []
-        actual = remove_stop_words(["the", "a", "is"], RemoveStopWordsTest.STOP_WORDS)
+        actual = remove_stop_words(
+            ["the", "a", "is"], RemoveStopWordsTest.STOP_WORDS)
         self.assertEqual(expected, actual)
