@@ -279,7 +279,18 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-
+    if not isinstance(word,str) or not isinstance(alphabet, list):
+        return []
+    if any(not isinstance(ch, str) or len(ch) != 1 for ch in alphabet):
+        return []
+    
+    results = []
+    for i in range(len(word) + 1):
+        for letter in alphabet:
+            new_word = word[:i] + letter + word[i:]
+            results.append(new_word)
+    return sorted(set(results))
+    
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     """
@@ -496,3 +507,7 @@ if __name__ == "__main__":
     word = "код"
     variant = delete_letter(word)
     print(f"variant w/delete letter '{word}':", variant)
+
+    alphabet = ["а", "о"]
+    added = add_letter(word, alphabet)
+    print(f"variant w/added letter'{word}':", added)
