@@ -2,8 +2,8 @@
 Frequency-driven keyword extraction starter
 """
 
-import sys
 import os
+import sys
 from json import load
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -12,26 +12,27 @@ try:
     from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
     from lab_2_spellcheck.main import (
         build_vocabulary,
-        find_out_of_vocab_words,
         calculate_distance,
-        find_correct_word,
+        calculate_frequency_distance,
         calculate_jaccard_distance,
-        calculate_levenshtein_distance,
         calculate_jaro_winkler_distance,
-        calculate_frequency_distance
+        calculate_levenshtein_distance,
+        find_correct_word,
+        find_out_of_vocab_words,
     )
 except ImportError:
     from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
     from lab_2_spellcheck.main import (
         build_vocabulary,
-        find_out_of_vocab_words,
         calculate_distance,
-        find_correct_word,
+        calculate_frequency_distance,
         calculate_jaccard_distance,
-        calculate_levenshtein_distance,
         calculate_jaro_winkler_distance,
-        calculate_frequency_distance
+        calculate_levenshtein_distance,
+        find_correct_word,
+        find_out_of_vocab_words,
     )
+
 
 
 def main() -> None:
