@@ -468,8 +468,6 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
             return None
         candidates_to_propose.update(generated_candidate)
 
-    candidates_to_propose.discard("")
-
     return tuple(sorted(candidates_to_propose))
 
 
