@@ -308,7 +308,7 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if alphabet and not all(isinstance(letter, str) for letter in alphabet):
         return []
     result = []
-    for i in range(len(word)):
+    for i, _ in enumerate(word):
         for letter in alphabet:
             result.append(word[:i] + letter + word[i + 1:])
     actual_result = sorted(result)
@@ -331,7 +331,7 @@ def swap_adjacent(word: str) -> list[str]:
     if not isinstance(word, str):
         return []
     actual_result = []
-    for i in range(len(word) - 1):
+    for i, _ in enumerate(word[:-1]):
         result = word[:i] + word[i + 1] + word[i] + word[i + 2:]
         actual_result.append(result)
     res = sorted(actual_result)
