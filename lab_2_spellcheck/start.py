@@ -32,11 +32,10 @@ def main() -> None:
     tokens = clean_and_tokenize(text) or []
     tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
     relative_frequencies = build_vocabulary(tokens_without_stopwords) or {}
-    #out_of_vocab_words = find_out_of_vocab_words(tokens_without_stopwords, vocabulary)
+    out_of_vocab_words = find_out_of_vocab_words(tokens_without_stopwords, relative_frequencies)
     result = find_correct_word(
          "висною", relative_frequencies, 'frequency-based', list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
     )
-    print(result)
     assert result, "Result is None"
 
 
