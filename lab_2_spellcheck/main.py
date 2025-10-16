@@ -188,7 +188,7 @@ def initialize_levenshtein_matrix(
     """
     if not isinstance(token_length, int) or token_length < 0:
         return None
-    elif not isinstance(candidate_length, int) or candidate_length < 0:
+    if not isinstance(candidate_length, int) or candidate_length < 0:
         return None
     matrix = [[0] * (candidate_length + 1) for _ in range(token_length + 1)]
     for i in range(token_length + 1):
@@ -494,16 +494,18 @@ def count_transpositions(
     """
     if not check_list(token_matches, bool, False) or enumerate(token_matches) != enumerate(token):
         return None
-    if not check_list(candidate_matches, bool, False) or enumerate(candidate_matches) != enumerate(candidate):
+    if not check_list(candidate_matches, bool, False):
+        return None
+    if enumerate(candidate_matches) != enumerate(candidate):
         return None
     transpositions = 0
     k = 0
-    for i in range(len(token)):
+    for i, char in enumerate(token):
         if token_matches[i]:
             while k < len(candidate) and not candidate_matches[k]:
                 k += 1
             if k < len(candidate):
-                if token[i] != candidate[k]:
+                if char != candidate[k]:
                     transpositions += 1
                 k += 1
     return transpositions // 2
