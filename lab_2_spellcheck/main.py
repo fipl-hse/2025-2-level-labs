@@ -229,7 +229,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
     matrix = initialize_levenshtein_matrix(len(token), len(candidate))
-    if not matrix:
+    if matrix is None:
         return None
     for i in range(1, len(token) + 1):
         for j in range(1, len(candidate) + 1):
@@ -258,9 +258,12 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
     matrix = fill_levenshtein_matrix(token, candidate)
-    if not matrix:
+    if matrix is None:
         return None
-    return matrix[len(token)][len(candidate)]
+    res = matrix[-1][-1]
+    if not isinstance(res, (int, float)):
+        return None
+    return res
 
 
 def delete_letter(word: str) -> list[str]:
