@@ -39,20 +39,28 @@ def main() -> None:
         'ы', 'ь', 'э', 'ю', 'я'
     ]
     tokens = clean_and_tokenize(text)
-    tokens_without_stopwords = remove_stop_words(tokens, stop_words) if tokens else None
-    vocabulary = build_vocabulary(tokens_without_stopwords) if tokens_without_stopwords else None
-    if tokens is None or tokens_without_stopwords is None or vocabulary is None:
+    if not tokens:
         return
-    if not sentences:
+    tokens_without_stopwords = remove_stop_words(tokens, stop_words)
+    if not tokens_without_stopwords:
         return
+    vocabulary = build_vocabulary(tokens_without_stopwords)
+    if not vocabulary:
+        return
+    print("Top-5 words with relative frequency:")
+    top_words = sorted(vocabulary.items(), key=lambda x: x[1], reverse=True)[:5]
+    for word, freq in top_words:
+        print(f"{word}: {freq:.4f}")
     sentence = sentences[0]
     print("\nSentence 1")
     print(f"Original: {sentence}")
     sentence_tokens = clean_and_tokenize(sentence)
-    sentence_tokens_without_stopwords = remove_stop_words(sentence_tokens, stop_words) if sentence_tokens else None
-    oov_words = find_out_of_vocab_words(sentence_tokens_without_stopwords, vocabulary) if sentence_tokens_without_stopwords else None
-    if not sentences or sentence_tokens is None or sentence_tokens_without_stopwords is None or oov_words is None:
+    if not sentence_tokens:
         return
+    sentence_tokens_without_stopwords = remove_stop_words(sentence_tokens, stop_words)
+    if not sentence_tokens_without_stopwords:
+        return
+    oov_words = find_out_of_vocab_words(sentence_tokens_without_stopwords, vocabulary) or []
     print(f"Out-of-vocabulary words: {oov_words}")
     for wrong_word in oov_words:
         print(f"\nProcessing word: '{wrong_word}'")
@@ -63,10 +71,12 @@ def main() -> None:
                 top_candidates = sorted(distances.items(), key=lambda x: x[1])[:3]
                 print(f"{method}: '{wrong_word}' -> '{correction}'")
                 print(f"Top 3 candidates: {top_candidates}")
-                if method == "levenshtein" and correction and (filled_matrix := fill_levenshtein_matrix(wrong_word, correction)):
+                if method == "levenshtein" and correction:
                     print(f"Levenshtein matrix for '{wrong_word}' and '{correction}':")
-                    for row in filled_matrix:
-                        print(f"      {row}")
+                    filled_matrix = fill_levenshtein_matrix(wrong_word, correction)
+                    if filled_matrix:
+                        for row in filled_matrix:
+                            print(f"      {row}")
                     distance = calculate_levenshtein_distance(wrong_word, correction)
                     print(f"Final distance: {distance}")
             else:
