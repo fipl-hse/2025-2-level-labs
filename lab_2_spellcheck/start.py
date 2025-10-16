@@ -39,7 +39,7 @@ def main() -> None:
         vocabulary = build_vocabulary(sentences)
         if vocabulary is not None:
             absent_words = find_out_of_vocab_words(text_without_stop_words, vocabulary)
-    if (absent_words is not None 
+    if (absent_words is not None
     and vocabulary is not None):
         for word in absent_words:
             first_result = calculate_distance(word, vocabulary, "levenshtein")
