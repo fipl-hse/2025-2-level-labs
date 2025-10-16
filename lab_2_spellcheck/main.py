@@ -93,15 +93,20 @@ def calculate_distance(
     """
     if not all([isinstance(first_token, str),
                 check_dict(vocabulary,str, float, False),
+                method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
                 check_list(alphabet, str, False) or alphabet is None]):
         return None
+    distances = {}
     if method == 'jaccard':
-        jaccard_calculated_dist = {token: calculate_jaccard_distance(first_token, token) for token in vocabulary}
-        if None in jaccard_calculated_dist.values():
+        distances = {token: calculate_jaccard_distance(first_token, token) for token in vocabulary}
+        if None in distances.values():
             return None
-        return jaccard_calculated_dist
-    else:
-        return None
+    elif method == "frequency-based":
+        if alphabet:
+            distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        else:
+            distances = {token: 1.0 for token in vocabulary}
+    return distances
 
 
 def find_correct_word(
@@ -341,20 +346,22 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not all([
-        isinstance(word, str) and
-        isinstance(frequencies, dict) and
-        check_list(alphabet, str, True)
-    ]):
+    if not all([isinstance(word, str),
+        check_dict(frequencies, str, float, False),
+        check_list(alphabet, str, True)]):
         return None
-    frequency_distance = {}
-    for token in frequencies:
-        candidates = propose_candidates(word, alphabet)
-        if candidates is None:
-            return None
-        
-        distance_freq = 1 - (frequencies[token]/max(frequencies.values()))
-    return distance_freq
+    
+    frequency_distances: dict = {token: 1.0 for token in frequencies}
+
+    candidates = propose_candidates(word, alphabet)
+    if candidates is None:
+        return frequency_distances
+
+    for candidate in candidates:
+        if candidate in frequencies:
+            frequency_distances[candidate] = 1.0 - frequencies[candidate]
+
+    return frequency_distances
 
 
 
