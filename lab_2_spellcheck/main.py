@@ -186,7 +186,9 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
-    if not isinstance(token_length, int) or token_length < 0 or not isinstance(candidate_length, int) or candidate_length < 0:
+    if not isinstance(token_length, int) or token_length < 0:
+        return None
+    elif not isinstance(candidate_length, int) or candidate_length < 0:
         return None
     matrix = [[0] * (candidate_length + 1) for _ in range(token_length + 1)]
     for i in range(token_length + 1):
@@ -310,9 +312,9 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if not check_list(alphabet, str, False):
         return []
     changed_words = set()
-    for i in range(len(word)):
+    for i, original_letter in enumerate(word):
         for letter in alphabet:
-            if letter != word[i]:
+            if letter != original_letter:
                 new_word = word[:i] + letter + word[i+1:]
                 changed_words.add(new_word)
     return sorted(changed_words)
@@ -490,9 +492,9 @@ def count_transpositions(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not check_list(token_matches, bool, False) or len(token_matches) != len(token):
+    if not check_list(token_matches, bool, False) or enumerate(token_matches) != enumerate(token):
         return None
-    if not check_list(candidate_matches, bool, False) or len(candidate_matches) != len(candidate):
+    if not check_list(candidate_matches, bool, False) or enumerate(candidate_matches) != enumerate(candidate):
         return None
     transpositions = 0
     k = 0
