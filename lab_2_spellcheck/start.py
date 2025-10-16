@@ -54,8 +54,14 @@ def main() -> None:
         print(f"\nSentence {i}")
         print(f"Original: {sentence}")
         sentence_tokens = clean_and_tokenize(sentence)
+        if sentence_tokens is None:
+            continue
         sentence_tokens_without_stopwords = remove_stop_words(sentence_tokens, stop_words)
+        if sentence_tokens_without_stopwords is None:
+            continue
         oov_words = find_out_of_vocab_words(sentence_tokens_without_stopwords, vocabulary)
+        if oov_words is None:
+            continue
         print(f"Out-of-vocabulary words: {oov_words}")
         for wrong_word in oov_words:
             print(f"\nProcessing word: '{wrong_word}'")

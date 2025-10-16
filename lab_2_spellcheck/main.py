@@ -119,8 +119,10 @@ def calculate_distance(
             return {word: 1.0 for word in vocabulary}
         if not check_list(alphabet, str, True):
             return None
-        distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        return distances
+        frequency_result = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if frequency_result is None:
+            return None
+        return frequency_result
     elif method == "levenshtein":
         for vocab_word in vocabulary:
             distance = calculate_levenshtein_distance(first_token, vocab_word)
