@@ -171,7 +171,7 @@ def find_correct_word(
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if not distances:
         return None
-
+    
     min_value = min(distances.values())
     candidates = [candidate for candidate, value in distances.items() if value == min_value]
     if not candidates:
