@@ -10,8 +10,6 @@ from lab_1_keywords_tfidf.main import (
 )
 from lab_2_spellcheck.main import (
     build_vocabulary,
-    calculate_distance,
-    calculate_jaccard_distance,
     find_correct_word,
     find_out_of_vocab_words,
 )
@@ -45,26 +43,40 @@ def main() -> None:
     vocabulary=build_vocabulary(text_without_stop_words)
     if vocabulary is None:
         return
-    print("vocabulary",vocabulary)
 
-    finded_out_of_vocab_words=find_out_of_vocab_words(text_without_stop_words, vocabulary)
+    all_elements_in_sentences=[]
+    for element in sentences:
+        cleaned_tokens=clean_and_tokenize(element)
+        without_stop_words=remove_stop_words(cleaned_tokens, stop_words)
+        all_elements_in_sentences.extend(without_stop_words)
+
+    finded_out_of_vocab_words=find_out_of_vocab_words(vocabulary, all_elements_in_sentences)
     if finded_out_of_vocab_words is None:
         return
+    print('Слова не из словаря:', finded_out_of_vocab_words)
 
-    '''jaccard_distance=calculate_jaccard_distance(finded_out_of_vocab_words, candidate)
-    if jaccard_distance is None:
-        return
+    russian_alphabet=list('абвгдеёжзийклмнопрстуфхцчшщъыьэюя')
+    correct_result={}
 
-    calculated_distance=calculate_distance(jaccard_distance)
-    if calculated_distance is None:
-        return 
-    print ("Distance: ", calculated_distance)
+    for token in finded_out_of_vocab_words:
+        correct_jaccard=find_correct_word(token, vocabulary, 'jaccard', russian_alphabet)
+        correct_frequency=find_correct_word(token, vocabulary, 'frequency-based', russian_alphabet)
+        correct_levenshtein=find_correct_word(token, vocabulary, 'levenshtein', russian_alphabet)
+        correct_jaro_winkler=find_correct_word(token, vocabulary, 'jaro-winkler', russian_alphabet)
 
-    finded_correct_word=find_correct_word(calculate_distance)
-    if finded_correct_word is None:
-        return'''
+        print('jaccard: ', correct_jaccard)
+        print('frequency_based: ', correct_frequency)
+        print('levenshtein: ', correct_levenshtein)
+        print('jaro-winkler: ', correct_jaro_winkler)
 
-    result=finded_out_of_vocab_words
+        correct_result[token]={
+            'jaccard: ', correct_jaccard,
+            'frequency_based: ', correct_frequency,
+            'levenshtein: ', correct_levenshtein,
+            'jaro-winkler: ', correct_jaro_winkler
+        }
+
+    result=correct_result
     assert result, "Result is None"
 
 

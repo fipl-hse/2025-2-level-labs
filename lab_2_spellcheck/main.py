@@ -132,9 +132,12 @@ def calculate_distance(
 
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
+    
+    if method == "frequency-based" and alphabet is None:
+        return {key: 1.0 for key in vocabulary.keys()}
 
     if alphabet is not None and not check_list(alphabet, str, True):
-        return {key: 1.0 for key in vocabulary}
+        return None
 
     if method == "frequency-based":
         distance=calculate_frequency_distance(first_token, vocabulary, alphabet)
@@ -154,8 +157,8 @@ def calculate_distance(
             distance = calculate_jaro_winkler_distance(first_token, token)
             dictionary[token]=distance
             
-            if distance is None:
-                return None 
+    if distance is None:
+        return None 
 
     return dictionary
 
@@ -203,8 +206,8 @@ def find_correct_word(
         if value==min_result:
             candidates.append(element)
 
-    '''if len(candidates)==1:
-        return candidates[0]'''
+    if len(candidates)==1:
+        return candidates[0]
 
     candidates.sort()
     candidates.sort(key=lambda word: abs(len(word)-len(wrong_word)))
@@ -504,16 +507,20 @@ def calculate_frequency_distance(
 
     proposed_candidates=propose_candidates(word, alphabet)
     if proposed_candidates is None:
-        return {}
+        return {x: 1.0 for x in frequencies.keys()}
 
     if word == "":
         return {x: 1.0 for x in frequencies.keys()}
 
     dictionary_of_candidates={}
 
+    for key in frequencies.keys():
+        dictionary_of_candidates[key] = 1.0
+
     for element in proposed_candidates:
         if element in frequencies:
-            distance=calculate_distance(word, element, frequencies)
+            frequency = frequencies.get(element, 0.0)
+            distance = 1.0 - frequency
             if distance is not None:
                 dictionary_of_candidates[element]=distance
 
@@ -676,9 +683,9 @@ def winkler_adjustment(
         return None
 
     prefix_len=0
-    maximum_len=max(len(token), len(candidate), 4)
+    minimum_len=min(len(token), len(candidate))
 
-    for i in range(maximum_len):
+    for i in range(min(4, minimum_len)):
         if token[i]==candidate[i]:
                 prefix_len+=1
         else:
@@ -709,47 +716,37 @@ def calculate_jaro_winkler_distance(
 
     if not isinstance(prefix_scaling, float):
         return None
+
     if token == "" and candidate == "":
         return 1.0
-    
+
     if token == "" or candidate == "":
         return 1.0
-    
-    try:
-        match_distance = max(len(token), len(candidate)) // 2 - 1
-        match_distance = max(match_distance, 0)
 
-        matches_result = get_matches(token, candidate, match_distance)
-        if matches_result is None:
-            return None
+    distance = max(len(token), len(candidate))//2 - 1
+    if distance<0:
+        distance==0
 
-        matches_count, token_matches, candidate_matches = matches_result
-
-        if matches_count == 0:
-            return 1.0
-
-        transpositions_count = count_transpositions(
-            token, candidate, token_matches, candidate_matches
-        )
-        if transpositions_count is None:
-            return None
-
-        jaro_distance = calculate_jaro_distance(
-            token, candidate, matches_count, transpositions_count
-        )
-        if jaro_distance is None:
-            return None
-
-        winkler_bonus = winkler_adjustment(
-            token, candidate, jaro_distance, prefix_scaling
-        )
-        if winkler_bonus is None:
-            return None
-
-        jaro_similarity = 1.0 - jaro_distance
-        jaro_winkler_similarity = jaro_similarity + winkler_bonus
-        
-        return float(1.0 - jaro_winkler_similarity)
-        
-    except Exception:
+    result_of_matches = get_matches(token, candidate, distance)
+    if result_of_matches is None:
         return None
+
+    matches_count, token_matches, candidate_matches = result_of_matches
+    if matches_count == 0:
+        return 1.0
+
+    transpositions=count_transpositions(token, candidate, token_matches, candidate_matches)
+    if transpositions is None:
+        return None
+
+    jaro_distance=calculate_jaro_distance(token, candidate, matches_count, transpositions)
+    if jaro_distance is None:
+        return None
+
+    adjustment=winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
+    if adjustment is None:
+        return None
+
+    jaro_winkler_distance=jaro_distance-adjustment
+
+    return jaro_winkler_distance
