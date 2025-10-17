@@ -6,7 +6,6 @@ Spellcheck starter
 from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 from lab_2_spellcheck.main import (
     build_vocabulary, calculate_distance, find_out_of_vocab_words, find_correct_word 
-
 )
 
 def main() -> None:
@@ -29,9 +28,12 @@ def main() -> None:
         tokens_no_stop = remove_stop_words(tokens, stop_words) or []
         frequencies = build_vocabulary(tokens_no_stop) or {}
         found_by_jaccard_word = find_correct_word("кит", {"кот": 0.5, "пёс": 0.5}, method = "jaccard")
-        found_by_frequency_word = find_correct_word("пиро", frequencies, "frequency-based", list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")) #пиво
-        found_by_levenshtein_word = find_correct_word("нага", frequencies, "levenshtein") #наша
-        found_by_jaro_winkler_word = find_correct_word("вторый", frequencies, "jaro-winkler") #второй
+        found_by_frequency_word = find_correct_word("пиро", frequencies, 
+                                                    "frequency-based", list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")) #пиво
+        found_by_levenshtein_word = find_correct_word("нага", frequencies, 
+                                                      "levenshtein") #наша
+        found_by_jaro_winkler_word = find_correct_word("вторый", frequencies, 
+                                                       "jaro-winkler") #второй
     result = found_by_jaro_winkler_word
     assert result, "Result is None"
 
