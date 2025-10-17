@@ -39,7 +39,7 @@ def main() -> None:
     text_without_stop_words=remove_stop_words(cleaned_and_tokenized_text, stop_words)
     if text_without_stop_words is None:
         return
-    
+
     vocabulary=build_vocabulary(text_without_stop_words)
     if vocabulary is None:
         return

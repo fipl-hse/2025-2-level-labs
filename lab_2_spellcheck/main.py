@@ -609,8 +609,8 @@ def count_transpositions(
         return None
 
     transposition=0
-    for i in range(len(matches_of_tokens)):
-        if matches_of_candidates[i]!=matches_of_tokens[i]:
+    for i,token_match in enumerate(matches_of_tokens):
+        if matches_of_candidates[i]!=token_match:
             transposition+=1
 
     final_transposition=transposition//2
@@ -714,21 +714,17 @@ def calculate_jaro_winkler_distance(
 
     In case of corrupt input arguments or corrupt outputs of used functions, None is returned.
     """
-    if not isinstance(token, str) or  not isinstance(candidate, str):
+    if not isinstance(token, str) or not isinstance(candidate, str):
         return None
 
     if not isinstance(prefix_scaling, float):
         return None
 
-    if token == "" and candidate == "":
-        return 1.0
-
-    if token == "" or candidate == "":
+    if not token or not candidate:
         return 1.0
 
     distance = max(len(token), len(candidate))//2 - 1
-    if distance<0:
-        distance==0
+    distance=max(distance, 0)
 
     result_of_matches = get_matches(token, candidate, distance)
     if result_of_matches is None:
