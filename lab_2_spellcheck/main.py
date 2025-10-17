@@ -111,26 +111,18 @@ def calculate_distance(
         if distance is None:
             return None
         return distance
+    distance_methods = {
+        'jaccard': calculate_jaccard_distance,
+        'levenshtein': calculate_levenshtein_distance,
+        'jaro-winkler': calculate_jaro_winkler_distance
+    }
+    distance_method = distance_methods.get(method, None)
     calculated_distance_score = {}
-    distance_value = None
-    if method == 'jaccard':
-            for word in vocabulary:
-                distance_value = calculate_jaccard_distance(first_token, word)
-                if distance_value is None:
-                    return None
-                calculated_distance_score[word] = distance_value
-    elif method == 'levenshtein':
-            for word in vocabulary:
-                distance_value = calculate_levenshtein_distance(first_token, word)
-                if distance_value is None:
-                    return None
-                calculated_distance_score[word] = distance_value
-    elif method == 'jaro-winkler':
-            for word in vocabulary:
-                distance_value = calculate_jaro_winkler_distance(first_token, word)
-                if distance_value is None:
-                        return None
-                calculated_distance_score[word] = distance_value
+    for word in vocabulary:
+        distance_value = distance_method(first_token, word)
+        if distance_value is None:
+            return None
+        calculated_distance_score[word] = distance_value
     return calculated_distance_score
 
 
