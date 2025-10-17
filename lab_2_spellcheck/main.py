@@ -141,7 +141,9 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if (not isinstance(vocabulary, dict) or not isinstance(wrong_word, str) or not check_dict(vocabulary, str, float, False) 
+    if (not isinstance(vocabulary, dict) 
+        or not isinstance(wrong_word, str) 
+        or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
     if alphabet is not None:
@@ -169,7 +171,9 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
-    if not (isinstance(token_length, int) and isinstance(candidate_length, int) and token_length >= 0 and candidate_length >= 0):
+    if not (isinstance(token_length, int) 
+            and isinstance(candidate_length, int) 
+            and token_length >= 0 and candidate_length >= 0):
         return None
     matrix2d = [[0 for i in range(candidate_length+1)] for j in range(token_length+1)]
     if token_length == 0:
@@ -264,7 +268,9 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not (isinstance(word, str) and isinstance(alphabet, list) and check_list(alphabet, str, False)):
+    if not (isinstance(word, str) 
+            and isinstance(alphabet, list) 
+            and check_list(alphabet, str, False)):
         return []
     new_words = []
     word_lst = list(word)
@@ -418,7 +424,9 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not (isinstance(token, str) and isinstance(candidate, str) and isinstance(match_distance, int)
+    if not (isinstance(token, str) 
+            and isinstance(candidate, str) 
+            and isinstance(match_distance, int)
             and match_distance >= 0):
         return None
     matches = 0
@@ -452,8 +460,10 @@ def count_transpositions(
     In case of corrupt input arguments, None is returned.
     """
     if not (isinstance(token, str) and isinstance(candidate, str) 
-            and isinstance(token_matches, list) and isinstance(candidate_matches, list) 
-            and check_list(token_matches, bool, False) and check_list(candidate_matches, bool, False)):
+            and isinstance(token_matches, list) 
+            and isinstance(candidate_matches, list) 
+            and check_list(token_matches, bool, False) 
+            and check_list(candidate_matches, bool, False)):
         return None
     transpositions = 0
     point = 0
