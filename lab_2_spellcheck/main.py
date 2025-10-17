@@ -127,6 +127,7 @@ def calculate_distance(
                 calculated_distance_score[word] = distance_value
             return calculated_distance_score
         return None
+    return None
 
 
 def find_correct_word(
