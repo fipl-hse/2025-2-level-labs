@@ -4,7 +4,9 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
-from lab_1_keywords_tfidf.main import check_list, check_dict
+
+from lab_1_keywords_tfidf.main import check_dict, check_list
+
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
@@ -581,28 +583,6 @@ def calculate_jaro_winkler_distance(
     if winkler_adjust is None:
         return None
     if winkler_adjust == 0.0:
-        return jaro_distance
-    if (jaro_distance and winkler_adjust):
-        jaro_winkler = jaro_distance - winkler_adjust
-        return jaro_winkler
-    return None
-    # match_distance = max(len(token), len(candidate)) // 2 - 1
-    # match_distance = max(match_distance, 0)
-    # matches_result = get_matches(token, candidate, match_distance)
-    # if matches_result is None:
-    #     return None
-    # matches_count, token_matches, candidate_matches = matches_result
-    # if matches_count == 0:
-    #     return 1.0
-    # transpositions_count = count_transpositions(token, candidate, token_matches, candidate_matches)
-    # if transpositions_count is None:
-    #     return None
-    # jaro_distance = calculate_jaro_distance(token, candidate, matches_count, transpositions_count)
-    # if jaro_distance is None:
-    #     return None
-    # winkler_bonus = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
-    # if winkler_bonus is None:
-    #     return None
-    # jaro_similarity = 1.0 - jaro_distance
-    # jaro_winkler_similarity = jaro_similarity + winkler_bonus
-    # return 1.0 - jaro_winkler_similarity
+        jaro_winkler = jaro_distance
+    jaro_winkler = jaro_distance - winkler_adjust
+    return jaro_winkler
