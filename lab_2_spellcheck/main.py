@@ -132,7 +132,7 @@ def calculate_distance(
 
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
-    
+
     if method == "frequency-based" and alphabet is None:
         return {key: 1.0 for key in vocabulary.keys()}
 
@@ -140,7 +140,7 @@ def calculate_distance(
         return None
 
     if method == "frequency-based":
-        distance=calculate_frequency_distance(first_token, vocabulary, alphabet)
+        distance=calculate_frequency_distance(first_token, vocabulary, alphabet or [])
         return distance
 
     dictionary={}
@@ -148,17 +148,17 @@ def calculate_distance(
         if method == "jaccard":
             distance=calculate_jaccard_distance(first_token, token)
             dictionary[token]=distance
-        
+
         elif method == "levenshtein":
             distance = calculate_levenshtein_distance(first_token, token)
             dictionary[token]=distance
-            
+
         elif method == "jaro-winkler":
             distance = calculate_jaro_winkler_distance(first_token, token)
             dictionary[token]=distance
-            
+
     if distance is None:
-        return None 
+        return None
 
     return dictionary
 
@@ -187,11 +187,11 @@ def find_correct_word(
         return None
 
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
-        return None 
+        return None
 
     if alphabet is not None and not check_list(alphabet, str, True):
         return None
-    
+
     if not vocabulary:
         return None
 
@@ -241,7 +241,7 @@ def initialize_levenshtein_matrix(
         matrix[0][j]= j
 
     for i in range(n):
-            matrix[i][0]= i
+        matrix[i][0]= i
 
     return matrix
 
@@ -471,7 +471,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         return None
 
     main_candidates = set(primary_candidates)
-    
+
     for candidate in primary_candidates:
         secondary_candidates = generate_candidates(candidate, alphabet)
         if secondary_candidates is None:
@@ -593,7 +593,7 @@ def count_transpositions(
 
     if not check_list(token_matches, bool, False) or not check_list(candidate_matches, bool, False):
         return None
-    
+
     matches_of_tokens=[]
     matches_of_candidates=[]
 
@@ -650,7 +650,10 @@ def calculate_jaro_distance(
     if matches==0:
         return 1.0
 
-    jaro_similarity=(1/3)*(matches/(len(token))+matches/len(candidate)+(matches-transpositions)/matches)
+    jaro_similarity = (1/3) * (
+    matches / len(token)
+    + matches / len(candidate)
+    + (matches - transpositions) / matches)
 
     jaro_distance=1-jaro_similarity
     return jaro_distance
@@ -678,7 +681,7 @@ def winkler_adjustment(
 
     if not isinstance(jaro_distance, float) or not isinstance(prefix_scaling, float):
         return None
-    
+
     if jaro_distance>1 or jaro_distance<0 or prefix_scaling<0:
         return None
 
@@ -687,7 +690,7 @@ def winkler_adjustment(
 
     for i in range(min(4, minimum_len)):
         if token[i]==candidate[i]:
-                prefix_len+=1
+            prefix_len+=1
         else:
             break
 
