@@ -37,11 +37,13 @@ def main() -> None:
 
     vocabulary = build_vocabulary(removed_stop_words) or {}
 
-    sentences_cleaned_tokens = list(set(
-        token
-        for sentence in sentences
-        for token in remove_stop_words(clean_and_tokenize(sentence) or [], stop_words)
-    ))
+    sentences_cleaned_tokens = list(
+        set(
+            token
+            for sentence in sentences
+            for token in remove_stop_words(clean_and_tokenize(sentence) or [], stop_words)
+        )
+    )
     out_of_vocab_words = find_out_of_vocab_words(sentences_cleaned_tokens, vocabulary)
     print("Words out of vocabulary:", out_of_vocab_words, sep="\n")
 
@@ -49,24 +51,29 @@ def main() -> None:
     jaccard_corrections = {}
     frequency_based_corrections = {}
     levenshtein_corrections = {}
-    jaro_winkler_corrections= {}
+    jaro_winkler_corrections = {}
     for word in out_of_vocab_words:
         jaccard_corrections[word] = find_correct_word(word, vocabulary, "jaccard", alphabet)
 
-        frequency_based_corrections[word] = find_correct_word(word, vocabulary, "frequency-based", alphabet)
+        frequency_based_corrections[word] = find_correct_word(
+            word, vocabulary, "frequency-based", alphabet
+        )
 
         levenshtein_corrections[word] = find_correct_word(word, vocabulary, "levenshtein", alphabet)
 
-        jaro_winkler_corrections[word] = find_correct_word(word, vocabulary, "jaro-winkler", alphabet)
+        jaro_winkler_corrections[word] = find_correct_word(
+            word, vocabulary, "jaro-winkler", alphabet
+        )
 
-
-    result = [jaccard_corrections,
-            frequency_based_corrections,
-            levenshtein_corrections,
-            jaro_winkler_corrections
+    result = [
+        jaccard_corrections,
+        frequency_based_corrections,
+        levenshtein_corrections,
+        jaro_winkler_corrections,
     ]
     print(result)
     assert result, "Result is None"
+
 
 if __name__ == "__main__":
     main()
