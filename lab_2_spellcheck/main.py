@@ -116,7 +116,9 @@ def calculate_distance(
         'levenshtein': calculate_levenshtein_distance,
         'jaro-winkler': calculate_jaro_winkler_distance
     }
-    distance_method = distance_methods.get(method, None)
+    distance_method = distance_methods.get(method)
+    if distance_method is None:
+        return None
     calculated_distance_score = {}
     for word in vocabulary:
         distance_value = distance_method(first_token, word)
