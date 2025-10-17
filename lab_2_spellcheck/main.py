@@ -4,7 +4,6 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
-from math import floor, ceil
 from lab_1_keywords_tfidf.main import check_list, check_dict
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -42,7 +41,7 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
     In case of corrupt input arguments, None is returned.
     """
     if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
-        return
+        return None
     incorrect_words = []
     for token in tokens:
         if token not in vocabulary:
@@ -141,8 +140,8 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if (not isinstance(vocabulary, dict) 
-        or not isinstance(wrong_word, str) 
+    if (not isinstance(vocabulary, dict)
+        or not isinstance(wrong_word, str)
         or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
@@ -171,8 +170,8 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
-    if not (isinstance(token_length, int) 
-            and isinstance(candidate_length, int) 
+    if not (isinstance(token_length, int)
+            and isinstance(candidate_length, int)
             and token_length >= 0 and candidate_length >= 0):
         return None
     matrix2d = [[0 for i in range(candidate_length+1)] for j in range(token_length+1)]
@@ -208,7 +207,8 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
             if token[i - 1] == candidate[j - 1]:
                 matrix2d[i][j] = matrix2d[i - 1][j - 1]
             else:
-                matrix2d[i][j] = 1 + min(matrix2d[i][j - 1], matrix2d[i - 1][j], matrix2d[i - 1][j - 1])
+                matrix2d[i][j] = 1 + min(matrix2d[i][j - 1], matrix2d[i - 1][j], 
+                                         matrix2d[i - 1][j - 1])
     return matrix2d
 
 
@@ -268,7 +268,7 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not (isinstance(word, str) 
+    if not (isinstance(word, str)
             and isinstance(alphabet, list) 
             and check_list(alphabet, str, False)):
         return []
@@ -341,7 +341,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     In case of corrupt input arguments, None is returned.
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
-        return
+        return None
     words = []
     words += delete_letter(word)
     words += add_letter(word, alphabet)
@@ -363,15 +363,15 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     In case of corrupt input arguments, None is returned.
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
-        return
+        return None
     candidates = []
     first_candidates = generate_candidates(word, alphabet)
     if first_candidates is None:
-        return
+        return None
     for operated_word in first_candidates:
         second_candidates = generate_candidates(operated_word, alphabet)
         if second_candidates is None:
-            return
+            return None
         candidates.extend(second_candidates)
     return tuple(sorted(list(set(candidates))))
 
@@ -395,7 +395,7 @@ def calculate_frequency_distance(
         or not check_dict(frequencies, str, float, False)
         or not check_list(alphabet, str, True)
     ):
-        return
+        return None
     frequency_dists = {}
     candidates = propose_candidates(word, alphabet) or ()
     for candidate in frequencies:
@@ -424,18 +424,19 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not (isinstance(token, str) 
-            and isinstance(candidate, str) 
+    if not (isinstance(token, str)
+            and isinstance(candidate, str)
             and isinstance(match_distance, int)
             and match_distance >= 0):
         return None
     matches = 0
     lst_tru1 = [False] * len(token)
     lst_tru2 = [False] * len(candidate)
-    for i in range(len(token)):
-        for j in range(max(0, i - match_distance), 
+    len_of_token = len(token)
+    for i in range(len_of_token):
+        for j in range(max(0, i - match_distance),
                        min(len(candidate), i + match_distance + 1)):
-            if (token[i] == candidate[j] and lst_tru2[j] == False):
+            if (token[i] == candidate[j] and lst_tru2[j] is False):
                 lst_tru1[i] = True
                 lst_tru2[j] = True
                 matches += 1
@@ -459,17 +460,18 @@ def count_transpositions(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not (isinstance(token, str) and isinstance(candidate, str) 
-            and isinstance(token_matches, list) 
-            and isinstance(candidate_matches, list) 
-            and check_list(token_matches, bool, False) 
+    if not (isinstance(token, str) and isinstance(candidate, str)
+            and isinstance(token_matches, list)
+            and isinstance(candidate_matches, list)
+            and check_list(token_matches, bool, False)
             and check_list(candidate_matches, bool, False)):
         return None
     transpositions = 0
     point = 0
-    for i in range(len(token)):
+    len_of_token = len(token)
+    for i in range(len_of_token):
         if (token_matches[i]):
-            while (candidate_matches[point] == False):
+            while (candidate_matches[point] is False):
                 point += 1
 
             if (token[i] != candidate[point]):
@@ -495,7 +497,7 @@ def calculate_jaro_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not (isinstance(token, str) and isinstance(candidate, str) 
+    if not (isinstance(token, str) and isinstance(candidate, str)
             and isinstance(matches, int) and isinstance(transpositions, int)
             and matches >= 0 and transpositions >= 0):
         return None
@@ -503,7 +505,7 @@ def calculate_jaro_distance(
         return 1.0
     if token == candidate:
         return 0.0
-    jaro_sim = ((matches/len(token) + (matches/len(candidate)) + (matches - transpositions)/matches) / 3.0)
+    jaro_sim = (matches/len(token) + (matches/len(candidate)) + (matches - transpositions)/matches) / 3.0
     jaro_distance = 1 - jaro_sim
     return jaro_distance
 
@@ -566,16 +568,16 @@ def calculate_jaro_winkler_distance(
     match_distance = max(len(token), len(candidate)) // 2 - 1
     match_distance = max(match_distance, 0)
     matches = get_matches(token, candidate, match_distance)
-    if matches == None:
+    if matches is None:
         matches = [0, [], []]
     transpositions = count_transpositions(token, candidate, matches[1], matches[2])
-    if transpositions == None:
+    if transpositions is None:
         return None
     jaro_distance = calculate_jaro_distance(token, candidate, matches[0], transpositions)
     winkler_adjust = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
     if winkler_adjust == 0:
         return jaro_distance
     if (jaro_distance and winkler_adjust):
-        jaro_winkler = jaro_distance - winkler_adjust 
+        jaro_winkler = jaro_distance - winkler_adjust
         return jaro_winkler
     return None
