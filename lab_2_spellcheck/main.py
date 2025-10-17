@@ -112,36 +112,21 @@ def calculate_distance(
     if method == "frequency-based":
         if alphabet:
             return calculate_frequency_distance(first_token, vocabulary, alphabet)
-        else:
-            return dict.fromkeys(vocabulary, 1.0)
+        return dict.fromkeys(vocabulary, 1.0)
 
     distances = {}
+    distance_function = {
+        "jaccard": calculate_jaccard_distance,
+        "levenshtein": calculate_levenshtein_distance,
+        "jaro-winkler": calculate_jaro_winkler_distance
+    }
 
-    if method == "jaccard":
-        for candidate in vocabulary:
-            distance = calculate_jaccard_distance(first_token, candidate)
-            if distance is None:
-                return None
-            distances[candidate] = distance
-        return distances
-
-    if method == "levenshtein":
-        for candidate in vocabulary:
-            distance = calculate_levenshtein_distance(first_token, candidate)
-            if distance is None:
-                return None
-            distances[candidate] = distance
-        return distances
-
-    if method == "jaro-winkler":
-        for candidate in vocabulary:
-            distance = calculate_jaro_winkler_distance(first_token, candidate)
-            if distance is None:
-                return None
-            distances[candidate] = distance
-        return distances
-
-    return None
+    for candidate in vocabulary:
+        distance = distance_function[method](first_token, candidate)
+        if distance is None:
+            return None
+        distances[candidate] = distance
+    return distances
 
 
 def find_correct_word(
