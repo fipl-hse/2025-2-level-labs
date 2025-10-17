@@ -20,7 +20,7 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     In case of corrupt input arguments, None is returned.
     """
     if not check_list(tokens, str, False):
-        return
+        return None
     dict_frequencies = {}
     for token in tokens:
         dict_frequencies[token] = tokens.count(token) / len(tokens)
@@ -207,10 +207,9 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
             if token[i - 1] == candidate[j - 1]:
                 matrix2d[i][j] = matrix2d[i - 1][j - 1]
             else:
-                matrix2d[i][j] = 1 + min(matrix2d[i][j - 1], matrix2d[i - 1][j], 
+                matrix2d[i][j] = 1 + min(matrix2d[i][j - 1], matrix2d[i - 1][j],
                                          matrix2d[i - 1][j - 1])
     return matrix2d
-
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     """
@@ -269,7 +268,7 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
     In case of corrupt input arguments, empty list is returned.
     """
     if not (isinstance(word, str)
-            and isinstance(alphabet, list) 
+            and isinstance(alphabet, list)
             and check_list(alphabet, str, False)):
         return []
     new_words = []
@@ -470,11 +469,11 @@ def count_transpositions(
     point = 0
     len_of_token = len(token)
     for i in range(len_of_token):
-        if (token_matches[i]):
-            while (candidate_matches[point] is False):
+        if token_matches[i]:
+            while candidate_matches[point] is False:
                 point += 1
 
-            if (token[i] != candidate[point]):
+            if token[i] != candidate[point]:
                 transpositions += 1
             point += 1
     transpositions = transpositions//2
@@ -505,7 +504,8 @@ def calculate_jaro_distance(
         return 1.0
     if token == candidate:
         return 0.0
-    jaro_sim = (matches/len(token) + (matches/len(candidate)) + (matches - transpositions)/matches) / 3.0
+    jaro_sim = (matches/len(token) + (matches/len(candidate)) +
+                (matches - transpositions)/matches) / 3.0
     jaro_distance = 1 - jaro_sim
     return jaro_distance
 
@@ -567,15 +567,20 @@ def calculate_jaro_winkler_distance(
         return 1.0
     match_distance = max(len(token), len(candidate)) // 2 - 1
     match_distance = max(match_distance, 0)
-    matches = get_matches(token, candidate, match_distance)
-    if matches is None:
-        matches = [0, [], []]
-    transpositions = count_transpositions(token, candidate, matches[1], matches[2])
+    match = get_matches(token, candidate, match_distance)
+    if match is None:
+        match = [0, [], []]
+    match_count, token_match, candidate_match = match
+    transpositions = count_transpositions(token, candidate, token_match, candidate_match)
     if transpositions is None:
         return None
-    jaro_distance = calculate_jaro_distance(token, candidate, matches[0], transpositions)
+    jaro_distance = calculate_jaro_distance(token, candidate, match_count, transpositions)
+    if jaro_distance is None:
+        return None
     winkler_adjust = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
-    if winkler_adjust == 0:
+    if winkler_adjust is None:
+        return None
+    if winkler_adjust == 0.0:
         return jaro_distance
     if (jaro_distance and winkler_adjust):
         jaro_winkler = jaro_distance - winkler_adjust
