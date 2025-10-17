@@ -116,15 +116,14 @@ def calculate_distance(
         'levenshtein': calculate_levenshtein_distance,
         'jaro-winkler': calculate_jaro_winkler_distance
     }
-    distance_method = distance_methods[method]
-    if distance_method is None:
-        return None
     calculated_distance_score = {}
-    for word in vocabulary:
-        distance_value = distance_method(first_token, word)
-        if distance_value is None:
-            return None
-        calculated_distance_score[word] = distance_value
+    if method in distance_methods:
+        distance_function = distance_methods[method]
+        for word in vocabulary:
+            distance_value = distance_function(first_token, word)
+            if distance_value is None:
+                return None
+            calculated_distance_score[word] = distance_value
     return calculated_distance_score
 
 
