@@ -28,7 +28,8 @@ def main() -> None:
         tokens_no_stop = remove_stop_words(tokens, stop_words) or []
         frequencies = build_vocabulary(tokens_no_stop) or {}
         out_vocab = find_out_of_vocab_words(sentences, frequencies)
-        found_by_jaccard_word = find_correct_word("кит", {"кот": 0.5, "пёс": 0.5}, method = "jaccard")
+        found_by_jaccard_word = find_correct_word("кит", {"кот": 0.5,
+                                                          "пёс": 0.5}, method = "jaccard")
         found_by_frequency_word = find_correct_word("пиро", frequencies,
                                                     "frequency-based", 
                                                     list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")) #пиво

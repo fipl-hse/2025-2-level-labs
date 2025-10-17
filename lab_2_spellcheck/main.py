@@ -539,8 +539,6 @@ def winkler_adjustment(
         if token[i] != candidate[i]:
             break
     adjust = match_prefix * prefix_scaling * jaro_distance
-    #any advice?
-    # I don't know what to do
     return adjust
 
 def calculate_jaro_winkler_distance(
@@ -569,8 +567,10 @@ def calculate_jaro_winkler_distance(
     match_distance = max(match_distance, 0)
     match = get_matches(token, candidate, match_distance)
     if match is None:
-        match = [0, [], []]
+        return None
     match_count, token_match, candidate_match = match
+    if match_count == 0:
+        return 1.0
     transpositions = count_transpositions(token, candidate, token_match, candidate_match)
     if transpositions is None:
         return None
@@ -586,3 +586,23 @@ def calculate_jaro_winkler_distance(
         jaro_winkler = jaro_distance - winkler_adjust
         return jaro_winkler
     return None
+    # match_distance = max(len(token), len(candidate)) // 2 - 1
+    # match_distance = max(match_distance, 0)
+    # matches_result = get_matches(token, candidate, match_distance)
+    # if matches_result is None:
+    #     return None
+    # matches_count, token_matches, candidate_matches = matches_result
+    # if matches_count == 0:
+    #     return 1.0
+    # transpositions_count = count_transpositions(token, candidate, token_matches, candidate_matches)
+    # if transpositions_count is None:
+    #     return None
+    # jaro_distance = calculate_jaro_distance(token, candidate, matches_count, transpositions_count)
+    # if jaro_distance is None:
+    #     return None
+    # winkler_bonus = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
+    # if winkler_bonus is None:
+    #     return None
+    # jaro_similarity = 1.0 - jaro_distance
+    # jaro_winkler_similarity = jaro_similarity + winkler_bonus
+    # return 1.0 - jaro_winkler_similarity
