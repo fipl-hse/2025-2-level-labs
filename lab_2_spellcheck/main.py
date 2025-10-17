@@ -202,12 +202,13 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     token_len = len(token)
     candidate_len = len(candidate)
     matrix = initialize_levenshtein_matrix(token_len, candidate_len)
-    for i in range(1, candidate_len + 1):
-        for j in range(1, token_len + 1):
-            if candidate[i - 1] == token[j - 1]:
-                cost=0
-            else:
-                cost=1
+    if not matrix:
+        return None
+    for i in range(1, token_len + 1):
+        for j in range(1, candidate_len + 1):
+            if i==0 or j==0:
+                continue
+            cost=0 if candidate[i - 1] == token[j - 1] else cost=1
             delete_symbol = matrix[i-1][j] + 1
             int_symbol = matrix[i][j-1] + 1
             replace_symbol = matrix[i-1][j-1] + cost
@@ -242,10 +243,7 @@ def delete_letter(word: str) -> list[str]:
     """
     if not isinstance(word, str):
         return []
-    removed_letter_words=[word[:i] + word[i+1:] for i in range(len(word))]
-    removed_letter_words.sort()
-    return removed_letter_words
-
+    return sorted([word[:i] + word[i+1:] for i in range(len(word))])
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
     """
@@ -263,13 +261,11 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return []
-    add_words=[
+    return sorted([
         word[:i] + letter + word[i:] 
         for i in range(len(word)+1) 
         for letter in alphabet
-        ]
-    add_words.sort()
-    return add_words
+        ])
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -288,13 +284,11 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return []
-    replaced_words=[
+    return sorted([
         word[:i] + letter + word[i+1:] 
         for i in range(len(word)) 
         for letter in alphabet
-        ]
-    replaced_words.sort()
-    return replaced_words
+        ])
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -312,9 +306,7 @@ def swap_adjacent(word: str) -> list[str]:
     """
     if not isinstance(word, str):
         return []
-    swapped_letters_words=[word[:i] + word[i+1] + word[i] + word[i+2:] for i in range(len(word)-1)]
-    swapped_letters_words.sort()
-    return swapped_letters_words
+    return sorted([word[:i] + word[i+1] + word[i] + word[i+2:] for i in range(len(word)-1)])
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
@@ -333,13 +325,8 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
-    deleted_letters=set(delete_letter(word))
-    add_letters=set(add_letter(word, alphabet))
-    replaced_letters=set(replace_letter(word, alphabet))
-    swapped_letters=set(swap_adjacent(word))
-    all_canidates=list(deleted_letters.union(add_letters,replaced_letters, swapped_letters))
-    all_canidates.sort()
-    return all_canidates
+    all_candidates = delete_letter(word) + add_letter(word, alphabet) + replace_letter(word, alphabet) + swap_adjacent(word)
+    return sorted(list(set(all_candidates)))
 
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
