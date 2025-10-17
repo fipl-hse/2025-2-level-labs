@@ -116,7 +116,7 @@ def calculate_distance(
         'levenshtein': calculate_levenshtein_distance,
         'jaro-winkler': calculate_jaro_winkler_distance
     }
-    distance_method = distance_methods.get(method)
+    distance_method = distance_methods[method]
     if distance_method is None:
         return None
     calculated_distance_score = {}
