@@ -64,7 +64,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
-    if (not isinstance(token, str) 
+    if (not isinstance(token, str)
         or not isinstance(candidate, str)):
         return None
     if not token or not candidate:
@@ -163,7 +163,7 @@ def find_correct_word(
         return candidates[0]
     min_length_differences = min(abs(len(candidate) - len(wrong_word)) for candidate in candidates)
     min_length_candidates = [
-        candidate for candidate in candidates 
+        candidate for candidate in candidates
         if abs(len(candidate) - len(wrong_word)) == min_length_differences
     ]
     return sorted(min_length_candidates)[0]
