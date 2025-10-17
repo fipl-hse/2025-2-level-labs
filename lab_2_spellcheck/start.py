@@ -46,12 +46,16 @@ def main() -> None:
         print(f"\nИсправление для '{wrong_word}':")
         jaccard_correction = find_correct_word(wrong_word, vocabulary,
                                                'jaccard', alphabet) or {}
+        frequency_correction = find_correct_word(wrong_word, vocabulary,
+                                                 'frequency-based', alphabet) or {}
         levenshtein_correction = find_correct_word(wrong_word, vocabulary,
                                                    'levenshtein', alphabet) or {}
         print(f"  Jaccard: {jaccard_correction}")
+        print(f"  Frequency-based: {frequency_correction}")
         print(f"  Levenshtein: {levenshtein_correction}")
         all_results[wrong_word] = {
             'jaccard': jaccard_correction,
+            'frequency-based': frequency_correction,
             'levenshtein': levenshtein_correction,
         }
     result = all_results

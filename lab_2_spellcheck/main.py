@@ -64,7 +64,8 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
-    if not isinstance(token, str) or not isinstance(candidate, str):
+    if (not isinstance(token, str) 
+        or not isinstance(candidate, str)):
         return None
     if not token or not candidate:
         return 1.0
@@ -158,16 +159,14 @@ def find_correct_word(
     min_distance = min(distances.values())
     candidates = [token for token, token_distance in distances.items()
                    if token_distance == min_distance]
-    if not candidates:
-        return None
-    if len(candidates) > 1:
-        min_length_differences = min(len(candidate) - len(wrong_word) for candidate in candidates)
-        min_length_candidates = []
-        for candidate in candidates:
-            if len(candidate) - len(wrong_word) == min_length_differences:
-                min_length_candidates.append(candidate)
-        return sorted(min_length_candidates)[0]
-    return candidates[0]
+    if len(candidates) == 1:
+        return candidates[0]
+    min_length_differences = min(abs(len(candidate) - len(wrong_word)) for candidate in candidates)
+    min_length_candidates = [
+        candidate for candidate in candidates 
+        if abs(len(candidate) - len(wrong_word)) == min_length_differences
+    ]
+    return sorted(min_length_candidates)[0]
 
 
 def initialize_levenshtein_matrix(
@@ -425,7 +424,7 @@ def calculate_frequency_distance(
     distance = {}
     for token in frequencies:
         if token in candidates:
-            distance[token] = 1.0 - float(frequencies[token])
+            distance[token] = 1.0 - frequencies.get(token, 0.0)
         else:
             distance[token] = 1.0
     return distance
