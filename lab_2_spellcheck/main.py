@@ -119,12 +119,14 @@ def calculate_distance(
     calculated_distance_score = {}
     if method in distance_methods:
         distance_function = distance_methods[method]
-        for word in vocabulary:
-            distance_value = distance_function(first_token, word)
-            if distance_value is None:
-                return None
-            calculated_distance_score[word] = distance_value
-    return calculated_distance_score
+        if callable(distance_function):
+            for word in vocabulary:
+                distance_value = distance_function(first_token, word)
+                if distance_value is None:
+                    return None
+                calculated_distance_score[word] = distance_value
+            return calculated_distance_score
+        return None
 
 
 def find_correct_word(
