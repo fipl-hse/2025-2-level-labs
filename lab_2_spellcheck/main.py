@@ -103,7 +103,6 @@ def calculate_distance(
         return None
 
     res = None
-
     if method == "jaccard":
         res = {}
         for key in vocabulary:
@@ -117,21 +116,16 @@ def calculate_distance(
             return {token: 1.0 for token in vocabulary}
         res = calculate_frequency_distance(first_token, vocabulary, alphabet)
 
-    if method == "levenshtein":
+    if method in ["levenshtein", "jaro-winkler"]:
         res = {}
         for word in vocabulary:
-            distance = calculate_levenshtein_distance(first_token, word)
+            if method == "levenshtein":
+                distance = calculate_levenshtein_distance(first_token, word)
+            else:
+                distance = distance = calculate_jaro_winkler_distance(first_token, word)
             if distance is None:
                 return None
             res[word] = float(distance)
-
-    if method == "jaro-winkler":
-        res = {}
-        for word in vocabulary:
-            distance = calculate_jaro_winkler_distance(first_token, word)
-            if distance is None:
-                return None
-            res[word] = max(0.0, min(1.0, float(distance)))
     return res
 
 
