@@ -60,9 +60,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return None
     if not token or not candidate:
         return 1.0
-    token=set(token)
-    candidate=set(candidate)
-    jaccared_coefficient=1-len(token.intersection(candidate)) / len(token.union(candidate))
+    jaccared_coefficient=1-len(set(token).intersection(set(candidate))) / len(set(token).union(set(candidate)))
     if 0 <= jaccared_coefficient <= 1:
         return jaccared_coefficient
     return None
@@ -98,7 +96,7 @@ def calculate_distance(
             distance = calculate_jaccard_distance(first_token, vocab)
             if distance is None:
                 return None
-            words_distances[vocab]=distance
+            words_distances[vocab]= float(distance)
         return words_distances
     if method == "frequency-based":
         if not alphabet:
@@ -111,8 +109,9 @@ def calculate_distance(
             lev_distance = calculate_levenshtein_distance(first_token, vocab)
             if not lev_distance:
                 return None
-            lev_distances[vocab] = lev_distance
+            lev_distances[vocab] = float(lev_distance)
         return lev_distances
+    return
 
 def find_correct_word(
     wrong_word: str,
@@ -384,8 +383,6 @@ def calculate_frequency_distance(
         if candidate in frequencies:
             candidate_frequencies[candidate] = 1.0 - frequencies[candidate]
     return candidate_frequencies
-
-
 
 
 def get_matches(
