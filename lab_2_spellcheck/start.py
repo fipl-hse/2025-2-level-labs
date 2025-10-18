@@ -36,11 +36,11 @@ def main() -> None:
     cleaned_sentences = clean_and_tokenize(senten_words) if removed_stop_words else []
     removed_sentences_stop_words = (
         remove_stop_words(cleaned_sentences, stop_words)
-        if cleaned_sentences else [])
+        if cleaned_sentences else []) if cleaned_text else []
     freq_vocab = build_vocabulary(removed_stop_words) if removed_sentences_stop_words else {}
     incorrect_words = (
         find_out_of_vocab_words(removed_sentences_stop_words, freq_vocab)
-        if freq_vocab else {})
+        if freq_vocab else {}) if freq_vocab else []
 
 
     print(incorrect_words)
