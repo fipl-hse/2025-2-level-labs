@@ -147,18 +147,18 @@ def calculate_distance(
     for token in vocabulary:
         if method == "jaccard":
             distance=calculate_jaccard_distance(first_token, token)
-            dictionary[token]=distance
+            if distance is not None:
+                dictionary[token]=distance
 
         elif method == "levenshtein":
             distance = calculate_levenshtein_distance(first_token, token)
-            dictionary[token]=distance
+            if distance is not None:
+                dictionary[token]=distance
 
         elif method == "jaro-winkler":
             distance = calculate_jaro_winkler_distance(first_token, token)
-            dictionary[token]=distance
-
-    if distance is None:
-        return None
+            if distance is not None:
+                dictionary[token]=distance
 
     return dictionary
 
@@ -517,11 +517,11 @@ def calculate_frequency_distance(
     for key in frequencies.keys():
         dictionary_of_candidates[key] = 1.0
 
-    for element in proposed_candidates:
-        if element in frequencies:
-            frequency = frequencies.get(element, 0.0)
-            distance = 1.0 - frequency
-            if distance is not None:
+    if proposed_candidates is not None and word != "":
+        for element in proposed_candidates:
+            if element in frequencies:
+                frequency = frequencies.get(element, 0.0)
+                distance = 1.0 - frequency
                 dictionary_of_candidates[element]=distance
 
     return dictionary_of_candidates
