@@ -63,7 +63,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     jaccared_coefficient=1-len(set(token).intersection(set(candidate))) / len(set(token).union(set(candidate)))
     if 0 <= jaccared_coefficient <= 1:
         return jaccared_coefficient
-    return None
+    return
 
 
 def calculate_distance(
@@ -135,19 +135,25 @@ def find_correct_word(
     In case of empty vocabulary, None is returned.
     """
     if not isinstance(wrong_word, str) or not check_dict(vocabulary, str, float, False):
-        return None 
+        return None
     if alphabet is not None and not check_list(alphabet, str, True):
         return None
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if not distances:
         return None
     min_distance = min(distances.values())
-    min_candidates = [candidate for candidate, distance in distances.items() if distance == min_distance]
+    min_candidates = [
+        candidate for candidate, distance in distances.items()
+        if distance == min_distance
+        ]
     if not min_candidates:
         return None
     if len(min_candidates) == 1:
         return min_candidates[0]
-    length_candidates = [candidate for candidate in min_candidates if len(candidate)==len(wrong_word)]
+    length_candidates = [
+        candidate for candidate in min_candidates
+        if len(candidate)==len(wrong_word)
+        ]
     name_candidates=sorted(length_candidates)
     return name_candidates[0] if name_candidates else ''
         
@@ -262,8 +268,8 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return []
     return sorted([
-        word[:i] + letter + word[i:] 
-        for i in range(len(word)+1) 
+        word[:i] + letter + word[i:]
+        for i in range(len(word)+1)
         for letter in alphabet
         ])
 
@@ -285,8 +291,8 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return []
     return sorted([
-        word[:i] + letter + word[i+1:] 
-        for i in range(len(word)) 
+        word[:i] + letter + word[i+1:]
+        for i in range(len(word))
         for letter in alphabet
         ])
 
@@ -325,7 +331,10 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
-    all_candidates = delete_letter(word) + add_letter(word, alphabet) + replace_letter(word, alphabet) + swap_adjacent(word)
+    all_candidates = (
+        delete_letter(word) + add_letter(word, alphabet) + 
+        replace_letter(word, alphabet) + swap_adjacent(word)
+        )
     return sorted(list(set(all_candidates)))
 
 
@@ -346,16 +355,16 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
     candidates = generate_candidates(word, alphabet)
-    if candidates==None:
+    if candidates is None:
         return None
     all_candidates=set()
-    for candidate in candidates: 
+    for candidate in candidates:
         new_candidates=generate_candidates(candidate, alphabet)
         if not new_candidates:
             return None
         all_candidates.update(new_candidates)
     return tuple(sorted(all_candidates))
-    
+
 
 def calculate_frequency_distance(
     word: str, frequencies: dict, alphabet: list[str]
@@ -373,7 +382,9 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(word, str) or not check_dict(frequencies, str, float, False) or not check_list(alphabet, str, True):
+    if not isinstance(word, str):
+        return None
+    if not check_dict(frequencies, str, float, False) or not check_list(alphabet, str, True):
         return None
     candidates=propose_candidates(word, alphabet)
     candidate_frequencies = {token: 1.0 for token in frequencies}

@@ -32,11 +32,13 @@ def main() -> None:
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
         senten_words = ''.join(sentences)
     cleaned_text = clean_and_tokenize(text)
-    removed_stop_words = remove_stop_words(cleaned_text, stop_words)
-    cleaned_sentences = clean_and_tokenize(senten_words)
-    removed_sentences_stop_words = remove_stop_words(cleaned_sentences, stop_words)
-    freq_vocab = build_vocabulary(removed_stop_words)
-    incorrect_words = find_out_of_vocab_words(removed_sentences_stop_words, freq_vocab)
+    removed_stop_words = remove_stop_words(cleaned_text, stop_words) if cleaned_text else None
+    cleaned_sentences = clean_and_tokenize(senten_words) if removed_stop_words else None
+    removed_sentences_stop_words = remove_stop_words(cleaned_sentences, stop_words) if cleaned_sentences else None
+    freq_vocab = build_vocabulary(removed_stop_words) if removed_sentences_stop_words else None
+    incorrect_words = find_out_of_vocab_words(removed_sentences_stop_words, freq_vocab) if freq_vocab else None
+    if not incorrect_words:
+        return None
     print(incorrect_words)
     alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
     jaccard=[]
@@ -45,14 +47,18 @@ def main() -> None:
     for incorrect_word in incorrect_words:
         jaccard_correct_words = find_correct_word(incorrect_word, freq_vocab, "jaccard")
         jaccard.append(jaccard_correct_words)
-        frequency_based_correct_words = find_correct_word(incorrect_word, freq_vocab, "frequency-based", alphabet)
+        frequency_based_correct_words = (
+            find_correct_word(incorrect_word, freq_vocab, "frequency-based", alphabet)
+            )
         frequency_based.append(frequency_based_correct_words)
-        levenshtein_correct_words = find_correct_word(incorrect_word, freq_vocab, "levenshtein")
-        levenshtein.append(levenshtein_correct_words)
-    correct_words = {"jaccard": jaccard, "frequency_based": frequency_based, "levenshtein": levenshtein}
+        lev_correct_words = find_correct_word(incorrect_word, freq_vocab, "levenshtein")
+        levenshtein.append(lev_correct_words)
+    correct_words = (
+        {"jaccard": jaccard, "frequency_based": frequency_based, "levenshtein": levenshtein}
+        )
     print (correct_words)
     result = correct_words
     assert result, "Result is None"
-    
+
 if __name__ == "__main__":
     main()
