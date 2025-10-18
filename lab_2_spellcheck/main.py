@@ -109,6 +109,11 @@ def calculate_distance(
         if alphabet is None:
             alphabet = []
         distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+    if method == "levenshtein":
+        for token in vocabulary:
+            distance[token] = calculate_levenshtein_distance(first_token, token)
+            if distance[token] is None:
+                return
     return distance
 
 
@@ -147,8 +152,10 @@ def find_correct_word(
     for candidate_word in maybe_correct_words:
         if abs(len(wrong_word) - len(candidate_word)) == abs(len(wrong_word) - len(correct_word)):
             correct_word = min(correct_word, candidate_word)
-        elif abs(len(wrong_word) - len(candidate_word)) < abs(len(wrong_word) - len(correct_word)):
-            correct_word = candidate_word
+        else:
+            correct_word = min(
+                correct_word, candidate_word, key=lambda x: abs(len(wrong_word) - len(x))
+                )
     return correct_word
 
 
@@ -165,7 +172,17 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
-    
+    if (not isinstance(token_length, int)
+        or not isinstance(candidate_length, int)
+        or candidate_length < 0
+        or token_length < 0
+    ):
+        return
+    levenshtein_matrix = [[0 for i in range(candidate_length + 1)] for j in range(token_length + 1)]
+    levenshtein_matrix[0] = [i for i in range(candidate_length + 1)]
+    for i in range(token_length + 1):
+        levenshtein_matrix[i][0] = i
+    return levenshtein_matrix
 
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
@@ -179,6 +196,22 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return
+    levenshtein_matrix = initialize_levenshtein_matrix(len(token), len(candidate))
+    if levenshtein_matrix is None:
+        return
+    for i in range(1, len(token) + 1): #row index
+        for j in range(1, len(candidate) + 1): #column index
+            if token[i - 1] == candidate[j - 1]:
+                levenshtein_matrix[i][j] = levenshtein_matrix[i - 1][j - 1]
+            else:
+                levenshtein_matrix[i][j] = min(
+                    levenshtein_matrix[i - 1][j] + 1,
+                    levenshtein_matrix[i][j - 1] + 1,
+                    levenshtein_matrix[i - 1][j - 1] + 1
+                    )
+    return levenshtein_matrix
 
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
@@ -193,6 +226,12 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return
+    levenshtein_matrix = fill_levenshtein_matrix(token, candidate)
+    if levenshtein_matrix is None:
+        return
+    return levenshtein_matrix[len(token)][len(candidate)]
 
 
 def delete_letter(word: str) -> list[str]:
