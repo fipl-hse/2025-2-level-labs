@@ -126,7 +126,6 @@ def find_key(data: dict[str, int]) -> str:
         str: Key with the largest value.
     """
     # student realisation goes here
-    
 # Function calls with expected result:
 # assert find_key({'Andrej': 10000, 'Artyom': 15000, 'Alexander': 100000}) == 'Alexander'
 
