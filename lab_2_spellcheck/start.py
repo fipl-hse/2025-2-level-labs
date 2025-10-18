@@ -3,8 +3,15 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
-from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
-from lab_2_spellcheck.main import build_vocabulary, calculate_distance, find_correct_word, find_out_of_vocab_words
+from lab_1_keywords_tfidf.main import (
+    clean_and_tokenize,
+    remove_stop_words
+    )
+from lab_2_spellcheck.main import (
+    build_vocabulary,
+    find_correct_word,
+    find_out_of_vocab_words,
+)
 
 russian = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
 
@@ -47,48 +54,20 @@ def main() -> None:
         return
     print("Tokens out of vocabulary: ", tokens_out_of_voc, "\n")
 
-    jaccard_distances = {token: calculate_distance(
-        token, vocabulary, "jaccard", russian)
-        for token in tokens_out_of_voc}
-    if not jaccard_distances:
-        return
-    print("Jaccard distances: ", jaccard_distances, "\n")
-
     correct_words_by_jacc = {token: find_correct_word(
         token, vocabulary, "jaccard", russian)
         for token in tokens_out_of_voc}
     print("Correct words by jaccard method: ", correct_words_by_jacc, "\n")
-
-    frequency_distances = {token: calculate_distance(
-        token, vocabulary, "frequency-based", russian)
-        for token in tokens_out_of_voc}
-    if not frequency_distances:
-        return
-    print("Frequensy distances: ", frequency_distances, "\n")
 
     correct_words_by_freq = {token: find_correct_word(
         token, vocabulary, "frequency-based", russian)
         for token in tokens_out_of_voc}
     print("Correct words by frequensy based method: ", correct_words_by_freq, "\n")
 
-    levenshtein_distances = {token: calculate_distance(
-        token, vocabulary, "levenshtein", russian)
-        for token in tokens_out_of_voc}
-    if not levenshtein_distances:
-        return
-    print("Levenshtein distances: ", levenshtein_distances, "\n")
-
     correct_words_by_lev = {token: find_correct_word(
         token, vocabulary, "levenshtein", russian)
         for token in tokens_out_of_voc}
     print("Correct words by levenshtein method: ", correct_words_by_lev, "\n")
-
-    jaro_winkler_distances = {token: calculate_distance(
-        token, vocabulary, "jaro-winkler", russian)
-        for token in tokens_out_of_voc}
-    if not jaro_winkler_distances:
-        return
-    print("Jaro-winkler distances: ", jaro_winkler_distances, "\n")
 
     correct_words_by_jaro = {token: find_correct_word(
         token, vocabulary, "jaro-winkler", russian)
