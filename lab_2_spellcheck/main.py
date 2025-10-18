@@ -60,10 +60,10 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return None
     if not token or not candidate:
         return 1.0
-    jaccared_coefficient=1-len(set(token).intersection(set(candidate))) / len(set(token).union(set(candidate)))
-    if 0 <= jaccared_coefficient <= 1:
-        return jaccared_coefficient
-    return
+    jaccared_coefficient= (
+        1-len(set(token).intersection(set(candidate))) / len(set(token).union(set(candidate)))
+        )
+    return jaccared_coefficient
 
 
 def calculate_distance(
@@ -97,21 +97,19 @@ def calculate_distance(
             if distance is None:
                 return None
             words_distances[vocab]= float(distance)
-        return words_distances
-    if method == "frequency-based":
+    elif method == "frequency-based":
         if not alphabet:
             return {token: 1.0 for token in vocabulary}
-        frequency_distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        return frequency_distances
-    if method == "levenshtein":
-        lev_distances={}
+        words_distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
+    elif method == "levenshtein":
         for vocab in vocabulary:
             lev_distance = calculate_levenshtein_distance(first_token, vocab)
             if not lev_distance:
                 return None
-            lev_distances[vocab] = float(lev_distance)
-        return lev_distances
-    return
+            words_distances[vocab] = float(lev_distance)
+    if not words_distances:
+        return None
+    return words_distances
 
 def find_correct_word(
     wrong_word: str,
@@ -156,7 +154,7 @@ def find_correct_word(
         ]
     name_candidates=sorted(length_candidates)
     return name_candidates[0] if name_candidates else ''
-        
+
 
 def initialize_levenshtein_matrix(
     token_length: int, candidate_length: int
@@ -332,7 +330,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
     all_candidates = (
-        delete_letter(word) + add_letter(word, alphabet) + 
+        delete_letter(word) + add_letter(word, alphabet) +
         replace_letter(word, alphabet) + swap_adjacent(word)
         )
     return sorted(list(set(all_candidates)))
