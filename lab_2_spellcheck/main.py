@@ -96,12 +96,13 @@ def calculate_distance(
     In case of corrupt input arguments or unsupported method, None is returned.
     """
     if (not check_dict(vocabulary, str, float, False) or
-        not vocabulary or
-        (alphabet is not None and not check_list(alphabet, str, True)) or
         not isinstance(first_token, str) or
         not isinstance(method, str) or
         not method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
     ):
+        return None
+    if (not vocabulary or
+    (alphabet is not None and not check_list(alphabet, str, True))):
         return None
 
     if method == "jaccard":
@@ -112,13 +113,14 @@ def calculate_distance(
                 return None
             jaccard_dist[key] = value
         return jaccard_dist
-    
-    elif method == "frequency-based":
+
+    if method == "frequency-based":
         if alphabet is None:
             return {token: 1.0 for token in vocabulary}
         freq_dist = calculate_frequency_distance(first_token, vocabulary, alphabet)
         return freq_dist
-    elif method == "levenshtein":
+
+    if method == "levenshtein":
         levenshtein_dist = {}
         for word in vocabulary:
             distance = calculate_levenshtein_distance(first_token, word)
@@ -127,7 +129,7 @@ def calculate_distance(
             levenshtein_dist[word] = float(distance)
         return levenshtein_dist
 
-    elif method == "jaro-winkler":
+    if method == "jaro-winkler":
         jaro_winkler_dist = {}
         for word in vocabulary:
             distance = calculate_jaro_winkler_distance(first_token, word)
@@ -511,7 +513,7 @@ def count_transpositions(
         not check_list(candidate_matches, bool, False)
         ):
         return None
-    
+
     if  len(token_matches) != len(token) or len(candidate_matches) != len(candidate):
         return None
 
