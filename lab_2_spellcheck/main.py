@@ -141,7 +141,7 @@ def calculate_distance(
         distance=calculate_frequency_distance(first_token, vocabulary, alphabet or [])
         return distance
 
-    dictionary: dict[str, float] = {}
+    dictionary = {}
     for token in vocabulary:
         if method == "jaccard":
             distance=calculate_jaccard_distance(first_token, token)
