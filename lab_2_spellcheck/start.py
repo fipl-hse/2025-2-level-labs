@@ -32,15 +32,25 @@ def main() -> None:
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
         senten_words = ''.join(sentences)
     cleaned_text = clean_and_tokenize(text)
-    removed_stop_words = remove_stop_words(cleaned_text, stop_words) if removed_stop_words else []
-    cleaned_sentences = clean_and_tokenize(senten_words) if cleaned_sentences else []
+    if cleaned_text is None:
+        return
+    removed_stop_words = remove_stop_words(cleaned_text, stop_words)
+    if removed_stop_words is None:
+        return
+    cleaned_sentences = clean_and_tokenize(senten_words)
+    if cleaned_sentences is None:
+        return
     removed_sentences_stop_words = (
         remove_stop_words(cleaned_sentences, stop_words)
-        if removed_sentences_stop_words else [])
-    freq_vocab = build_vocabulary(removed_stop_words) if freq_vocab else {}
+        )
+    if removed_sentences_stop_words is None:
+        return
+    freq_vocab = build_vocabulary(removed_stop_words)
+    if freq_vocab is None:
+        return
     incorrect_words = (
         find_out_of_vocab_words(removed_sentences_stop_words, freq_vocab)
-        if incorrect_words else [])
+        )
 
 
     print(incorrect_words)
@@ -50,18 +60,12 @@ def main() -> None:
     levenshtein=[]
     for incorrect_word in incorrect_words:
         jaccard_correct_words = find_correct_word(incorrect_word, freq_vocab, "jaccard")
-        if not jaccard_correct_words:
-            return
         jaccard.append(jaccard_correct_words)
         frequency_based_correct_words = (
             find_correct_word(incorrect_word, freq_vocab, "frequency-based", alphabet)
             )
-        if not frequency_based_correct_words:
-            return
         frequency_based.append(frequency_based_correct_words)
         lev_correct_words = find_correct_word(incorrect_word, freq_vocab, "levenshtein")
-        if not lev_correct_words:
-            return
         levenshtein.append(lev_correct_words)
     correct_words = (
         {"jaccard": jaccard, "frequency_based": frequency_based, "levenshtein": levenshtein}
