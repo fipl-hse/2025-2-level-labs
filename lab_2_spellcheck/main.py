@@ -509,24 +509,23 @@ def count_transpositions(
     if (
         not isinstance(token, str) or
         not isinstance(candidate, str) or
-        not check_list(token_matches, bool, True) or
-        not check_list(candidate_matches, bool, True) or
+        not check_list(token_matches, bool, False) or
+        not check_list(candidate_matches, bool, False) or
         len(token_matches) != len(token) or
         len(candidate_matches) != len(candidate)
         ):
         return None
 
-    transpositions = 0
     token_match_els = []
-    for el in enumerate(token):
-        if el:
+    for i, el in enumerate(token):
+        if token_matches[i]:
             token_match_els.append(el)
     if not token_match_els:
         return 0
 
     candidate_match_els = []
-    for el in enumerate(candidate):
-        if el:
+    for i, el in enumerate(candidate):
+        if candidate_matches[i]:
             candidate_match_els.append(el)
     if not candidate_match_els:
         return 0
@@ -534,6 +533,7 @@ def count_transpositions(
     if len(token_match_els) != len(candidate_match_els):
         return 0
 
+    transpositions = 0
     for i, el in enumerate(token_match_els):
         if el != candidate_match_els[i]:
             transpositions += 1
