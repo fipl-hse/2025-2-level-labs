@@ -126,7 +126,7 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if (not isinstance(first_token, str) or 
+    if (not isinstance(first_token, str) or
     not check_dict(vocabulary, str, float, False) or
     (alphabet is not None and not check_list(alphabet, str, True))):
         return None
@@ -200,11 +200,11 @@ def find_correct_word(
     if not correct_word:
         return None
 
-    min_result=min(correct_word.values())
+    minimum_result=min(correct_word.values())
 
     candidates=[]
     for element, value in correct_word.items():
-        if value==min_result:
+        if value==minimum_result:
             candidates.append(element)
 
     if len(candidates)==1:
