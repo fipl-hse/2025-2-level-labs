@@ -100,7 +100,8 @@ def calculate_distance(
     elif method == "frequency-based":
         if not alphabet:
             return {token: 1.0 for token in vocabulary}
-        words_distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        freq_distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        return freq_distances
     elif method == "levenshtein":
         for vocab in vocabulary:
             lev_distance = calculate_levenshtein_distance(first_token, vocab)
