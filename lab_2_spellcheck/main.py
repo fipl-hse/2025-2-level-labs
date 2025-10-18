@@ -21,7 +21,7 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     In case of corrupt input arguments, None is returned.
     """
     if not check_list(tokens, str, False):
-        return
+        return None
     relative_frequencies = {}
     for token in tokens:
         relative_frequencies[token] = tokens.count(token) / len(tokens)
@@ -42,7 +42,7 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
     In case of corrupt input arguments, None is returned.
     """
     if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
-        return
+        return None
     out_of_vocab_words = []
     for token in tokens:
         if token not in vocabulary:
@@ -98,7 +98,7 @@ def calculate_distance(
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
         or not alphabet is None and not check_list(alphabet, str, False) 
     ):
-        return
+        return None
     distance = {}
     if method == "jaccard":
         for token in vocabulary:
@@ -113,7 +113,7 @@ def calculate_distance(
         for token in vocabulary:
             distance[token] = calculate_levenshtein_distance(first_token, token)
             if distance[token] is None:
-                return
+                return None
     return distance
 
 
@@ -139,10 +139,10 @@ def find_correct_word(
     In case of empty vocabulary, None is returned.
     """
     if vocabulary == {}:
-        return
+        return None
     distance_dict = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if distance_dict is None:
-        return
+        return None
     minimum_distance = min(distance_dict.values())
     maybe_correct_words = [
     key for key, value in distance_dict.items()
@@ -177,7 +177,7 @@ def initialize_levenshtein_matrix(
         or candidate_length < 0
         or token_length < 0
     ):
-        return
+        return None
     levenshtein_matrix = [[0 for i in range(candidate_length + 1)] for j in range(token_length + 1)]
     levenshtein_matrix[0] = [i for i in range(candidate_length + 1)]
     for i in range(token_length + 1):
@@ -200,7 +200,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
         return
     levenshtein_matrix = initialize_levenshtein_matrix(len(token), len(candidate))
     if levenshtein_matrix is None:
-        return
+        return None
     for i in range(1, len(token) + 1): #row index
         for j in range(1, len(candidate) + 1): #column index
             if token[i - 1] == candidate[j - 1]:
@@ -230,7 +230,7 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         return
     levenshtein_matrix = fill_levenshtein_matrix(token, candidate)
     if levenshtein_matrix is None:
-        return
+        return None
     return levenshtein_matrix[len(token)][len(candidate)]
 
 
@@ -336,7 +336,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     In case of corrupt input arguments, None is returned.
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
-        return
+        return None
     candidates_list = []
     candidates_list.extend(delete_letter(word))
     candidates_list.extend(add_letter(word, alphabet))
@@ -360,15 +360,15 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     In case of corrupt input arguments, None is returned.
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
-        return
+        return None
     candidates_list = []
     first_operation_candidates = generate_candidates(word, alphabet)
     if first_operation_candidates is None:
-        return
+        return None
     for operated_word in first_operation_candidates:
         second_operation_candidates = generate_candidates(operated_word, alphabet)
         if second_operation_candidates is None:
-            return
+            return None
         candidates_list.extend(second_operation_candidates)
     return tuple(sorted(list(set(candidates_list))))
 
@@ -393,7 +393,7 @@ def calculate_frequency_distance(
         or not check_dict(frequencies, str, float, False)
         or not check_list(alphabet, str, True)
     ):
-        return
+        return None
     frequency_distances = {}
     candidates_tuple = propose_candidates(word, alphabet) or ()
     for candidate in frequencies:
