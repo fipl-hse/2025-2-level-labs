@@ -115,6 +115,7 @@ def calculate_distance(
     if method in ["jaccard", "levenshtein", "jaro-winkler"]:
         res = {}
         for word in vocabulary:
+            distance : float | None
             if method == "levenshtein":
                 distance = calculate_levenshtein_distance(first_token, word)
             elif method == "jaro-winkler":
@@ -123,7 +124,7 @@ def calculate_distance(
                 distance = calculate_jaccard_distance(first_token, word)
             if distance is None:
                 return None
-            res[word] = float(distance)
+            res[word] = distance
     return res
 
 
