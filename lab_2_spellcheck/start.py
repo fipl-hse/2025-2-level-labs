@@ -32,15 +32,15 @@ def main() -> None:
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
         senten_words = ''.join(sentences)
     cleaned_text = clean_and_tokenize(text)
-    removed_stop_words = remove_stop_words(cleaned_text, stop_words) if cleaned_text else []
-    cleaned_sentences = clean_and_tokenize(senten_words) if senten_words else []
+    removed_stop_words = remove_stop_words(cleaned_text, stop_words) if removed_stop_words else []
+    cleaned_sentences = clean_and_tokenize(senten_words) if cleaned_sentences else []
     removed_sentences_stop_words = (
         remove_stop_words(cleaned_sentences, stop_words)
-        if cleaned_sentences else [])
-    freq_vocab = build_vocabulary(removed_stop_words) if removed_stop_words else []
+        if removed_sentences_stop_words else [])
+    freq_vocab = build_vocabulary(removed_stop_words) if freq_vocab else {}
     incorrect_words = (
         find_out_of_vocab_words(removed_sentences_stop_words, freq_vocab)
-        if freq_vocab and removed_sentences_stop_words else [])
+        if incorrect_words else [])
 
 
     print(incorrect_words)
