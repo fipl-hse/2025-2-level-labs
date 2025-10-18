@@ -5,7 +5,7 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 
-from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
+from lab_1_keywords_tfidf.main import check_dict, check_list
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -105,6 +105,14 @@ def calculate_distance(
             return {token: 1.0 for token in vocabulary}
         frequency_distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
         return frequency_distances
+    if method == "levenshtein":
+        lev_distances={}
+        for vocab in vocabulary:
+            lev_distance = calculate_levenshtein_distance(first_token, vocab)
+            if not lev_distance:
+                return None
+            lev_distances[vocab] = lev_distance
+        return lev_distances
 
 def find_correct_word(
     wrong_word: str,
@@ -127,38 +135,22 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if not isinstance(wrong_word, str):
+    if not isinstance(wrong_word, str) or not check_dict(vocabulary, str, float, False):
+        return None 
+    if alphabet is not None and not check_list(alphabet, str, True):
         return None
-    if not check_dict(vocabulary, str, float, False):
+    distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
+    if not distances:
         return None
-    if method == "frequency-based":
-        if not check_list(alphabet, str, True):
-            return None
-        frequencies=calculate_frequency_distance(wrong_word, vocabulary, alphabet)
-        if not frequencies:
-            return None
-        min_frequency=[word for word, freq in frequencies.items() if min(frequencies.values())==freq]
-        if len(min_frequency)==1:
-            return min_frequency[0]
-        min_len_frequency = [word for word in min_frequency if len(word) == len(wrong_word)]
-        if len(min_len_frequency)==1:
-            return min_len_frequency[0]
-        min_len_frequency.sort()
-        return min_len_frequency[0] if min_len_frequency else ''
-        
-    if method == "jaccard":
-        distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
-        if not distances:
-            return None
-        min_distances = min(distances.values())
-        min_candidates = [candidate for candidate, distance in distances.items() if distance == min_distances]
-        if len(min_candidates) == 1:
-            return min_candidates[0]
-        length_candidates = [candidate for candidate in min_candidates if len(candidate)==len(wrong_word)]
-        if len(length_candidates)==1:
-            return length_candidates[0]
-        name_candidates=sorted(length_candidates)
-        return name_candidates[0] if name_candidates else ''
+    min_distance = min(distances.values())
+    min_candidates = [candidate for candidate, distance in distances.items() if distance == min_distance]
+    if not min_candidates:
+        return None
+    if len(min_candidates) == 1:
+        return min_candidates[0]
+    length_candidates = [candidate for candidate in min_candidates if len(candidate)==len(wrong_word)]
+    name_candidates=sorted(length_candidates)
+    return name_candidates[0] if name_candidates else ''
         
 
 def initialize_levenshtein_matrix(
@@ -204,11 +196,17 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     matrix = initialize_levenshtein_matrix(token_len, candidate_len)
     if not matrix:
         return None
-    for i in range(1, token_len + 1):
-        for j in range(1, candidate_len + 1):
+    for i in range(token_len + 1):
+        for j in range(candidate_len + 1):
+            if i==0 or j==0:
+                continue
+            if token[i-1] == candidate[j-1]:
+                cost=0
+            else:
+                cost=1
             delete_symbol = matrix[i-1][j] + 1
             int_symbol = matrix[i][j-1] + 1
-            replace_symbol = matrix[i-1][j-1]
+            replace_symbol = matrix[i-1][j-1] + cost
             matrix[i][j] = min(delete_symbol, int_symbol, replace_symbol)
     return matrix
 
@@ -224,6 +222,12 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    matrix = fill_levenshtein_matrix(token, candidate)
+    if not matrix:
+        return None
+    return matrix[len(token)][len(candidate)]
 
 
 def delete_letter(word: str) -> list[str]:

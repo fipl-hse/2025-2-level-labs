@@ -41,12 +41,15 @@ def main() -> None:
     alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
     jaccard=[]
     frequency_based=[]
+    levenshtein=[]
     for incorrect_word in incorrect_words:
-        jaccard_correct_words = find_correct_word(incorrect_word, freq_vocab, "jaccard", alphabet)
+        jaccard_correct_words = find_correct_word(incorrect_word, freq_vocab, "jaccard")
         jaccard.append(jaccard_correct_words)
         frequency_based_correct_words = find_correct_word(incorrect_word, freq_vocab, "frequency-based", alphabet)
         frequency_based.append(frequency_based_correct_words)
-    correct_words = {"jaccard": jaccard, "frequency_based": frequency_based}
+        levenshtein_correct_words = find_correct_word(incorrect_word, freq_vocab, "levenshtein")
+        levenshtein.append(levenshtein_correct_words)
+    correct_words = {"jaccard": jaccard, "frequency_based": frequency_based, "levenshtein": levenshtein}
     print (correct_words)
     result = correct_words
     assert result, "Result is None"
