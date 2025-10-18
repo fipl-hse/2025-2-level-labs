@@ -4,28 +4,12 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
-
-def clean_and_tokenize(text: str) -> list[str] | None:
-    
-    if not isinstance(text, str):
-        return None
-    string_punct = '«»„“‚‘—–−-….,:;!?()[]""''`'
-    for syb in string_punct:
-        text = text.replace(syb, '')
-    new_text = text.lower()
-    tokens = new_text.split()
-    return tokens
-
-def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
-
-    if not isinstance(tokens, list) or not isinstance(stop_words, list):
-        return None
-    if not all(isinstance(el, str) for el in tokens):
-        return None
-    if not all(isinstance(el, str) for el in stop_words):
-        return None
-    result = [token for token in tokens if token not in stop_words]
-    return result
+from lab_1_keywords_tfidf.main import(
+    clean_and_tokenize, 
+    remove_stop_words,
+    check_dict,
+    check_list
+)
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -41,10 +25,8 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list):
+    if not (check_list(tokens, str, True)):
         return None
-    if not all(isinstance(token, str) for token in tokens):
-        return None 
     if not tokens:
         return None
     
@@ -52,10 +34,8 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     tokens_total = len(tokens)
 
     for token in tokens:
-        freq_tokens[token] = freq_tokens.get(token, 0) +1
+        freq_tokens[token] = freq_tokens.get(token, 0) +1 / tokens_total
 
-    for token in freq_tokens:
-        freq_tokens[token] = freq_tokens[token] / tokens_total
 
     return freq_tokens
 
@@ -72,15 +52,11 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list) or not tokens:
+    if not check_list(tokens, str, True):
         return None
-    if not all(isinstance(token, str) for token in tokens):
+    if not check_dict(vocabulary, str, int, True):
         return None
-    if not isinstance(vocabulary, dict) or not vocabulary:
-        return None
-    if not all(isinstance(word, str) for word in vocabulary):
-        return None
-    if not all(isinstance(word_freq, (int, float)) for word_freq in vocabulary.values()):
+    if not check_dict(vocabulary, str, float, True):
         return None
     
     incor_words = []
@@ -105,10 +81,11 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
-    if not isinstance(token, str):
+    if not check_list(token, str, True):
         return None
-    if not isinstance(candidate, str):
+    if not check_list(candidate, str, True):
         return None
+    
     if len(token) == 0 and len(candidate) == 0:
         return 1.0
 
@@ -147,13 +124,11 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if not isinstance(first_token, str) or not first_token:
+    if not check_list(first_token, str, True):
         return None
-    if not isinstance(vocabulary, dict) or not vocabulary:
+    if not check_dict(vocabulary, str, int, True):
         return None
-    if not all(isinstance(word, str) for word in vocabulary.keys()):
-        return None
-    if not all(isinstance(word_freq, (int, float)) for word_freq in vocabulary.values()):
+    if not check_dict(vocabulary, str, float, True):
         return None
     if not isinstance(method, str) or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
@@ -209,14 +184,13 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if not isinstance(wrong_word, str):
+    if not check_list(wrong_word, str, True):
         return None
-    if not isinstance(vocabulary, dict):
+    if not check_dict(vocabulary, str, int, True):
         return None
-    if not all(isinstance(word, str) for word in vocabulary.keys()):
+    if not check_dict(vocabulary, str, float, True):
         return None
-    if not all(isinstance(word_freq, (int, float)) for word_freq in vocabulary.values()):
-        return None
+    
     if alphabet is not None:
         if not isinstance(alphabet, list):
             return None
@@ -530,6 +504,8 @@ def calculate_frequency_distance(
     if not all(isinstance(word_freq, (int, float)) for word_freq in frequencies.values()):
         return None
     if not all(isinstance(syb, str) for syb in alphabet):
+        return None
+    if not frequencies:
         return None
     
     dist = dict.fromkeys(frequencies.keys(), 1.0)
