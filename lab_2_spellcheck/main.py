@@ -143,7 +143,7 @@ def calculate_distance(
         distance=calculate_frequency_distance(first_token, vocabulary, alphabet or [])
         return distance
 
-    dictionary={}
+    dictionary: dict[str, float] = {}
     for token in vocabulary:
         if method == "jaccard":
             distance=calculate_jaccard_distance(first_token, token)
@@ -159,6 +159,9 @@ def calculate_distance(
             distance = calculate_jaro_winkler_distance(first_token, token)
             if distance is not None:
                 dictionary[token]=distance
+
+    if not dictionary:
+        return None
 
     return dictionary
 
