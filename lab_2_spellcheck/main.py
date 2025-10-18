@@ -112,31 +112,22 @@ def calculate_distance(
                 return None
             jaccard_dist[key] = value
         return jaccard_dist
-
-    if method == "frequency-based":
+    elif method == "frequency-based":
         if alphabet is None:
             return {token: 1.0 for token in vocabulary}
         freq_dist = calculate_frequency_distance(first_token, vocabulary, alphabet)
         return freq_dist
-
-    if method == "levenshtein":
-        levenshtein_dist = {}
+    else:
+        dist = {}
         for word in vocabulary:
-            distance = calculate_levenshtein_distance(first_token, word)
+            if method == "levenshtein":
+                distance = calculate_levenshtein_distance(first_token, word)
+            elif method == "jaro-winkler":
+                distance = calculate_jaro_winkler_distance(first_token, word)
             if distance is None:
                 return None
-            levenshtein_dist[word] = float(distance)
-        return levenshtein_dist
-
-    if method == "jaro-winkler":
-        jaro_winkler_dist = {}
-        for word in vocabulary:
-            distance = calculate_jaro_winkler_distance(first_token, word)
-            if distance is None:
-                return None
-            jaro_winkler_dist[word] = float(distance)
-        return jaro_winkler_dist
-    return None
+            dist[word] = float(distance)
+        return dist
 
 
 def find_correct_word(
@@ -559,9 +550,11 @@ def calculate_jaro_distance(
     """
     if (not isinstance(token, str) or
         not isinstance(candidate, str) or
-        not isinstance(matches, int) or matches < 0 or
-        not isinstance(transpositions, int) or transpositions < 0
+        not isinstance(matches, int) or
+        not isinstance(transpositions, int)
         ):
+        return None
+    if matches < 0 or transpositions < 0:
         return None
 
     if matches == 0:
@@ -592,9 +585,11 @@ def winkler_adjustment(
     """
     if (not isinstance(token, str) or
         not isinstance(candidate, str) or
-        not isinstance(jaro_distance, float) or jaro_distance < 0 or jaro_distance > 1 or
-        not isinstance(prefix_scaling, float) or not 1 > prefix_scaling > 0
+        not isinstance(jaro_distance, float) or
+        not isinstance(prefix_scaling, float)
         ):
+        return None
+    if jaro_distance < 0 or prefix_scaling <= 0:
         return None
 
     prefix_len = 0
