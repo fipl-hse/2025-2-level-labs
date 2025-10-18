@@ -3,6 +3,7 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
+import isort
 
 from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 
