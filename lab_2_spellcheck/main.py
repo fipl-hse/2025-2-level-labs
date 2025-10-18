@@ -146,17 +146,17 @@ def calculate_distance(
         if method == "jaccard":
             distance=calculate_jaccard_distance(first_token, token)
             if distance is not None:
-                dictionary[token]=distance # type: ignore
+                dictionary[token]=distance  # type: ignore
 
         elif method == "levenshtein":
             distance = calculate_levenshtein_distance(first_token, token)
             if distance is not None:
-                dictionary[token]=distance # type: ignore
+                dictionary[token]=distance  # type: ignore
 
         elif method == "jaro-winkler":
             distance = calculate_jaro_winkler_distance(first_token, token)
             if distance is not None:
-                dictionary[token]=distance # type: ignore
+                dictionary[token]=distance  # type: ignore
 
     if not dictionary:
         return None
