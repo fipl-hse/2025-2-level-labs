@@ -7,6 +7,7 @@ from typing import Literal
 
 from lab_1_keywords_tfidf.main import check_dict, check_list
 
+
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
     Build a vocabulary from the documents.
@@ -122,9 +123,7 @@ def calculate_distance(
         return result
     else:
         return None
-
-
-        
+     
 def find_correct_word(
     wrong_word: str,
     vocabulary: dict[str, float],
@@ -175,7 +174,6 @@ def initialize_levenshtein_matrix(
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
 
-
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
     """
     Fill a Levenshtein matrix with edit distances between all prefixes.
@@ -188,8 +186,6 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
     
-
-
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     """
     Calculate the Levenshtein edit distance between two strings.
@@ -202,7 +198,6 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
-
 
 def delete_letter(word: str) -> list[str]:
     """
@@ -244,7 +239,6 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
         for letter in alphabet       
     )
 
-
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     """
     Generate all possible words by replacing each letter in the word
@@ -267,7 +261,6 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
             candidate = word[:i] + letter + word[i+1:]
             replaced_candidates.append(candidate)
     return sorted(replaced_candidates)
-
 
 def swap_adjacent(word: str) -> list[str]:
     """
@@ -340,7 +333,6 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         all_candidates.update(secondary)
     return tuple(sorted(all_candidates))
 
-
 def calculate_frequency_distance(
     word: str, frequencies: dict, alphabet: list[str]
 ) -> dict[str, float] | None:
@@ -393,7 +385,6 @@ def get_matches(
     In case of corrupt input arguments, None is returned.
     """
 
-
 def count_transpositions(
     token: str, candidate: str, token_matches: list[bool], candidate_matches: list[bool]
 ) -> int | None:
@@ -411,7 +402,6 @@ def count_transpositions(
 
     In case of corrupt input arguments, None is returned.
     """
-
 
 def calculate_jaro_distance(
     token: str, candidate: str, matches: int, transpositions: int
@@ -431,7 +421,6 @@ def calculate_jaro_distance(
     In case of corrupt input arguments, None is returned.
     """
 
-
 def winkler_adjustment(
     token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
 ) -> float | None:
@@ -449,7 +438,6 @@ def winkler_adjustment(
 
     In case of corrupt input arguments, None is returned.
     """
-
 
 def calculate_jaro_winkler_distance(
     token: str, candidate: str, prefix_scaling: float = 0.1
