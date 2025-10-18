@@ -102,7 +102,6 @@ def calculate_distance(
     (alphabet is not None and not check_list(alphabet, str, True))):
         return None
 
-    res = None
     if method == "jaccard":
         res = {}
         for key in vocabulary:
@@ -122,7 +121,7 @@ def calculate_distance(
             if method == "levenshtein":
                 distance = calculate_levenshtein_distance(first_token, word)
             else:
-                distance = distance = calculate_jaro_winkler_distance(first_token, word)
+                distance = calculate_jaro_winkler_distance(first_token, word)
             if distance is None:
                 return None
             res[word] = float(distance)
