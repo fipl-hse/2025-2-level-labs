@@ -72,8 +72,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
 
     tok = set(token)
     cand = set(candidate)
-    jaccard_distance = 1 - len(tok & cand)/len(tok | cand)
-    return jaccard_distance
+    return 1 - len(tok & cand)/len(tok | cand)
 
 
 def calculate_distance(
@@ -96,12 +95,12 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if not (
-        check_dict(vocabulary, str, float, False) and
-        vocabulary and
-        (alphabet is None or check_list(alphabet, str, False)) and
-        isinstance(first_token, str) and
-        method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+    if (not check_dict(vocabulary, str, float, False) or
+        not vocabulary or
+        (alphabet is not None and not check_list(alphabet, str, True)) or
+        not isinstance(first_token, str) or
+        not isinstance(method, str) or
+        not method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
     ):
         return None
 
@@ -135,9 +134,8 @@ def calculate_distance(
             distance = calculate_jaro_winkler_distance(first_token, word)
             if distance is None:
                 return None
-            jaro_winkler_dist[word] = max(0.0, min(1.0, distance))
+            jaro_winkler_dist[word] = float(distance)
         return jaro_winkler_dist
-    return None
 
 
 def find_correct_word(
@@ -605,8 +603,7 @@ def winkler_adjustment(
             prefix_len += 1
         else:
             break
-    adjustment = prefix_len * prefix_scaling * jaro_distance
-    return adjustment
+    return prefix_len * prefix_scaling * jaro_distance
 
 def calculate_jaro_winkler_distance(
     token: str, candidate: str, prefix_scaling: float = 0.1
@@ -629,18 +626,12 @@ def calculate_jaro_winkler_distance(
         not isinstance(prefix_scaling, float) or prefix_scaling < 0 or prefix_scaling is None
         ):
         return None
-    if len(token) == 0 or len(candidate) == 0:
+    if not len(token) or not len(candidate):
         return 1.0
     max_len = max(len(token), len(candidate))
     match_distance = (max_len // 2) - 1
     matches = get_matches(token, candidate, match_distance)
     if matches is None:
-        return None
-    if (not isinstance(matches, tuple) or len(matches) != 3 or
-        not isinstance(matches[0], int) or matches[0] < 0 or
-        not check_list(matches[1], bool, False) or
-        not check_list(matches[2], bool, False)
-        ):
         return None
     transpositions = count_transpositions(token, candidate, matches[1], matches[2])
     if transpositions is None:
@@ -651,5 +642,4 @@ def calculate_jaro_winkler_distance(
     adjustment = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
     if adjustment is None or adjustment > 1:
         return None
-    jaro_winkler_distance = jaro_distance - adjustment
-    return max(0, jaro_winkler_distance)
+    return max(0, jaro_distance - adjustment)
