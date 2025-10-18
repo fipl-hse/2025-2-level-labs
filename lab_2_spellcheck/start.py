@@ -14,7 +14,6 @@ from lab_2_spellcheck.main import (
     find_out_of_vocab_words,
 )
 
-
 def main() -> None:
     """
     Launches an implementation.
@@ -32,27 +31,19 @@ def main() -> None:
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
     result = None
-    cleaned_and_tokenized_text=clean_and_tokenize(text)
-    if cleaned_and_tokenized_text is None:
-        return
+    cleaned_and_tokenized_text=clean_and_tokenize(text) or []
 
-    text_without_stop_words=remove_stop_words(cleaned_and_tokenized_text, stop_words)
-    if text_without_stop_words is None:
-        return
+    text_without_stop_words=remove_stop_words(cleaned_and_tokenized_text, stop_words) or []
 
-    vocabulary=build_vocabulary(text_without_stop_words)
-    if vocabulary is None:
-        return
+    vocabulary=build_vocabulary(text_without_stop_words) or {}
 
     all_elements_in_sentences=[]
     for element in sentences:
-        cleaned_tokens=clean_and_tokenize(element)
-        without_stop_words=remove_stop_words(cleaned_tokens, stop_words)
+        cleaned_tokens=clean_and_tokenize(element) or []
+        without_stop_words=remove_stop_words(cleaned_tokens, stop_words) or []
         all_elements_in_sentences.extend(without_stop_words)
 
-    finded_out_of_vocab_words=find_out_of_vocab_words(vocabulary, all_elements_in_sentences)
-    if finded_out_of_vocab_words is None:
-        return
+    finded_out_of_vocab_words=find_out_of_vocab_words(all_elements_in_sentences, vocabulary) or []
     print('Слова не из словаря:', finded_out_of_vocab_words)
 
     russian_alphabet=list('абвгдеёжзийклмнопрстуфхцчшщъыьэюя')
@@ -70,10 +61,10 @@ def main() -> None:
         print('jaro-winkler: ', correct_jaro_winkler)
 
         correct_result[token]={
-            'jaccard: ', correct_jaccard,
-            'frequency_based: ', correct_frequency,
-            'levenshtein: ', correct_levenshtein,
-            'jaro-winkler: ', correct_jaro_winkler
+            'jaccard: ': correct_jaccard,
+            'frequency_based: ': correct_frequency,
+            'levenshtein: ': correct_levenshtein,
+            'jaro-winkler: ': correct_jaro_winkler
         }
 
     result=correct_result
