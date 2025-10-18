@@ -422,18 +422,10 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
 
-    candidates = set()
     if word == "":
         if not alphabet:
-            return[]
-        candidates.add("")
-
-        for letter in alphabet:
-            candidates.add(letter)
-
-        for letter1 in alphabet:
-            for letter2 in alphabet:
-                candidates.add(letter1 + letter2)
+            return []
+        return sorted(alphabet)
 
     deleted=delete_letter(word) or []
     added=add_letter(word, alphabet) or []
