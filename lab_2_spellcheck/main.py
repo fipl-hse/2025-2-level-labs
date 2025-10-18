@@ -126,8 +126,9 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-
-    if not isinstance(first_token, str) or not check_dict(vocabulary, str, float, False):
+    if (not isinstance(first_token, str) or 
+    not check_dict(vocabulary, str, float, False) or
+    (alphabet is not None and not check_list(alphabet, str, True))):
         return None
 
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
@@ -135,9 +136,6 @@ def calculate_distance(
 
     if method == "frequency-based" and alphabet is None:
         return {key: 1.0 for key in vocabulary.keys()}
-
-    if alphabet is not None and not check_list(alphabet, str, True):
-        return None
 
     if method == "frequency-based":
         distance=calculate_frequency_distance(first_token, vocabulary, alphabet or [])
@@ -444,7 +442,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     candidates=deleted+added+replaced+swaped_adjacent
 
-    list_of_candidates=[]
+    list_of_candidates: list[str] = []
     for candidate in candidates:
         if candidate not in list_of_candidates:
             list_of_candidates.append(candidate)
@@ -502,7 +500,7 @@ def calculate_frequency_distance(
     if not isinstance(word, str):
         return None
 
-    if not isinstance(frequencies, dict) or not check_dict(frequencies, str, (int, float), False):
+    if not isinstance(frequencies, dict) or not check_dict(frequencies, str, float, False):
         return None
 
     if not check_list(alphabet, str, True):
