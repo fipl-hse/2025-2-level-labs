@@ -7,6 +7,7 @@ from typing import Literal
 
 from lab_1_keywords_tfidf.main import check_dict, check_list
 
+
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
     Build a vocabulary from the documents.
@@ -112,7 +113,7 @@ def calculate_distance(
 
     if method == "frequency-based":
         if alphabet is None:
-            return {token: 1.0 for token in vocabulary}
+            res = {token: 1.0 for token in vocabulary}
         res = calculate_frequency_distance(first_token, vocabulary, alphabet)
 
     if method in ["levenshtein", "jaro-winkler"]:
