@@ -231,11 +231,11 @@ def initialize_levenshtein_matrix(
     if not isinstance(token_length, int) or not isinstance(candidate_length, int):
         return None
 
-    if token_length < 0 or candidate_length <0:
+    if token_length < 0 or candidate_length < 0:
         return None
 
-    n=token_length+1
-    m=candidate_length+1
+    n=token_length + 1
+    m=candidate_length + 1
     matrix=[[0 for _ in range(m)] for _ in range(n)]
 
     for j in range(m):
