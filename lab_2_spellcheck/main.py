@@ -69,7 +69,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of both strings being empty, 0.0 is returned.
     """
     if not isinstance(token, str) or not isinstance(candidate, str):
-        return None  
+        return None
     set1 = set(token)
     set2 = set(candidate)
     intersection = len(set1.intersection(set2))
@@ -118,12 +118,12 @@ def calculate_distance(
         result: dict[str, float] = {}
         for word in vocabulary:
             dist = calculate_jaccard_distance(first_token, word)
-            if dist is None: 
+            if dist is None:
                 return None
             result[word] = float(dist)
         return result
     return None
-     
+
 def find_correct_word(
     wrong_word: str,
     vocabulary: dict[str, float],
@@ -146,19 +146,19 @@ def find_correct_word(
     In case of empty vocabulary, None is returned.
     """
     if alphabet is not None:
-        if not check_list(alphabet, str, False): 
+        if not check_list(alphabet, str, False):
             return None
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
-    if distances is None: 
+    if distances is None:
         return None
-    if not distances: 
+    if not distances:
         return None
     wrong_len = len(wrong_word)
     sorted_words = sorted(
-        distances.items(),  
+        distances.items(),
         key=lambda item: (item[1], abs(len(item[0]) - wrong_len), item[0])
     )
-    return sorted_words[0][0] 
+    return sorted_words[0][0]
 
 def initialize_levenshtein_matrix(
     token_length: int, candidate_length: int
@@ -185,7 +185,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
-    
+
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     """
     Calculate the Levenshtein edit distance between two strings.
@@ -235,8 +235,8 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
         return []
     return sorted(
         word[:i] + letter + word[i:]
-        for i in range(len(word) + 1) 
-        for letter in alphabet       
+        for i in range(len(word) + 1)
+        for letter in alphabet
     )
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
