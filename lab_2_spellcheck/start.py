@@ -33,14 +33,14 @@ def main() -> None:
         senten_words = ''.join(sentences)
     cleaned_text = clean_and_tokenize(text)
     removed_stop_words = remove_stop_words(cleaned_text, stop_words) if cleaned_text else []
-    cleaned_sentences = clean_and_tokenize(senten_words) if removed_stop_words else []
+    cleaned_sentences = clean_and_tokenize(senten_words) if senten_words else []
     removed_sentences_stop_words = (
         remove_stop_words(cleaned_sentences, stop_words)
-        if cleaned_sentences else []) if cleaned_text else []
-    freq_vocab = build_vocabulary(removed_stop_words) if removed_sentences_stop_words else {}
+        if cleaned_sentences else [])
+    freq_vocab = build_vocabulary(removed_stop_words) if removed_stop_words else []
     incorrect_words = (
         find_out_of_vocab_words(removed_sentences_stop_words, freq_vocab)
-        if freq_vocab else {}) if freq_vocab else []
+        if freq_vocab and removed_sentences_stop_words else [])
 
 
     print(incorrect_words)
@@ -50,19 +50,25 @@ def main() -> None:
     levenshtein=[]
     for incorrect_word in incorrect_words:
         jaccard_correct_words = find_correct_word(incorrect_word, freq_vocab, "jaccard")
+        if not jaccard_correct_words:
+            return
         jaccard.append(jaccard_correct_words)
         frequency_based_correct_words = (
             find_correct_word(incorrect_word, freq_vocab, "frequency-based", alphabet)
             )
+        if not frequency_based_correct_words:
+            return
         frequency_based.append(frequency_based_correct_words)
         lev_correct_words = find_correct_word(incorrect_word, freq_vocab, "levenshtein")
+        if not lev_correct_words:
+            return
         levenshtein.append(lev_correct_words)
     correct_words = (
         {"jaccard": jaccard, "frequency_based": frequency_based, "levenshtein": levenshtein}
         )
+    print(correct_words)
     result = correct_words
     assert result, "Result is None"
-    return print(correct_words)
 
 if __name__ == "__main__":
     main()
