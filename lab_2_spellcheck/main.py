@@ -75,7 +75,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     intersection = len(set1.intersection(set2))
     union = len(set1.union(set2))
     if not union:
-       return 1.0
+        return 1.0
     return 1.0 - (float(intersection) / union)
 
 def calculate_distance(
@@ -110,19 +110,19 @@ def calculate_distance(
     if method == "frequency-based":
         if alphabet is None:
             return {word: 1.0 for word in vocabulary}
-        distances = calculate_frequency_distance(first_token, vocabulary, alphabet) 
+        distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
         if distances is None:
             return None
         return distances
-    elif method == "jaccard":
+    if method == "jaccard":
+        result: dict[str, float] = {}
         for word in vocabulary:
             dist = calculate_jaccard_distance(first_token, word)
             if dist is None: 
                 return None
             result[word] = float(dist)
         return result
-    else:
-        return None
+    return None
      
 def find_correct_word(
     wrong_word: str,
