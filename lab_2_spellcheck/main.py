@@ -114,7 +114,10 @@ def calculate_distance(
     if method == "frequency-based":
         if alphabet is None:
             return {token: 1.0 for token in vocabulary}
-        res = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        freq_res = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if freq_res is None:
+            return None
+        res = freq_res
 
     if method in ["levenshtein", "jaro-winkler"]:
         res = {}
@@ -249,10 +252,10 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     matrix = fill_levenshtein_matrix(token, candidate)
     if matrix is None:
         return None
-    res = matrix[-1][-1]
-    if not isinstance(res, (int, float)):
+    result = matrix[-1][-1]
+    if not isinstance(result, int):
         return None
-    return res
+    return result
 
 
 def delete_letter(word: str) -> list[str]:

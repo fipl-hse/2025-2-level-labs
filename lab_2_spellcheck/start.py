@@ -40,6 +40,8 @@ def main() -> None:
         return
 
     vocabulary = build_vocabulary(corpus_without_stopwords)
+    if not vocabulary:
+        return
     print("Vocabulary: ", vocabulary, "\n")
 
     tokens_out_of_voc = find_out_of_vocab_words(sentences_without_stopwords, vocabulary)
