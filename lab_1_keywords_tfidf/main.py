@@ -22,7 +22,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if len(user_input) == 0 and not can_be_empty:
+    if not user_input == 0 and not can_be_empty:
         return False
     for individual_item in user_input:
         if not isinstance(individual_item, elements_type):
@@ -45,7 +45,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    if len(user_input) == 0 and not can_be_empty:
+    if not user_input == 0 and not can_be_empty:
         return False
     for key, value in user_input.items():
         if not isinstance(key, key_type):
@@ -113,12 +113,10 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     for s in t:
         temp=''
         for symb in s:
-            if symb in '!"#$%&\'()*+,./:;<=>?'\
+            if symb in '!"#$%&\'()*-+,./:;<=>?'\
             '@[\\]^_`{|}~\n':
                 continue
             temp+=symb
-        if temp == '-':
-            continue
         if temp != '':
             ans.append(temp)
     return ans
@@ -152,15 +150,10 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         dict[str, int] | None: A dictionary {token: occurrences}.
         In case of corrupt input arguments, None is returned.
     """
+    if not check_list(tokens, str, True):
+         return None
+    return {token: tokens.count(token) for token in set(tokens)}
 
-    if not isinstance(tokens, list):
-        return None
-    frequencies = {}
-    for token in tokens:
-        if not isinstance(token, str):
-            return None
-        frequencies[token] = frequencies.get(token, 0) + 1
-    return frequencies
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
     """
