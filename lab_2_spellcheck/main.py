@@ -114,10 +114,9 @@ def calculate_distance(
     if method == "frequency-based":
         if alphabet is None:
             return {token: 1.0 for token in vocabulary}
-        freq_res = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        if freq_res is None:
+        res = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if res is None:
             return None
-        res = freq_res
 
     if method in ["levenshtein", "jaro-winkler"]:
         res = {}
