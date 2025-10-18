@@ -3,7 +3,6 @@ Lab 2.
 """
 
 # pylint:disable=unused-argument
-
 from typing import Literal
 
 from lab_1_keywords_tfidf.main import check_dict, check_list
@@ -24,7 +23,9 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
     if not check_list(tokens, str, False):
         return None
-    vocab: dict[str, float] = {}
+    vocab = {}
+    if not check_dict(vocab, str, float, True):
+        return None
     total = len(tokens)
     for token in tokens:
         if not isinstance(token, str):
@@ -122,19 +123,18 @@ def calculate_distance(
         if alphabet is None:
             return {word: 1.0 for word in vocabulary}
         distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        if distances is None:
-            return None
-        return distances
-    result: dict[str, float] = {}
+        return distances if distances is not None else None
+    if method == "jaccard":
+        distance_fn = calculate_jaccard_distance
+    elif method == "levenshtein":
+        distance_fn = calculate_levenshtein_distance
+    elif method == "jaro-winkler":
+        distance_fn = calculate_jaro_winkler_distance
+    else:
+        return None
+    result = {}
     for word in vocabulary:
-        if method == "jaccard":
-            dist = calculate_jaccard_distance(first_token, word)
-        elif method == "levenshtein":
-            dist = calculate_levenshtein_distance(first_token, word)
-        elif method == "jaro-winkler":
-            dist = calculate_jaro_winkler_distance(first_token, word)
-        else:
-            return None
+        dist = distance_fn(first_token, word)
         if dist is None:
             return None
         result[word] = float(dist)
