@@ -42,7 +42,7 @@ def main() -> None:
     if (absent_words is not None
     and vocabulary is not None):
         for word in absent_words:
-            first_result = calculate_distance(word, vocabulary, "levenshtein")
+            first_result = calculate_distance(word, vocabulary, "jaro-winkler")
     if first_result is not None:
         print(first_result)
     result = first_result
