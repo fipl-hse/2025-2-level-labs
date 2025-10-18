@@ -103,28 +103,24 @@ def calculate_distance(
     (alphabet is not None and not check_list(alphabet, str, True))):
         return None
 
-    if method == "jaccard":
-        res = {}
-        for key in vocabulary:
-            value = calculate_jaccard_distance(key, first_token)
-            if value is None:
-                return None
-            res[key] = value
-
     if method == "frequency-based":
         if alphabet is None:
             return {token: 1.0 for token in vocabulary}
-        fr_dist = calculate_frequency_distance(first_token, vocabulary, alphabet) or None
-        res = fr_dist or None
+        fr_dist = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if fr_dist is None:
+            return None
+        res = fr_dist
 
 
-    if method in ["levenshtein", "jaro-winkler"]:
+    if method in ["jaccard", "levenshtein", "jaro-winkler"]:
         res = {}
         for word in vocabulary:
             if method == "levenshtein":
                 distance = calculate_levenshtein_distance(first_token, word)
-            else:
+            elif method == "jaro-winkler":
                 distance = calculate_jaro_winkler_distance(first_token, word)
+            else:
+                distance = calculate_jaccard_distance(first_token, word)
             if distance is None:
                 return None
             res[word] = float(distance)
