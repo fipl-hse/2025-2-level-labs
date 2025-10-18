@@ -127,7 +127,7 @@ def calculate_distance(
                 return None
             levenshtein_dist[word] = float(distance)
         return levenshtein_dist
-    
+
     if method == "jaro-winkler":
         jaro_winkler_dist = {}
         for word in vocabulary:
@@ -136,6 +136,7 @@ def calculate_distance(
                 return None
             jaro_winkler_dist[word] = float(distance)
         return jaro_winkler_dist
+    return None
 
 
 def find_correct_word(
@@ -169,7 +170,7 @@ def find_correct_word(
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if not distances:
         return None
-    
+
     min_value = min(distances.values())
     candidates = [candidate for candidate, value in distances.items() if value == min_value]
     if not candidates:
@@ -483,7 +484,7 @@ def get_matches(
                 if_candidate_letter_match[j] = True
                 match_count += 1
                 break
-    
+
     return (match_count, if_token_letter_match, if_candidate_letter_match)
 
 
@@ -517,24 +518,24 @@ def count_transpositions(
 
     transpositions = 0
     token_match_els = []
-    for i in range(len(token)):
-        if token_matches[i]:
-            token_match_els.append(token[i])
+    for el in enumerate(token):
+        if el:
+            token_match_els.append(el)
     if not token_match_els:
         return 0
 
     candidate_match_els = []
-    for j in range(len(candidate)):
-        if candidate_matches[j]:
-            candidate_match_els.append(candidate[j])
+    for el in enumerate(candidate):
+        if el:
+            candidate_match_els.append(el)
     if not candidate_match_els:
         return 0
 
     if len(token_match_els) != len(candidate_match_els):
         return 0
 
-    for i in range(len(token_match_els)):
-        if token_match_els[i] != candidate_match_els[i]:
+    for i, el in enumerate(token_match_els):
+        if el != candidate_match_els[i]:
             transpositions += 1
     return transpositions // 2
 
@@ -595,7 +596,7 @@ def winkler_adjustment(
         not isinstance(prefix_scaling, float) or not 1 > prefix_scaling > 0
         ):
         return None
-    
+
     prefix_len = 0
     for i in range(min(4, len(token), len(candidate))):
         if token[i] == candidate[i]:
