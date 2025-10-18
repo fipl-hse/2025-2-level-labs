@@ -181,7 +181,8 @@ def find_correct_word(
         return None
     wrong_len = len(wrong_word)
     min_len_diff = min(abs(len(candidate) - wrong_len) for candidate in candidates)
-    filtered = [candidate for candidate in candidates if abs(len(candidate) - wrong_len) == min_len_diff]
+    filtered = [candidate for candidate in candidates if abs(len(candidate) - wrong_len)
+                == min_len_diff]
     return sorted(filtered)[0] if filtered else None
 
 
@@ -517,9 +518,9 @@ def count_transpositions(
         if not matched:
             continue
         while candidate_index < len(candidate) and not candidate_matches[candidate_index]:
-                candidate_index += 1
+            candidate_index += 1
         if candidate_index < len(candidate) and token[i] != candidate[candidate_index]:
-                transpositions += 1
+            transpositions += 1
         candidate_index += 1
     return transpositions // 2
 
