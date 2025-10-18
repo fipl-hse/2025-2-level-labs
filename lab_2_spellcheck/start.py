@@ -11,7 +11,7 @@ from lab_2_spellcheck.main import (
     calculate_jaro_winkler_distance,
     calculate_levenshtein_distance,
     find_correct_word,
-    find_out_of_vocab_words
+    find_out_of_vocab_words,
 )
 
 
@@ -53,9 +53,9 @@ def main() -> None:
         sentence_tokens = clean_and_tokenize(sentence) or []
         out_of_vocab = find_out_of_vocab_words(sentence_tokens, tokens_vocab) or []
         all_wrong_words.extend(out_of_vocab)
-    all_wrong_words = set(all_wrong_words)
+    all_wrong_words_set = set(all_wrong_words)
     jaccard_corrections = {}
-    for wrong_word in all_wrong_words:
+    for wrong_word in all_wrong_words_set:
         correct_word = find_correct_word(wrong_word, tokens_vocab, "jaccard", alphabet)
         if correct_word and correct_word != wrong_word:
             jaccard_corrections[wrong_word] = correct_word

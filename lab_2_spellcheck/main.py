@@ -111,6 +111,8 @@ def calculate_distance(
         calc_distance = calculate_levenshtein_distance
     elif method == "jaro-winkler":
         calc_distance = calculate_jaro_winkler_distance
+    else:
+        return None
     for token in vocabulary:
         distance_value = calc_distance(first_token, token)
         if distance_value is None:
@@ -487,7 +489,7 @@ def count_transpositions(
     if not isinstance(candidate, str):
         return None
     if not check_list(token_matches, bool, False):
-        return None  
+        return None
     if not check_list(candidate_matches, bool, False):
         return None
     matched_token_indexes = []
