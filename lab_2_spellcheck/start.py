@@ -10,7 +10,8 @@ from lab_2_spellcheck.main import (
     calculate_frequency_distance,
     calculate_jaro_winkler_distance,
     calculate_levenshtein_distance,
-    find_out_of_vocab_words,
+    find_correct_word,
+    find_out_of_vocab_words
 )
 
 
@@ -47,6 +48,36 @@ def main() -> None:
     jaro_winkler_distance = calculate_jaro_winkler_distance("кот", "кто")
     print(jaro_winkler_distance)
     result = jaro_winkler_distance
+    all_wrong_words = []
+    for sentence in sentences:
+        sentence_tokens = clean_and_tokenize(sentence) or []
+        out_of_vocab = find_out_of_vocab_words(sentence_tokens, tokens_vocab) or []
+        all_wrong_words.extend(out_of_vocab)
+    all_wrong_words = set(all_wrong_words)
+    jaccard_corrections = {}
+    for wrong_word in all_wrong_words:
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "jaccard", alphabet)
+        if correct_word and correct_word != wrong_word:
+            jaccard_corrections[wrong_word] = correct_word
+    print(f"corrections by jaccard method: {jaccard_corrections}")
+    freq_corrections = {}
+    for wrong_word in all_wrong_words:
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "frequency-based", alphabet)
+        if correct_word and correct_word != wrong_word:
+            freq_corrections[wrong_word] = correct_word
+    print(f"corrections by frequency_based method: {freq_corrections}")
+    lev_corrections = {}
+    for wrong_word in all_wrong_words:
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "levenshtein", alphabet)
+        if correct_word and correct_word != wrong_word:
+            lev_corrections[wrong_word] = correct_word
+    print(f"corrections by levenshtein method: {lev_corrections}")
+    jw_corrections = {}
+    for wrong_word in all_wrong_words:
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "jaro-winkler", alphabet)
+        if correct_word and correct_word != wrong_word:
+            jw_corrections[wrong_word] = correct_word
+    print(f"corrections by jaro-winkler method: {jw_corrections}")
     assert result, "Result is None"
 
 
