@@ -65,7 +65,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of both strings being empty, 0.0 is returned.
     """
     if not isinstance(token, str) or not isinstance(candidate, str):
-        return
+        return None
     if token == "" and candidate == "":
         return 1.0
     jaccard_distance = 1 - len(set(token) & set(candidate)) / len(set(token) | set(candidate))
@@ -96,7 +96,7 @@ def calculate_distance(
         not isinstance(first_token, str)
         or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-        or not alphabet is None and not check_list(alphabet, str, False) 
+        or not alphabet is None and not check_list(alphabet, str, False)
     ):
         return None
     distance = {}
@@ -104,7 +104,7 @@ def calculate_distance(
         for token in vocabulary:
             distance[token] = calculate_jaccard_distance(first_token, token)
             if distance[token] is None:
-                return
+                return None
     if method == "frequency-based":
         if alphabet is None:
             alphabet = []
@@ -179,7 +179,7 @@ def initialize_levenshtein_matrix(
     ):
         return None
     levenshtein_matrix = [[0 for i in range(candidate_length + 1)] for j in range(token_length + 1)]
-    levenshtein_matrix[0] = [i for i in range(candidate_length + 1)]
+    levenshtein_matrix[0] = list(range(candidate_length + 1))
     for i in range(token_length + 1):
         levenshtein_matrix[i][0] = i
     return levenshtein_matrix
@@ -197,7 +197,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
     if not isinstance(token, str) or not isinstance(candidate, str):
-        return
+        return None
     levenshtein_matrix = initialize_levenshtein_matrix(len(token), len(candidate))
     if levenshtein_matrix is None:
         return None
@@ -227,7 +227,7 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
              substitutions) required to transform token into candidate.
     """
     if not isinstance(token, str) or not isinstance(candidate, str):
-        return
+        return None
     levenshtein_matrix = fill_levenshtein_matrix(token, candidate)
     if levenshtein_matrix is None:
         return None
@@ -395,7 +395,9 @@ def calculate_frequency_distance(
     ):
         return None
     frequency_distances = {}
-    candidates_tuple = propose_candidates(word, alphabet) or ()
+    candidates_tuple = propose_candidates(word, alphabet)
+    if candidates_tuple is None:
+        candidates_tuple = ()
     for candidate in frequencies:
         if candidate in candidates_tuple:
             frequency_distances[candidate] = 1.0 - frequencies[candidate]
