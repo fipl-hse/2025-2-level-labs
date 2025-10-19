@@ -148,7 +148,7 @@ def calculate_sum(arg1: int, arg2: int, arg3: int) -> int:
 
 
 # Task 2:
-def calculate_power(nimber:int, power:int) -> int:
+# def calculate_power(number:int, power:int) -> int:
     """
     Raise the number to the required power.
 
@@ -236,7 +236,7 @@ print(scream("I love programming on Python"))
 
 
 # Task 6
-def is_allowed_to_drive(personal_info:dict, threshold:int) -> bool:
+def is_allowed_to_drive():
     """
     Check, whether it is allowed to drive.
     By default, 18 is the age when it is allowed to drive a car.
@@ -257,7 +257,7 @@ print(is_allowed_to_drive({"name": "Kath", "eyes": "blue", "age": 20}, 21))
 
 
 # Task 7
-def get_fibonacci_sequence(length:int) -> list:
+def get_fibonacci_sequence():
     """
     Return Fibonacci sequence of the specified length.
 

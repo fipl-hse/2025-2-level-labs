@@ -146,7 +146,7 @@ def remove_duplicates(data: dict[str, int]) -> dict[str, int]:
     Returns:
         dict[str, int]: Dictionary without duplicates.
     """
-    
+
 
 # assert remove_duplicates({
 #     'Marat': 10000,

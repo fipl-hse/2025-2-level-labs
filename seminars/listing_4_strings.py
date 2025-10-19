@@ -338,7 +338,7 @@ def is_palindrome(input_string: str) -> bool:
         bool: True if input_string is a palindrome, False otherwise
     """
     # student implementation goes here
-    
+
 #    for i in range(1, len(input_string)//2+2):
 #        if input_string[i-1] != input_string[-i]:
 #            return False
@@ -382,15 +382,6 @@ def reverse_word(sentence: str) -> str:
         str: Modified sentence
     """
     # student implementation goes here
-    sentence_separated = sentence.split()
-    new_sentence = []
-    for i in sentence_separated:
-        if len(i) >= 5:
-            i = i[::-1]
-        new_sentence.append(i)
-    new_sentence_joined = ' '.join(new_sentence)
-    return new_sentence_joined
-
 
 # reverse_word("Hey fellow warriors") → "Hey wollef sroirraw"
 # reverse_word("This is a test") → "This is a test"
