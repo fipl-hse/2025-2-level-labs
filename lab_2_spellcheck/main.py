@@ -601,7 +601,7 @@ def calculate_jaro_winkler_distance(
         return 1.0
     if not token or not candidate:
         return 1.0
-    match_distance = max(max(len(token), len(candidate)) // 2 - 1, 0)    
+    match_distance = max(max(len(token), len(candidate)) // 2 - 1, 0)
     matches_result = get_matches(token, candidate, match_distance)
     if matches_result is None:
         return None
