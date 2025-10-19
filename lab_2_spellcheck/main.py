@@ -31,16 +31,15 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     if all_tokens==0:
         return {}
 
-    count_frequency={}
-    for token in tokens:
-        if token in count_frequency:
-            count_frequency[token]+=1
-        else:
-            count_frequency[token]=1
-
     dictionary={}
-    for element, value in count_frequency.items():
-        dictionary[element]=value/all_tokens
+    for token in tokens:
+        if token in dictionary:
+            dictionary[token]+=1
+        else:
+            dictionary[token]=1
+
+    for token in dictionary:
+        dictionary[token]=dictionary[token]/all_tokens
 
     return dictionary
 

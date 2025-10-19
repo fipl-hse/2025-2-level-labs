@@ -47,27 +47,26 @@ def main() -> None:
     print('Слова не из словаря:', finded_out_of_vocab_words)
 
     russian_alphabet=list('абвгдеёжзийклмнопрстуфхцчшщъыьэюя')
-    correct_result={}
+    jaccard_corrected = {}
+    frequency_corrected = {}
+    levenshtein_corrected = {}
+    jaro_winkler_corrected = {}
 
     for token in finded_out_of_vocab_words:
-        correct_jaccard=find_correct_word(token, vocabulary, 'jaccard', russian_alphabet)
-        correct_frequency=find_correct_word(token, vocabulary, 'frequency-based', russian_alphabet)
-        correct_levenshtein=find_correct_word(token, vocabulary, 'levenshtein', russian_alphabet)
-        correct_jaro_winkler=find_correct_word(token, vocabulary, 'jaro-winkler', russian_alphabet)
+        jaccard_corrected[token]=find_correct_word(token, vocabulary, 'jaccard', russian_alphabet)
+        frequency_corrected[token]=find_correct_word(token, vocabulary, 'frequency-based', russian_alphabet)
+        levenshtein_corrected[token]=find_correct_word(token, vocabulary, 'levenshtein', russian_alphabet)
+        jaro_winkler_corrected[token]=find_correct_word(token, vocabulary, 'jaro-winkler', russian_alphabet)
 
-        print('jaccard: ', correct_jaccard)
-        print('frequency_based: ', correct_frequency)
-        print('levenshtein: ', correct_levenshtein)
-        print('jaro-winkler: ', correct_jaro_winkler)
-
-        correct_result[token]={
-            'jaccard: ': correct_jaccard,
-            'frequency_based: ': correct_frequency,
-            'levenshtein: ': correct_levenshtein,
-            'jaro-winkler: ': correct_jaro_winkler
-        }
+        correct_result = [
+            jaccard_corrected,
+            frequency_corrected,
+            levenshtein_corrected,
+            jaro_winkler_corrected
+        ]
 
     result=correct_result
+    print(result)
     assert result, "Result is None"
 
 
