@@ -543,7 +543,7 @@ def calculate_jaro_distance(
     m_over_len2 = matches / len(candidate)
     mt_over_m = (matches - transpositions) / matches
     jaro_similarity = 1 - (m_over_len1 + m_over_len2 + mt_over_m) / 3
-    return jaro_similarity    
+    return jaro_similarity
 
 
 def winkler_adjustment(
@@ -592,24 +592,18 @@ def calculate_jaro_winkler_distance(
 
     In case of corrupt input arguments or corrupt outputs of used functions, None is returned.
     """
-def calculate_jaro_winkler_distance(
-    token: str, candidate: str, prefix_scaling: float = 0.1
-) -> float | None:
-    """
-    Calculate the Jaro-Winkler distance between two strings.
-    """
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
     if not isinstance(prefix_scaling, float):
         return None
     if prefix_scaling < 0 or prefix_scaling > 1:
-        return None   
+        return None
     match_distance = max(len(token), len(candidate)) // 2 - 1
     match_distance = max(match_distance, 0)
     matches_result = get_matches(token, candidate, match_distance)
     if matches_result is None:
         return None
-    matches, token_matches, candidate_matches = matches_result    
+    matches, token_matches, candidate_matches = matches_result
     if matches == 0:
         return 1.0
     transpositions_result = count_transpositions(token, candidate, token_matches, candidate_matches)

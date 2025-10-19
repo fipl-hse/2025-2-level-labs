@@ -33,7 +33,7 @@ def main() -> None:
     tokens = clean_and_tokenize(text) or []
     tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
     vocabulary = build_vocabulary(tokens_without_stopwords) or {}
-    all_sentence_tokens = list()
+    all_sentence_tokens = []
     for sentence in sentences:
         sentence_tokens = clean_and_tokenize(sentence) or []
         sentence_tokens_without_stop_words = remove_stop_words(sentence_tokens, stop_words) or []
@@ -41,7 +41,7 @@ def main() -> None:
     error_words = find_out_of_vocab_words(all_sentence_tokens, vocabulary) or []
     print(error_words)
     alphabet = [chr(i) for i in range(1072, 1104)]
-    all_results = dict()
+    all_results = {}
     for error_word in error_words:
         print(f"\nCorrection for '{error_word}':")
         jaccard_correction = find_correct_word(error_word, vocabulary,
