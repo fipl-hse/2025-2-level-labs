@@ -49,15 +49,15 @@ def main() -> None:
         word_results = {}
         jaccard = find_correct_word(word, vocabulary, 'jaccard', alphabet)
         if jaccard is None:
-            jaccard = {}
+            jaccard = ""
         word_results['jaccard'] = jaccard
         frequency = find_correct_word(word, vocabulary, 'frequency-based', alphabet)
         if frequency is None:
-            frequency = {}
+            frequency = ""
         word_results['frequency-based'] = frequency
         levenshtein = find_correct_word(word, vocabulary, 'levenshtein', alphabet)
         if levenshtein is None:
-            levenshtein = {}
+            levenshtein = ""
         word_results['levenshtein'] = levenshtein
         result[word] = word_results
         assert result, "Result is None"
