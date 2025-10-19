@@ -33,24 +33,37 @@ def main() -> None:
     tokens_text = clean_and_tokenize(text) or []
     tokens_text_without_stop_words = remove_stop_words(tokens_text, stop_words) or []
     vocabulary = build_vocabulary(tokens_text_without_stop_words) or {}
+
     all_sentence_tokens = []
     for sentence in sentences:
         sentence_tokens = clean_and_tokenize(sentence) or []
         sentence_tokens_without_stop_words = remove_stop_words(sentence_tokens, stop_words) or []
         all_sentence_tokens.extend(sentence_tokens_without_stop_words)
     error_words = find_out_of_vocab_words(all_sentence_tokens, vocabulary) or []
-    print(f"\nError words: {error_words}")
+    print(error_words)
+
     alphabet = [chr(i) for i in range(1072, 1104)]
-    methods = ('jaccard', 'frequency-based', 'levenshtein', 'jaro-winkler')
     all_results = {}
     for error_word in error_words:
         print(f"\nCorrection for '{error_word}':")
-        word_results = {}
-        for method in methods:
-            correction = find_correct_word(error_word, vocabulary, method, alphabet)
-            print(f"  {method}: {correction}")
-            word_results[method] = correction
-        all_results[error_word] = word_results
+        jaccard_correction = find_correct_word(error_word, vocabulary,
+                                               'jaccard', alphabet) or {}
+        frequency_correction = find_correct_word(error_word, vocabulary,
+                                                 'frequency-based', alphabet) or {}
+        levenshtein_correction = find_correct_word(error_word, vocabulary,
+                                                   'levenshtein', alphabet) or {}
+        jaro_winkler_correction = find_correct_word(error_word, vocabulary,
+                                                    'jaro-winkler', alphabet) or {}
+        print(f"  Jaccard: {jaccard_correction}")
+        print(f"  Frequency-based: {frequency_correction}")
+        print(f"  Levenshtein: {levenshtein_correction}")
+        print(f"  Jaro-Winkler: {jaro_winkler_correction}")
+        all_results[error_word] = {
+            'jaccard': jaccard_correction,
+            'frequency-based': frequency_correction,
+            'levenshtein': levenshtein_correction,
+            'jaro-winkler': jaro_winkler_correction
+        }
     result = all_results
     assert result, "Result is None"
 
