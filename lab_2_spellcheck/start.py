@@ -68,7 +68,7 @@ def main() -> None:
         lev_correct_words = find_correct_word(incorrect_word, freq_vocab, "levenshtein")
         levenshtein.append(lev_correct_words)
     correct_words = (
-        {"jaccard": jaccard, "frequency_based": frequency_based, "levenshtein": levenshtein}
+        f"JACCARD : {jaccard} \nFREQUENCY_BAESD: {frequency_based} \nLEVENSHTEIN: {levenshtein}"
         )
     print(correct_words)
     result = correct_words
