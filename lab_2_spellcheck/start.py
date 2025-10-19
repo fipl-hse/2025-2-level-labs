@@ -64,31 +64,28 @@ def main() -> None:
         return
     oov_words = find_out_of_vocab_words(sentence_tokens_without_stopwords, vocabulary) or []
     print(f"Out-of-vocabulary words: {oov_words}")
-    methods_dict = {
-    "jaccard": "jaccard",
-    "frequency-based": "frequency-based", 
-    "levenshtein": "levenshtein",
-    "jaro-winkler": "jaro-winkler"
-    }
     for wrong_word in oov_words:
         print(f"\nProcessing word: '{wrong_word}'")
-        for method_name, method_value in methods_dict.items():
-            distances = calculate_distance(wrong_word, vocabulary, method_value, russian_alphabet)
-            correction = find_correct_word(wrong_word, vocabulary, method_value, russian_alphabet)
-            if not distances:
-                print(f"{method_name}: Failed to calculate distances")
-                continue  
-            top_candidates = sorted(distances.items(), key=lambda x: x[1])[:3]
-            print(f"{method_name}: '{wrong_word}' -> '{correction}'")
-            print(f"Top 3 candidates: {top_candidates}")
-            if method_name == "levenshtein" and correction:
-                print(f"Levenshtein matrix for '{wrong_word}' and '{correction}':")
-                filled_matrix = fill_levenshtein_matrix(wrong_word, correction)
-                if filled_matrix:
-                    for row in filled_matrix:
-                        print(f"      {row}")
-                distance = calculate_levenshtein_distance(wrong_word, correction)
-                print(f"Final distance: {distance}")
+        methods_tuple: tuple[Literal["jaccard", "frequency-based", "levenshtein", "jaro-winkler"], ...] = (
+            "jaccard", "frequency-based", "levenshtein", "jaro-winkler"
+        )
+        for method in methods_tuple:
+            distances = calculate_distance(wrong_word, vocabulary, method, russian_alphabet)
+            correction = find_correct_word(wrong_word, vocabulary, method, russian_alphabet)
+            if distances:
+                top_candidates = sorted(distances.items(), key=lambda x: x[1])[:3]
+                print(f"{method}: '{wrong_word}' -> '{correction}'")
+                print(f"Top 3 candidates: {top_candidates}")
+                if method == "levenshtein" and correction:
+                    print(f"Levenshtein matrix for '{wrong_word}' and '{correction}':")
+                    filled_matrix = fill_levenshtein_matrix(wrong_word, correction)
+                    if filled_matrix:
+                        for row in filled_matrix:
+                            print(f"      {row}")
+                    distance = calculate_levenshtein_distance(wrong_word, correction)
+                    print(f"Final distance: {distance}")
+            else:
+                print(f"{method}: Failed to calculate distances")
     result = distance
     assert result, "Result is None"
 
