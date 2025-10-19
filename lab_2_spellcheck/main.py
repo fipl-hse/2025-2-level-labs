@@ -396,7 +396,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     for candidate in candidates:
         generated_candidate = generate_candidates(candidate, alphabet)
-        if not check_list(generated_candidate, str, True):
+        if not check_list(generated_candidate, str, True) or not generated_candidate:
             return None
         proposed_candidates.update(generated_candidate)
 

@@ -44,7 +44,7 @@ def main() -> None:
     for token in remove_stop_words(clean_and_tokenize(sentence) or [], stop_words)
       ))
 
-    out_of_vocab_words = find_out_of_vocab_words(tokenized_sentences, vocabulary)
+    out_of_vocab_words = find_out_of_vocab_words(tokenized_sentences, vocabulary) or []
 
     print("These mispelled words are out of vocabulary:", out_of_vocab_words)
 
