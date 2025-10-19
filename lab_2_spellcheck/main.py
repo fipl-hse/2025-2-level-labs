@@ -160,7 +160,6 @@ def calculate_distance(
             if distance is None:
                 return None
             distances[word] = distance
-        return distances
     if method == "frequency-based":
         freq_distances = calculate_frequency_distance(first_token, vocabulary, alphabet or [])
         if freq_distances is None:
@@ -172,15 +171,13 @@ def calculate_distance(
             if distance is None:
                 return None
             distances[word] = float(distance)
-        return distances
     if method == "jaro-winkler":
         for word in vocabulary:
             distance = calculate_jaro_winkler_distance(first_token, word)
             if distance is None:
                 return None
             distances[word] = distance
-        return distances
-    return None
+    return distances if distances else None
 
 
 def find_correct_word(
