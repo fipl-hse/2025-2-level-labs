@@ -61,14 +61,24 @@ def main() -> None:
         all_wrong_words.extend(out_of_vocab)
     unique_wrong_words = sorted(set(all_wrong_words))
 
-    methods = ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-
     for wrong_word in unique_wrong_words:
         print(f"Исправления для слова '{wrong_word}':")
-        for method in methods:
-            correct_word = find_correct_word(wrong_word, tokens_vocab, method, alphabet)
-            if correct_word and correct_word != wrong_word:
-                print(f"{method}: {correct_word}")
+        
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "jaccard", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"jaccard: {correct_word}")
+        
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "frequency-based", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"frequency-based: {correct_word}")
+        
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "levenshtein", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"levenshtein: {correct_word}")
+        
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "jaro-winkler", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"jaro-winkler: {correct_word}")
     assert result, "Result is None"
 
 
