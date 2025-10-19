@@ -248,9 +248,6 @@ def is_allowed_to_drive(personal_info:dict, threshold:int) -> bool:
     Returns:
         bool: whether it is allowed to drive
     """
-    if personal_info.get('age') >= threshold:
-        return True
-    return False
 
 
 # Function calls with expected result:
@@ -270,12 +267,6 @@ def get_fibonacci_sequence(length:int) -> list:
     Returns:
         list: Fibonacci sequence
     """
-    fibonacci_sequence = [1, 1]
-    #for index, number in enumerate(range(2, length+1)):
-    #    first_fibonacci_number = fibonacci_sequence[index-1]
-    #    second_fibonacci_number = 
-    return False
-    # student implementation goes here
 
 
 # Function calls with expected result:
