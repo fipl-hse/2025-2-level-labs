@@ -10,8 +10,6 @@
         "lab_1_keywords_tfidf\\assets\\freq_and_idf_dictionary_creation.py",
         "lab_2_spellcheck/**/*.py",
         "lab_2_spellcheck\\**\\*.py",
-        "lab_4_auto_completion/**/*.py",
-        "lab_4_auto_completion\\**\\*.py",
         "seminars/**/*.py",
         "seminars\\**\\*.py",
         "config/**/*.py",

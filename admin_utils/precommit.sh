@@ -8,7 +8,6 @@ if [[ "$1" == "smoke" ]]; then
     "lab_1_keywords_tfidf"
     "lab_2_spellcheck"
     "lab_3_generate_by_ngrams"
-    "lab_4_auto_completion"
   )
 else
   DIRS_TO_CHECK=(
@@ -17,7 +16,6 @@ else
     "lab_1_keywords_tfidf"
     "lab_2_spellcheck"
     "lab_3_generate_by_ngrams"
-    "lab_4_auto_completion"
   )
 fi
 
