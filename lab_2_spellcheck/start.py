@@ -30,7 +30,8 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
-    vocabulary = build_vocabulary(remove_stop_words(clean_and_tokenize(text) or [], stop_words)) or {}
+    vocabulary = build_vocabulary(remove_stop_words(clean_and_tokenize(text) or [],
+                                                    stop_words) or []) or {}
     print(vocabulary)
 
     all_sentence_tokens = [
