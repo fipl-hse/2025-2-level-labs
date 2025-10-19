@@ -5,84 +5,7 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 from typing import Any
-
-def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
-    """
-    Check if the object is a list containing elements of a certain type.
-
-    Args:
-        user_input (Any): Object to check
-        elements_type (type): Expected type of list elements
-        can_be_empty (bool): Whether an empty list is allowed
-
-    Returns:
-        bool: True if valid, False otherwise
-    """
-    if not isinstance(user_input, list):
-        return False
-    if not user_input:
-        return can_be_empty
-    return all(isinstance(element, elements_type) for element in user_input)
-
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
-    """
-    Check if the object is a dictionary with keys and values of given types.
-
-    Args:
-        user_input (Any): Object to check
-        key_type (type): Expected type of dictionary keys
-        value_type (type): Expected type of dictionary values
-        can_be_empty (bool): Whether an empty dictionary is allowed
-
-    Returns:
-        bool: True if valid, False otherwise
-    """
-    if not isinstance(user_input, dict):
-        return False
-    if not user_input:
-        return can_be_empty
-    return (all(isinstance(key, key_type) for key in user_input) and
-        all(isinstance(value, value_type) for value in user_input.values()))
-
-def clean_and_tokenize(text: str) -> list[str] | None:
-    """
-    Remove punctuation, convert to lowercase, and split into tokens.
-
-    Args:
-        text (str): Original text
-
-    Returns:
-        list[str] | None: A list of lowercase tokens without punctuation.
-        In case of corrupt input arguments, None is returned.
-    """
-    if not isinstance(text, str):
-        return None
-    words = text.lower().split()
-    tokens = []
-    for word in words:
-        cleaned_word = ''.join(
-            symbol for symbol in word
-            if symbol.isalnum())
-        if cleaned_word:
-            tokens.append(cleaned_word)
-    return tokens
-
-def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
-    """
-    Exclude stop words from the token sequence.
-
-    Args:
-        tokens (list[str]): Original token sequence
-        stop_words (list[str]): Tokens to exclude
-
-    Returns:
-        list[str] | None: Token sequence without stop words.
-        In case of corrupt input arguments, None is returned.
-    """
-    if not all([check_list(tokens, str, True),
-        check_list(stop_words, str, True)]):
-        return None
-    return [token for token in tokens if token not in set(stop_words)]
+from lab_1_keywords_tfidf.main import check_list, check_dict
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
@@ -175,9 +98,6 @@ def calculate_distance(
         not method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
     ):
         return None
-    if (not vocabulary or
-    (alphabet is not None and not check_list(alphabet, str, True))):
-        return None
 
     if method == "frequency-based":
         if alphabet is None:
@@ -187,8 +107,19 @@ def calculate_distance(
             return None
         res = fr_dist
 
-    #add other methods here
-
+    if method in ["jaccard", "levenshtein", "jaro-winkler"]:
+        res = {}
+        for word in vocabulary:
+            distance : float | None
+            if method == "levenshtein":
+                distance = calculate_levenshtein_distance(first_token, word)
+            elif method == "jaro-winkler":
+                distance = calculate_jaro_winkler_distance(first_token, word)
+            else:
+                distance = calculate_jaccard_distance(first_token, word)
+            if distance is None:
+                return None
+            res[word] = distance
     return res
 
 
@@ -230,9 +161,9 @@ def find_correct_word(
         return None
 
     if len(candidates) > 1:
-        min_length_diff = min(abs(len(candidate) - len(wrong_word)) for candidate in candidates)
+        smallest_length_diff = min(abs(len(candidate) - len(wrong_word)) for candidate in candidates)
         closest_candidates = [candidate for candidate in candidates
-                              if abs(len(candidate) - len(wrong_word)) == min_length_diff]
+                              if abs(len(candidate) - len(wrong_word)) == smallest_length_diff]
         return sorted(closest_candidates)[0]
 
     return candidates[0]
@@ -251,7 +182,20 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
-    
+    if (not isinstance(token_length, int) or
+        not isinstance(candidate_length, int) or
+        token_length < 0 or
+        candidate_length < 0):
+        return None
+    matrix = []
+    for i in range(token_length + 1):
+        if i == 0:
+            matrix_line = list(range(candidate_length + 1))
+            matrix.append(matrix_line)
+        else:
+            matrix_line = [i if ii == 0 else 0 for ii in range(candidate_length + 1)]
+            matrix.append(matrix_line)
+    return matrix
 
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
@@ -265,7 +209,21 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
-    
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    matrix = initialize_levenshtein_matrix(len(token), len(candidate))
+    if matrix is None:
+        return None
+    for i in range(1, len(token) + 1):
+        for j in range(1, len(candidate) + 1):
+            if token[i - 1] == candidate[j - 1]:
+                matrix[i][j] = matrix[i - 1][j - 1]
+            else:
+                delete_cost = matrix[i - 1][j] + 1
+                insert_cost = matrix[i][j - 1] + 1
+                replace_cost = matrix[i - 1][j - 1] + 1
+                matrix[i][j] = min(delete_cost, insert_cost, replace_cost)
+    return matrix
 
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
@@ -280,7 +238,12 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
-    
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    matrix = fill_levenshtein_matrix(token, candidate)
+    if matrix is None:
+        return None
+    return matrix[-1][-1]
 
 
 def delete_letter(word: str) -> list[str]:
@@ -298,11 +261,11 @@ def delete_letter(word: str) -> list[str]:
     if not isinstance(word, str):
         return []
 
-    shortened_words = []
+    shorter_words = []
     for i in range(len(word)):
         new_word = word[:i] + word[i+1:]
-        shortened_words.append(new_word)
-    return sorted(shortened_words)
+        shorter_words.append(new_word)
+    return sorted(shorter_words)
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -321,12 +284,12 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
     """
     if not isinstance(word, str) or not check_list(alphabet, str, False):
         return []
-    extended_words = []
+    longer_words = []
     for i in range(len(word) + 1):
         for letter in alphabet:
             new_word = word[:i] + letter + word[i:]
-            extended_words.append(new_word)
-    return sorted(extended_words)
+            longer_words.append(new_word)
+    return sorted(longer_words)
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -346,12 +309,12 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if not isinstance(word, str) or not check_list(alphabet, str, False) or word is None:
         return []
 
-    replased_letters_words = []
+    misspelled_words = []
     for i in range(len(word)):
         for letter in alphabet:
             new_word = word[:i] + letter + word[i + 1:]
-            replased_letters_words.append(new_word)
-    return sorted(replased_letters_words)
+            misspelled_words.append(new_word)
+    return sorted(misspelled_words)
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -370,11 +333,11 @@ def swap_adjacent(word: str) -> list[str]:
     if not isinstance(word, str):
         return []
 
-    replaced_letters_words = []
+    mixed_up_words = []
     for i in range(len(word) - 1):
         new_word = word[:i] + word[i + 1] + word[i] + word[i + 2:]
-        replaced_letters_words.append(new_word)
-    return sorted(replaced_letters_words)
+        mixed_up_words.append(new_word)
+    return sorted(mixed_up_words)
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
@@ -415,7 +378,18 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
-    
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
+        return None
+    candidates = generate_candidates(word, alphabet)
+    if candidates is None:
+        return None
+    all_candidates = set(candidates)
+    for token in list(all_candidates):
+        refined_candidates = generate_candidates(token, alphabet)
+        if refined_candidates is None:
+            return None
+        all_candidates.update(refined_candidates)
+    return tuple(sorted(set(all_candidates)))
 
 
 def calculate_frequency_distance(
@@ -434,7 +408,24 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    
+    if not isinstance(word, str) or not check_dict(frequencies, str, float, False):
+        return None
+    if not frequencies:
+        return {}
+    if not check_list(alphabet, str, True):
+        return None
+    candidates = propose_candidates(word, alphabet)
+    candidate_frequencies = {token: 1.0 for token in frequencies.keys()}
+    valid_candidates = set()
+    if candidates:
+        valid_candidates = set(candidates) & set(frequencies.keys())
+    for candidate in valid_candidates:
+        if candidate in frequencies:
+            distance_freq = 1 - frequencies[candidate]
+        else: distance_freq = 1.0
+        candidate_frequencies[candidate] = distance_freq
+    return candidate_frequencies
+
 
 def get_matches(
     token: str, candidate: str, match_distance: int
@@ -455,7 +446,28 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
-    
+    if (
+        not isinstance(token, str) or
+        not isinstance(candidate, str) or
+        not isinstance(match_distance, int)
+        or match_distance < 0
+        ):
+        return None
+    match_count = 0
+    token_letter_match = [False] * len(token)
+    candidate_letter_match = [False] * len(candidate)
+    for i, el in enumerate(token):
+        start = max(0, i - match_distance)
+        end = min(len(candidate), i + match_distance + 1)
+        for j in range(start, end):
+            if not candidate_letter_match[j] and el == candidate[j]:
+                token_letter_match[i] = True
+                candidate_letter_match[j] = True
+                match_count += 1
+                break
+
+    return (match_count, token_letter_match, candidate_letter_match)
+
 
 
 def count_transpositions(
@@ -475,7 +487,39 @@ def count_transpositions(
 
     In case of corrupt input arguments, None is returned.
     """
-    
+    if (
+        not isinstance(token, str) or
+        not isinstance(candidate, str) or
+        not check_list(token_matches, bool, False) or
+        not check_list(candidate_matches, bool, False)
+        ):
+        return None
+
+    if  len(token_matches) != len(token) or len(candidate_matches) != len(candidate):
+        return None
+
+    token_match_elements = []
+    for i, el in enumerate(token):
+        if token_matches[i]:
+            token_match_elements.append(el)
+    if not token_match_elements:
+        return 0
+
+    candidate_match_elements = []
+    for i, el in enumerate(candidate):
+        if candidate_matches[i]:
+            candidate_match_elements.append(el)
+    if not candidate_match_elements:
+        return 0
+
+    if len(token_match_elements) != len(candidate_match_elements):
+        return 0
+
+    transpositions = 0
+    for i, el in enumerate(token_match_elements):
+        if el != candidate_match_elements[i]:
+            transpositions += 1
+    return transpositions // 2
 
 
 def calculate_jaro_distance(

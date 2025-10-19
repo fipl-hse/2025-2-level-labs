@@ -3,10 +3,10 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
-from main import clean_and_tokenize, remove_stop_words
-from main import build_vocabulary, find_correct_word, find_out_of_vocab_words
+from lab_2_spellcheck.main import build_vocabulary, find_correct_word, find_out_of_vocab_words
+from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 
-russian = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+russian = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ")
 
 def main() -> None:
     """
@@ -67,7 +67,7 @@ def main() -> None:
     correct_words_by_jaro = {token: find_correct_word(
         token, vocabulary, "jaro-winkler", russian)
         for token in tokens_out_of_voc}
-    print("Correct words by jaro-winkler method: ", correct_words_by_jaro, "\n")
+    #print("Correct words by jaro-winkler method: ", correct_words_by_jaro, "\n")
 
     result = correct_words_by_jaro
     assert result, "Result is None"

@@ -152,16 +152,14 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not all([isinstance(frequencies, dict), check_positive_int(top), frequencies]):
         return None
-<<<<<<< HEAD
+
     return sorted(frequencies.keys(), key=lambda key: frequencies[key], reverse=True)[:top]
 #пропис через лямбду
-=======
     for key, value in frequencies.items():
         if not isinstance(value, (int, float)) or not isinstance(key, str):
             return None
     return [item[0] for item in sorted(frequencies.items(),
                    key=lambda item: item[1], reverse=True)[:top]]
->>>>>>> 73e7907b6b06a721f34df743dc2cae29cb85a026
 
 
 def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
