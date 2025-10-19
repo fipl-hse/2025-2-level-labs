@@ -87,9 +87,9 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if not isinstance(first_token, str) or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
+    if not isinstance(first_token, str) or not check_dict(vocabulary, str, float, False):
         return None
-    if not check_dict(vocabulary, str, float, False):
+    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
     if alphabet is not None and not check_list(alphabet, str, True):
         return None
@@ -151,7 +151,7 @@ def find_correct_word(
         return min_candidates[0]
     min_length = min(abs(len(wrong_word) - len(word)) for word in min_candidates)
     length_candidates=[
-        word for word in min_candidates 
+        word for word in min_candidates
         if abs(len(wrong_word) - len(word))==min_length
         ]
     if not length_candidates:
