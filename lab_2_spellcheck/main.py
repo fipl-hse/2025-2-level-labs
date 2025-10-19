@@ -99,15 +99,32 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if not check_dict(vocabulary, str, float, False) or not check_list(first_token, str, False):
+    if (
+        not isinstance(first_token, str)
+        or not check_dict(vocabulary, str, float, False)
+        or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        or (alphabet is not None and not check_list(alphabet, str, False))
+    ):
         return None
-    #это пока и не должно работать
-    result = {}
-    if method == "jaccard":
-        for word in vocabulary.keys():
-            distance = calculate_jaccard_distance(first_token, word)
-            result[word] = distance
-        return result
+    result: dict[str, float] = {}
+    if method == "frequency-based":
+        freq_dict = calculate_frequency_distance(first_token, vocabulary, alphabet or [])
+        if freq_dict is None:
+            return None
+        return freq_dict
+    for vocab_word in vocabulary:
+        if method == "levenshtein":
+            distance = calculate_levenshtein_distance(first_token, vocab_word)
+        elif method == "jaccard":
+            distance = calculate_jaccard_distance(first_token, vocab_word)
+        elif method == "jaro-winkler":
+            distance = calculate_jaro_winkler_distance(first_token, vocab_word)
+        else:
+            return None
+        if distance is None:
+            return None
+        result[vocab_word] = distance
+    return result
 
 
 def find_correct_word(
@@ -131,16 +148,26 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if not check_list(wrong_word, str, False) or not check_dict(vocabulary, str, float, False):
+    if (
+        not isinstance(wrong_word, str)
+        or not check_dict(vocabulary, str, float, False)
+        or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        or (alphabet is not None and not check_list(alphabet, str, False))
+    ):
         return None
-    #это тоже
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
-    if not distances:
+    if not distances or distances is None:
         return None
-    min_distance = min(distances.values())
-    candidates = [word for word, dist in distances.items() if dist == min_distance]
-    candidates.sort(key=lambda w: (abs(len(w) - len(wrong_word)), w))
-    return candidates[0] if candidates else None
+    min_dist_value = float("inf")
+    for value in distances.values():
+        if value < min_dist_value:
+            min_dist_value = value
+    closest_candidates = [word for word, dist in distances.items() if dist == min_dist_value]
+    if len(closest_candidates) == 1:
+        return closest_candidates[0]
+    min_len_diff = min(abs(len(word) - len(wrong_word)) for word in closest_candidates)
+    length_filtered = [word for word in closest_candidates if abs(len(word) - len(wrong_word)) == min_len_diff]
+    return min(length_filtered)
 
 
 def initialize_levenshtein_matrix(
@@ -168,7 +195,7 @@ def initialize_levenshtein_matrix(
         matrix.append(row)
     for token_index in range(token_length + 1):
         matrix[token_index][0] = token_index
-    for j in range(candidate_length + 1):
+    for cand_index in range(candidate_length + 1):
         matrix[0][cand_index] = cand_index
     return matrix
 
@@ -395,6 +422,23 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not (
+            isinstance(word, str)
+            or not check_dict(frequencies, str, float, False)
+            or not check_list(alphabet, str, True)
+        ):
+        return None
+    freq_distance = {token: 1.0 for token in frequencies}
+    if word == "":
+        return freq_distance
+    candidates = propose_candidates(word, alphabet)
+    if candidates is None:
+        return freq_distance
+    for candidate in candidates:
+        if candidate in frequencies:
+            freq_distance[candidate] = 1.0 - frequencies[candidate]
+    return freq_distance
+
 
 
 def get_matches(
