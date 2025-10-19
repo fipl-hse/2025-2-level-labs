@@ -43,7 +43,8 @@ def main() -> None:
     sentences_without_stop_words = remove_stop_words(cleaned_sentences, stop_words)
     if text_without_stop_words is not None:
         vocabulary = build_vocabulary(text_without_stop_words)
-        if vocabulary is not None:
+        if (vocabulary is not None
+        and sentences_without_stop_words is not None):
             absent_words = find_out_of_vocab_words(sentences_without_stop_words, vocabulary)
     final_result = {}
     if (absent_words is not None

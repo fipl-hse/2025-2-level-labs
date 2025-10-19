@@ -66,7 +66,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
-    if (not isinstance(token, str) 
+    if (not isinstance(token, str)
     or not isinstance(candidate, str)):
         return None
     if not token or not candidate:
@@ -280,10 +280,10 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if (not isinstance(word, str) 
+    if (not isinstance(word, str)
     or not check_list(alphabet, str, False)):
         return []
-    if (alphabet 
+    if (alphabet
     and not all(isinstance(letter, str) for letter in alphabet)):
         return []
     res = []
@@ -309,10 +309,10 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if (not isinstance(word, str) 
+    if (not isinstance(word, str)
     or not check_list(alphabet, str, False)):
         return []
-    if (alphabet 
+    if (alphabet
     and not all(isinstance(letter, str) for letter in alphabet)):
         return []
     result = []
@@ -360,10 +360,10 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if (not isinstance(word, str) 
+    if (not isinstance(word, str)
     or not isinstance(alphabet, list)):
         return None
-    if (alphabet 
+    if (alphabet
     and not all(isinstance(letter, str) for letter in alphabet)):
         return None
     set_delete = set(delete_letter(word))
@@ -388,7 +388,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
-    if (not isinstance(word, str) 
+    if (not isinstance(word, str)
     or not check_list(alphabet, str, True)):
         return None
     result = generate_candidates(word, alphabet)
