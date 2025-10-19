@@ -152,6 +152,8 @@ def find_correct_word(
             return None
     if method == "jaccard":
         wrong_word_distance = calculate_distance(wrong_word, vocabulary, "jaccard", None)
+    if wrong_word_distance == None:
+        return None
     min_distance = min(wrong_word_distance.values())
     candidates = [word for word, dis in wrong_word_distance.items() if dis == min_distance]
     if not candidates:
