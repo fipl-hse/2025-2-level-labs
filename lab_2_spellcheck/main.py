@@ -95,9 +95,11 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if (not (isinstance(first_token, str) and first_token)
+    if (not isinstance(first_token, str)
     or not check_dict(vocabulary, str, float, False) or
     method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
+        return None
+    if not first_token:
         return None
     result = {}
     if method in ["jaccard", "levenshtein", "jaro-winkler"]:
@@ -143,12 +145,14 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if (not (isinstance(wrong_word, str) and wrong_word)
+    if (not isinstance(wrong_word, str) 
     or not check_dict(vocabulary, str, float, False) or
     method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
+    if not wrong_word:
+        return None
     if alphabet is not None:
-        if not isinstance(alphabet, list) or not alphabet:
+        if not check_list(alphabet, str, False) or not alphabet:
             return None
         if not all(isinstance(item, str) for item in alphabet):
             return None
@@ -276,7 +280,7 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not isinstance(word, str) or not isinstance(alphabet, list):
+    if not isinstance(word, str) or not check_list(alphabet, str, False):
         return []
     if alphabet and not all(isinstance(letter, str) for letter in alphabet):
         return []
@@ -303,7 +307,7 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not isinstance(word, str) or not isinstance(alphabet, list):
+    if not isinstance(word, str) or not check_list(alphabet, str, False):
         return []
     if alphabet and not all(isinstance(letter, str) for letter in alphabet):
         return []
@@ -410,14 +414,13 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if (not isinstance(word, str)
-    or not check_dict(frequencies, str, float, False)
-    or not check_list(alphabet, str, True)):
+    if (not isinstance(word, str) or
+    not check_dict(frequencies, str, float, False) or
+    not check_list(alphabet, str, True)):
         return None
     result = {}
     if word == "":
         return {token: 1.0 for token in frequencies}
-
     candidates = propose_candidates(word, alphabet)
     if candidates:
         for element in frequencies:
