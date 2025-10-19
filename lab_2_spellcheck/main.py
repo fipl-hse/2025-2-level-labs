@@ -164,10 +164,10 @@ def find_correct_word(
     """
     if (
         not isinstance(wrong_word, str)
-    or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-    or not check_dict(vocabulary, str, float, False)
-    or not all(isinstance(k, str) and isinstance(v, (int, float)) for k, v in vocabulary.items())
-    ):
+        or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        or not check_dict(vocabulary, str, float, False)
+        or not all(isinstance(k, str) and isinstance(v, (int, float)) for k, v in vocabulary.items())
+        ):
         return None
     if alphabet is not None:
         if not check_list(alphabet, str, False) or not all(isinstance(ch, str) for ch in alphabet):
@@ -423,9 +423,11 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if (not isinstance(word, str)
+    if (
+        not isinstance(word, str)
         or not check_dict(frequencies, str, float, False)
-        or not check_list(alphabet, str, True)):
+        or not check_list(alphabet, str, True)
+        ):
         return None
     candidates = propose_candidates(word, alphabet)
     if not candidates:
@@ -461,10 +463,10 @@ def get_matches(
     """
     if (
         not isinstance(token, str)
-    or not isinstance(candidate, str)
-    or not isinstance(match_distance, int)
-    or match_distance < 0
-    ):
+        or not isinstance(candidate, str)
+        or not isinstance(match_distance, int)
+        or match_distance < 0
+        ):
         return None
     candidate_len = len(candidate)
     token_matches = [False for _ in token]
@@ -475,11 +477,12 @@ def get_matches(
         start = max(0, i - max_distance)
         end = min(i + max_distance + 1, candidate_len)
         for j in range(start, end):
-            if not candidate_matches[j] and token_char == candidate[j]:
-                token_matches[i] = True
-                candidate_matches[j] = True
-                matches += 1
-                break
+            if candidate_matches[j] or token_char != candidate[j]:
+                continue
+            token_matches[i] = True
+            candidate_matches[j] = True
+            matches += 1
+            break
     return matches, token_matches, candidate_matches
 
 
@@ -500,17 +503,14 @@ def count_transpositions(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(token, str):
+    if not isinstance(token, str) or not isinstance(candidate, str):
         return None
-    if not isinstance(candidate, str):
+    if (
+        not check_list(token_matches, bool, True)
+        or not check_list(candidate_matches, bool, True)
+        ):
         return None
-    if not check_list(token_matches, bool, True):
-        return None
-    if not check_list(candidate_matches, bool, True):
-        return None
-    if len(token) != len(token_matches):
-        return None
-    if len(candidate) != len(candidate_matches):
+    if len(token) != len(token_matches) or len(candidate) != len(candidate_matches):
         return None
     transpositions = 0
     candidate_index = 0
@@ -542,11 +542,14 @@ def calculate_jaro_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(token, str) or not isinstance(candidate, str):
+    if (
+        not isinstance(token, str)
+        or not isinstance(candidate, str)
+        or not isinstance(matches, int)
+        or not isinstance(transpositions, int)
+        ):
         return None
-    if not isinstance(matches, int) or matches < 0:
-        return None
-    if not isinstance(transpositions, int) or transpositions < 0:
+    if matches < 0 or transpositions < 0:
         return None
     if len(token) == 0 or len(candidate) == 0:
         return None

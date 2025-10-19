@@ -4,8 +4,6 @@ Spellcheck starter
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
 
-from typing import Literal
-
 from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 from lab_2_spellcheck.main import build_vocabulary, find_correct_word, find_out_of_vocab_words
 
@@ -38,12 +36,12 @@ def main() -> None:
         all_tokens_from_sentences.extend(filtered_tokens)
 
     unknown_words = find_out_of_vocab_words(all_tokens_from_sentences, vocabulary_map) or []
-    print('Слова не в словаре:', unknown_words)
+    print('Words not in the dictionary:', unknown_words)
 
     rus_alphabet = list('абвгдеёжзийклмнопрстуфхцчшщъыьэюя')
     corrections_result = {}
 
-    methods: list[Literal["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]] = [
+    methods = [
     "jaccard",
     "frequency-based",
     "levenshtein",
@@ -51,7 +49,7 @@ def main() -> None:
     ]
 
     for unknown in unknown_words:
-        print(f'\nВозможные исправления слова: {unknown}')
+        print(f'\nPossible corrections of the word: {unknown}')
         word_corrections = {}
         for method in methods:
             correction = find_correct_word(unknown,
