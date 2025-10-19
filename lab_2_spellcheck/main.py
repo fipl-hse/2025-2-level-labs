@@ -577,7 +577,7 @@ def count_transpositions(
         return None
     token_matched_chars = [token[i] for i, matched in enumerate(token_matches) if matched]
     candidate_matched_chars = [candidate[j] for j, matched in enumerate(candidate_matches) if matched]
-    transpositions = sum(1 for t_char, c_char in zip(token_matched_chars, candidate_matched_chars) 
+    transpositions = sum(1 for t_char, c_char in zip(token_matched_chars, candidate_matched_chars)
                         if t_char != c_char)
     return transpositions // 2
 
@@ -604,11 +604,16 @@ def calculate_jaro_distance(
         return None
     token_len = len(token)
     candidate_len = len(candidate)
-    if (matches < 0 or transpositions < 0 or 
+    invalid_conditions = (
+        matches < 0 or 
+        transpositions < 0 or 
         transpositions > matches or
-        matches == 0 or
-        (matches > 0 and (token_len == 0 or candidate_len == 0))):
-        return 1.0 if matches == 0 else None
+        (matches > 0 and (token_len == 0 or candidate_len == 0))
+    )
+    if invalid_conditions:
+        return None
+    if matches == 0:
+        return 1.0
     jaro_similarity = (
         matches / token_len +
         matches / candidate_len +
