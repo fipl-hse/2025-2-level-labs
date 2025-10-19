@@ -117,12 +117,12 @@ def calculate_distance(
         if method == "levenshtein":
             distance = calculate_levenshtein_distance(first_token, vocab_word)
         elif method == "jaccard":
-            distance = float(calculate_jaccard_distance(first_token, vocab_word))
+            distance = calculate_jaccard_distance(first_token, vocab_word)
         else:
             return None
         if distance is None:
             return None
-        result[vocab_word] = distance
+        result[vocab_word] = float(distance)
     return result
 
 
