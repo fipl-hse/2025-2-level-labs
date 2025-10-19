@@ -112,15 +112,17 @@ def calculate_distance(
         return None
     distance = {}
     if method == "jaccard":
-        for key in vocabulary:
-            distance_value = calculate_jaccard_distance(first_token, key)
+        for token in vocabulary:
+            distance_value = calculate_jaccard_distance(first_token, token)
             if distance_value is None:
                 return None
-            distance[key] = distance_value
-    elif (method == "frequency-based" 
-        or method == "levenshtein"
-        or method == "jaro-winkler"
-    ):
+            distance[token] = distance_value
+    elif method == "frequency-based":
+        result = calculate_frequency_distance(first_token, vocabulary, alphabet or [])
+        if result is None:
+            return None
+        distance = result
+    elif method == "jaro-winkler" or method == "levenshtein":
         return None
     return distance
 
@@ -153,11 +155,9 @@ def find_correct_word(
         method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
     ):
         return None
-    if calculate_distance is None:
-            return None
     if not vocabulary:
         return None
-    wrong_word_distance = calculate_distance(wrong_word, vocabulary, "jaccard", None)
+    wrong_word_distance = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if wrong_word_distance == None:
         return None
     min_distance = min(wrong_word_distance.values())
