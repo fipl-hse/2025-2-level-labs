@@ -63,19 +63,15 @@ def main() -> None:
 
     for wrong_word in unique_wrong_words:
         print(f"Исправления для слова '{wrong_word}':")
-        
         correct_word = find_correct_word(wrong_word, tokens_vocab, "jaccard", alphabet)
         if correct_word and correct_word != wrong_word:
             print(f"jaccard: {correct_word}")
-        
         correct_word = find_correct_word(wrong_word, tokens_vocab, "frequency-based", alphabet)
         if correct_word and correct_word != wrong_word:
             print(f"frequency-based: {correct_word}")
-        
         correct_word = find_correct_word(wrong_word, tokens_vocab, "levenshtein", alphabet)
         if correct_word and correct_word != wrong_word:
             print(f"levenshtein: {correct_word}")
-        
         correct_word = find_correct_word(wrong_word, tokens_vocab, "jaro-winkler", alphabet)
         if correct_word and correct_word != wrong_word:
             print(f"jaro-winkler: {correct_word}")
