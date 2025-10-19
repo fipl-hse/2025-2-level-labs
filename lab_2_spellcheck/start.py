@@ -50,7 +50,8 @@ def main() -> None:
     if vocab:
         sample_tokens = list(vocab.keys())
         if len(sample_tokens) >= 2:
-            word1, word2 = sample_tokens[:2]
+            word1 = sample_tokens[0]
+            word2 = sample_tokens[1]
             jaccard_dist = calculate_distance(
                 word1, {word1: 0.1, word2: 0.2}, "jaccard"
             )
