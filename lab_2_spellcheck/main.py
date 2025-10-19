@@ -356,7 +356,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     candidates = generate_candidates(word, alphabet)
     if candidates is None:
         return None
-    all_candidates=set()
+    all_candidates=set(candidates)
     for candidate in candidates:
         new_candidates=generate_candidates(candidate, alphabet)
         if not new_candidates:
