@@ -44,9 +44,9 @@ def main() -> None:
         word_corrections = {}
         for method_name in ['jaccard', 'frequency-based', 'levenshtein', 'jaro-winkler']:
             correction = find_correct_word(
-                unknown, 
-                vocabulary_map, 
-                method_name, 
+                unknown,
+                vocabulary_map,
+                method_name,
                 rus_alphabet
             ) or None
             word_corrections[method_name] = correction
