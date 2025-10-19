@@ -98,17 +98,12 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if not isinstance(first_token, str):
-        return None
+    if not (isinstance(first_token, str)
+        and check_dict(vocabulary, str, float, False)
+        and isinstance(method, str)
+        and method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        and (alphabet is None or check_list(alphabet, str, False))):
 
-    if not check_dict(vocabulary, str, float, False):
-        return None
-
-    if not isinstance(method, str)\
-    or method not in("jaccard", "frequency-based", "levenshtein", "jaro-winkler"):
-        return None
-
-    if alphabet is not None and not check_list(alphabet, str, False):
         return None
 
     distance = {}
@@ -362,8 +357,12 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if not (isinstance(word, str) and check_list(alphabet, str, True)):
+    if any([
+        not isinstance(word, str),
+        not check_list(alphabet, str, True)
+    ]):
         return None
+
 
     if not word:
         return alphabet
@@ -389,7 +388,10 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
-    if not (isinstance(word, str) and check_list(alphabet, str, True)):
+    if any([
+        not isinstance(word, str),
+        not check_list(alphabet, str, True)
+    ]):
         return None
 
     candidates = generate_candidates(word, alphabet)
