@@ -201,10 +201,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
         return None
     for i in range(1, token_len + 1):
         for j in range(1, candidate_len + 1):
-            if token[i-1] == candidate[j-1]:
-                cost=0
-            else:
-                cost=1
+            cost=0 if token[i-1] == candidate[j-1] else 1
             delete_symbol = matrix[i-1][j] + 1
             int_symbol = matrix[i][j-1] + 1
             replace_symbol = matrix[i-1][j-1] + cost
