@@ -67,7 +67,7 @@ def main() -> None:
     correct_words_by_jaro = {token: find_correct_word(
         token, vocabulary, "jaro-winkler", russian)
         for token in tokens_out_of_voc}
-    #print("Correct words by jaro-winkler method: ", correct_words_by_jaro, "\n")
+    print("Correct words by jaro-winkler method: ", correct_words_by_jaro, "\n")
 
     result = correct_words_by_jaro
     assert result, "Result is None"
