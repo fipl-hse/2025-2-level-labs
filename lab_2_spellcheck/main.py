@@ -46,11 +46,7 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
     if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
         return None
 
-    incorrect_tokens = []
-    for token in tokens:
-        if token not in vocabulary.keys():
-            incorrect_tokens.append(token)
-    return incorrect_tokens
+    return [token for token in tokens if token not in vocabulary.keys()]
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     """
@@ -73,8 +69,8 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return 1.0
 
     token_set = set(token)
-    candidate = set(candidate)
-    jaccard_distance = 1 - len(token_set.intersection(candidate)) / len(token_set.union(candidate))
+    candidate_set = set(candidate)
+    jaccard_distance = 1 - len(token_set.intersection(candidate_set)) / len(token_set.union(candidate_set))
 
     return jaccard_distance
 
@@ -105,24 +101,45 @@ def calculate_distance(
     if not check_dict(vocabulary, str, float, False):
         return None
 
-    if not isinstance(method, str):
-        return None
-
-    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
+    if not isinstance(method, str) or method not in ("jaccard", "frequency-based", "levenshtein", "jaro-winkler"):
         return None
 
     if alphabet is not None and not check_list(alphabet, str, False):
         return None
 
-    distance_score = {}
+    distance = {}
 
     if method == "jaccard":
         for candidate in vocabulary.keys():
-         distance_score.update({candidate: calculate_jaccard_distance(first_token, candidate)})
+            distance_jaccard = calculate_jaccard_distance(first_token, candidate)
+            if distance_jaccard is None:
+                return None
+            distance[candidate] = distance_jaccard
+
+    elif method == "frequency-based":
+        if alphabet is None:
+            return {key: 1.0 for key in vocabulary.keys()}
+        freq_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if freq_distance is None:
+            return None
+        distance[candidate] = freq_distance
+
+    elif method == "levenshtein":
+        for candidate in vocabulary.keys():
+            levenshtein_distance = calculate_levenshtein_distance(first_token, candidate)
+            if levenshtein_distance is None:
+                return None
+            distance[candidate] = levenshtein_distance
+
+    elif method == "jaro-winkler":
+        for candidate in vocabulary:
+            distance = calculate_jaro_winkler_distance(first_token, candidate)
+            if distance is None:
+                return None
+            distance[candidate] = distance
 
 
-    return distance_score
-
+    return distance
 
 
 def find_correct_word(
@@ -146,7 +163,27 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
+    if not isinstance(wrong_word, str) and check_dict(vocabulary, str, float, False):
+        return None
+    if not method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
+        return None
+    if not (alphabet is None or check_list(alphabet, str, False)):
+        return None
 
+
+    calculated_distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
+
+    if calculated_distances is None:
+        return None
+
+    best_value = min(calculated_distances.values())
+
+    candidates = [word for word, value in calculated_distances.items() if value == best_value]
+
+    if len(candidates) > 1:
+        candidates.sort(key=lambda word: (abs(len(word) - len(wrong_word)), word))
+
+    return candidates[0]
 
 def initialize_levenshtein_matrix(
     token_length: int, candidate_length: int
@@ -161,7 +198,19 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
+    if (not (isinstance(token_length, int) and token_length >= 0) or
+        not (isinstance(candidate_length, int) and candidate_length >= 0)):
+        return None
 
+    levenshtein_matrix = [[0 for _ in range(candidate_length + 1)] for _ in range(token_length + 1)]
+
+    for i in range(candidate_length + 1):
+        levenshtein_matrix[0][i] = i
+
+    for j in range(token_length + 1):
+        levenshtein_matrix[j][0] = j
+
+    return levenshtein_matrix
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
     """
@@ -174,7 +223,25 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
+    if not (isinstance(token, str) and isinstance(candidate, str)):
+        return None
 
+    levenshtein_matrix = initialize_levenshtein_matrix(len(token), len(candidate))
+
+    if not levenshtein_matrix:
+        return None
+
+    for i in range(1, len(token) + 1):
+        for j in range(1, len(candidate) + 1):
+            cost = 0 if token[i - 1] == candidate[j - 1] else 1
+
+            levenshtein_matrix[i][j] = min(
+                levenshtein_matrix[i - 1][j] + 1,
+                levenshtein_matrix[i][j - 1] + 1,
+                levenshtein_matrix[i - 1][j - 1] + cost,
+             )
+
+    return levenshtein_matrix
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     """
@@ -188,6 +255,15 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
+    if not (isinstance(token, str) and isinstance(candidate, str)):
+        return None
+
+    levenshtein_matrix = fill_levenshtein_matrix(token, candidate)
+
+    if not levenshtein_matrix:
+        return None
+
+    return levenshtein_matrix[-1][-1]
 
 
 def delete_letter(word: str) -> list[str]:
@@ -203,6 +279,10 @@ def delete_letter(word: str) -> list[str]:
     In case of corrupt input arguments, empty list is returned.
     """
 
+    if not isinstance(word, str):
+        return []
+
+    return sorted([word[:i] + word[i + 1 :] for i in range(len(word))])
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
     """
