@@ -4,7 +4,6 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
-from typing import Any
 from lab_1_keywords_tfidf.main import check_list, check_dict
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -156,17 +155,17 @@ def find_correct_word(
         return None
 
     min_value = min(distances.values())
-    candidates = [candidate for candidate, value in distances.items() if value == min_value]
-    if not candidates:
+    cands = [cand for cand, value in distances.items() if value == min_value]
+    if not cands:
         return None
 
-    if len(candidates) > 1:
-        smallest_length_diff = min(abs(len(candidate) - len(wrong_word)) for candidate in candidates)
-        closest_candidates = [candidate for candidate in candidates
-                              if abs(len(candidate) - len(wrong_word)) == smallest_length_diff]
-        return sorted(closest_candidates)[0]
+    if len(cands) > 1:
+        smallest_length_diff = min(abs(len(cand) - len(wrong_word)) for cand in cands)
+        closest_cands = [cand for cand in cands
+                              if abs(len(cand) - len(wrong_word)) == smallest_length_diff]
+        return sorted(closest_cands)[0]
 
-    return candidates[0]
+    return cands[0]
 
 
 def initialize_levenshtein_matrix(
@@ -539,7 +538,7 @@ def calculate_jaro_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    
+
 
 def winkler_adjustment(
     token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
@@ -558,7 +557,7 @@ def winkler_adjustment(
 
     In case of corrupt input arguments, None is returned.
     """
-    
+
 
 def calculate_jaro_winkler_distance(
     token: str, candidate: str, prefix_scaling: float = 0.1
@@ -576,4 +575,3 @@ def calculate_jaro_winkler_distance(
 
     In case of corrupt input arguments or corrupt outputs of used functions, None is returned.
     """
-    
