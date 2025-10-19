@@ -33,6 +33,7 @@ def main() -> None:
     tokens_text = clean_and_tokenize(text) or []
     tokens_text_without_stop_words = remove_stop_words(tokens_text, stop_words) or []
     vocabulary = build_vocabulary(tokens_text_without_stop_words) or {}
+    print(vocabulary)
 
     all_sentence_tokens = []
     for sentence in sentences:
@@ -40,10 +41,26 @@ def main() -> None:
         sentence_tokens_without_stop_words = remove_stop_words(sentence_tokens, stop_words) or []
         all_sentence_tokens.extend(sentence_tokens_without_stop_words)
     error_words = find_out_of_vocab_words(all_sentence_tokens, vocabulary) or []
+    print()
     print(error_words)
+
+    correct_words = ['тёмной', 'московской', 'улице', 'профессор', 'квартире',
+                     'думал', 'странностях', 'записывал', 'наблюдения', 'тетрадь',
+                     'вечером', 'шумном', 'проспекте', 'патриса', 'лумумбы', 'собирались',
+                     'прохожие', 'обсуждая', 'последние', 'московские', 'новости',
+                     'деревянной', 'скамье', 'саду', 'под', 'фонарем', 'сидели', 'двое',
+                     'оживлённо', 'спорили', 'судьбах', 'литературы', 'трамвай', 'заскрипел',
+                     'повороте', 'остановился', 'парящего', 'моста', 'толпа', 'ждала', 'вечернего',
+                     'представления', 'усталый', 'редактор', 'принёс', 'толстую', 'рукопись',
+                     'контору', 'надеясь', 'наконец-то', 'найти', 'одобрение', 'коллег']
+    jaccard_correct = 0
+    frequency_correct = 0
+    levenshtein_correct = 0
+    jaro_winkler_correct = 0
 
     alphabet = [chr(i) for i in range(1072, 1104)]
     all_results = {}
+    real_incorrect_words = 0
     for error_word in error_words:
         print(f"\nCorrection for '{error_word}':")
         jaccard_correction = find_correct_word(error_word, vocabulary,
@@ -54,6 +71,26 @@ def main() -> None:
                                                    'levenshtein', alphabet) or {}
         jaro_winkler_correction = find_correct_word(error_word, vocabulary,
                                                     'jaro-winkler', alphabet) or {}
+        has_correct_correction = (jaccard_correction in correct_words or 
+                                frequency_correction in correct_words or 
+                                levenshtein_correction in correct_words or 
+                                jaro_winkler_correction in correct_words)
+        if not has_correct_correction:
+            if error_word in correct_words:
+                print("The word is spelled correctly for the given context, but it is not in the vocabulary.")
+            else:
+                print("The word is spelled incorrectly for the given context, and it is not in the vocabulary.")
+        else:
+            print("The word is spelled incorrectly. There are corrections for it.")
+            real_incorrect_words += 1
+            if jaccard_correction in correct_words:
+                jaccard_correct += 1
+            if frequency_correction in correct_words:
+                frequency_correct += 1
+            if levenshtein_correction in correct_words:
+                levenshtein_correct += 1
+            if jaro_winkler_correction in correct_words:
+                jaro_winkler_correct += 1
         print(f"  Jaccard: {jaccard_correction}")
         print(f"  Frequency-based: {frequency_correction}")
         print(f"  Levenshtein: {levenshtein_correction}")
@@ -64,6 +101,11 @@ def main() -> None:
             'levenshtein': levenshtein_correction,
             'jaro-winkler': jaro_winkler_correction
         }
+    print(f"\Efficiency of methods:")
+    print(f"Jaccard: {jaccard_correct}/{real_incorrect_words}")
+    print(f"Frequency-based: {frequency_correct}/{real_incorrect_words}")
+    print(f"Levenshtein: {levenshtein_correct}/{real_incorrect_words}")
+    print(f"Jaro-Winkler: {jaro_winkler_correct}/{real_incorrect_words}")
     result = all_results
     assert result, "Result is None"
 
