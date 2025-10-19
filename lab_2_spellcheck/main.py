@@ -60,10 +60,11 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return None
     if not token or not candidate:
         return 1.0
-    jaccared_coefficient= (
-        1-len(set(token).intersection(set(candidate))) / len(set(token).union(set(candidate)))
-        )
-    return jaccared_coefficient
+    tokenn=set(token)
+    candidatee=set(candidate)
+    return (
+        1-len(tokenn.intersection(candidatee)) / len(tokenn.union(candidatee))
+    )
 
 
 def calculate_distance(
@@ -90,6 +91,8 @@ def calculate_distance(
         return None
     if not check_dict(vocabulary, str, float, False):
         return None
+    if alphabet is not None and not check_list(alphabet, str, True):
+        return None
     words_distances={}
     if method=="jaccard":
         for vocab in vocabulary:
@@ -98,7 +101,7 @@ def calculate_distance(
                 return None
             words_distances[vocab]= float(distance)
     elif method == "frequency-based":
-        if not alphabet:
+        if alphabet is None:
             return {token: 1.0 for token in vocabulary}
         freq_distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
         return freq_distances
@@ -108,9 +111,8 @@ def calculate_distance(
             if not lev_distance:
                 return None
             words_distances[vocab] = float(lev_distance)
-    if not words_distances:
-        return None
     return words_distances
+
 
 def find_correct_word(
     wrong_word: str,
@@ -135,8 +137,6 @@ def find_correct_word(
     """
     if not isinstance(wrong_word, str) or not check_dict(vocabulary, str, float, False):
         return None
-    if alphabet is not None and not check_list(alphabet, str, True):
-        return None
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if not distances:
         return None
@@ -149,12 +149,11 @@ def find_correct_word(
         return None
     if len(min_candidates) == 1:
         return min_candidates[0]
-    length_candidates = [
-        candidate for candidate in min_candidates
-        if len(candidate)==len(wrong_word)
-        ]
-    name_candidates=sorted(length_candidates)
-    return name_candidates[0] if name_candidates else ''
+    min_length = min(abs(len(wrong_word) - len(word)) for word in min_candidates)
+    length_candidates=[word for word in min_candidates if abs(len(wrong_word) - len(word))==min_length]
+    if not length_candidates:
+        return None
+    return min(length_candidates)
 
 
 def initialize_levenshtein_matrix(
@@ -200,10 +199,8 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     matrix = initialize_levenshtein_matrix(token_len, candidate_len)
     if not matrix:
         return None
-    for i in range(token_len + 1):
-        for j in range(candidate_len + 1):
-            if i==0 or j==0:
-                continue
+    for i in range(1, token_len + 1):
+        for j in range(1, candidate_len + 1):
             if token[i-1] == candidate[j-1]:
                 cost=0
             else:
