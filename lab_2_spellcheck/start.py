@@ -7,11 +7,10 @@ from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     remove_stop_words,
 )
-
 from lab_2_spellcheck.main import (
     build_vocabulary,
     find_out_of_vocab_words,
-    find_correct_word, 
+    find_correct_word,
 )
 
 def main() -> None:
