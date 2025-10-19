@@ -122,6 +122,13 @@ def calculate_distance(
                 return None
             distances[candidate] = distance
         return distances
+    if method == "jaro-winkler":
+        for candidate in vocabulary:
+            distance = calculate_jaro_winkler_distance(first_token, candidate)
+            if distance is None:
+                return None
+            distances[candidate] = distance
+        return distances
     return None
 
 def find_correct_word(
@@ -409,7 +416,6 @@ def calculate_frequency_distance(
         return None
     
     frequency_distances: dict = {token: 1.0 for token in frequencies}
-
     top_words = propose_candidates(word, alphabet)
     if top_words is None:
         return frequency_distances
@@ -423,7 +429,7 @@ def calculate_frequency_distance(
 
 
 def get_matches(
-    token: str, word: str, match_distance: int
+    token: str, candidate: str, match_distance: int
 ) -> tuple[int, list[bool], list[bool]] | None:
     """
     Find matching letters between two strings within a distance.
@@ -441,10 +447,35 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not (
+        isinstance(token, str)
+        and isinstance(candidate, str)
+        and isinstance(match_distance, int)
+        and check_positive_int(match_distance)
+        or match_distance == 0
+    ):
+        return None
+
+    total_matches_counter = 0
+    token_matches = [False] * len(token)
+    candidate_matches = [False] * len(candidate)
+
+    for token_index, token_char in enumerate(token):
+        start = max(0, token_index - match_distance)
+        end = token_index + match_distance + 1
+        candidate_slice = candidate[start:end]
+        for offset, candidate_char in enumerate(candidate_slice):
+            candidate_index = start + offset
+            if candidate_char == token_char and not candidate_matches[candidate_index]:
+                total_matches_counter += 1
+                token_matches[token_index] = True
+                candidate_matches[candidate_index] = True
+                break
+    return total_matches_counter, token_matches, candidate_matches
 
 
 def count_transpositions(
-    token: str, word: str, token_matches: list[bool], word_matches: list[bool]
+    token: str, candidate: str, token_matches: list[bool], candidate_matches: list[bool]
 ) -> int | None:
     """
     Count the number of transpositions between two strings based on matching letters.
@@ -460,10 +491,27 @@ def count_transpositions(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not (
+        isinstance(token, str)
+        and isinstance(candidate, str)
+        and check_list(token_matches, bool, False)
+        and check_list(candidate_matches, bool, False)
+    ):
+        return None
+
+    token_matches_chars = [char for char, matched in zip(token, token_matches) if matched]
+    candidate_matches_chars = [
+        char for char, matched in zip(candidate, candidate_matches) if matched
+    ]
+
+    transpositions_counter = sum(1
+        for token_char, candidate_char in zip(token_matches_chars, candidate_matches_chars)
+        if token_char != candidate_char)
+    return transpositions_counter // 2
 
 
 def calculate_jaro_distance(
-    token: str, word: str, matches: int, transpositions: int
+    token: str, candidate: str, matches: int, transpositions: int
 ) -> float | None:
     """
     Calculate the Jaro distance between two strings.
@@ -479,10 +527,23 @@ def calculate_jaro_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not (
+        isinstance(token, str)
+        and isinstance(candidate, str)
+        and (check_positive_int(matches) or matches == 0)
+        and (check_positive_int(transpositions) or transpositions == 0)
+    ):
+        return None
+
+    if not matches:
+        return 1.0
+    return (1
+        - (matches / len(token) + matches / len(candidate) + 
+           (matches - transpositions) / matches)/ 3)
 
 
 def winkler_adjustment(
-    token: str, word: str, jaro_distance: float, prefix_scaling: float = 0.1
+    token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
 ) -> float | None:
     """
     Apply the Winkler adjustment to boost distance for strings with a common prefix.
@@ -498,10 +559,24 @@ def winkler_adjustment(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not (
+        isinstance(token, str)
+        and isinstance(candidate, str)
+        and check_float(jaro_distance)
+        and check_float(prefix_scaling)
+    ):
+        return None
+
+    prefix_length = 0
+    for token_char, candidate_char in tuple(zip(token, candidate))[:4]:
+        if token_char != candidate_char:
+            break
+        prefix_length += 1
+    return prefix_length * prefix_scaling * jaro_distance
 
 
 def calculate_jaro_winkler_distance(
-    token: str, word: str, prefix_scaling: float = 0.1
+    token: str, candidate: str, prefix_scaling: float = 0.1
 ) -> float | None:
     """
     Calculate the Jaro-Winkler distance between two strings.
@@ -516,3 +591,27 @@ def calculate_jaro_winkler_distance(
 
     In case of corrupt input arguments or corrupt outputs of used functions, None is returned.
     """
+    if not (isinstance(token, str) and isinstance(candidate, str) and check_float(prefix_scaling)):
+        return None
+
+    if not token or not candidate:
+        return 1.0
+
+    match_distance = max(len(token), len(candidate)) // 2 - 1
+    match_distance = max(match_distance, 0)
+    matches = get_matches(token, candidate, match_distance)
+    if matches is None:
+        return None
+    total_matches, token_matches, candidate_matches = matches
+    if total_matches == 0:
+        return 1.0
+    transpositions = count_transpositions(token, candidate, token_matches, candidate_matches)
+    if transpositions is None:
+        return None
+    jaro_distance = calculate_jaro_distance(token, candidate, total_matches, transpositions)
+    if jaro_distance is None:
+        return None
+    adjustment = winkler_adjustment(token, candidate, jaro_distance)
+    if adjustment is None:
+        return None
+    return jaro_distance - adjustment
