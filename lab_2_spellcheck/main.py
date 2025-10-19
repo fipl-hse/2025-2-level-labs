@@ -188,14 +188,12 @@ def initialize_levenshtein_matrix(
         token_length < 0 or
         candidate_length < 0):
         return None
+    
     levenshtein_matrix = []
-    for i in range(token_length + 1):
-        if i == 0:
-            levenshtein_matrix_line = list(range(candidate_length + 1))
-            levenshtein_matrix.append(levenshtein_matrix_line)
-        else:
-            levenshtein_matrix_line = [i if ii == 0 else 0 for ii in range(candidate_length + 1)]
-            levenshtein_matrix.append(levenshtein_matrix_line)
+    levenshtein_matrix.append(list(range(candidate_length + 1)))
+    for i in range(1, token_length + 1):
+        levenshtein_matrix_line = [i if ii == 0 else 0 for ii in range(candidate_length + 1)]
+        levenshtein_matrix.append(levenshtein_matrix_line)
     return levenshtein_matrix
 
 
@@ -221,11 +219,11 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
             if token[i - 1] == candidate[j - 1]:
                 levenshtein_matrix[i][j] = levenshtein_matrix[i - 1][j - 1]
             else:
-                delete_cost = levenshtein_matrix[i - 1][j] + 1
-                insert_cost = levenshtein_matrix[i][j - 1] + 1
-                replace_cost = levenshtein_matrix[i - 1][j - 1] + 1
+                delete_c = levenshtein_matrix[i - 1][j] + 1
+                insert_c = levenshtein_matrix[i][j - 1] + 1
+                replace_c = levenshtein_matrix[i - 1][j - 1] + 1
                 levenshtein_matrix[i][j] = min(
-                    delete_cost, insert_cost, replace_cost)
+                    delete_c, insert_c, replace_c)
     return levenshtein_matrix
 
 
