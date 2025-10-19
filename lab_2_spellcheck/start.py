@@ -49,11 +49,14 @@ def main() -> None:
             if method_name == 'jaccard':
                 correction = find_correct_word(unknown, vocabulary_map, 'jaccard', rus_alphabet)
             elif method_name == 'frequency-based':
-                correction = find_correct_word(unknown, vocabulary_map, 'frequency-based', rus_alphabet)
+                correction = find_correct_word(unknown, vocabulary_map, 
+                                             'frequency-based', rus_alphabet)
             elif method_name == 'levenshtein':
-                correction = find_correct_word(unknown, vocabulary_map, 'levenshtein', rus_alphabet)
+                correction = find_correct_word(unknown, vocabulary_map, 
+                                             'levenshtein', rus_alphabet)
             elif method_name == 'jaro-winkler':
-                correction = find_correct_word(unknown, vocabulary_map, 'jaro-winkler', rus_alphabet)
+                correction = find_correct_word(unknown, vocabulary_map, 
+                                             'jaro-winkler', rus_alphabet)
             else:
                 correction = None
             word_corrections[method_name] = correction
