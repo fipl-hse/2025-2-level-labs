@@ -6,6 +6,7 @@ Lab 2.
 from typing import Literal
 from typing import Any
 
+
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
     Check if the object is a list containing elements of a certain type.
@@ -45,6 +46,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     return (all(isinstance(key, key_type) for key in user_input) and
         all(isinstance(value, value_type) for value in user_input.values()))
 
+
 def check_non_negative_int(user_input: Any) -> bool:
     """
     Check if the object is a non-negative integer (not bool).
@@ -56,6 +58,48 @@ def check_non_negative_int(user_input: Any) -> bool:
         bool: True if valid, False otherwise
     """
     return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input >= 0
+
+
+def clean_and_tokenize(text: str) -> list[str] | None:
+    """
+    Remove punctuation, convert to lowercase, and split into tokens.
+
+    Args:
+        text (str): Original text
+
+    Returns:
+        list[str] | None: A list of lowercase tokens without punctuation.
+        In case of corrupt input arguments, None is returned.
+    """
+    if not isinstance(text, str):
+        return None
+    words = text.lower().split()
+    tokens = []
+    for word in words:
+        cleaned_word = ''.join(
+            symbol for symbol in word
+            if symbol.isalnum())
+        if cleaned_word:
+            tokens.append(cleaned_word)
+    return tokens
+
+
+def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
+    """
+    Exclude stop words from the token sequence.
+
+    Args:
+        tokens (list[str]): Original token sequence
+        stop_words (list[str]): Tokens to exclude
+
+    Returns:
+        list[str] | None: Token sequence without stop words.
+        In case of corrupt input arguments, None is returned.
+    """
+    if not all([check_list(tokens, str, True),
+        check_list(stop_words, str, True)]):
+        return None
+    return [token for token in tokens if token not in set(stop_words)]
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:

@@ -3,12 +3,12 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
-from main import (
+from lab_2_spellcheck.main import (
     clean_and_tokenize,
     remove_stop_words,
     build_vocabulary,
     find_correct_word,
-    find_out_of_vocab_words
+    find_out_of_vocab_words,
 )
 
 def main() -> None:
