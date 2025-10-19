@@ -43,18 +43,19 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
-    if not all([check_dict(vocabulary, str, float, False), check_list(tokens, str, False)]):
+    if not all([check_dict(vocabulary, str, float, False),
+                check_list(tokens, str, False)]):
         return None
     return [token for token in tokens if token not in vocabulary.keys()]
 
 
-def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
+def calculate_jaccard_distance(token: str, word: str) -> float | None:
     """
     Calculate Jaccard distance between two strings.
 
     Args:
         token (str): First string to compare.
-        candidate (str): Second string to compare.
+        word (str): Second string to compare.
 
     Returns:
         float | None: Jaccard distance score in range [0, 1].
@@ -62,13 +63,16 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
-    if not token and not candidate:
+    if not token and not word:
         return 1.0
-    if not all([isinstance(token, str), isinstance(candidate, str)]):
+    if not all([isinstance(token, str), isinstance(word, str)]):
         return None
-    token_scores = {char for char in token}
-    candidate_scores = {char for char in candidate}
-    return 1 - len(token_scores.intersection(candidate_scores)) / len(token_scores.union(candidate_scores))
+    token_scores = {token}
+    word_scores = {word}
+    jaccard_distance = 1 - len(
+        token_scores.intersection(word_scores)) / len(
+        token_scores.union(word_scores))
+    return 
 
 
 def calculate_distance(
@@ -101,7 +105,7 @@ def calculate_distance(
         distances = {token: calculate_jaccard_distance(first_token, token) for token in vocabulary}
         if None in distances.values():
             return None
-    elif method == "frequency-based":
+    if method == "frequency-based":
         if alphabet:
             distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
         else:
@@ -120,7 +124,7 @@ def find_correct_word(
 
     Args:
         wrong_word (str): Word that might be misspelled.
-        vocabulary (dict[str, float]): Dict of candidate words.
+        vocabulary (dict[str, float]): Dict of word words.
         method (str): Method to use for comparison.
         alphabet (list[str]): The alphabet with letters.
 
@@ -130,71 +134,71 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if not all([isinstance(wrong_word, str),
-        check_dict(vocabulary, str, float, False),
-        method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
-        (alphabet is None or check_list(alphabet, str, False))]):
+    if not (
+        isinstance(wrong_word, str)
+        and check_dict(vocabulary, str, float, False)
+        and method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        and (alphabet is None or check_list(alphabet, str, False))
+    ):
         return None
     
-    distances_dict = calculate_distance(wrong_word, vocabulary, method, alphabet)
-    if not distances_dict:
+    distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
+    if distances is None:
         return None
 
-    min_value = float("inf")
-    best_word = None
-    for word, dist in distances_dict.items():
-        if dist < min_value:
-            min_value = dist
-            best_word = word
-        elif dist == min_value and best_word is not None:
-            if abs(len(wrong_word) - len(word)) < abs(len(wrong_word) - len(best_word)):
-                best_word = word
-            elif len(word) == len(best_word) and word < best_word:
-                best_word = word
-    return best_word
+    min_value = min(distances.values())
+
+    top_words = [word for word, value in distances.items() if value == min_value]
+
+    if len(top_words) > 1:
+        min_length_diff = min(abs(len(word) - len(wrong_word)) for word in top_words)
+        closest_top_words = [word for word in top_words
+                              if abs(len(word) - len(wrong_word)) == min_length_diff]
+        return sorted(closest_top_words)[0]
+    
 
 
 
 
 def initialize_levenshtein_matrix(
-    token_length: int, candidate_length: int
+    token_length: int, word_length: int
 ) -> list[list[int]] | None:
     """
     Initialize a 2D matrix for Levenshtein distance calculation.
 
     Args:
         token_length (int): Length of the first string.
-        candidate_length (int): Length of the second string.
+        word_length (int): Length of the second string.
 
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
 
 
-def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
+def fill_levenshtein_matrix(token: str, word: str) -> list[list[int]] | None:
     """
     Fill a Levenshtein matrix with edit distances between all prefixes.
 
     Args:
         token (str): First string.
-        candidate (str): Second string.
+        word (str): Second string.
 
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
 
 
-def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
+def calculate_levenshtein_distance(token: str, word: str) -> int | None:
     """
     Calculate the Levenshtein edit distance between two strings.
 
     Args:
         token (str): First string.
-        candidate (str): Second string.
+        word (str): Second string.
 
     Returns:
         int | None: Minimum number of single-character edits (insertions, deletions,
-             substitutions) required to transform token into candidate.
+             substitutions) required to transform token into word.
     """
 
 
@@ -282,52 +286,52 @@ def swap_adjacent(word: str) -> list[str]:
     return sorted(replace_letter_list)
 
 
-def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
+def generate_top_words(word: str, alphabet: list[str]) -> list[str] | None:
     """
-    Generate all possible candidate words for a given word using
+    Generate all possible word words for a given word using
     four basic operations.
 
     Args:
         word (str): The input word.
-        alphabet (list[str]): Alphabet for candidates creation.
+        alphabet (list[str]): Alphabet for top_words creation.
 
     Returns:
-        list[str] | None: A combined list of candidate words generated by all operations.
+        list[str] | None: A combined list of word words generated by all operations.
 
     In case of corrupt input arguments, None is returned.
     """
     if not all([isinstance(word, str), check_list(alphabet, str, True)]):
         return None
-    candidates = delete_letter(word) + add_letter(word, alphabet) + replace_letter(word, alphabet) + swap_adjacent(word)
-    return sorted(candidates)
+    top_words = delete_letter(word) + add_letter(word, alphabet) + replace_letter(word, alphabet) + swap_adjacent(word)
+    return sorted(top_words)
 
 
-def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
+def propose_top_words(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
     """
-    Generate candidate words by applying single-edit operations
+    Generate word words by applying single-edit operations
     (delete, add, replace, swap) to the word.
 
     Args:
         word (str): The input incorrect word.
-        alphabet (list[str]): Alphabet for candidates creation.
+        alphabet (list[str]): Alphabet for top_words creation.
 
     Returns:
-        tuple[str] | None: A tuple of unique candidate words generated from the input.
+        tuple[str] | None: A tuple of unique word words generated from the input.
 
     In case of corrupt input arguments, None is returned.
     """
     if not all([isinstance(word, str), check_list(alphabet, str, True)]):
         return None
-    candidates = generate_candidates(word, alphabet)
-    if candidates is None:
+    top_words = generate_top_words(word, alphabet)
+    if top_words is None:
         return None
-    all_candidates = set(candidates)
-    for word in list(all_candidates):
-        second_level_candidates = generate_candidates(word, alphabet)
-        if second_level_candidates is None:
+    all_top_words = set(top_words)
+    for word in list(all_top_words):
+        second_level_top_words = generate_top_words(word, alphabet)
+        if second_level_top_words is None:
             return None
-        all_candidates.update(second_level_candidates)
-    return tuple(sorted(set(all_candidates)))
+        all_top_words.update(second_level_top_words)
+    return tuple(sorted(set(all_top_words)))
 
 
 def calculate_frequency_distance(
@@ -339,7 +343,7 @@ def calculate_frequency_distance(
     Args:
         word (str): The input incorrect word.
         frequencies (dict): A dictionary with frequencies.
-        alphabet (list[str]): Alphabet for candidates creation.
+        alphabet (list[str]): Alphabet for top_words creation.
 
     Returns:
         dict[str, float] | None: The most probable corrected word.
@@ -353,50 +357,50 @@ def calculate_frequency_distance(
     
     frequency_distances: dict = {token: 1.0 for token in frequencies}
 
-    candidates = propose_candidates(word, alphabet)
-    if candidates is None:
+    top_words = propose_top_words(word, alphabet)
+    if top_words is None:
         return frequency_distances
 
-    for candidate in candidates:
-        if candidate in frequencies:
-            frequency_distances[candidate] = 1.0 - frequencies[candidate]
+    for word in top_words:
+        if word in frequencies:
+            frequency_distances[word] = 1.0 - frequencies[word]
 
     return frequency_distances
 
 
 
 def get_matches(
-    token: str, candidate: str, match_distance: int
+    token: str, word: str, match_distance: int
 ) -> tuple[int, list[bool], list[bool]] | None:
     """
     Find matching letters between two strings within a distance.
 
     Args:
         token (str): The first string to compare.
-        candidate (str): The second string to compare.
+        word (str): The second string to compare.
         match_distance (int): Maximum allowed offset for letters to be considered matching.
 
     Returns:
         tuple[int, list[bool], list[bool]]:
             Number of matching letters.
             Boolean list indicating matches in token.
-            Boolean list indicating matches in candidate.
+            Boolean list indicating matches in word.
 
     In case of corrupt input arguments, None is returned.
     """
 
 
 def count_transpositions(
-    token: str, candidate: str, token_matches: list[bool], candidate_matches: list[bool]
+    token: str, word: str, token_matches: list[bool], word_matches: list[bool]
 ) -> int | None:
     """
     Count the number of transpositions between two strings based on matching letters.
 
     Args:
         token (str): The first string to compare.
-        candidate (str): The second string to compare.
+        word (str): The second string to compare.
         token_matches (list[bool]): Boolean list indicating matches in token.
-        candidate_matches (list[bool]): Boolean list indicating matches in candidate.
+        word_matches (list[bool]): Boolean list indicating matches in word.
 
     Returns:
         int | None: Number of transpositions.
@@ -406,14 +410,14 @@ def count_transpositions(
 
 
 def calculate_jaro_distance(
-    token: str, candidate: str, matches: int, transpositions: int
+    token: str, word: str, matches: int, transpositions: int
 ) -> float | None:
     """
     Calculate the Jaro distance between two strings.
 
     Args:
         token (str): The first string to compare.
-        candidate (str): The second string to compare.
+        word (str): The second string to compare.
         matches (int): Number of matching letters.
         transpositions (int): Number of transpositions.
 
@@ -425,14 +429,14 @@ def calculate_jaro_distance(
 
 
 def winkler_adjustment(
-    token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
+    token: str, word: str, jaro_distance: float, prefix_scaling: float = 0.1
 ) -> float | None:
     """
     Apply the Winkler adjustment to boost distance for strings with a common prefix.
 
     Args:
         token (str): The first string to compare.
-        candidate (str): The second string to compare.
+        word (str): The second string to compare.
         jaro_distance (float): Jaro distance score.
         prefix_scaling (float): Scaling factor for the prefix boost.
 
@@ -444,14 +448,14 @@ def winkler_adjustment(
 
 
 def calculate_jaro_winkler_distance(
-    token: str, candidate: str, prefix_scaling: float = 0.1
+    token: str, word: str, prefix_scaling: float = 0.1
 ) -> float | None:
     """
     Calculate the Jaro-Winkler distance between two strings.
 
     Args:
         token (str): The first string.
-        candidate (str): The second string.
+        word (str): The second string.
         prefix_scaling (float): Scaling factor for the prefix boost.
 
     Returns:

@@ -32,7 +32,6 @@ def main() -> None:
     tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
     print(tokens_without_stopwords)
     vocab = build_vocabulary(tokens_without_stopwords)
-        
     result = None
     assert result, "Result is None"
 
