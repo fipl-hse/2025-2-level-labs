@@ -22,7 +22,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if not user_input == 0 and not can_be_empty:
+    if not user_input and not can_be_empty:
         return False
     for individual_item in user_input:
         if not isinstance(individual_item, elements_type):
@@ -45,12 +45,10 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    if not user_input == 0 and not can_be_empty:
+    if not user_input and not can_be_empty:
         return False
     for key, value in user_input.items():
-        if not isinstance(key, key_type):
-            return False
-        if not isinstance(value, value_type):
+        if not isinstance(key, key_type) and not isinstance(value, value_type):
             return False
     return True
 
@@ -98,28 +96,20 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    word = ''
-    t=[]
+    punctuation = '!"#$%&\'()*-+,./:;<=>?@[\\]^_`{|}~\n'
+    result = []
+    current_word = '' 
     for symb in text:
+        symb_lower = symb.lower()
         if symb in (' ', '\n'):
-            if word != '':
-                t.append(word)
-            word = ''
-            continue
-        word += symb.lower()
-    if word != '':
-        t.append(word)
-    ans = []
-    for s in t:
-        temp=''
-        for symb in s:
-            if symb in '!"#$%&\'()*-+,./:;<=>?'\
-            '@[\\]^_`{|}~\n':
-                continue
-            temp+=symb
-        if temp != '':
-            ans.append(temp)
-    return ans
+            if current_word:
+                result.append(current_word)
+                current_word = ''
+        elif symb_lower not in punctuation:
+            current_word += symb_lower
+    if current_word:
+        result.append(current_word)
+    return result
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """
@@ -137,7 +127,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
         return None
     if not check_list(stop_words,str, True):
         return None
-    return [token for token in tokens if token not in stop_words]
+    filtered_tokens = [token for token in tokens if token not in stop_words]
+    return filtered_tokens
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
@@ -168,8 +159,8 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
         list[str] | None: Top-N tokens sorted by frequency.
         In case of corrupt input arguments, None is returned.
     """
-    if not check_dict(frequencies, str, (int, float), True) \
-        or not check_positive_int(top) or not frequencies:
+    if not check_dict(frequencies, str, (int, float), False) \
+        or not check_positive_int(top):
         return None
     return [item[0] for item in sorted(frequencies.items(),
                    key=lambda item: item[1], reverse=True)[:top]]
