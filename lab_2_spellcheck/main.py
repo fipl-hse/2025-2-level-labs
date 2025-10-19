@@ -98,10 +98,9 @@ def calculate_distance(
     ):
         return None
     if method == "frequency-based":
-        if alphabet:
-            return calculate_frequency_distance(first_token, vocabulary, alphabet)
-        else:
+        if not alphabet:
             return dict.fromkeys(vocabulary, 1.0)
+        return calculate_frequency_distance(first_token, vocabulary, alphabet)
 
     distances = {}
 
@@ -112,21 +111,20 @@ def calculate_distance(
                 return None
             distances[candidate] = distance
         return distances
-    if method == "levenshtein":
+    elif method == "levenshtein":
         for candidate in vocabulary:
             distance = calculate_levenshtein_distance(first_token, candidate)
             if distance is None:
                 return None
             distances[candidate] = distance
         return distances
-    if method == "jaro-winkler":
+    elif method == "jaro-winkler":
         for candidate in vocabulary:
             distance = calculate_jaro_winkler_distance(first_token, candidate)
             if distance is None:
                 return None
             distances[candidate] = distance
-        return distances
-    return None
+    return distances
 
 def find_correct_word(
     wrong_word: str,
@@ -151,16 +149,15 @@ def find_correct_word(
     """
     if (
         not isinstance(wrong_word, str)
-        and not check_dict(vocabulary, str, float, False)
-        and not method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-        and not (alphabet is None or check_list(alphabet, str, False))
+        or not check_dict(vocabulary, str, float, False)
+        or not method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        or not (alphabet is None or check_list(alphabet, str, True))
     ):
         return None
     
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if distances is None:
         return None
-
     min_value = min(distances.values())
 
     top_words = [word for word, value in distances.items() if value == min_value]
@@ -170,8 +167,6 @@ def find_correct_word(
     
     return top_words[0]
     
-
-
 
 
 def initialize_levenshtein_matrix(
@@ -195,6 +190,7 @@ def initialize_levenshtein_matrix(
     
     levenshtein_matrix = []
     levenshtein_matrix.append(list(range(candidate_length + 1)))
+
     for i in range(1, token_length + 1):
         levenshtein_matrix_line = [i if ii == 0 else 0 for ii in range(candidate_length + 1)]
         levenshtein_matrix.append(levenshtein_matrix_line)
@@ -383,8 +379,8 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     if top_words is None:
         return None
     all_top_words = set(top_words)
-    for word in list(all_top_words):
-        second_level_top_words = generate_candidates(word, alphabet)
+    for top_word in list(all_top_words):
+        second_level_top_words = generate_candidates(top_word, alphabet)
         if second_level_top_words is None:
             return None
         all_top_words.update(second_level_top_words)
@@ -417,9 +413,9 @@ def calculate_frequency_distance(
     if top_words is None:
         return frequency_distances
 
-    for word in top_words:
-        if word in frequencies:
-            frequency_distances[word] = 1.0 - frequencies[word]
+    for top_word in top_words:
+        if top_word in frequencies:
+            frequency_distances[top_word] = 1.0 - frequencies[top_word]
 
     return frequency_distances
 
