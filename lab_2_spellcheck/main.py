@@ -4,7 +4,9 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
-from lab_1_keywords_tfidf.main import check_list, check_dict
+
+from lab_1_keywords_tfidf.main import check_dict, check_list
+
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
@@ -91,11 +93,11 @@ def calculate_distance(
     if not check_dict(vocabulary, str, float, False) or (
         not isinstance(first_token, str) or
         not isinstance(method, str) or
-        not method in [(
+        not method in [
             "frequency-based", 
             "jaccard", 
             "levenshtein", 
-            "jaro-winkler")]
+            "jaro-winkler"]
         ):
         return None
     if method == "frequency-based":
@@ -141,16 +143,11 @@ def find_correct_word(
     """
     if not isinstance(wrong_word, str) or (
         method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"] or
-        not check_dict(vocabulary, str, float, False) or
-        not (all(isinstance(key, str)
-            and isinstance(value, (int, float)) for key, value in vocabulary.items()))
+        not check_dict(vocabulary, str, float, False)
         ):
         return None
-    if alphabet is not None:
-        if not check_list(alphabet, str, False) or (
-            not all(isinstance(letter, str) for letter in alphabet)
-        ):
-            return None
+    if alphabet is not None and not check_list(alphabet, str, False):
+        return None
     wrong_word_distance = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if wrong_word_distance is None:
         return None
@@ -412,15 +409,12 @@ def calculate_frequency_distance(
     ):
         return None
     proposed_cands = propose_candidates(word, alphabet)
-    if not proposed_cands:
-        distance_cands = {}
-        for token, freq in frequencies.items():
-            distance_cands[token] = float(freq) if token == word else 1.0
-        return distance_cands
     distance = {}
-    for token in frequencies:
-        freq_value = frequencies.get(token, 0.0)
-        distance[token] = 1.0 - float(freq_value) if token in proposed_cands else 1.0
+    for token, freq in frequencies.items():
+        if proposed_cands and token in proposed_cands:
+            distance[token] = 1.0 - float(freq)
+        else:
+            distance[token] = 1.0
     return distance
 
 def get_matches(
