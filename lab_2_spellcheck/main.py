@@ -91,12 +91,11 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if alphabet is not None and not check_list(alphabet, str, False):
-        return None
     if (
         not isinstance(first_token, str)
         or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        or (alphabet is not None and not check_list(alphabet, str, False))
         ):
         return None
     if method == "frequency-based":
@@ -473,7 +472,7 @@ def get_matches(
         start = max(0, i - match_distance)
         end = min(len_candidate, i + match_distance + 1)
         for j in range(start, end):
-            if candidate_matches[j] == 0 and token[i] == candidate[j]:
+            if not candidate_matches[j] and token[i] == candidate[j]:
                 token_matches[i] = True
                 candidate_matches[j] = True
                 matching_letters += 1

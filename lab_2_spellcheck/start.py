@@ -59,35 +59,16 @@ def main() -> None:
         sentence_tokens = clean_and_tokenize(sentence) or []
         out_of_vocab = find_out_of_vocab_words(sentence_tokens, tokens_vocab) or []
         all_wrong_words.extend(out_of_vocab)
-    all_wrong_words_set = set(all_wrong_words)
+    unique_wrong_words = sorted(set(all_wrong_words))
 
-    jaccard_corrections = {}
-    for wrong_word in all_wrong_words_set:
-        correct_word = find_correct_word(wrong_word, tokens_vocab, "jaccard", alphabet)
-        if correct_word and correct_word != wrong_word:
-            jaccard_corrections[wrong_word] = correct_word
-    print(f"corrections by jaccard method: {jaccard_corrections}")
+    methods = ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
 
-    freq_corrections = {}
-    for wrong_word in all_wrong_words:
-        correct_word = find_correct_word(wrong_word, tokens_vocab, "frequency-based", alphabet)
-        if correct_word and correct_word != wrong_word:
-            freq_corrections[wrong_word] = correct_word
-    print(f"corrections by frequency_based method: {freq_corrections}")
-
-    lev_corrections = {}
-    for wrong_word in all_wrong_words:
-        correct_word = find_correct_word(wrong_word, tokens_vocab, "levenshtein", alphabet)
-        if correct_word and correct_word != wrong_word:
-            lev_corrections[wrong_word] = correct_word
-    print(f"corrections by levenshtein method: {lev_corrections}")
-
-    jw_corrections = {}
-    for wrong_word in all_wrong_words:
-        correct_word = find_correct_word(wrong_word, tokens_vocab, "jaro-winkler", alphabet)
-        if correct_word and correct_word != wrong_word:
-            jw_corrections[wrong_word] = correct_word
-    print(f"corrections by jaro-winkler method: {jw_corrections}")
+    for wrong_word in unique_wrong_words:
+        print(f"Исправления для слова '{wrong_word}':")
+        for method in methods:
+            correct_word = find_correct_word(wrong_word, tokens_vocab, method, alphabet)
+            if correct_word and correct_word != wrong_word:
+                print(f"{method}: {correct_word}")
     assert result, "Result is None"
 
 
