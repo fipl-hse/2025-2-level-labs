@@ -2,9 +2,9 @@
 Lab 2.
 """
 
+from typing import Any, Literal
+
 # pylint:disable=unused-argument
-from typing import Literal
-from typing import Any
 
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -284,6 +284,7 @@ def initialize_levenshtein_matrix(
         matrix[0][j] = j
     return matrix
 
+
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
     """
     Fill a Levenshtein matrix with edit distances between all prefixes.
@@ -309,6 +310,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
                 matrix[i-1][j-1] + cost
             )
     return matrix
+
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     """
