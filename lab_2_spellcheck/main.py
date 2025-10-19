@@ -5,8 +5,8 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 
+from lab_1_keywords_tfidf.main import check_dict, check_float, check_list, check_positive_int
 
-from lab_1_keywords_tfidf.main import check_dict, check_list, check_float, check_positive_int
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
@@ -45,13 +45,13 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
     return [token for token in tokens if token not in vocabulary.keys()]
 
 
-def calculate_jaccard_distance(token: str, word: str) -> float | None:
+def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     """
     Calculate Jaccard distance between two strings.
 
     Args:
         token (str): First string to compare.
-        word (str): Second string to compare.
+        candidate (str): Second string to compare.
 
     Returns:
         float | None: Jaccard distance score in range [0, 1].
@@ -59,12 +59,12 @@ def calculate_jaccard_distance(token: str, word: str) -> float | None:
     In case of corrupt input arguments, None is returned.
     In case of both strings being empty, 0.0 is returned.
     """
-    if not token and not word:
+    if not token and not candidate:
         return 1.0
-    if not (isinstance(token, str) and isinstance(word, str)):
+    if not (isinstance(token, str) and isinstance(candidate, str)):
         return None
     token_scores = set(token)
-    word_scores = set(word)
+    word_scores = set(candidate)
     jaccard_distance = 1 - len(
         token_scores.intersection(word_scores)) / len(
         token_scores.union(word_scores))
@@ -91,10 +91,11 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if not all([isinstance(first_token, str),
-                check_dict(vocabulary,str, float, False),
-                method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
-                check_list(alphabet, str, False) or alphabet is None]):
+    if (not check_dict(vocabulary, str, float, False) or
+        not isinstance(first_token, str) or
+        not isinstance(method, str) or
+        not method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+    ):
         return None
     if method == "frequency-based":
         if alphabet:
@@ -138,7 +139,7 @@ def find_correct_word(
 
     Args:
         wrong_word (str): Word that might be misspelled.
-        vocabulary (dict[str, float]): Dict of word words.
+        vocabulary (dict[str, float]): Dict of candidate words.
         method (str): Method to use for comparison.
         alphabet (list[str]): The alphabet with letters.
 
@@ -148,11 +149,11 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if not (
-        isinstance(wrong_word, str)
-        and check_dict(vocabulary, str, float, False)
-        and method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-        and (alphabet is None or check_list(alphabet, str, False))
+    if (
+        not isinstance(wrong_word, str)
+        and not check_dict(vocabulary, str, float, False)
+        and not method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        and not (alphabet is None or check_list(alphabet, str, False))
     ):
         return None
     
@@ -181,7 +182,7 @@ def initialize_levenshtein_matrix(
 
     Args:
         token_length (int): Length of the first string.
-        word_length (int): Length of the second string.
+        candidate_length (int): Length of the second string.
 
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
@@ -206,7 +207,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
 
     Args:
         token (str): First string.
-        word (str): Second string.
+        candidate (str): Second string.
 
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
@@ -237,11 +238,11 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
 
     Args:
         token (str): First string.
-        word (str): Second string.
+        candidate (str): Second string.
 
     Returns:
         int | None: Minimum number of single-character edits (insertions, deletions,
-             substitutions) required to transform token into word.
+             substitutions) required to transform token into candidate.
     """
     if (not isinstance(token, str) or 
         not isinstance(candidate, str)):
@@ -344,11 +345,11 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     four basic operations.
 
     Args:
-        word (str): The input word.
-        alphabet (list[str]): Alphabet for top_words creation.
+        candidate (str): The input word.
+        alphabet (list[str]): Alphabet for candidates creation.
 
     Returns:
-        list[str] | None: A combined list of word words generated by all operations.
+        list[str] | None: A combined list of candidate words generated by all operations.
 
     In case of corrupt input arguments, None is returned.
     """
@@ -364,15 +365,15 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
     """
-    Generate word words by applying single-edit operations
+    Generate candidate words by applying single-edit operations
     (delete, add, replace, swap) to the word.
 
     Args:
         word (str): The input incorrect word.
-        alphabet (list[str]): Alphabet for top_words creation.
+        alphabet (list[str]): Alphabet for candidates creation.
 
     Returns:
-        tuple[str] | None: A tuple of unique word words generated from the input.
+        tuple[str] | None: A tuple of unique candidate words generated from the input.
 
     In case of corrupt input arguments, None is returned.
     """
@@ -399,7 +400,7 @@ def calculate_frequency_distance(
     Args:
         word (str): The input incorrect word.
         frequencies (dict): A dictionary with frequencies.
-        alphabet (list[str]): Alphabet for top_words creation.
+        alphabet (list[str]): Alphabet for candidates creation.
 
     Returns:
         dict[str, float] | None: The most probable corrected word.
@@ -432,14 +433,14 @@ def get_matches(
 
     Args:
         token (str): The first string to compare.
-        word (str): The second string to compare.
+        candidate (str): The second string to compare.
         match_distance (int): Maximum allowed offset for letters to be considered matching.
 
     Returns:
         tuple[int, list[bool], list[bool]]:
             Number of matching letters.
             Boolean list indicating matches in token.
-            Boolean list indicating matches in word.
+            Boolean list indicating matches in candidate.
 
     In case of corrupt input arguments, None is returned.
     """
@@ -478,9 +479,9 @@ def count_transpositions(
 
     Args:
         token (str): The first string to compare.
-        word (str): The second string to compare.
+        candidate (str): The second string to compare.
         token_matches (list[bool]): Boolean list indicating matches in token.
-        word_matches (list[bool]): Boolean list indicating matches in word.
+        candidate_matches (list[bool]): Boolean list indicating matches in word.
 
     Returns:
         int | None: Number of transpositions.
@@ -514,7 +515,7 @@ def calculate_jaro_distance(
 
     Args:
         token (str): The first string to compare.
-        word (str): The second string to compare.
+        candidate (str): The second string to compare.
         matches (int): Number of matching letters.
         transpositions (int): Number of transpositions.
 
@@ -546,7 +547,7 @@ def winkler_adjustment(
 
     Args:
         token (str): The first string to compare.
-        word (str): The second string to compare.
+        candidate (str): The second string to compare.
         jaro_distance (float): Jaro distance score.
         prefix_scaling (float): Scaling factor for the prefix boost.
 
@@ -579,7 +580,7 @@ def calculate_jaro_winkler_distance(
 
     Args:
         token (str): The first string.
-        word (str): The second string.
+        candidate (str): The second string.
         prefix_scaling (float): Scaling factor for the prefix boost.
 
     Returns:

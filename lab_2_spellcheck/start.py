@@ -6,7 +6,6 @@ Spellcheck starter
 from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 from lab_2_spellcheck.main import build_vocabulary, find_correct_word, find_out_of_vocab_words
 
-russian = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
 
 def main() -> None:
     """
@@ -24,6 +23,7 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
+    russian = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
     corpus_tokens = clean_and_tokenize(text)
     if not corpus_tokens:
         return
@@ -39,7 +39,6 @@ def main() -> None:
     vocabulary = build_vocabulary(corpus_without_stop_words)
     if not vocabulary:
         return
-    print("Vocabulary: ", vocabulary, "\n")
     tokens_out_of_vocab = find_out_of_vocab_words(sentences_without_stop_words, vocabulary)
     if not tokens_out_of_vocab:
         return
