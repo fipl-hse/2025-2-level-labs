@@ -117,8 +117,6 @@ def calculate_distance(
             distance = calculate_levenshtein_distance(first_token, vocab_word)
         elif method == "jaccard":
             distance = calculate_jaccard_distance(first_token, vocab_word)
-        elif method == "jaro-winkler":
-            distance = calculate_jaro_winkler_distance(first_token, vocab_word)
         else:
             return None
         if distance is None:
@@ -160,13 +158,22 @@ def find_correct_word(
         return None
     min_dist_value = float("inf")
     for value in distances.values():
-        if value < min_dist_value:
-            min_dist_value = value
-    closest_candidates = [word for word, dist in distances.items() if dist == min_dist_value]
+        min_dist_value = min(min_dist_value, value)
+    closest_candidates = []
+    for word, dist in distances.items():
+        if dist == min_dist_value:
+            closest_candidates.append(word)
     if len(closest_candidates) == 1:
         return closest_candidates[0]
-    min_len_diff = min(abs(len(word) - len(wrong_word)) for word in closest_candidates)
-    length_filtered = [word for word in closest_candidates if abs(len(word) - len(wrong_word)) == min_len_diff]
+    min_len_diff = float("inf")
+    for word in closest_candidates:
+        diff = abs(len(word) - len(wrong_word))
+        if diff < min_len_diff:
+            min_len_diff = diff
+    length_filtered = []
+    for word in closest_candidates:
+        if abs(len(word) - len(wrong_word)) == min_len_diff:
+            length_filtered.append(word)
     return min(length_filtered)
 
 
@@ -320,10 +327,10 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if not isinstance(word, str) or not check_list(alphabet, str, False):
         return []
     result = []
-    for i in range(len(word)):
+    for i, current_letter in enumerate(word):
         for letter in alphabet:
-            if word[i] != letter:
-                new_word = word[:i] + letter + word[i+1:]
+            if current_letter != letter:
+                new_word = word[:i] + letter + word[i + 1:]
                 result.append(new_word)
     return sorted(result)
 
@@ -422,8 +429,8 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not (
-            isinstance(word, str)
+    if (
+            not isinstance(word, str)
             or not check_dict(frequencies, str, float, False)
             or not check_list(alphabet, str, True)
         ):
@@ -460,6 +467,7 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
+
 
 
 def count_transpositions(
