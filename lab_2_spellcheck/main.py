@@ -597,18 +597,15 @@ def calculate_jaro_winkler_distance(
     match_distance = max(len(token), len(candidate)) // 2 - 1
     match_distance = max(match_distance, 0)
     matches = get_matches(token, candidate, match_distance)
-    if matches is None:
-        return None
-    total_matches, token_matches, candidate_matches = matches
-    if total_matches == 0:
-        return 1.0
-    transpositions = count_transpositions(token, candidate, token_matches, candidate_matches)
-    if transpositions is None:
-        return None
-    jaro_distance = calculate_jaro_distance(token, candidate, total_matches, transpositions)
-    if jaro_distance is None:
-        return None
-    adjustment = winkler_adjustment(token, candidate, jaro_distance)
-    if adjustment is None:
-        return None
-    return jaro_distance - adjustment
+    if matches is not None:
+        total_matches, token_matches, candidate_matches = matches
+        if total_matches == 0:
+            return 1.0
+        transpositions = count_transpositions(token, candidate, token_matches, candidate_matches)
+        if transpositions is not None:
+            jaro_distance = calculate_jaro_distance(token, candidate, total_matches, transpositions)
+            if jaro_distance is not None:
+                adjustment = winkler_adjustment(token, candidate, jaro_distance)
+                if adjustment is not None:
+                    return jaro_distance - adjustment
+    return None
