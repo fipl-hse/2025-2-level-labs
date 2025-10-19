@@ -35,43 +35,53 @@ def main() -> None:
     tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
     tokens_vocab = build_vocabulary(tokens_without_stopwords) or {}
     print(tokens_vocab)
+
     tokens_not_in_vocab = find_out_of_vocab_words(tokens_without_stopwords, tokens_vocab) or []
     print(tokens_not_in_vocab)
-    tokens_jaccard_distance = calculate_distance("кот", {"кот": 0.5, "пёс": 0.5},
+
+    jaccard_distance = calculate_distance("кот", {"кот": 0.5, "пёс": 0.5},
                                                  method = "jaccard") or {}
-    print(tokens_jaccard_distance)
+    print(jaccard_distance)
+
     alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
     freq_distances = calculate_frequency_distance("маладой", tokens_vocab, alphabet) or {}
     print(freq_distances)
+
     levenshtein_distance = calculate_levenshtein_distance("кот", "кто")
     print(levenshtein_distance)
+
     jaro_winkler_distance = calculate_jaro_winkler_distance("кот", "кто")
     print(jaro_winkler_distance)
     result = jaro_winkler_distance
+
     all_wrong_words = []
     for sentence in sentences:
         sentence_tokens = clean_and_tokenize(sentence) or []
         out_of_vocab = find_out_of_vocab_words(sentence_tokens, tokens_vocab) or []
         all_wrong_words.extend(out_of_vocab)
     all_wrong_words_set = set(all_wrong_words)
+
     jaccard_corrections = {}
     for wrong_word in all_wrong_words_set:
         correct_word = find_correct_word(wrong_word, tokens_vocab, "jaccard", alphabet)
         if correct_word and correct_word != wrong_word:
             jaccard_corrections[wrong_word] = correct_word
     print(f"corrections by jaccard method: {jaccard_corrections}")
+
     freq_corrections = {}
     for wrong_word in all_wrong_words:
         correct_word = find_correct_word(wrong_word, tokens_vocab, "frequency-based", alphabet)
         if correct_word and correct_word != wrong_word:
             freq_corrections[wrong_word] = correct_word
     print(f"corrections by frequency_based method: {freq_corrections}")
+
     lev_corrections = {}
     for wrong_word in all_wrong_words:
         correct_word = find_correct_word(wrong_word, tokens_vocab, "levenshtein", alphabet)
         if correct_word and correct_word != wrong_word:
             lev_corrections[wrong_word] = correct_word
     print(f"corrections by levenshtein method: {lev_corrections}")
+    
     jw_corrections = {}
     for wrong_word in all_wrong_words:
         correct_word = find_correct_word(wrong_word, tokens_vocab, "jaro-winkler", alphabet)
