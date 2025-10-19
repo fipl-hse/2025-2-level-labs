@@ -134,16 +134,15 @@ def calculate_distance(
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
 
-    if method == "frequency-based" and alphabet is None:
-        return {key: 1.0 for key in vocabulary.keys()}
-
     if method == "frequency-based":
+        if alphabet is None:
+            return {word: 1.0 for word in vocabulary}
         frequency_distance=calculate_frequency_distance(first_token, vocabulary, alphabet)
         if frequency_distance is None:
             return None
         return frequency_distance
 
-    dictionary: dict[str, float] = {}
+    dictionary = {}
     for token in vocabulary:
         if method == "jaccard":
             distance=calculate_jaccard_distance(first_token, token)
