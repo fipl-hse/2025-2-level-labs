@@ -35,11 +35,7 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
-    russian_alphabet = [
-        'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м',
-        'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ',
-        'ы', 'ь', 'э', 'ю', 'я'
-    ]
+    russian_alphabet = list('абвгдеёжзийклмнопрстуфхцчшщъыьэюя')
     tokens = clean_and_tokenize(text)
     if not tokens:
         return
