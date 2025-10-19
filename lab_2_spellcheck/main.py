@@ -119,6 +119,9 @@ def calculate_distance(
             distance[token] = calculate_levenshtein_distance(first_token, token)
             if distance[token] is None:
                 return None
+    for key in distance:
+        if key is None:
+            return None
     return distance
 
 
@@ -394,10 +397,11 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if (not isinstance(word, str)
+    if (
+        not isinstance(word, str)
         or not check_dict(frequencies, str, float, False)
         or not check_list(alphabet, str, True)
-    ):
+        ):
         return None
     frequency_distances = {key: 1.0 for key in frequencies}
     #for key in frequencies:
