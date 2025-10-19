@@ -43,7 +43,12 @@ def main() -> None:
         print(f'\nВозможные исправления слова: {unknown}')
         word_corrections = {}
         for method_name in ['jaccard', 'frequency-based', 'levenshtein', 'jaro-winkler']:
-            correction = find_correct_word(unknown, vocabulary_map, method_name, rus_alphabet) or None
+            correction = find_correct_word(
+                unknown, 
+                vocabulary_map, 
+                method_name, 
+                rus_alphabet
+            ) or None
             word_corrections[method_name] = correction
             print(f"  {method_name.capitalize()}: {correction}")
         corrections_result[unknown] = word_corrections
