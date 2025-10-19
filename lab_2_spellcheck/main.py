@@ -117,6 +117,11 @@ def calculate_distance(
             if distance_value is None:
                 return None
             distance[key] = distance_value
+    if (method == "frequency-based" 
+        or method == "levenshtein"
+        or method == "jaro-winkler"
+    ):
+        return None
     return distance
 
 
@@ -152,6 +157,8 @@ def find_correct_word(
             return None
     if method == "jaccard":
         wrong_word_distance = calculate_distance(wrong_word, vocabulary, "jaccard", None)
+    else:
+        return None
     if wrong_word_distance == None:
         return None
     min_distance = min(wrong_word_distance.values())
