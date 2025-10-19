@@ -39,12 +39,12 @@ def main() -> None:
         correct_jaccard = find_correct_word(token, vocabulary, "jaccard", alphabet)
         correct_levenshtein = find_correct_word(token, vocabulary, "levenshtein", alphabet)
         correct_frequency = find_correct_word(token, vocabulary, "frequency-based", alphabet)
-        correct_jaro_winkler = find_correct_word(token, vocabulary, "jaro_winkler", alphabet)
+        correct_jaro_winkler = find_correct_word(token, vocabulary, "jaro-winkler", alphabet)
         fixed_words[token] = {
             "jaccard", correct_jaccard,
             "levenshtein", correct_levenshtein,
             "frequency-based", correct_frequency,
-            "jaro_winkler", correct_jaro_winkler
+            "jaro-winkler", correct_jaro_winkler
         }
     result = fixed_words
     assert result, "Result is None"

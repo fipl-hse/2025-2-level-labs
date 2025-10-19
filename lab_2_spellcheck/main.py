@@ -431,18 +431,18 @@ def get_matches(
             and match_distance >= 0):
         return None
     matches = 0
-    lst_ofFalse1 = [False] * len(token)
-    lst_ofFalse2 = [False] * len(candidate)
+    lst_of_false1 = [False] * len(token)
+    lst_of_false2 = [False] * len(candidate)
     len_of_token = len(token)
     for i in range(len_of_token):
         for j in range(max(0, i - match_distance),
                        min(len(candidate), i + match_distance + 1)):
-            if (token[i] == candidate[j] and lst_ofFalse2[j] is False):
-                lst_ofFalse1[i] = True
-                lst_ofFalse2[j] = True
+            if (token[i] == candidate[j] and lst_of_false2[j] is False):
+                lst_of_false1[i] = True
+                lst_of_false2[j] = True
                 matches += 1
                 break
-    return matches, lst_ofFalse1, lst_ofFalse2
+    return matches, lst_of_false1, lst_of_false2
 
 def count_transpositions(
     token: str, candidate: str, token_matches: list[bool], candidate_matches: list[bool]
