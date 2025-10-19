@@ -41,23 +41,41 @@ def main() -> None:
     rus_alphabet = list('абвгдеёжзийклмнопрстуфхцчшщъыьэюя')
     corrections_result = {}
 
-    methods = [
-    "jaccard",
-    "frequency-based",
-    "levenshtein",
-    "jaro-winkler",
-    ]
-
     for unknown in unknown_words:
         print(f'\nPossible corrections of the word: {unknown}')
         word_corrections = {}
-        for method in methods:
-            correction = find_correct_word(unknown,
-                                           vocabulary_map,
-                                           method,
-                                           rus_alphabet) or None
-            word_corrections[method] = correction
-            print(f"  {method.capitalize()}: {correction}")
+        correction_jaccard = find_correct_word(
+            unknown,
+            vocabulary_map,
+            'jaccard',
+            rus_alphabet
+            ) or None
+        word_corrections['jaccard'] = correction_jaccard
+        print(f'Jaccard: {correction_jaccard}')
+        correction_frequency = find_correct_word(
+            unknown,
+            vocabulary_map,
+            'frequency-based',
+            rus_alphabet
+            ) or None
+        word_corrections['frequency-based'] = correction_frequency
+        print(f'Frequency-based: {correction_frequency}')
+        correction_levenshtein = find_correct_word(
+            unknown,
+            vocabulary_map,
+            'levenshtein',
+            rus_alphabet
+            ) or None
+        word_corrections['levenshtein'] = correction_levenshtein
+        print(f'Levenshtein: {correction_levenshtein}')
+        correction_jaro = find_correct_word(
+            unknown,
+            vocabulary_map,
+            'jaro-winkler',
+            rus_alphabet
+            ) or None
+        word_corrections['jaro-winkler'] = correction_jaro
+        print(f'Jaro-winkler: {correction_jaro}')
         corrections_result[unknown] = word_corrections
 
     result = corrections_result

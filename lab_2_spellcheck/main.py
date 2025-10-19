@@ -166,7 +166,8 @@ def find_correct_word(
         not isinstance(wrong_word, str)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
         or not check_dict(vocabulary, str, float, False)
-        or not all(isinstance(k, str) and isinstance(v, (int, float)) for k, v in vocabulary.items())
+        or not (all(isinstance(k, str)
+                    and isinstance(v, (int, float)) for k, v in vocabulary.items()))
         ):
         return None
     if alphabet is not None:
