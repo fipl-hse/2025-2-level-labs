@@ -496,10 +496,7 @@ def calculate_frequency_distance(
         return None
 
     proposed_candidates=propose_candidates(word, alphabet)
-    if proposed_candidates is None:
-        return {x: 1.0 for x in frequencies.keys()}
-
-    if word == "":
+    if proposed_candidates is None or word == "":
         return {x: 1.0 for x in frequencies.keys()}
 
     dictionary_of_candidates = {}
