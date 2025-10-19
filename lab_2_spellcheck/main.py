@@ -23,9 +23,8 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
     if not check_list(tokens, str, False):
         return None
+
     total = len(tokens)
-    if total == 0:
-        return None
     vocab = {}
     for token in tokens:
         vocab[token] = vocab.get(token, 0.0) + 1.0 / total
@@ -123,7 +122,7 @@ def calculate_distance(
         "levenshtein",
             "jaro-winkler"]:
         return None
-    if alphabet is not None and not check_list(alphabet, str, False):
+    if alphabet is not None and not check_list(alphabet, str, True):
         return None
     if method == "frequency-based":
         return calculate_frequency_distance(
@@ -136,8 +135,6 @@ def calculate_distance(
             d = calculate_levenshtein_distance(first_token, token)
         elif method == "jaro-winkler":
             d = calculate_jaro_winkler_distance(first_token, token)
-        else:
-            return None
         if d is None:
             return None
         distances[token] = d
@@ -175,8 +172,6 @@ def find_correct_word(
             str,
             float,
             False):
-        return None
-    if not vocabulary:
         return None
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if distances is None:
@@ -510,23 +505,23 @@ def count_transpositions(
     In case of corrupt input arguments, None is returned.
     """
     if not isinstance(
-            token,
-            str) or not isinstance(
-            candidate,
-            str) or not check_list(
-                token_matches,
-                bool,
-                False) or not check_list(
-                    candidate_matches,
-                    bool,
-            False):
+        token, str
+    ) or not isinstance(candidate, str):
         return None
-    matched_token = [i for i, m in enumerate(token_matches) if m]
-    matched_candidate = [i for i, m in enumerate(candidate_matches) if m]
+    if not check_list(
+        token_matches, bool, False
+    ) or not check_list(candidate_matches, bool, False):
+        return None
+
     transpositions = 0
-    for i, j in zip(matched_token, matched_candidate):
-        if token[i] != candidate[j]:
-            transpositions += 1
+    j = 0
+    for i, match in enumerate(token_matches):
+        if match:
+            while j < len(candidate_matches) and not candidate_matches[j]:
+                j += 1
+            if j < len(candidate_matches) and token[i] != candidate[j]:
+                transpositions += 1
+            j += 1
     return transpositions // 2
 
 
@@ -555,8 +550,8 @@ def calculate_jaro_distance(
         return None
     if matches == 0:
         return 1.0
-    return 1.0 - ((matches / len(token) + matches /
-                  len(candidate) + (matches - transpositions) / matches) / 3)
+    return 1.0 - ((matches / len(token) + matches / len(candidate) +
+                   (matches - transpositions) / matches) / 3)
 
 
 def winkler_adjustment(
