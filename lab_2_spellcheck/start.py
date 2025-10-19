@@ -49,6 +49,12 @@ def main() -> None:
     top_words = sorted(vocabulary.items(), key=lambda x: x[1], reverse=True)[:5]
     for word, freq in top_words:
         print(f"{word}: {freq:.4f}")
+    test_token_jaccard = "кат"
+    test_vocab_jaccard = {"кот": 0.5, "котик": 0.3, "пес": 0.2}
+    jaccard_distances = calculate_distance(test_token_jaccard, test_vocab_jaccard, method="jaccard")
+    print(f"Jaccard distance for '{test_token_jaccard}'")
+    if jaccard_distances:
+        print(f"Dictionary of distances: {jaccard_distances}")
     sentence = sentences[0]
     print("\nSentence 1")
     print(f"Original: {sentence}")
@@ -59,7 +65,8 @@ def main() -> None:
     if not sentence_tokens_without_stopwords:
         return
     oov_words = find_out_of_vocab_words(sentence_tokens_without_stopwords, vocabulary) or []
-    print(f"Out-of-vocabulary words: {oov_words}")
+    if oov_words:
+        print(f"Out-of-vocabulary words: {oov_words}")
     for wrong_word in oov_words:
         print(f"\nProcessing word: '{wrong_word}'")
         methods_tuple: tuple[
@@ -76,13 +83,8 @@ def main() -> None:
             print(f"{method}: '{wrong_word}' -> '{correction}'")
             print(f"Top 3 candidates: {top_candidates}")
             if method == "levenshtein" and correction:
-                print(f"Levenshtein matrix for '{wrong_word}' and '{correction}':")
-                filled_matrix = fill_levenshtein_matrix(wrong_word, correction)
-                if filled_matrix:
-                    for row in filled_matrix:
-                        print(f"      {row}")
                 distance = calculate_levenshtein_distance(wrong_word, correction)
-                print(f"Final distance: {distance}")
+                print(f"Final Levenshtein distance: {distance}")
     result = distance
     assert result, "Result is None"
 
