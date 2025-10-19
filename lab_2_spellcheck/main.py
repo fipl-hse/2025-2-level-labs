@@ -120,7 +120,7 @@ def calculate_distance(
                 return None
             distance[candidate] = distance_jaccard
 
-    elif method == "frequency-based":
+    if method == "frequency-based":
         if alphabet is None:
             return {key: 1.0 for key in vocabulary.keys()}
         freq_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
@@ -128,7 +128,7 @@ def calculate_distance(
             return None
         distance = freq_distance
 
-    elif method == "levenshtein":
+    if method == "levenshtein":
         for candidate in vocabulary.keys():
             levenshtein_distance = calculate_levenshtein_distance(first_token, candidate)
             if levenshtein_distance is None:
@@ -319,7 +319,10 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if not (isinstance(word, str) and check_list(alphabet, str, False) and word):
         return []
 
-    return sorted([word[:i] + letter + word[i + 1:] for i in range(len(word)) for letter in alphabet])
+    return sorted([word[:i] + letter + word[i + 1:]
+        for i in range(len(word))
+        for letter in alphabet]
+    )
 
 def swap_adjacent(word: str) -> list[str]:
     """
