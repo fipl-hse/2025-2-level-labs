@@ -26,22 +26,22 @@ def main() -> None:
     russian = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
     corpus_tokens = clean_and_tokenize(text)
     if not corpus_tokens:
-        return
+        return None
     corpus_without_stop_words = remove_stop_words(corpus_tokens, stop_words)
     if not corpus_without_stop_words:
-        return
+        return None
     sentences_tokens = clean_and_tokenize(''.join(sentences))
     if not sentences_tokens:
-        return
+        return None
     sentences_without_stop_words = remove_stop_words(sentences_tokens, stop_words)
     if not sentences_without_stop_words:
-        return
+        return None
     vocabulary = build_vocabulary(corpus_without_stop_words)
     if not vocabulary:
-        return
+        return None
     tokens_out_of_vocab = find_out_of_vocab_words(sentences_without_stop_words, vocabulary)
     if not tokens_out_of_vocab:
-        return
+        return None
     print("Tokens out of vocabulary: ", tokens_out_of_vocab, "\n")
     correct_words_jaccard = {token: find_correct_word(
         token, vocabulary, "jaccard", russian)
