@@ -8,6 +8,7 @@ from typing import Literal
 from lab_1_keywords_tfidf.main import (
     check_dict,
     check_list,
+    check_positive_int
 )
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
