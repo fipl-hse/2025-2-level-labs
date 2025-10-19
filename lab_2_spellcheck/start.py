@@ -46,9 +46,8 @@ def main() -> None:
             "frequency-based", correct_frequency,
             "jaro_winkler", correct_jaro_winkler
         }
-    print(fixed_words)
-    # result = found_by_jaro_winkler_word
-    # assert result, "Result is None"
+    result = fixed_words
+    assert result, "Result is None"
 
 
 if __name__ == "__main__":
