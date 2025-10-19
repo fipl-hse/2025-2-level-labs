@@ -5,7 +5,6 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 from typing import Any
-from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
@@ -181,6 +180,7 @@ def calculate_distance(
                 return None
             distances[word] = distance
         return distances
+    return None
 
 
 def find_correct_word(
