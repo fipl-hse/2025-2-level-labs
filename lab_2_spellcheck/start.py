@@ -48,7 +48,6 @@ def main() -> None:
 
     print("These mispelled words are out of vocabulary:", out_of_vocab_words)
 
-    alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
     jaccard_corrections = {}
     frequency_based_corrections = {}
     levenshtein_corrections = {}

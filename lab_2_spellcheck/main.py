@@ -70,10 +70,9 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
 
     token_set = set(token)
     candidate_set = set(candidate)
-    jaccard_distance = 1 - len(
-        token_set.intersection(candidate_set))/len(
+    jaccard_distance = 1 - len(token_set.intersection(candidate_set)) / len(
             token_set.union(candidate_set)
-            )
+                )
 
     return jaccard_distance
 
@@ -158,7 +157,7 @@ def find_correct_word(
         return None
     if not method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
-    if not (alphabet is None or check_list(alphabet, str, False)):
+    if alphabet is None and check_list(alphabet, str, False):
         return None
 
 
@@ -246,8 +245,6 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
-    if not (isinstance(token, str) and isinstance(candidate, str)):
-        return None
 
     levenshtein_matrix = fill_levenshtein_matrix(token, candidate)
 
@@ -332,10 +329,7 @@ def swap_adjacent(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not isinstance(word, str):
-        return []
-
-    if not word:
+    if not (isinstance(word, str) and word):
         return []
 
     return sorted(
@@ -357,10 +351,9 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if any([
-        not isinstance(word, str),
-        not check_list(alphabet, str, True)
-    ]):
+    if (not isinstance(word, str) or
+       not check_list(alphabet, str, True)
+        ):
         return None
 
 
@@ -388,10 +381,10 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
-    if any([
-        not isinstance(word, str),
+    if (
+        not isinstance(word, str) and
         not check_list(alphabet, str, True)
-    ]):
+        ):
         return None
 
     candidates = generate_candidates(word, alphabet)
@@ -432,14 +425,14 @@ def calculate_frequency_distance(
     ):
         return None
 
-    frequency_distance: dict = {token: 1.0 for token in frequencies}
+    frequency_distance = {token: 1.0 for token in frequencies}
 
     candidates = propose_candidates(word, alphabet)
     if candidates is None:
         return frequency_distance
 
     for candidate in candidates:
-        if candidate in frequencies:
+        if frequencies.get(candidate):
             frequency_distance[candidate] = 1.0 - frequencies[candidate]
 
     return frequency_distance
