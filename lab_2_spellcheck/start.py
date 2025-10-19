@@ -40,7 +40,7 @@ def main() -> None:
 
     tokenized_sentences = list(set(token
     for sentence in sentences
-    for token in remove_stop_words(clean_and_tokenize(sentence))
+    for token in remove_stop_words(clean_and_tokenize(sentence) or [], stop_words)
       ))
 
     out_of_vocab_words = find_out_of_vocab_words(tokenized_sentences, vocabulary)
@@ -56,9 +56,11 @@ def main() -> None:
 
         jaccard_corrections[word] = find_correct_word(word, vocabulary, "jaccard", alphabet)
 
-        frequency_based_corrections[word] = find_correct_word(word, vocabulary, "frequency-based", alphabet)
+        frequency_based_corrections[word] = find_correct_word(
+            word, vocabulary, "frequency-based", alphabet)
 
-        levenshtein_corrections[word] = find_correct_word(word, vocabulary, "levenshtein", alphabet)
+        levenshtein_corrections[word] = find_correct_word(
+            word, vocabulary, "levenshtein", alphabet)
 
     result = [jaccard_corrections, frequency_based_corrections, levenshtein_corrections]
 

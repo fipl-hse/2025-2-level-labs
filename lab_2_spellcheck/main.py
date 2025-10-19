@@ -7,9 +7,7 @@ from typing import Literal
 
 from lab_1_keywords_tfidf.main import (
     check_dict,
-    check_float,
     check_list,
-    check_positive_int,
 )
 
 
@@ -72,7 +70,10 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
 
     token_set = set(token)
     candidate_set = set(candidate)
-    jaccard_distance = 1 - len(token_set.intersection(candidate_set)) / len(token_set.union(candidate_set))
+    jaccard_distance = 1 - len(
+        token_set.intersection(candidate_set))/len(
+            token_set.union(candidate_set)
+            )
 
     return jaccard_distance
 
@@ -103,7 +104,8 @@ def calculate_distance(
     if not check_dict(vocabulary, str, float, False):
         return None
 
-    if not isinstance(method, str) or method not in ("jaccard", "frequency-based", "levenshtein", "jaro-winkler"):
+    if not isinstance(method, str)\
+    or method not in("jaccard", "frequency-based", "levenshtein", "jaro-winkler"):
         return None
 
     if alphabet is not None and not check_list(alphabet, str, False):
@@ -124,7 +126,7 @@ def calculate_distance(
         freq_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
         if freq_distance is None:
             return None
-        distance[candidate] = freq_distance
+        distance = freq_distance
 
     elif method == "levenshtein":
         for candidate in vocabulary.keys():
@@ -418,6 +420,24 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if not (
+        isinstance(word, str)
+        and check_dict(frequencies, str, float, False)
+        and check_list(alphabet, str, True)
+    ):
+        return None
+
+    frequency_distance: dict = {token: 1.0 for token in frequencies}
+
+    candidates = propose_candidates(word, alphabet)
+    if candidates is None:
+        return frequency_distance
+
+    for candidate in candidates:
+        if candidate in frequencies:
+            frequency_distance[candidate] = 1.0 - frequencies[candidate]
+
+    return frequency_distance
 
 
 def get_matches(
