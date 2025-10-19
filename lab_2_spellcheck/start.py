@@ -3,7 +3,7 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
-from lab_2_spellcheck.main import (
+from main import (
     clean_and_tokenize,
     remove_stop_words,
     build_vocabulary,
