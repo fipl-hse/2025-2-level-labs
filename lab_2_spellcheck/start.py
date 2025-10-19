@@ -51,14 +51,14 @@ def main() -> None:
     print("calculating levenshtein distances...")
     for word in out_of_vocab_words:
         levenshtein_correct_word.append(find_correct_word(word, tokens_dict, "levenshtein"))
-    
+
     jaro_winkler_correct_word = []
     print("calculating jaro-winkler distances...")
     for word in out_of_vocab_words:
         jaro_winkler_correct_word.append(find_correct_word(word, tokens_dict, "jaro-winkler"))
 
-    for i in range(len(out_of_vocab_words)):
-        print(f'''correct word for "{out_of_vocab_words[i]}":
+    for i, out_of_vocab_word in enumerate(out_of_vocab_words):
+        print(f'''correct word for "{out_of_vocab_word}":
             jaccard: {jaccard_distance[i]},
             frequency_based_correct_word: {frequency_based_correct_word[i]},
             levenshtein: {levenshtein_correct_word[i]},

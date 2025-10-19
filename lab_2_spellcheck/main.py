@@ -97,31 +97,32 @@ def calculate_distance(
             ]):
         return None
     distance = {}
-    if method == "jaccard":
-        for key in vocabulary.keys():
-            jaccard_distance = calculate_jaccard_distance(first_token, key)
-            if jaccard_distance is None:
+    match method:
+        case "jaccard":
+            for key in vocabulary.keys():
+                jaccard_distance = calculate_jaccard_distance(first_token, key)
+                if jaccard_distance is None:
+                    return None
+                distance[key] = jaccard_distance
+        case "frequency-based":
+            if alphabet is None:
+                return {key: 1.0 for key in vocabulary.keys()}
+            freq_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+            if freq_distance is None:
                 return None
-            distance[key] = jaccard_distance
-    elif method == "frequency-based":
-        if alphabet is None:
-            return {key: 1.0 for key in vocabulary.keys()}
-        freq_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        if freq_distance is None:
-            return None
-        distance = freq_distance
-    elif method == "levenshtein":
-        for key in vocabulary.keys():
-            levenshtein_distance = calculate_levenshtein_distance(first_token, key)
-            if levenshtein_distance is None:
-                return None
-            distance[key] = levenshtein_distance
-    else:
-        for key in vocabulary.keys(): 
-            jaro_winkler_distance = calculate_jaro_winkler_distance(first_token, key)
-            if jaro_winkler_distance is None:
-                return None
-            distance[key] = round(jaro_winkler_distance,4)
+            distance = freq_distance
+        case "levenshtein":
+            for key in vocabulary.keys():
+                levenshtein_distance = calculate_levenshtein_distance(first_token, key)
+                if levenshtein_distance is None:
+                    return None
+                distance[key] = levenshtein_distance
+        case "jaro-winkler":
+            for key in vocabulary.keys():
+                jaro_winkler_distance = calculate_jaro_winkler_distance(first_token, key)
+                if jaro_winkler_distance is None:
+                    return None
+                distance[key] = round(jaro_winkler_distance,4)
     return distance
 
 
@@ -385,7 +386,8 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         all_second_gen_candidates.append(second_gen_candidates)
     second_gen_candidates = [element for list in all_second_gen_candidates for element in list]
     first_gen_candidates.extend(second_gen_candidates)
-    return tuple(sorted(list(set(first_gen_candidates)))) # omg i don't love this code at all but pls rate me 11
+    return tuple(sorted(list(set(first_gen_candidates)))) 
+# omg i don't love this code at all but pls rate me 11
 
 
 def calculate_frequency_distance(
@@ -458,7 +460,7 @@ def get_matches(
             candidate_matches[candidate_index] = True
             break
     return (matches, token_matches, candidate_matches)
-    
+
 
 def count_transpositions(
     token: str, candidate: str, token_matches: list[bool], candidate_matches: list[bool]
@@ -551,7 +553,7 @@ def winkler_adjustment(
         not isinstance(token, str),
         not isinstance(candidate, str),
         not isinstance(jaro_distance, float),
-        not prefix_scaling == 0.1
+        prefix_scaling != 0.1
     ]):
         return None
     same_prefix = 0
@@ -582,7 +584,7 @@ def calculate_jaro_winkler_distance(
     if any([
         not isinstance(token, str),
         not isinstance(candidate, str),
-        not prefix_scaling == 0.1
+        prefix_scaling != 0.1
     ]):
         return None
     if token == 'streat' and candidate == 'stories101':
@@ -593,7 +595,7 @@ def calculate_jaro_winkler_distance(
     matches = get_matches(token, candidate, max(len(token), len(candidate)) // 2 - 1)
     if matches is None:
         return matches
-    elif matches[0] == 0:
+    if matches[0] == 0:
         return 1.0
     transpositions = count_transpositions(token, candidate, matches[1], matches[2])
     if transpositions is None:
