@@ -197,6 +197,7 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
              substitutions) required to transform token into candidate.
     """
 
+
 def delete_letter(word: str) -> list[str]:
     """
     Generate all possible words by deleting one letter from the word.
