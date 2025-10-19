@@ -117,11 +117,11 @@ def calculate_distance(
             if distance_value is None:
                 return None
             distance[key] = distance_value
-    if (method == "frequency-based" 
-        or method == "levenshtein"
-        or method == "jaro-winkler"
-    ):
-        return None
+    elif method == "frequency-based":
+        for key in vocabulary:
+            distance[key] = 1.0 - vocabulary[key]
+    else:
+        return {}
     return distance
 
 
