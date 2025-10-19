@@ -107,15 +107,13 @@ def calculate_distance(
         if alphabet is None:
             alphabet = []
         distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        if distance is None:
-            return None
     if method == "levenshtein":
         for token in vocabulary:
             distance[token] = calculate_levenshtein_distance(first_token, token)
-            if distance[token] is None:
-                return None
+    if distance is None:
+        return None
     for key in distance:
-        if key is None:
+        if distance[key] is None:
             return None
     return distance
 
