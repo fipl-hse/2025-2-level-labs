@@ -3,9 +3,10 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
-
 from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
+
 from lab_2_spellcheck.main import build_vocabulary, find_out_of_vocab_words, find_correct_word
+
 
 def main() -> None:
     """
@@ -37,7 +38,7 @@ def main() -> None:
     if wrong_words is None:
         wrong_words = []
     alphabet = [chr(i) for i in range(1072, 1104)]
-    result: dict[str, dict] = {}
+    result = {}
     for word in wrong_words:
         word_results = {}
         jaccard = find_correct_word(word, vocabulary, 'jaccard', alphabet)
