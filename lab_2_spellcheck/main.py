@@ -103,17 +103,12 @@ def calculate_distance(
     if method == "jaccard":
         for token in vocabulary:
             distance[token] = calculate_jaccard_distance(first_token, token)
-            if distance[token] is None:
-                return None
     if method == "frequency-based":
         if alphabet is None:
             alphabet = []
         distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
         if distance is None:
             return None
-        for key in distance:
-            if distance[key] is None:
-                return None
     if method == "levenshtein":
         for token in vocabulary:
             distance[token] = calculate_levenshtein_distance(first_token, token)
