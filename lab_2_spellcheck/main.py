@@ -386,7 +386,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         all_second_gen_candidates.append(second_gen_candidates)
     second_gen_candidates = [element for list in all_second_gen_candidates for element in list]
     first_gen_candidates.extend(second_gen_candidates)
-    return tuple(sorted(list(set(first_gen_candidates)))) 
+    return tuple(sorted(list(set(first_gen_candidates))))
 # omg i don't love this code at all but pls rate me 11
 
 
