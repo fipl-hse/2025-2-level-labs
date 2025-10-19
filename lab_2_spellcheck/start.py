@@ -67,20 +67,20 @@ def main() -> None:
         for method in ("jaccard", "frequency-based", "levenshtein", "jaro-winkler"):
             distances = calculate_distance(wrong_word, vocabulary, method, russian_alphabet)
             correction = find_correct_word(wrong_word, vocabulary, method, russian_alphabet)
-            if distances:
-                top_candidates = sorted(distances.items(), key=lambda x: x[1])[:3]
-                print(f"{method}: '{wrong_word}' -> '{correction}'")
-                print(f"Top 3 candidates: {top_candidates}")
-                if method == "levenshtein" and correction:
-                    print(f"Levenshtein matrix for '{wrong_word}' and '{correction}':")
-                    filled_matrix = fill_levenshtein_matrix(wrong_word, correction)
-                    if filled_matrix:
-                        for row in filled_matrix:
-                            print(f"      {row}")
-                    distance = calculate_levenshtein_distance(wrong_word, correction)
-                    print(f"Final distance: {distance}")
-            else:
+            if not distances:
                 print(f"{method}: Failed to calculate distances")
+                continue
+            top_candidates = sorted(distances.items(), key=lambda x: x[1])[:3]
+            print(f"{method}: '{wrong_word}' -> '{correction}'")
+            print(f"Top 3 candidates: {top_candidates}")
+            if method == "levenshtein" and correction:
+                print(f"Levenshtein matrix for '{wrong_word}' and '{correction}':")
+                filled_matrix = fill_levenshtein_matrix(wrong_word, correction)
+                if filled_matrix:
+                    for row in filled_matrix:
+                        print(f"      {row}")
+                distance = calculate_levenshtein_distance(wrong_word, correction)
+                print(f"Final distance: {distance}")
     result = distance
     assert result, "Result is None"
 
