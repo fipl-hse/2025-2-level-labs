@@ -188,24 +188,26 @@ def calculate_distance(
             if distance is None:
                 return None
             distances[word] = distance
+        return distances
     elif method == "frequency-based":
         freq_distances = calculate_frequency_distance(first_token, vocabulary, alphabet or [])
         if freq_distances is None:
             return None
-        distances = freq_distances
+        return freq_distances
     elif method == "levenshtein":
         for word in vocabulary:
             distance = calculate_levenshtein_distance(first_token, word)
             if distance is None:
                 return None
             distances[word] = float(distance)
+        return distances
     elif method == "jaro-winkler":
         for word in vocabulary:
             distance = calculate_jaro_winkler_distance(first_token, word)
             if distance is None:
                 return None
             distances[word] = distance
-    return distances
+        return distances
 
 
 def find_correct_word(
@@ -453,8 +455,6 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
-    if not alphabet:
-        return ()
     candidates = set()
     first_step_candidates = generate_candidates(word, alphabet)
     if first_step_candidates is None:
@@ -489,15 +489,13 @@ def calculate_frequency_distance(
     if not check_list(alphabet, str, True):
         return None
     proposed = propose_candidates(word, alphabet)
-    if proposed is None:
-        candidates = set()
-    else:
-        candidates = set(proposed)
+    candidates = set(proposed) if proposed is not None else set()
     distances = {}
     for vocab_word, frequency in frequencies.items():
         distance = 1.0 - float(frequency) if vocab_word in candidates else 1.0
         distances[vocab_word] = distance
     return distances
+
 
 def get_matches(
     token: str, candidate: str, match_distance: int
@@ -521,8 +519,6 @@ def get_matches(
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
     if not isinstance(match_distance, int) or match_distance < 0:
-        return None
-    if match_distance < 0:
         return None
     token_len = len(token)
     candidate_len = len(candidate)
@@ -639,15 +635,12 @@ def winkler_adjustment(
     if not isinstance(jaro_distance, float) or not isinstance(prefix_scaling, float):
         return None
     prefix_length = 0
-    for i in range(min(len(token), len(candidate))):
-        if i >= 4:
-            break
+    for i in range(min(4, len(token), len(candidate))):
         if token[i] == candidate[i]:
             prefix_length += 1
         else:
             break
-    winkler_adjustment_value = prefix_length * prefix_scaling * jaro_distance
-    return winkler_adjustment_value
+    return prefix_length * prefix_scaling * jaro_distance
 
 
 def calculate_jaro_winkler_distance(
@@ -685,5 +678,5 @@ def calculate_jaro_winkler_distance(
     winkler_adjustment_value = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
     if winkler_adjustment_value is None:
         return None
-    jaro_winkler_similarity = (1.0 - jaro_distance) + winkler_adjustment_value
-    return 1.0 - jaro_winkler_similarity
+    jaro_winkler_distance = jaro_distance - winkler_adjustment_value
+    return max(0.0, jaro_winkler_distance)
