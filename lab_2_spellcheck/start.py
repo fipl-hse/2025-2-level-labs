@@ -81,7 +81,7 @@ def main() -> None:
         if correct_word and correct_word != wrong_word:
             lev_corrections[wrong_word] = correct_word
     print(f"corrections by levenshtein method: {lev_corrections}")
-    
+
     jw_corrections = {}
     for wrong_word in all_wrong_words:
         correct_word = find_correct_word(wrong_word, tokens_vocab, "jaro-winkler", alphabet)
