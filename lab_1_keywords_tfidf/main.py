@@ -6,7 +6,6 @@ Extract keywords based on frequency related metrics
 
 # pylint:disable=unused-argument
 from math import log
-
 from typing import Any
 
 
