@@ -4,7 +4,9 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
+
 from lab_1_keywords_tfidf.main import check_list, check_dict
+
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
