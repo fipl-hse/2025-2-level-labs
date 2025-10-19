@@ -40,19 +40,22 @@ def main() -> None:
     correct_words_jaccard = {token: find_correct_word(
         token, vocabulary, "jaccard", russian)
         for token in tokens_out_of_vocab}
-    print("Correct words by jaccard method: ", correct_words_jaccard, "\n")
     correct_words_freq = {token: find_correct_word(
         token, vocabulary, "frequency-based", russian)
         for token in tokens_out_of_vocab}
-    print("Correct words by frequensy based method: ", correct_words_freq, "\n")
     correct_words_lev = {token: find_correct_word(
         token, vocabulary, "levenshtein", russian)
         for token in tokens_out_of_vocab}
-    print("Correct words by levenshtein method: ", correct_words_lev, "\n")
     correct_words_jaro = {token: find_correct_word(
         token, vocabulary, "jaro-winkler", russian)
         for token in tokens_out_of_vocab}
-    print("Correct words by jaro-winkler method: ", correct_words_jaro, "\n")
+    for token in tokens_out_of_vocab:
+        print(f"Token out of vocabulary: {token}")
+        print(f"Corrected by jaccard method: {correct_words_jaccard[token]}")
+        print(f"Corrected by frequensy based method: {correct_words_freq[token]}")
+        print(f"Corrected by levenshtein method: {correct_words_lev[token]}")
+        print(f"Corrected by jaro-winkler method: {correct_words_jaro[token]}")
+        print("~~~")
     result = correct_words_jaro
     assert result, "Result is None"
 
