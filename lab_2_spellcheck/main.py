@@ -96,26 +96,29 @@ def calculate_distance(
         not isinstance(first_token, str)
         or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-        or not alphabet is None and not check_list(alphabet, str, False)
+        or (not alphabet is None and not check_list(alphabet, str, False))
     ):
         return None
     distance = {}
     if method == "jaccard":
         for token in vocabulary:
-            distance[token] = calculate_jaccard_distance(first_token, token)
+            jaccard_distance = calculate_jaccard_distance(first_token, token)
+            if jaccard_distance is None:
+                return None
+            distance[token] = jaccard_distance
     if method == "levenshtein":
         for token in vocabulary:
-            distance[token] = calculate_levenshtein_distance(first_token, token)
+            levenshtein_distance = calculate_levenshtein_distance(first_token, token)
+            if levenshtein_distance is None:
+                return None
+            distance[token] = levenshtein_distance
     if method == "frequency-based":
         if alphabet is None:
             alphabet = []
-        distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        return distance
-    if distance is None:
-        return None
-    for key in distance:
-        if distance[key] is None:
-            return None
+        frequency_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        #if frequency_distance is None:
+            #return None
+        distance = frequency_distance
     return distance
 
 
@@ -397,8 +400,10 @@ def calculate_frequency_distance(
         or not check_list(alphabet, str, True)
     ):
         return None
-    frequency_distances = {key: 1.0 for key in frequencies}
-    #for key in frequencies:
+    frequency_distances = {}
+    for key in frequencies:
+        frequency_distances[key] = 1.0
+        #for key in frequencies:
         #if key is None:
             #return None
     candidates_tuple = propose_candidates(word, alphabet)
@@ -406,13 +411,7 @@ def calculate_frequency_distance(
         candidates_tuple = ()
     for candidate in candidates_tuple:
         if candidate in frequencies:
-            #if frequencies[candidate] is None:
-                #return None
             frequency_distances[candidate] = 1.0 - frequencies[candidate]
-            #if frequencies[candidate] is None:
-                #return None
-            #if frequency_distances[candidate] is None:
-                #return None
     return frequency_distances
 
 
