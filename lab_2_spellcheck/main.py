@@ -116,8 +116,8 @@ def calculate_distance(
         if alphabet is None:
             alphabet = []
         frequency_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        #if frequency_distance is None:
-            #return None
+        if frequency_distance is None:
+            return None
         distance = frequency_distance
     return distance
 
@@ -403,9 +403,6 @@ def calculate_frequency_distance(
     frequency_distances = {}
     for key in frequencies:
         frequency_distances[key] = 1.0
-        #for key in frequencies:
-        #if key is None:
-            #return None
     candidates_tuple = propose_candidates(word, alphabet)
     if candidates_tuple is None:
         candidates_tuple = ()
