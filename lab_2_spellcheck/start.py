@@ -48,9 +48,9 @@ def main() -> None:
     alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
 
     if vocab:
-        sample_tokens = list(vocab.keys())[:2]
-        if len(sample_tokens) == 2:
-            word1, word2 = sample_tokens
+        sample_tokens = list(vocab.keys())
+        if len(sample_tokens) >= 2:
+            word1, word2 = sample_tokens[:2]
             jaccard_dist = calculate_distance(
                 word1, {word1: 0.1, word2: 0.2}, "jaccard"
             )
@@ -70,35 +70,36 @@ def main() -> None:
                 f"and '{word2}': {jw_dist}"
             )
 
-        freq_dist = calculate_frequency_distance(
-            sample_tokens[0], vocab, alphabet
-        ) or {}
-        print(
-            f"Frequency distance keys for '{sample_tokens[0]}':"
-            f"{list(freq_dist.keys())[:5]}"
-        )
+        if sample_tokens:
+            freq_dist = calculate_frequency_distance(
+                sample_tokens[0], vocab, alphabet
+            ) or {}
+            print(
+                f"Frequency distance keys for '{sample_tokens[0]}':"
+                f"{list(freq_dist.keys())[:5]}"
+            )
 
-        test_word = out_of_vocab[0] if out_of_vocab else sample_tokens[0]
+            test_word = out_of_vocab[0] if out_of_vocab else sample_tokens[0]
 
-        jaccard_correct = find_correct_word(
-            test_word, vocab, "jaccard", alphabet
-        )
-        print(f"Jaccard correction for '{test_word}': {jaccard_correct}")
+            jaccard_correct = find_correct_word(
+                test_word, vocab, "jaccard", alphabet
+            )
+            print(f"Jaccard correction for '{test_word}': {jaccard_correct}")
 
-        freq_correct = find_correct_word(
-            test_word, vocab, "frequency-based", alphabet
-        )
-        print(f"Frequency correction for '{test_word}': {freq_correct}")
+            freq_correct = find_correct_word(
+                test_word, vocab, "frequency-based", alphabet
+            )
+            print(f"Frequency correction for '{test_word}': {freq_correct}")
 
-        lev_correct = find_correct_word(
-            test_word, vocab, "levenshtein", alphabet
-        )
-        print(f"Levenshtein correction for '{test_word}': {lev_correct}")
+            lev_correct = find_correct_word(
+                test_word, vocab, "levenshtein", alphabet
+            )
+            print(f"Levenshtein correction for '{test_word}': {lev_correct}")
 
-        jw_correct = find_correct_word(
-            test_word, vocab, "jaro-winkler", alphabet
-        )
-        print(f"Jaro-Winkler correction for '{test_word}': {jw_correct}")
+            jw_correct = find_correct_word(
+                test_word, vocab, "jaro-winkler", alphabet
+            )
+            print(f"Jaro-Winkler correction for '{test_word}': {jw_correct}")
 
     all_misspelled = []
     for sentence in sentences:
@@ -106,7 +107,12 @@ def main() -> None:
         sent_out_of_vocab = find_out_of_vocab_words(sent_tokens, vocab) or []
         all_misspelled.extend(sent_out_of_vocab)
 
-    print(f"Total misspelled words found: {len(set(all_misspelled))}")
+    result = len(set(all_misspelled))
+    print(f"Total misspelled words found: {result}")
+
+    assert result is not None, "Misspelled words count is None"
+    assert isinstance(result, int), "Misspelled words count should be integer"
+    assert result >= 0, "Misspelled words count cannot be negative"
 
 
 if __name__ == "__main__":

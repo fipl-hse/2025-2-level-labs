@@ -135,6 +135,9 @@ def calculate_distance(
             d = calculate_levenshtein_distance(first_token, token)
         elif method == "jaro-winkler":
             d = calculate_jaro_winkler_distance(first_token, token)
+        else:
+            continue
+
         if d is None:
             return None
         distances[token] = d
