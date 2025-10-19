@@ -114,8 +114,8 @@ def calculate_distance(
             distance : float | None
             if method == "levenshtein":
                 distance = calculate_levenshtein_distance(first_token, word)
-            elif method == "jaro-winkler":
-                distance = calculate_jaro_winkler_distance(first_token, word)
+            #elif method == "jaro-winkler":
+                #distance = calculate_jaro_winkler_distance(first_token, word)
             else:
                 distance = calculate_jaccard_distance(first_token, word)
             if distance is None:
@@ -359,10 +359,8 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
         return None
 
     return sorted(
-        delete_letter(word) +
-        add_letter(word, alphabet) +
-        replace_letter(word, alphabet) +
-        swap_adjacent(word))
+        delete_letter(word) + add_letter(word, alphabet) +
+        replace_letter(word, alphabet) + swap_adjacent(word))
 
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
