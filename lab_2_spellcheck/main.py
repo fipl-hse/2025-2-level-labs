@@ -395,6 +395,9 @@ def calculate_frequency_distance(
     ):
         return None
     frequency_distances = {key: 1.0 for key in frequencies}
+    for key in frequency_distances:
+        if key is None:
+            return None
     candidates_tuple = propose_candidates(word, alphabet)
     if candidates_tuple is None:
         candidates_tuple = ()
