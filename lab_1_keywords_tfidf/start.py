@@ -39,13 +39,13 @@ def main() -> None:
     term_freq_tfidf = calculate_tfidf(term_freq_tf, idf) or {}
     print(term_freq_tfidf)
     top_key_words = get_top_n(term_freq_tfidf, 10) or []
-    print(", ".join(top_key_words))
+    print(', '.join(top_key_words))
     expected = calculate_expected_frequency(frequencies, corpus_freqs) or {}
     chi_values = calculate_chi_values(expected, frequencies) or {}
     significant_words = extract_significant_words(chi_values, alpha=0.001) or {}
     print(significant_words)
     key_words_chi = get_top_n(chi_values, 10) or []
-    print(", ".join(key_words_chi))
+    print(', '.join(key_words_chi))
     result = key_words_chi
     assert result, "Keywords are not extracted"
 

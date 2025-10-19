@@ -115,7 +115,7 @@ def calculate_distance(
         return dict.fromkeys(vocabulary, 1.0)
 
     distances = {}
-    distance_function = {
+    distance_function: dict= {
         "jaccard": calculate_jaccard_distance,
         "levenshtein": calculate_levenshtein_distance,
         "jaro-winkler": calculate_jaro_winkler_distance
@@ -402,7 +402,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     for candidate in candidates:
         generated_candidate = generate_candidates(candidate, alphabet)
-        if not check_list(generated_candidate, str, True):
+        if not generated_candidate or not check_list(generated_candidate, str, True):
             return None
         candidates_to_propose.update(generated_candidate)
 
@@ -432,7 +432,7 @@ def calculate_frequency_distance(
     ):
         return None
 
-    frequency_distances: dict = {token: 1.0 for token in frequencies}
+    frequency_distances = {token: 1.0 for token in frequencies}
 
     candidates = propose_candidates(word, alphabet)
     if candidates is None:
