@@ -8,9 +8,7 @@ from lab_2_spellcheck.main import (
     build_vocabulary,
     calculate_distance,
     find_out_of_vocab_words,
-
 )
-
 
 
 def main() -> None:
