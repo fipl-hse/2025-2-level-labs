@@ -166,7 +166,7 @@ def find_correct_word(
     for key, value in result.items():
         if value == min_value:
             candidates.append(key)
-    candidates.sort(key=lambda word: (vocabulary.get(word, 0), word), reverse=True)
+    candidates.sort(key=lambda word: (abs(len(word) - len(wrong_word)), word))
     return candidates[0]
 
 

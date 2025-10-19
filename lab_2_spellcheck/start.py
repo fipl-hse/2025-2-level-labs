@@ -54,6 +54,7 @@ def main() -> None:
             frequency_result = find_correct_word(word, vocabulary, "frequency-based", alphabet)
             levenshtein_result = find_correct_word(word, vocabulary, "levenshtein", alphabet)
             jaro_winkler_result = find_correct_word(word, vocabulary, "jaro-winkler", alphabet)
+            print(word)
             print(f"jaccard: {jaccard_result}")
             print(f"frequency_based: {frequency_result}")
             print(f"levenshtein: {levenshtein_result}")
