@@ -403,6 +403,10 @@ def calculate_frequency_distance(
             if frequencies[candidate] is None:
                 return None
             frequency_distances[candidate] = 1.0 - frequencies[candidate]
+            if frequencies[candidate] is None:
+                return None
+            if frequency_distances[candidate] is None:
+                return None
     return frequency_distances
 
 
