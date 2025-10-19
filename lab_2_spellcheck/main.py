@@ -168,8 +168,7 @@ def find_correct_word(
     min_len_diff = float("inf")
     for word in closest_candidates:
         diff = abs(len(word) - len(wrong_word))
-        if diff < min_len_diff:
-            min_len_diff = diff
+        min_len_diff = min(min_len_diff, diff)
     length_filtered = []
     for word in closest_candidates:
         if abs(len(word) - len(wrong_word)) == min_len_diff:
