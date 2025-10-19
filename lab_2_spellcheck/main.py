@@ -111,14 +111,14 @@ def calculate_distance(
                 return None
             distances[candidate] = distance
         return distances
-    elif method == "levenshtein":
+    if method == "levenshtein":
         for candidate in vocabulary:
             distance = calculate_levenshtein_distance(first_token, candidate)
             if distance is None:
                 return None
             distances[candidate] = distance
         return distances
-    elif method == "jaro-winkler":
+    if method == "jaro-winkler":
         for candidate in vocabulary:
             distance = calculate_jaro_winkler_distance(first_token, candidate)
             if distance is None:
@@ -154,7 +154,7 @@ def find_correct_word(
         or not (alphabet is None or check_list(alphabet, str, True))
     ):
         return None
-    
+
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if distances is None:
         return None
@@ -164,9 +164,9 @@ def find_correct_word(
 
     if len(top_words) > 1:
         top_words.sort(key=lambda word: (abs(len(word) - len(wrong_word)), word))
-    
+
     return top_words[0]
-    
+
 
 
 def initialize_levenshtein_matrix(
@@ -187,7 +187,7 @@ def initialize_levenshtein_matrix(
         token_length < 0 or
         candidate_length < 0):
         return None
-    
+
     levenshtein_matrix = []
     levenshtein_matrix.append(list(range(candidate_length + 1)))
 
@@ -208,7 +208,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
-    if (not isinstance(token, str) or 
+    if (not isinstance(token, str) or
         not isinstance(candidate, str)):
         return None
     levenshtein_matrix = initialize_levenshtein_matrix(len(token), len(candidate))
@@ -240,7 +240,7 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
-    if (not isinstance(token, str) or 
+    if (not isinstance(token, str) or
         not isinstance(candidate, str)):
         return None
     levenshtein_matrix = fill_levenshtein_matrix(token, candidate)
@@ -280,7 +280,7 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not all([isinstance(word, str), 
+    if not all([isinstance(word, str),
                 check_list(alphabet, str, False)]):
         return []
     add_letter_list = []
@@ -304,7 +304,7 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not all([isinstance(word, str), 
+    if not all([isinstance(word, str),
                 check_list(alphabet, str, False)]):
         return []
     replaced_letter_list = []
@@ -349,13 +349,13 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if not all([isinstance(word, str), 
+    if not all([isinstance(word, str),
                 check_list(alphabet, str, True)]):
         return None
     return sorted(
-        delete_letter(word) + 
-        add_letter(word, alphabet) + 
-        replace_letter(word, alphabet) + 
+        delete_letter(word) +
+        add_letter(word, alphabet) +
+        replace_letter(word, alphabet) +
         swap_adjacent(word))
 
 
@@ -407,7 +407,7 @@ def calculate_frequency_distance(
         check_dict(frequencies, str, float, False),
         check_list(alphabet, str, True)]):
         return None
-    
+
     frequency_distances: dict = {token: 1.0 for token in frequencies}
     top_words = propose_candidates(word, alphabet)
     if top_words is None:
@@ -531,7 +531,7 @@ def calculate_jaro_distance(
     if not matches:
         return 1.0
     return (1
-        - (matches / len(token) + matches / len(candidate) + 
+        - (matches / len(token) + matches / len(candidate) +
            (matches - transpositions) / matches)/ 3)
 
 
