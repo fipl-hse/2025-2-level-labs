@@ -61,7 +61,6 @@ def main() -> None:
         for token in tokens_out_of_vocab}
     print("Correct words by jaro-winkler method: ", correct_words_jaro, "\n")
     result = correct_words_jaro
-    result = None
     assert result, "Result is None"
 
 
