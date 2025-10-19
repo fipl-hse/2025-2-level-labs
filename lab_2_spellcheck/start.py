@@ -23,21 +23,32 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
-        tokens = clean_and_tokenize(text) or []
+    alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+    all_words = clean_and_tokenize(text) or []
+    words_no_stop = remove_stop_words(all_words, stop_words) or []
+    vocabulary = build_vocabulary(words_no_stop) or {}
+    all_text = []
+    for sentence in sentences:
+
+        tokens = clean_and_tokenize(sentence) or []
         tokens_no_stop = remove_stop_words(tokens, stop_words) or []
-        frequencies = build_vocabulary(tokens_no_stop) or {}
-        out_vocab = find_out_of_vocab_words(sentences, frequencies)
-        found_by_jaccard_word = find_correct_word("кит", {"кот": 0.5,
-                                                          "пёс": 0.5}, method = "jaccard")
-        found_by_frequency_word = find_correct_word("пиро", frequencies,
-                                                    "frequency-based", 
-                                                    list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")) #пиво
-        found_by_levenshtein_word = find_correct_word("нага", frequencies,
-                                                      "levenshtein") #наша
-        found_by_jaro_winkler_word = find_correct_word("вторый", frequencies,
-                                                       "jaro-winkler") #второй
-    result = found_by_jaro_winkler_word
-    assert result, "Result is None"
+        all_text.extend(tokens_no_stop)
+    wrong_words = find_out_of_vocab_words(all_text, vocabulary) or []
+    fixed_words = {}
+    for token in wrong_words:
+        correct_jaccard = find_correct_word(token, vocabulary, "jaccard", alphabet)
+        correct_levenshtein = find_correct_word(token, vocabulary, "levenshtein", alphabet)
+        correct_frequency = find_correct_word(token, vocabulary, "frequency-based", alphabet)
+        correct_jaro_winkler = find_correct_word(token, vocabulary, "jaro_winkler", alphabet)
+        fixed_words[token] = {
+            "jaccard", correct_jaccard,
+            "levenshtein", correct_levenshtein,
+            "frequency-based", correct_frequency,
+            "jaro_winkler", correct_jaro_winkler
+        }
+    print(fixed_words)
+    # result = found_by_jaro_winkler_word
+    # assert result, "Result is None"
 
 
 if __name__ == "__main__":

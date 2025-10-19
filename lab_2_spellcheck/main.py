@@ -68,9 +68,9 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return None
     if token == "" and candidate == "":
         return 1.0
-    sym = set(token).symmetric_difference(set(candidate))
+    symmetric_dif = set(token).symmetric_difference(set(candidate))
     union = set(token).union(set(candidate))
-    return len(sym)/ len(union)
+    return len(symmetric_dif)/ len(union)
 
 
 def calculate_distance(
@@ -431,18 +431,18 @@ def get_matches(
             and match_distance >= 0):
         return None
     matches = 0
-    lst_tru1 = [False] * len(token)
-    lst_tru2 = [False] * len(candidate)
+    lst_ofFalse1 = [False] * len(token)
+    lst_ofFalse2 = [False] * len(candidate)
     len_of_token = len(token)
     for i in range(len_of_token):
         for j in range(max(0, i - match_distance),
                        min(len(candidate), i + match_distance + 1)):
-            if (token[i] == candidate[j] and lst_tru2[j] is False):
-                lst_tru1[i] = True
-                lst_tru2[j] = True
+            if (token[i] == candidate[j] and lst_ofFalse2[j] is False):
+                lst_ofFalse1[i] = True
+                lst_ofFalse2[j] = True
                 matches += 1
                 break
-    return matches, lst_tru1, lst_tru2
+    return matches, lst_ofFalse1, lst_ofFalse2
 
 def count_transpositions(
     token: str, candidate: str, token_matches: list[bool], candidate_matches: list[bool]
