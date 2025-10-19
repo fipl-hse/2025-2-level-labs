@@ -32,7 +32,12 @@ def check_list(
     return all(isinstance(el, elements_type) for el in user_input)
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(
+        user_input: Any,
+        key_type: type,
+        value_type: type,
+        can_be_empty: bool
+) -> bool:
     """
     Check if the object is a dictionary with keys and values of given types.
 
@@ -63,7 +68,8 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input > 0
+    return isinstance(user_input, int) and not isinstance(user_input, bool) \
+        and user_input > 0
 
 
 def check_float(user_input: Any) -> bool:
@@ -105,7 +111,10 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     return tokens
 
 
-def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
+def remove_stop_words(
+        tokens: list[str],
+        stop_words: list[str]
+) -> list[str] | None:
     """
     Exclude stop words from the token sequence.
 
@@ -143,13 +152,17 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     return {token: tokens.count(token) for token in set(tokens)}
 
 
-def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
+def get_top_n(
+        frequencies: dict[str, int | float],
+        top: int
+) -> list[str] | None:
     """
     Extract the most frequent tokens.
 
     Args:
 
-        frequencies (dict[str, int | float]): A dictionary with tokens and their frequencies
+        frequencies (dict[str, int | float]): A dictionary with tokens
+            and their frequencies
         top (int): Number of tokens to extract
 
     Returns:
@@ -202,7 +215,10 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     return {k: v / total for k, v in frequencies.items()}
 
 
-def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
+def calculate_tfidf(
+        term_freq: dict[str, float],
+        idf: dict[str, float]
+) -> dict[str, float] | None:
     """
     Calculate TF-IDF score for tokens.
 
@@ -238,7 +254,8 @@ def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> dict[str, float] | None:
     """
-    Calculate expected frequency for tokens based on document and corpus frequencies.
+    Calculate expected frequency for tokens based on document
+        and corpus frequencies.
 
     Args:
         doc_freqs (dict[str, int]): Token frequencies in document
