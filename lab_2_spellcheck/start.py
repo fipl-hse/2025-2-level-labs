@@ -9,10 +9,8 @@ from lab_1_keywords_tfidf.main import (
 )
 from lab_2_spellcheck.main import (
     build_vocabulary,
-    calculate_distance,
-    calculate_frequency_distance,
-    calculate_levenshtein_distance,
     find_out_of_vocab_words,
+    find_correct_word
 )
 
 def main() -> None:
@@ -32,23 +30,33 @@ def main() -> None:
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
     result = None
-    tokens = clean_and_tokenize(text) or []
-    without_stop_words = remove_stop_words(tokens, stop_words) or []
-    tokens_vocabulary = build_vocabulary(without_stop_words) or {}
-    print(tokens_vocabulary)
-    tokens_not_in_vocab = find_out_of_vocab_words(without_stop_words, tokens_vocabulary) or []
-    print(tokens_not_in_vocab)
-    jaccard_distance = calculate_distance("кот", {"кот": 0.5, "пёс": 0.5},
-                                                 method = "jaccard") or {}
-    print(jaccard_distance)
-    alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
-    freq_distances = calculate_frequency_distance("маладой", tokens_vocabulary, alphabet) or {}
-    print(freq_distances)
-    levenshtein_distance = calculate_levenshtein_distance("кот", "кто")
-    print(levenshtein_distance)
-    result = levenshtein_distance
-    assert result, "Result is None"
-
-
+    tokens = clean_and_tokenize(text)
+    if tokens is None:
+        tokens = []
+    tokens_no_stop = remove_stop_words(tokens, stop_words)
+    if tokens_no_stop is None:
+        tokens_no_stop = []
+    vocabulary = build_vocabulary(tokens_no_stop)
+    if vocabulary is None:
+        vocabulary = {}
+    wrong_words = find_out_of_vocab_words(tokens_no_stop, vocabulary)
+    if wrong_words is None:
+        wrong_words = []
+    alphabet = [chr(i) for i in range(1072, 1104)]
+    for word in wrong_words:
+        word_results = {}
+        jaccard = find_correct_word(word, vocabulary, 'jaccard', alphabet)
+        if jaccard is None:
+            jaccard = {}
+        word_results['jaccard'] = jaccard
+        frequency = find_correct_word(word, vocabulary, 'frequency-based', alphabet)
+        if frequency is None:
+            frequency = {}
+        word_results['frequency-based'] = frequency
+        levenshtein = find_correct_word(word, vocabulary, 'levenshtein', alphabet)
+        if levenshtein is None:
+            levenshtein = {}
+        word_results['levenshtein'] = levenshtein
+        result[word] = word_results
 if __name__ == "__main__":
     main()
