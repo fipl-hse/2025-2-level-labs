@@ -30,14 +30,12 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
-    tokens_text = clean_and_tokenize(text) or []
-    tokens_text_without_stop_words = remove_stop_words(tokens_text, stop_words) or []
-    vocabulary = build_vocabulary(tokens_text_without_stop_words) or {}
+    vocabulary = build_vocabulary(remove_stop_words(clean_and_tokenize(text) or [], stop_words)) or {}
     print(vocabulary)
 
     all_sentence_tokens = [
-        token 
-        for sentence in sentences 
+        token
+        for sentence in sentences
         for token in remove_stop_words(clean_and_tokenize(sentence) or [], stop_words)
     ]
     error_words = find_out_of_vocab_words(all_sentence_tokens, vocabulary) or []
@@ -77,7 +75,7 @@ def main() -> None:
         if not has_correct:
             msg = ("The word is spelled correctly for the given context,"
             "but it is not in the vocabulary." 
-                   if error_word in correct_words else 
+                   if error_word in correct_words else
                    "The word is spelled incorrectly for the given context,"
                    "and it is not in the vocabulary.")
             print(msg)
