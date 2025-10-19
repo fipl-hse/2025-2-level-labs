@@ -3,15 +3,8 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
-from lab_1_keywords_tfidf.main import (
-    clean_and_tokenize,
-    remove_stop_words,
-)
-from lab_2_spellcheck.main import (
-    build_vocabulary,
-    find_correct_word,
-    find_out_of_vocab_words
-)
+from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
+from lab_2_spellcheck.main import build_vocabulary, find_correct_word, find_out_of_vocab_words
 
 
 def main() -> None:
@@ -43,7 +36,7 @@ def main() -> None:
     alphabet = [chr(i) for i in range(1072, 1104)]
     all_results = {}
     for wrong_word in wrong_words:
-        print(f"\nИсправление для '{wrong_word}':")
+        print(f"\ncorrection for '{wrong_word}':")
         jaccard_correction = find_correct_word(wrong_word, vocabulary,
                                                'jaccard', alphabet) or {}
         print(f"  Jaccard: {jaccard_correction}")
