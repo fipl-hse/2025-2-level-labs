@@ -109,6 +109,11 @@ def calculate_distance(
         if alphabet is None:
             alphabet = []
         distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if distance is None:
+            return None
+        for key in distance:
+            if distance[key] is None:
+                return None
     if method == "levenshtein":
         for token in vocabulary:
             distance[token] = calculate_levenshtein_distance(first_token, token)
@@ -395,9 +400,9 @@ def calculate_frequency_distance(
     ):
         return None
     frequency_distances = {key: 1.0 for key in frequencies}
-    for key in frequencies:
-        if key is None:
-            return None
+    #for key in frequencies:
+        #if key is None:
+            #return None
     candidates_tuple = propose_candidates(word, alphabet)
     if candidates_tuple is None:
         candidates_tuple = ()
