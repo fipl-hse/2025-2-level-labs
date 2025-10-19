@@ -108,21 +108,25 @@ def calculate_distance(
     ):
         return None
     result: dict[str, float] = {}
-    if method == "frequency-based":
-        freq_dict = calculate_frequency_distance(first_token, vocabulary, alphabet or [])
-        if freq_dict is None:
+    if method == "jaccard":
+        for vocab_word in vocabulary:
+            jacc_distance = calculate_jaccard_distance(first_token, vocab_word)
+            if jacc_distance is None:
+                return None
+            result[vocab_word] = jacc_distance
+    elif method == "levenshtein":
+        for vocab_word in vocabulary:
+            lev_distance = calculate_levenshtein_distance(first_token, vocab_word)
+            if lev_distance is None:
+                return None
+            result[vocab_word] = lev_distance
+    elif method == "frequency-based":
+        freq_result = calculate_frequency_distance(first_token, vocabulary, alphabet or [])
+        if freq_result is None:
             return None
-        return freq_dict
-    for vocab_word in vocabulary:
-        if method == "levenshtein":
-            distance = calculate_levenshtein_distance(first_token, vocab_word)
-        elif method == "jaccard":
-            distance = calculate_jaccard_distance(first_token, vocab_word)
-        else:
-            return None
-        if distance is None:
-            return None
-        result[vocab_word] = float(distance)
+        result = freq_result
+    elif method == "jaro-winkler":
+        return None
     return result
 
 
