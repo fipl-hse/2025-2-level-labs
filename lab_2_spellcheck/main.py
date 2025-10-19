@@ -5,7 +5,7 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 
-from lab_1_keywords_tfidf.main import check_list, check_dict
+from lab_1_keywords_tfidf.main import check_dict, check_list
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -25,9 +25,9 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
         return None
 
     unique_tokens = set(tokens)
-    all_tokens_length = len(tokens)
+    all_tokens = len(tokens)
 
-    return {token : tokens.count(token) / all_tokens_length for token in unique_tokens}
+    return {token : tokens.count(token) / all_tokens for token in unique_tokens}
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
@@ -99,6 +99,9 @@ def calculate_distance(
         not method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
     ):
         return None
+    if (not vocabulary or
+    (alphabet is not None and not check_list(alphabet, str, True))):
+        return None
 
     if method == "frequency-based":
         if alphabet is None:
@@ -108,14 +111,15 @@ def calculate_distance(
             return None
         res = fr_dist
 
+
     if method in ["jaccard", "levenshtein", "jaro-winkler"]:
         res = {}
         for word in vocabulary:
             distance : float | None
             if method == "levenshtein":
                 distance = calculate_levenshtein_distance(first_token, word)
-            #elif method == "jaro-winkler":
-                #distance = calculate_jaro_winkler_distance(first_token, word)
+            elif method == "jaro-winkler":
+                distance = calculate_jaro_winkler_distance(first_token, word)
             else:
                 distance = calculate_jaccard_distance(first_token, word)
             if distance is None:
@@ -157,17 +161,17 @@ def find_correct_word(
         return None
 
     min_value = min(distances.values())
-    cands = [cand for cand, value in distances.items() if value == min_value]
-    if not cands:
+    candidates = [candidate for candidate, value in distances.items() if value == min_value]
+    if not candidates:
         return None
 
-    if len(cands) > 1:
-        smallest_length_diff = min(abs(len(cand) - len(wrong_word)) for cand in cands)
-        closest_cands = [cand for cand in cands
-                              if abs(len(cand) - len(wrong_word)) == smallest_length_diff]
-        return sorted(closest_cands)[0]
+    if len(candidates) > 1:
+        min_length_diff = min(abs(len(candidate) - len(wrong_word)) for candidate in candidates)
+        closest_candidates = [candidate for candidate in candidates
+                              if abs(len(candidate) - len(wrong_word)) == min_length_diff]
+        return sorted(closest_candidates)[0]
 
-    return cands[0]
+    return candidates[0]
 
 
 def initialize_levenshtein_matrix(
@@ -262,11 +266,11 @@ def delete_letter(word: str) -> list[str]:
     if not isinstance(word, str):
         return []
 
-    shorter_words = []
+    shortened_words = []
     for i in range(len(word)):
         new_word = word[:i] + word[i+1:]
-        shorter_words.append(new_word)
-    return sorted(shorter_words)
+        shortened_words.append(new_word)
+    return sorted(shortened_words)
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -285,12 +289,12 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
     """
     if not isinstance(word, str) or not check_list(alphabet, str, False):
         return []
-    longer_words = []
+    extended_words = []
     for i in range(len(word) + 1):
         for letter in alphabet:
             new_word = word[:i] + letter + word[i:]
-            longer_words.append(new_word)
-    return sorted(longer_words)
+            extended_words.append(new_word)
+    return sorted(extended_words)
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -310,12 +314,12 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if not isinstance(word, str) or not check_list(alphabet, str, False) or word is None:
         return []
 
-    misspelled_words = []
+    replased_letters_words = []
     for i in range(len(word)):
         for letter in alphabet:
             new_word = word[:i] + letter + word[i + 1:]
-            misspelled_words.append(new_word)
-    return sorted(misspelled_words)
+            replased_letters_words.append(new_word)
+    return sorted(replased_letters_words)
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -334,11 +338,11 @@ def swap_adjacent(word: str) -> list[str]:
     if not isinstance(word, str):
         return []
 
-    mixed_up_words = []
+    replaced_letters_words = []
     for i in range(len(word) - 1):
         new_word = word[:i] + word[i + 1] + word[i] + word[i + 2:]
-        mixed_up_words.append(new_word)
-    return sorted(mixed_up_words)
+        replaced_letters_words.append(new_word)
+    return sorted(replaced_letters_words)
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
@@ -359,8 +363,10 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
         return None
 
     return sorted(
-        delete_letter(word) + add_letter(word, alphabet) +
-        replace_letter(word, alphabet) + swap_adjacent(word))
+        delete_letter(word) +
+        add_letter(word, alphabet) +
+        replace_letter(word, alphabet) +
+        swap_adjacent(word))
 
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
@@ -384,10 +390,10 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         return None
     all_candidates = set(candidates)
     for token in list(all_candidates):
-        refined_candidates = generate_candidates(token, alphabet)
-        if refined_candidates is None:
+        second_level_candidates = generate_candidates(token, alphabet)
+        if second_level_candidates is None:
             return None
-        all_candidates.update(refined_candidates)
+        all_candidates.update(second_level_candidates)
     return tuple(sorted(set(all_candidates)))
 
 
@@ -453,19 +459,19 @@ def get_matches(
         ):
         return None
     match_count = 0
-    token_letter_match = [False] * len(token)
-    candidate_letter_match = [False] * len(candidate)
+    if_token_letter_match = [False] * len(token)
+    if_candidate_letter_match = [False] * len(candidate)
     for i, el in enumerate(token):
         start = max(0, i - match_distance)
         end = min(len(candidate), i + match_distance + 1)
         for j in range(start, end):
-            if not candidate_letter_match[j] and el == candidate[j]:
-                token_letter_match[i] = True
-                candidate_letter_match[j] = True
+            if not if_candidate_letter_match[j] and el == candidate[j]:
+                if_token_letter_match[i] = True
+                if_candidate_letter_match[j] = True
                 match_count += 1
                 break
 
-    return (match_count, token_letter_match, candidate_letter_match)
+    return (match_count, if_token_letter_match, if_candidate_letter_match)
 
 
 
@@ -497,26 +503,26 @@ def count_transpositions(
     if  len(token_matches) != len(token) or len(candidate_matches) != len(candidate):
         return None
 
-    token_match_elements = []
+    token_match_els = []
     for i, el in enumerate(token):
         if token_matches[i]:
-            token_match_elements.append(el)
-    if not token_match_elements:
+            token_match_els.append(el)
+    if not token_match_els:
         return 0
 
-    candidate_match_elements = []
+    candidate_match_els = []
     for i, el in enumerate(candidate):
         if candidate_matches[i]:
-            candidate_match_elements.append(el)
-    if not candidate_match_elements:
+            candidate_match_els.append(el)
+    if not candidate_match_els:
         return 0
 
-    if len(token_match_elements) != len(candidate_match_elements):
+    if len(token_match_els) != len(candidate_match_els):
         return 0
 
     transpositions = 0
-    for i, el in enumerate(token_match_elements):
-        if el != candidate_match_elements[i]:
+    for i, el in enumerate(token_match_els):
+        if el != candidate_match_els[i]:
             transpositions += 1
     return transpositions // 2
 
@@ -556,7 +562,6 @@ def calculate_jaro_distance(
     jaro_distance = 1 - jaro_sim
     return jaro_distance
 
-
 def winkler_adjustment(
     token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
 ) -> float | None:
@@ -590,7 +595,6 @@ def winkler_adjustment(
         else:
             break
     return prefix_len * prefix_scaling * jaro_distance
-
 
 def calculate_jaro_winkler_distance(
     token: str, candidate: str, prefix_scaling: float = 0.1
