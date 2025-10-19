@@ -431,7 +431,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     candidates=deleted+added+replaced+swaped_adjacent
 
-    list_of_candidates: list[str] = []
+    list_of_candidates = []
     for candidate in candidates:
         if candidate not in list_of_candidates:
             list_of_candidates.append(candidate)
