@@ -103,11 +103,11 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if not (
-        check_dict(vocabulary, str, float, False) and
-        (alphabet is None or check_list(alphabet, str, False)) and
-        isinstance(first_token, str) and
-        method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+    if (
+        not isinstance(first_token, str)
+        or not check_dict(vocabulary, str, float, False)
+        or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        or not alphabet is None and not check_list(alphabet, str, False)
     ):
         return None
     distance = {}
@@ -117,11 +117,11 @@ def calculate_distance(
             if distance_value is None:
                 return None
             distance[key] = distance_value
-    elif method == "frequency-based":
-        for key in vocabulary:
-            distance[key] = 1.0 - vocabulary[key]
-    else:
-        return {}
+    elif (method == "frequency-based" 
+        or method == "levenshtein"
+        or method == "jaro-winkler"
+    ):
+        return None
     return distance
 
 
@@ -155,10 +155,9 @@ def find_correct_word(
         return None
     if calculate_distance is None:
             return None
-    if method == "jaccard":
-        wrong_word_distance = calculate_distance(wrong_word, vocabulary, "jaccard", None)
-    else:
+    if not vocabulary:
         return None
+    wrong_word_distance = calculate_distance(wrong_word, vocabulary, "jaccard", None)
     if wrong_word_distance == None:
         return None
     min_distance = min(wrong_word_distance.values())
