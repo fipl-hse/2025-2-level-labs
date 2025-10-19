@@ -43,6 +43,7 @@ def main() -> None:
     if wrong_words is None:
         wrong_words = []
     alphabet = [chr(i) for i in range(1072, 1104)]
+    result = {}
     for word in wrong_words:
         word_results = {}
         jaccard = find_correct_word(word, vocabulary, 'jaccard', alphabet)
