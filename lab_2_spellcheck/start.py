@@ -54,9 +54,15 @@ def main() -> None:
 
     for token in finded_out_of_vocab_words:
         jaccard_corrected[token]=find_correct_word(token, vocabulary, 'jaccard', russian_alphabet)
-        frequency_corrected[token]=find_correct_word(token, vocabulary, 'frequency-based', russian_alphabet)
-        levenshtein_corrected[token]=find_correct_word(token, vocabulary, 'levenshtein', russian_alphabet)
-        jaro_winkler_corrected[token]=find_correct_word(token, vocabulary, 'jaro-winkler', russian_alphabet)
+        frequency_corrected[token]=find_correct_word(
+            token, vocabulary, 'frequency-based', russian_alphabet
+            )
+        levenshtein_corrected[token]=find_correct_word(
+            token, vocabulary, 'levenshtein', russian_alphabet
+            )
+        jaro_winkler_corrected[token]=find_correct_word(
+            token, vocabulary, 'jaro-winkler', russian_alphabet
+            )
 
         correct_result = [
             jaccard_corrected,
