@@ -59,5 +59,6 @@ def main() -> None:
             levenshtein = {}
         word_results['levenshtein'] = levenshtein
         result[word] = word_results
+        assert result, "Result is None"
 if __name__ == "__main__":
     main()
