@@ -233,7 +233,8 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not all([isinstance(word, str), check_list(alphabet, str, False)]):
+    if not all([isinstance(word, str), 
+                check_list(alphabet, str, False)]):
         return []
     add_letter_list = []
     for i in range(len(word) + 1):
@@ -256,13 +257,14 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not all([isinstance(word, str), check_list(alphabet, str, False)]):
+    if not all([isinstance(word, str), 
+                check_list(alphabet, str, False)]):
         return []
-    replace_letter_list = []
+    replaced_letter_list = []
     for i in range(len(word)):
         for char in alphabet:
-            replace_letter_list.append(word[:i] + char + word[i+1:])
-    return sorted(replace_letter_list)
+            replaced_letter_list.append(word[:i] + char + word[i + 1:])
+    return sorted(replaced_letter_list)
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -282,11 +284,11 @@ def swap_adjacent(word: str) -> list[str]:
         return []
     replace_letter_list = []
     for i in range(len(word) - 1):
-        replace_letter_list.append(word[:i] + word[i+1] + word[i] + word[i+2:])
+        replace_letter_list.append(word[:i] + word[i + 1] + word[i] + word[i + 2:])
     return sorted(replace_letter_list)
 
 
-def generate_top_words(word: str, alphabet: list[str]) -> list[str] | None:
+def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     """
     Generate all possible word words for a given word using
     four basic operations.
@@ -300,13 +302,17 @@ def generate_top_words(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if not all([isinstance(word, str), check_list(alphabet, str, True)]):
+    if not all([isinstance(word, str), 
+                check_list(alphabet, str, True)]):
         return None
-    top_words = delete_letter(word) + add_letter(word, alphabet) + replace_letter(word, alphabet) + swap_adjacent(word)
-    return sorted(top_words)
+    return sorted(
+        delete_letter(word) + 
+        add_letter(word, alphabet) + 
+        replace_letter(word, alphabet) + 
+        swap_adjacent(word))
 
 
-def propose_top_words(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
+def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
     """
     Generate word words by applying single-edit operations
     (delete, add, replace, swap) to the word.
@@ -322,12 +328,12 @@ def propose_top_words(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
     """
     if not all([isinstance(word, str), check_list(alphabet, str, True)]):
         return None
-    top_words = generate_top_words(word, alphabet)
+    top_words = generate_candidates(word, alphabet)
     if top_words is None:
         return None
     all_top_words = set(top_words)
     for word in list(all_top_words):
-        second_level_top_words = generate_top_words(word, alphabet)
+        second_level_top_words = generate_candidates(word, alphabet)
         if second_level_top_words is None:
             return None
         all_top_words.update(second_level_top_words)
@@ -357,7 +363,7 @@ def calculate_frequency_distance(
     
     frequency_distances: dict = {token: 1.0 for token in frequencies}
 
-    top_words = propose_top_words(word, alphabet)
+    top_words = propose_candidates(word, alphabet)
     if top_words is None:
         return frequency_distances
 
