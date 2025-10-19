@@ -485,7 +485,7 @@ def count_transpositions(
     In case of corrupt input arguments, None is returned.
     """
     if not all([isinstance(token, str), isinstance(candidate, str),
-                check_list(token_matches, bool, True), 
+                check_list(token_matches, bool, True),
                 check_list(candidate_matches, bool, True)]):
         return None
     if len(token_matches) != len(token) or len(candidate_matches) != len(candidate):
@@ -562,7 +562,7 @@ def winkler_adjustment(
     """
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
-    if not isinstance(jaro_distance, float) or not (0 <= jaro_distance <= 1):
+    if not isinstance(jaro_distance, float) or not 0 <= jaro_distance <= 1:
         return None
     if not isinstance(prefix_scaling, float) or prefix_scaling < 0:
         return None
@@ -601,9 +601,7 @@ def calculate_jaro_winkler_distance(
         return 1.0
     if not token or not candidate:
         return 1.0
-    match_distance = max(len(token), len(candidate)) // 2 - 1
-    if match_distance < 0:
-        match_distance = 0
+    match_distance = max(max(len(token), len(candidate)) // 2 - 1, 0)    
     matches_result = get_matches(token, candidate, match_distance)
     if matches_result is None:
         return None
