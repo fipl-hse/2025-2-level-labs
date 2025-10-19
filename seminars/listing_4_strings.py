@@ -339,11 +339,6 @@ def is_palindrome(input_string: str) -> bool:
     """
     # student implementation goes here
 
-#    for i in range(1, len(input_string)//2+2):
-#        if input_string[i-1] != input_string[-i]:
-#            return False
-#    return True
-
 
 # is_palindrome("level") → True
 # is_palindrome("hello") → False
@@ -383,6 +378,7 @@ def reverse_word(sentence: str) -> str:
     """
     # student implementation goes here
 
+
 # reverse_word("Hey fellow warriors") → "Hey wollef sroirraw"
 # reverse_word("This is a test") → "This is a test"
 # reverse_word("This is another test") → "This is rehtona test"
@@ -403,15 +399,7 @@ def generate_hashtag(input_string: str) -> str:
         str | bool: Hashtag string or False
     """
     # student implementation goes here
-    string_separated = input_string.split()
-    words_hashtag = []
-    for word in string_separated:
-        word = word.capitalize()
-        words_hashtag.append(word)
-    complete_hashtag = '#'+''.join(words_hashtag)
-    return complete_hashtag
 
-print(generate_hashtag(' Hello there thanks for trying my quiz'))
 
 # " Hello there thanks for trying my quiz" → "#HelloThereThanksForTryingMyQuiz"
 # "    Hello     World   " → "#HelloWorld"
