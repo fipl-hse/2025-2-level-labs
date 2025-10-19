@@ -419,8 +419,6 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
         return None
 
     if word == "":
-        '''if not alphabet:
-            return []'''
         return sorted(alphabet)
 
     deleted = delete_letter(word) or []
