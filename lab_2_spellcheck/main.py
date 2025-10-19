@@ -610,8 +610,8 @@ def calculate_jaro_distance(
     if matches == 0:
         return 1.0
     jaro_similarity = (
-        matches / token_len + 
-        matches / candidate_len + 
+        matches / token_len +
+        matches / candidate_len +
         (matches - transpositions) / matches
     ) / 3.0
     return 1.0 - jaro_similarity
