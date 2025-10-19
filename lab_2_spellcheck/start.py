@@ -3,6 +3,8 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
+from typing import Literal
+
 from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     remove_stop_words,
@@ -62,18 +64,24 @@ def main() -> None:
         return
     oov_words = find_out_of_vocab_words(sentence_tokens_without_stopwords, vocabulary) or []
     print(f"Out-of-vocabulary words: {oov_words}")
+    methods_dict = {
+    "jaccard": "jaccard",
+    "frequency-based": "frequency-based", 
+    "levenshtein": "levenshtein",
+    "jaro-winkler": "jaro-winkler"
+    }
     for wrong_word in oov_words:
         print(f"\nProcessing word: '{wrong_word}'")
-        for method in ("jaccard", "frequency-based", "levenshtein", "jaro-winkler"):
-            distances = calculate_distance(wrong_word, vocabulary, method, russian_alphabet)
-            correction = find_correct_word(wrong_word, vocabulary, method, russian_alphabet)
+        for method_name, method_value in methods_dict.items():
+            distances = calculate_distance(wrong_word, vocabulary, method_value, russian_alphabet)
+            correction = find_correct_word(wrong_word, vocabulary, method_value, russian_alphabet)
             if not distances:
-                print(f"{method}: Failed to calculate distances")
-                continue
+                print(f"{method_name}: Failed to calculate distances")
+                continue  
             top_candidates = sorted(distances.items(), key=lambda x: x[1])[:3]
-            print(f"{method}: '{wrong_word}' -> '{correction}'")
+            print(f"{method_name}: '{wrong_word}' -> '{correction}'")
             print(f"Top 3 candidates: {top_candidates}")
-            if method == "levenshtein" and correction:
+            if method_name == "levenshtein" and correction:
                 print(f"Levenshtein matrix for '{wrong_word}' and '{correction}':")
                 filled_matrix = fill_levenshtein_matrix(wrong_word, correction)
                 if filled_matrix:
