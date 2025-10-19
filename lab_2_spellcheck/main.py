@@ -70,12 +70,12 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     """
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
-    tokenized1 = set(token)
-    tokenized2 = set(candidate)
-    if not tokenized1 and not tokenized2:
+    chars_tok = set(token)
+    chars_cand = set(candidate)
+    if not chars_tok and not chars_cand:
         return 1.0
-    intersected = tokenized1.intersection(tokenized2)
-    united = tokenized1.union(tokenized2)
+    intersected = chars_tok.intersection(chars_cand)
+    united = chars_tok.union(chars_cand)
     jaccard_dictance = 1 - len(intersected) / len(united)
     return jaccard_dictance
 

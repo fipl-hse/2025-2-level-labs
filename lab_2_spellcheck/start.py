@@ -31,35 +31,35 @@ def main() -> None:
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
     result = None
-    tokens = clean_and_tokenize(text)
-    if tokens is None:
-        tokens = []
-    tokens_no_stop = remove_stop_words(tokens, stop_words)
-    if tokens_no_stop is None:
-        tokens_no_stop = []
-    vocabulary = build_vocabulary(tokens_no_stop)
-    if vocabulary is None:
-        vocabulary = {}
-    wrong_words = find_out_of_vocab_words(tokens_no_stop, vocabulary)
-    if wrong_words is None:
-        wrong_words = []
+    tokens = clean_and_tokenize(text) or []
+    tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
+    vocabulary = build_vocabulary(tokens_without_stopwords) or {}
+    all_sentence_tokens = []
+    for sentence in sentences:
+        sentence_tokens = clean_and_tokenize(sentence) or []
+        sentence_tokens_without_stop_words = remove_stop_words(sentence_tokens, stop_words) or []
+        all_sentence_tokens.extend(sentence_tokens_without_stop_words)
+    wrong_words = find_out_of_vocab_words(all_sentence_tokens, vocabulary) or []
+    print(wrong_words)
     alphabet = [chr(i) for i in range(1072, 1104)]
-    result = {}
-    for word in wrong_words:
-        word_results = {}
-        jaccard = find_correct_word(word, vocabulary, 'jaccard', alphabet)
-        if jaccard is None:
-            jaccard = ""
-        word_results['jaccard'] = jaccard
-        frequency = find_correct_word(word, vocabulary, 'frequency-based', alphabet)
-        if frequency is None:
-            frequency = ""
-        word_results['frequency-based'] = frequency
-        levenshtein = find_correct_word(word, vocabulary, 'levenshtein', alphabet)
-        if levenshtein is None:
-            levenshtein = ""
-        word_results['levenshtein'] = levenshtein
-        result[word] = word_results
-        assert result, "Result is None"
+    all_results = {}
+    for wrong_word in wrong_words:
+        print(f"\nCorrection for '{wrong_word}':")
+        jaccard_correction = find_correct_word(wrong_word, vocabulary,
+                                               'jaccard', alphabet) or {}
+        frequency_correction = find_correct_word(wrong_word, vocabulary,
+                                                 'frequency-based', alphabet) or {}
+        levenshtein_correction = find_correct_word(wrong_word, vocabulary,
+                                                   'levenshtein', alphabet) or {}
+        print(f"  Jaccard: {jaccard_correction}")
+        print(f"  Frequency-based: {frequency_correction}")
+        print(f"  Levenshtein: {levenshtein_correction}")
+        all_results[wrong_word] = {
+            'jaccard': jaccard_correction,
+            'frequency-based': frequency_correction,
+            'levenshtein': levenshtein_correction,
+        }
+    result = all_results
+    assert result, "Result is None"
 if __name__ == "__main__":
     main()
