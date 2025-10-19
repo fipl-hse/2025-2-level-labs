@@ -102,6 +102,7 @@ def calculate_distance(
     result = {}
     if method in ["jaccard", "levenshtein", "jaro-winkler"]:
         for el in vocabulary:
+            distance = None
             if method == "jaccard":
                 distance = calculate_jaccard_distance(first_token, el)
             elif method == "levenshtein":
@@ -454,7 +455,7 @@ def get_matches(
         return None
     matches_in_token = [False for _ in range(len(token))]
     matches_in_candidate = [False for _ in range(len(candidate))]
-    for i in range(len(token)):
+    for i, _ in enumerate(token):
         start = i - match_distance
         end = i + match_distance + 1
         for j in range(start, end):
@@ -492,7 +493,7 @@ def count_transpositions(
     if len(token_letters) != len(candidate_letters):
         return None
     result = 0
-    for i in range(len(token_letters)):
+    for i, _ in enumerate(token_letters):
         if token_letters[i] != candidate_letters[i]:
             result += 1
     return result // 2
