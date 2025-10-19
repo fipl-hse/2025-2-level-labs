@@ -65,14 +65,14 @@ def calculate_jaccard_distance(token: str, word: str) -> float | None:
     """
     if not token and not word:
         return 1.0
-    if not all([isinstance(token, str), isinstance(word, str)]):
+    if not (isinstance(token, str) and isinstance(word, str)):
         return None
-    token_scores = {token}
-    word_scores = {word}
+    token_scores = set(token)
+    word_scores = set(word)
     jaccard_distance = 1 - len(
         token_scores.intersection(word_scores)) / len(
         token_scores.union(word_scores))
-    return 
+    return jaccard_distance
 
 
 def calculate_distance(
@@ -100,18 +100,22 @@ def calculate_distance(
                 method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
                 check_list(alphabet, str, False) or alphabet is None]):
         return None
-    distances = {}
-    if method == 'jaccard':
-        distances = {token: calculate_jaccard_distance(first_token, token) for token in vocabulary}
-        if None in distances.values():
-            return None
     if method == "frequency-based":
         if alphabet:
-            distances = calculate_frequency_distance(first_token, vocabulary, alphabet)
+            return calculate_frequency_distance(first_token, vocabulary, alphabet)
         else:
-            distances = {token: 1.0 for token in vocabulary}
-    return distances
+            return dict.fromkeys(vocabulary, 1.0)
 
+    distances = {}
+
+    if method == "jaccard":
+        for candidate in vocabulary:
+            distance = calculate_jaccard_distance(first_token, candidate)
+            if distance is None:
+                return None
+            distances[candidate] = distance
+        return distances
+    return None
 
 def find_correct_word(
     wrong_word: str,
@@ -151,10 +155,9 @@ def find_correct_word(
     top_words = [word for word, value in distances.items() if value == min_value]
 
     if len(top_words) > 1:
-        min_length_diff = min(abs(len(word) - len(wrong_word)) for word in top_words)
-        closest_top_words = [word for word in top_words
-                              if abs(len(word) - len(wrong_word)) == min_length_diff]
-        return sorted(closest_top_words)[0]
+        top_words.sort(key=lambda word: (abs(len(word) - len(wrong_word)), word))
+    
+    return top_words[0]
     
 
 
@@ -173,6 +176,11 @@ def initialize_levenshtein_matrix(
     Returns:
         list[list[int]] | None: Initialized matrix with base cases filled.
     """
+    if (not isinstance(token_length, int) or
+        not isinstance(word_length, int) or
+        token_length < 0 or
+        word_length < 0):
+        return None
 
 
 def fill_levenshtein_matrix(token: str, word: str) -> list[list[int]] | None:
