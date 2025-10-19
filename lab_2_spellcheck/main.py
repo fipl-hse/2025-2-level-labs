@@ -100,9 +100,14 @@ def calculate_distance(
     method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
     result = {}
-    if method == "jaccard":
+    if method in ["jaccard", "levenshtein", "jaro-winkler"]:
         for el in vocabulary:
-            distance = calculate_jaccard_distance(first_token, el)
+            if method == "jaccard":
+                distance = calculate_jaccard_distance(first_token, el)
+            elif method == "levenshtein":
+                distance = calculate_levenshtein_distance(first_token, el)
+            elif method == "jaro-winkler":
+                distance = calculate_jaro_winkler_distance(first_token, el)
             if distance is None:
                 return None
             result[el] = distance
@@ -113,18 +118,6 @@ def calculate_distance(
         if frequency_result is None:
             return None
         result = frequency_result
-    elif method == "levenshtein":
-        for el in vocabulary:
-            distance = calculate_levenshtein_distance(first_token, el)
-            if distance is None:
-                return None
-            result[el] = distance
-    elif method == "jaro-winkler":
-        for el in vocabulary:
-            distance = calculate_jaro_winkler_distance(first_token, el)
-            if distance is None:
-                return None
-            result[el] = distance
     return result
 
 
@@ -469,7 +462,7 @@ def get_matches(
                 if token[i] == candidate[j] and not matches_in_candidate[j]:
                     matches_in_token[i] = True
                     matches_in_candidate[j] = True
-                    break  
+                    break
     return (sum(matches_in_token), matches_in_token, matches_in_candidate)
 
 
@@ -523,7 +516,7 @@ def calculate_jaro_distance(
     In case of corrupt input arguments, None is returned.
     """
     if (not isinstance(token, str) or not isinstance(candidate, str)
-    or not isinstance(matches, int) 
+    or not isinstance(matches, int)
     or not isinstance(transpositions, int)):
         return None
     if matches < 0 or transpositions < 0:
@@ -587,7 +580,7 @@ def calculate_jaro_winkler_distance(
     or not isinstance(prefix_scaling, float)):
         return None
     if len(token) == 0 or len(candidate) == 0:
-            return 1.0
+        return 1.0
     max_len = max(len(token), len(candidate))
     match_distance = max(0, (max_len // 2) - 1)
     matches_result = get_matches(token, candidate, match_distance)
