@@ -127,8 +127,8 @@ def calculate_distance(
     In case of corrupt input arguments or unsupported method, None is returned.
     """
     if (not isinstance(first_token, str) or
-    not check_dict(vocabulary, str, float, False) or
-    (alphabet is not None and not check_list(alphabet, str, True))):
+    not check_dict(vocabulary, str, float, False)
+    and not check_list(alphabet, str, False)):
         return None
 
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
@@ -138,8 +138,10 @@ def calculate_distance(
         return {key: 1.0 for key in vocabulary.keys()}
 
     if method == "frequency-based":
-        distance=calculate_frequency_distance(first_token, vocabulary, alphabet or [])
-        return distance
+        frequency_distance=calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if frequency_distance is None:
+            return None
+        return frequency_distance
 
     dictionary: dict[str, float] = {}
     for token in vocabulary:
@@ -155,7 +157,7 @@ def calculate_distance(
         if distance is None:
             return None
 
-        dictionary[token]=float(distance)
+        dictionary[token] = float(distance)
 
     return dictionary
 
