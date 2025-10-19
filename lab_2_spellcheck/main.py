@@ -5,7 +5,7 @@ Lab 2.
 # pylint:disable=unused-argument
 from typing import Literal
 from typing import Any
-#from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
+from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 
 def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
@@ -57,33 +57,6 @@ def check_non_negative_int(user_input: Any) -> bool:
         bool: True if valid, False otherwise
     """
     return isinstance(user_input, int) and not isinstance(user_input, bool) and user_input >= 0
-
-
-def clean_and_tokenize(text: str) -> list[str] | None:
-    """
-    Remove punctuation, convert to lowercase, and split into tokens.
-    """
-    if not isinstance(text, str):
-        return None
-    punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
-    cleaned_text = "".join(symbol for symbol in text if symbol not in punctuation)
-    lower_cleaned_text = cleaned_text.lower()
-    tokens = lower_cleaned_text.split()
-    return tokens
-
-
-def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
-    """
-    Exclude stop words from the token sequence.
-    """
-    if not isinstance(tokens, list) or not isinstance(stop_words, list):
-        return None
-    if not all(isinstance(token, str) for token in tokens):
-        return None
-    if not all(isinstance(word, str) for word in stop_words):
-        return None
-    cleaned_tokens = [token for token in tokens if token not in stop_words]
-    return cleaned_tokens
 
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
@@ -189,19 +162,19 @@ def calculate_distance(
                 return None
             distances[word] = distance
         return distances
-    elif method == "frequency-based":
+    if method == "frequency-based":
         freq_distances = calculate_frequency_distance(first_token, vocabulary, alphabet or [])
         if freq_distances is None:
             return None
         return freq_distances
-    elif method == "levenshtein":
+    if method == "levenshtein":
         for word in vocabulary:
             distance = calculate_levenshtein_distance(first_token, word)
             if distance is None:
                 return None
             distances[word] = float(distance)
         return distances
-    elif method == "jaro-winkler":
+    if method == "jaro-winkler":
         for word in vocabulary:
             distance = calculate_jaro_winkler_distance(first_token, word)
             if distance is None:
