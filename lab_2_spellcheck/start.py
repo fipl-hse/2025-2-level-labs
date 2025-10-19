@@ -6,7 +6,6 @@ Spellcheck starter
 from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 from lab_2_spellcheck.main import (
     build_vocabulary,
-    calculate_distance,
     find_correct_word,
     find_out_of_vocab_words,
 )
@@ -38,20 +37,34 @@ def main() -> None:
     out_of_vocab_words = find_out_of_vocab_words(tokens, tokens_dict) or []
 
     jaccard_distance = []
+    print("calculating jaccard distances...")
     for word in out_of_vocab_words:
-        jaccard_distance.append(calculate_distance(word, tokens_dict, "jaccard"))
+        jaccard_distance.append(find_correct_word(word, tokens_dict, "jaccard"))
 
     frequency_based_correct_word = []
+    print("calculating frequency-based distances...")
     for word in out_of_vocab_words:
         frequency_based_correct_word.append(find_correct_word(word, tokens_dict,
                                                             "frequency-based", alphabet))
-    print(frequency_based_correct_word)
 
     levenshtein_correct_word = []
+    print("calculating levenshtein distances...")
     for word in out_of_vocab_words:
         levenshtein_correct_word.append(find_correct_word(word, tokens_dict, "levenshtein"))
+    
+    jaro_winkler_correct_word = []
+    print("calculating jaro-winkler distances...")
+    for word in out_of_vocab_words:
+        jaro_winkler_correct_word.append(find_correct_word(word, tokens_dict, "jaro-winkler"))
 
-    result = levenshtein_correct_word
+    for i in range(len(out_of_vocab_words)):
+        print(f'''correct word for "{out_of_vocab_words[i]}":
+            jaccard: {jaccard_distance[i]},
+            frequency_based_correct_word: {frequency_based_correct_word[i]},
+            levenshtein: {levenshtein_correct_word[i]},
+            jaro_winkler_correct_word: {jaro_winkler_correct_word[i]}''')
+
+    result = jaro_winkler_correct_word
     assert result, "Result is None"
 
 
