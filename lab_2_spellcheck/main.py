@@ -401,7 +401,7 @@ def calculate_frequency_distance(
     for candidate in candidates_tuple:
         if candidate in frequencies:
             frequency_distances[candidate] = 1.0 - frequencies[candidate]
-            if frequency_distances[candidate] is None:
+            if frequencies[candidate] is None:
                 return None
     return frequency_distances
 
