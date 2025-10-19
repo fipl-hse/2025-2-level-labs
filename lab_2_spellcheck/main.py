@@ -500,7 +500,7 @@ def calculate_frequency_distance(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(word, str) or not check_dict(frequencies, str, (int, float), False):
+    if not isinstance(word, str) or not check_dict(frequencies, str, float, False):
         return None
     if not check_list(alphabet, str, True):
         return None
