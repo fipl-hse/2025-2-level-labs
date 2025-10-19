@@ -177,8 +177,8 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if (not isinstance(first_token, str) or not first_token 
-    or not check_dict(vocabulary, str, float, False) or 
+    if (not isinstance(first_token, str) or not first_token
+    or not check_dict(vocabulary, str, float, False) or
     method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
     distances = {}
@@ -382,9 +382,9 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if not word:
         return []
     candidates = []
-    for i in range(len(word)):
+    for i, current_letter in enumerate(word):
         for letter in alphabet:
-            if letter != word[i]:
+            if letter != current_letter:
                 candidate = word[:i] + letter + word[i+1:]
                 candidates.append(candidate)
     return sorted(candidates)
@@ -490,14 +490,14 @@ def calculate_frequency_distance(
         return None
     proposed = propose_candidates(word, alphabet)
     if proposed is None:
-        return None
-    candidates = set(proposed)
+        candidates = set()
+    else:
+        candidates = set(proposed)
     distances = {}
     for vocab_word, frequency in frequencies.items():
         distance = 1.0 - float(frequency) if vocab_word in candidates else 1.0
         distances[vocab_word] = distance
     return distances
-
 
 def get_matches(
     token: str, candidate: str, match_distance: int
@@ -518,7 +518,9 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(token, str) or not isinstance(candidate, str) or not isinstance(match_distance, int):
+    if not isinstance(token, str) or not isinstance(candidate, str):
+        return None
+    if not isinstance(match_distance, int) or match_distance < 0:
         return None
     if match_distance < 0:
         return None
@@ -599,14 +601,19 @@ def calculate_jaro_distance(
         return None
     token_len = len(token)
     candidate_len = len(candidate)
-    if (matches < 0 or transpositions < 0 or
-        transpositions > matches or
-        (matches > 0 and (token_len == 0 or candidate_len == 0))):
+    if matches < 0 or transpositions < 0:
+        return None
+    if transpositions > matches:
+        return None
+    if matches > 0 and (token_len == 0 or candidate_len == 0):
         return None
     if matches == 0:
         return 1.0
-    jaro_similarity = (matches / token_len + matches / candidate_len +
-                      (matches - transpositions) / matches) / 3.0
+    jaro_similarity = (
+        matches / token_len + 
+        matches / candidate_len + 
+        (matches - transpositions) / matches
+    ) / 3.0
     return 1.0 - jaro_similarity
 
 
