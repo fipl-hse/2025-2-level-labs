@@ -152,8 +152,9 @@ def find_correct_word(
     if not (
         isinstance(wrong_word, str) and
         check_dict(vocabulary, str, float, False) and
+        isinstance(method, str) and
         method in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"] and
-        (alphabet is None or check_list(alphabet, str, False))
+        (alphabet is None or check_list(alphabet, str, True))
     ):
         return None
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
