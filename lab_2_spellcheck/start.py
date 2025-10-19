@@ -35,11 +35,11 @@ def main() -> None:
     vocabulary = build_vocabulary(tokens_text_without_stop_words) or {}
     print(vocabulary)
 
-    all_sentence_tokens = []
-    for sentence in sentences:
-        sentence_tokens = clean_and_tokenize(sentence) or []
-        sentence_tokens_without_stop_words = remove_stop_words(sentence_tokens, stop_words) or []
-        all_sentence_tokens.extend(sentence_tokens_without_stop_words)
+    all_sentence_tokens = [
+        token 
+        for sentence in sentences 
+        for token in remove_stop_words(clean_and_tokenize(sentence) or [], stop_words)
+    ]
     error_words = find_out_of_vocab_words(all_sentence_tokens, vocabulary) or []
     print(f"\n{error_words}")
 
@@ -59,10 +59,20 @@ def main() -> None:
     real_incorrect_words = 0
     for error_word in error_words:
         print(f"\nCorrection for '{error_word}':")
-        methods = ['jaccard', 'frequency-based', 'levenshtein', 'jaro-winkler']
-        corrections = {}
-        for method in methods:
-            corrections[method] = find_correct_word(error_word, vocabulary, method, alphabet) or ""
+        jaccard_correction = find_correct_word(error_word, vocabulary,
+                                               'jaccard', alphabet) or ""
+        frequency_correction = find_correct_word(error_word, vocabulary,
+                                                 'frequency-based', alphabet) or ""
+        levenshtein_correction = find_correct_word(error_word, vocabulary,
+                                                   'levenshtein', alphabet) or ""
+        jaro_winkler_correction = find_correct_word(error_word, vocabulary,
+                                                    'jaro-winkler', alphabet) or ""
+        corrections = {
+            'jaccard': jaccard_correction,
+            'frequency-based': frequency_correction,
+            'levenshtein': levenshtein_correction,
+            'jaro-winkler': jaro_winkler_correction
+        }
         has_correct = any(corr in correct_words for corr in corrections.values())
         if not has_correct:
             msg = ("The word is spelled correctly for the given context,"
@@ -74,19 +84,18 @@ def main() -> None:
         else:
             print("The word is spelled incorrectly. There are corrections for it.")
             real_incorrect_words += 1
-            for method, correction in corrections.items():
-                if correction in correct_words:
-                    if method == 'jaccard':
-                        jaccard_correct += 1
-                    elif method == 'frequency-based':
-                        frequency_correct += 1
-                    elif method == 'levenshtein':
-                        levenshtein_correct += 1
-                    elif method == 'jaro-winkler':
-                        jaro_winkler_correct += 1
-        for method, correction in corrections.items():
-            method_name = method.replace('-', ' ').title()
-            print(f"  {method_name}: {correction}")
+            if jaccard_correction in correct_words:
+                jaccard_correct += 1
+            if frequency_correction in correct_words:
+                frequency_correct += 1
+            if levenshtein_correction in correct_words:
+                levenshtein_correct += 1
+            if jaro_winkler_correction in correct_words:
+                jaro_winkler_correct += 1
+        print(f"  Jaccard: {jaccard_correction}")
+        print(f"  Frequency-based: {frequency_correction}")
+        print(f"  Levenshtein: {levenshtein_correction}")
+        print(f"  Jaro-Winkler: {jaro_winkler_correction}")
         all_results[error_word] = corrections
     print("\nEfficiency of methods:")
     print(f"Jaccard: {jaccard_correct}/{real_incorrect_words}")
