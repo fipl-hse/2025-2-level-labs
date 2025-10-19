@@ -532,7 +532,7 @@ def get_matches(
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
 
-    if not isinstance(match_distance, int) or match_distance<0:
+    if not isinstance(match_distance, int) or match_distance < 0:
         return None
 
     founded_token = [0] * len(token)
@@ -593,7 +593,7 @@ def count_transpositions(
         return None
 
     transposition = 0
-    for i,token_match in enumerate(matches_of_tokens):
+    for i, token_match in enumerate(matches_of_tokens):
         if matches_of_candidates[i] != token_match:
             transposition += 1
 
@@ -730,6 +730,6 @@ def calculate_jaro_winkler_distance(
     if adjustment is None:
         return None
 
-    jaro_winkler_distance = jaro_distance-adjustment
+    jaro_winkler_distance = jaro_distance - adjustment
 
     return jaro_winkler_distance
