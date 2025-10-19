@@ -6,7 +6,7 @@ Extract keywords based on frequency related metrics
 
 # pylint:disable=unused-argument
 from math import log
-import math
+
 from typing import Any
 
 
@@ -76,7 +76,6 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
-    return isinstance(user_input, float)
     return isinstance(user_input, float)
 
 
