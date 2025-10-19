@@ -193,7 +193,7 @@ def find_correct_word(
     if not vocabulary:
         return None
 
-    correct_word=calculate_distance(wrong_word, vocabulary, method, alphabet)
+    correct_word = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if not correct_word:
         return None
 
@@ -278,7 +278,6 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
             matrix[i][j] = min(deleted, insertion, rechange)
 
     return matrix
-
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     """
@@ -420,8 +419,8 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
         return None
 
     if word == "":
-        if not alphabet:
-            return []
+        '''if not alphabet:
+            return []'''
         return sorted(alphabet)
 
     deleted = delete_letter(word) or []
