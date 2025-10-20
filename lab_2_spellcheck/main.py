@@ -104,37 +104,33 @@ def calculate_distance(
     """
     if (
         not isinstance(first_token, str)
-        or not first_token
         or not check_dict(vocabulary, str, float, False)
-        or not isinstance(method, str)
-        or method not in ("jaccard",
-                       "frequency-based",
-                       "levenshtein",
-                       "jaro-winkler")
-        ):
+        or method not in ("jaccard", "frequency-based",
+                          "levenshtein", "jaro-winkler")):
         return None
-    if method == 'frequency-based':
-        if (
-            not check_list(alphabet, str, True)
-            or alphabet is None
-            ):
-            return {word: 1.0 for word in vocabulary}
-        distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
-        if distance is None:
+    if not first_token:
+        return None
+    result = {}
+    if method == "frequency-based":
+        if alphabet is None:
+            return {token: 1.0 for token in vocabulary}
+        frequency_result = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if frequency_result is None:
             return None
-        return distance
-    calculated_distance_score = {}
-    for word in vocabulary:
-        if method == 'jaccard':
-            distance = calculate_jaccard_distance(first_token, word)
-        elif method == 'levenshtein':
-            distance = calculate_levenshtein_distance(first_token, word)
-        elif method == 'jaro-winkler':
-            distance = calculate_jaro_winkler_distance(first_token, word)
-        if distance is None:
+        result = frequency_result
+    elif method in ("jaccard", "levenshtein", "jaro-winkler"):
+        for word in vocabulary:
+            distance = None
+            if method == "jaccard":
+                distance = calculate_jaccard_distance(first_token, word)
+            elif method == "levenshtein":
+                distance = calculate_levenshtein_distance(first_token, word)
+            elif method == "jaro-winkler":
+                distance = calculate_jaro_winkler_distance(first_token, word)
+            if distance is None:
                 return None
-        calculated_distance_score[word] = distance
-    return calculated_distance_score
+            result[word] = distance
+    return result
 
 
 def find_correct_word(
@@ -545,7 +541,10 @@ def calculate_jaro_distance(
         or not isinstance(candidate, str)
         or not isinstance(matches, int)
         or not isinstance(transpositions, int)
-        or matches < 0
+        ):
+        return None
+    if (
+        matches < 0
         or transpositions < 0
         ):
         return None
