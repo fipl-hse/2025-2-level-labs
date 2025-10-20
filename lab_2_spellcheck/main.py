@@ -1,6 +1,7 @@
 """
 Lab 2.
 """
+
 # pylint:disable=unused-argument
 from typing import Literal
 
