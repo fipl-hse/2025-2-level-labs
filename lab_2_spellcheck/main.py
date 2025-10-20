@@ -172,7 +172,7 @@ def find_correct_word(
         return None
     return (min(distance_wrong_word.items(),
                 key=lambda item:
-                (item[1], abs(len(wrong_word) - len(item[0])),item[0])))[0]
+                (item[1], abs(len(wrong_word) - len(item[0])), item[0])))[0]
 
 
 def initialize_levenshtein_matrix(
