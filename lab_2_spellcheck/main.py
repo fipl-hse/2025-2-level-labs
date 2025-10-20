@@ -11,6 +11,18 @@ from lab_1_keywords_tfidf.main import (
 )
 
 
+def get_top_corrections(corrected_words, method, top_n):
+    """
+    Возвращает топ-N слов для указанного метода.
+    """
+    method_corrections = []
+
+    for word, corrections in corrected_words.items():
+        correction = corrections[method]
+        method_corrections.append((word, correction))
+
+    return method_corrections[:top_n]
+
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
     Build a vocabulary from the documents.
@@ -257,8 +269,8 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
 
-    token_length=len(token)
-    candidate_length=len(candidate)
+    token_length = len(token)
+    candidate_length = len(candidate)
 
     matrix=initialize_levenshtein_matrix(token_length, candidate_length)
     if matrix is None:
@@ -492,7 +504,7 @@ def calculate_frequency_distance(
     if not check_list(alphabet, str, True):
         return None
 
-    proposed_candidates=propose_candidates(word, alphabet)
+    proposed_candidates = propose_candidates(word, alphabet)
     if proposed_candidates is None or word == "":
         return {x: 1.0 for x in frequencies.keys()}
 
@@ -501,12 +513,11 @@ def calculate_frequency_distance(
     for key in frequencies.keys():
         dictionary_of_candidates[key] = 1.0
 
-    if proposed_candidates is not None and word != "":
-        for element in proposed_candidates:
-            if element in frequencies:
-                frequency = frequencies.get(element, 0.0)
-                distance = 1.0 - frequency
-                dictionary_of_candidates[element]=distance
+    for element in proposed_candidates:
+        if element in frequencies:
+            frequency = frequencies.get(element, 0.0)
+            distance = 1.0 - frequency
+            dictionary_of_candidates[element]=distance
 
     return dictionary_of_candidates
 

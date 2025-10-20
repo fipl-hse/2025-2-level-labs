@@ -11,6 +11,7 @@ from lab_2_spellcheck.main import (
     build_vocabulary,
     find_correct_word,
     find_out_of_vocab_words,
+    get_top_corrections
 )
 
 
@@ -47,34 +48,44 @@ def main() -> None:
     print('Слова не из словаря:', finded_out_of_vocab_words)
 
     russian_alphabet=list('абвгдеёжзийклмнопрстуфхцчшщъыьэюя')
-    jaccard_corrected = {}
-    frequency_corrected = {}
-    levenshtein_corrected = {}
-    jaro_winkler_corrected = {}
+    corrected_words = {}
 
     for token in finded_out_of_vocab_words:
-        jaccard_corrected[token]=find_correct_word(token, vocabulary, 'jaccard', russian_alphabet)
-        frequency_corrected[token]=find_correct_word(
+        jaccard_corrected=find_correct_word(token, vocabulary, 'jaccard', russian_alphabet)
+        frequency_corrected=find_correct_word(
             token, vocabulary, 'frequency-based', russian_alphabet
             )
-        levenshtein_corrected[token]=find_correct_word(
+        levenshtein_corrected=find_correct_word(
             token, vocabulary, 'levenshtein', russian_alphabet
             )
-        jaro_winkler_corrected[token]=find_correct_word(
+        jaro_winkler_corrected=find_correct_word(
             token, vocabulary, 'jaro-winkler', russian_alphabet
             )
 
-        correct_result = [
-            jaccard_corrected,
-            frequency_corrected,
-            levenshtein_corrected,
-            jaro_winkler_corrected
-        ]
+        corrected_words[token] = {
+        'jaccard': jaccard_corrected,
+        'frequency-based': frequency_corrected,
+        'levenshtein': levenshtein_corrected,
+        'jaro-winkler': jaro_winkler_corrected
+    }
 
-    result=correct_result
+    top_jaccard = get_top_corrections(corrected_words, 'jaccard', 8)
+    top_jaro_winkler = get_top_corrections(corrected_words, 'jaro-winkler', 8)
+
+    print('Метод Jaccard: ', top_jaccard)
+    print('Метод Jaro-Winkler: ', top_jaro_winkler)
+
+    for word, corrections in corrected_words.items():
+        print(f"\nСлово: '{word}'")
+        print(f"Jaccard:          {corrections['jaccard']}")
+        print(f"Frequency-based:  {corrections['frequency-based']}")
+        print(f"Levenshtein:      {corrections['levenshtein']}")
+        print(f"Jaro-Winkler:     {corrections['jaro-winkler']}")
+
+    result=corrected_words
     print(result)
+    print(f"\nИтоговый результат: {result}")
     assert result, "Result is None"
-
 
 if __name__ == "__main__":
     main()
