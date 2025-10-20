@@ -46,7 +46,7 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
     if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
         return None
 
-    return [token for token in tokens if token not in vocabulary.keys()]
+    return [token for token in tokens if not vocabulary.get(token)]
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     """

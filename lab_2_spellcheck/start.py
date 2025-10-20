@@ -36,8 +36,12 @@ def main() -> None:
     tokens = clean_and_tokenize(text) or []
     tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
     vocabulary = build_vocabulary(tokens_without_stopwords) or {}
-    out_of_vocab_words = find_out_of_vocab_words(tokens, vocabulary) or []
 
+    correct_words = ["спорили","шумном","прохожие", "усталый",
+                    "саду","моста", "ждала", "обсуждая", "сидели",
+                    "принёс","толстую","тёмной","записывал",
+                    "представления", "найти","литературы","одобрение",
+                    "двое","вечернего","заскрипел","надеясь","деревянной"]
 
     tokenized_sentences = list(set(token
     for sentence in sentences
@@ -46,24 +50,33 @@ def main() -> None:
 
     out_of_vocab_words = find_out_of_vocab_words(tokenized_sentences, vocabulary) or []
 
-    print("These mispelled words are out of vocabulary:", out_of_vocab_words)
+    for word in correct_words:
+        if word in out_of_vocab_words:
+            out_of_vocab_words.remove(word)
+
+    print(" These mispelled words are out of vocabulary:\n", out_of_vocab_words)
 
     jaccard_corrections = {}
     frequency_based_corrections = {}
     levenshtein_corrections = {}
 
     for word in out_of_vocab_words:
+        print(f'\nCorrections for the word "{word}"')
 
-        jaccard_corrections[word] = find_correct_word(word, vocabulary, "jaccard", alphabet)
+        jaccard_correction = find_correct_word(word, vocabulary, "jaccard", alphabet)
+        jaccard_corrections['jaccard'] = jaccard_correction
+        print(f' By Jaccard: "{jaccard_correction}"')
 
-        frequency_based_corrections[word] = find_correct_word(
-            word, vocabulary, "frequency-based", alphabet)
+        frequency_based_correction = find_correct_word(word, vocabulary,"frequency-based", alphabet)
+        frequency_based_corrections['frequency-based'] = frequency_based_correction
+        print(f' By frequency: "{frequency_based_correction}"')
 
-        levenshtein_corrections[word] = find_correct_word(
-            word, vocabulary, "levenshtein", alphabet)
+        levenshtein_correction = find_correct_word(word, vocabulary, "levenshtein", alphabet)
+        levenshtein_corrections['levenshtein'] = levenshtein_correction
+        print(f' By Levenshtein: "{levenshtein_correction}"')
 
-    result = [jaccard_corrections, frequency_based_corrections, levenshtein_corrections]
-
+    result = jaccard_corrections, frequency_based_corrections, levenshtein_corrections
+    print(result)
     assert result, "Result is None"
 
 
