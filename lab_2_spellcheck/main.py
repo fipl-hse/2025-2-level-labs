@@ -104,11 +104,10 @@ def calculate_distance(
     """
     if (
         not isinstance(first_token, str)
+        or not first_token
         or not check_dict(vocabulary, str, float, False)
         or method not in ("jaccard", "frequency-based",
                           "levenshtein", "jaro-winkler")):
-        return None
-    if not first_token:
         return None
     result = {}
     if method == "frequency-based":
