@@ -34,7 +34,7 @@ def main() -> None:
     for sentence in sentences:
         sentence_tokens = clean_and_tokenize(sentence) or []
         sentence_tokens_without_stopwords = remove_stop_words(sentence_tokens, stop_words) or []
-        out_of_vocab_words = find_out_of_vocab_words(sentence_tokens_without_stopwords, vocabulary)
+        out_of_vocab_words = find_out_of_vocab_words(sentence_tokens_without_stopwords, vocabulary) or []
         all_sentences_wrong_words.extend(out_of_vocab_words)
     possible_correct_words = {}
     for wrong_word in all_sentences_wrong_words:
@@ -45,7 +45,9 @@ def main() -> None:
         levenshtein_correct_word = find_correct_word(
             wrong_word, vocabulary, "levenshtein", list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
             ) or {}
-        possible_correct_words[wrong_word] = [jaccard_correct_word, frequency_based_correct_word, levenshtein_correct_word]
+        possible_correct_words[wrong_word] = [
+            jaccard_correct_word, frequency_based_correct_word, levenshtein_correct_word
+            ]
     result = possible_correct_words
     print(result)
     assert result, "Result is None"
