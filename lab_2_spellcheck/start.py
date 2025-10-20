@@ -3,6 +3,7 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
+
 import os
 from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 from lab_2_spellcheck.main import (
@@ -20,8 +21,8 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    BASE_DIR = os.path.dirname(__file__)
-    assets_path = os.path.join(BASE_DIR, "assets")
+    base_dir = os.path.dirname(__file__)
+    assets_path = os.path.join(base_dir, "assets")
     with open(
         os.path.join(
             assets_path, "Master_and_Margarita_chapter1.txt"
