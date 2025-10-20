@@ -11,7 +11,11 @@ from lab_1_keywords_tfidf.main import (
 )
 
 
-def get_top_corrections(corrected_words, method, top_n):
+def get_top_corrections(
+    corrected_words: dict[str, dict[str, any]], 
+    method: str, 
+    top_n: int = 8
+) -> list[tuple[str, any]]:
     """
     Возвращает топ-N слов для указанного метода.
     """
