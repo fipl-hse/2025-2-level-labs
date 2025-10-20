@@ -36,6 +36,7 @@ def main() -> None:
         return
     top_n = get_top_n(frequencies, 10)
     result = top_n
+    
     assert result, "Keywords are not extracted"
 if __name__ == "__main__":
     main()
