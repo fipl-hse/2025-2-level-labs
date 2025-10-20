@@ -206,8 +206,8 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     levenshtein_matrix = initialize_levenshtein_matrix(len(token), len(candidate))
     if levenshtein_matrix is None:
         return None
-    for i in range(1, len(token) + 1): #row index
-        for j in range(1, len(candidate) + 1): #column index
+    for i in range(1, len(token) + 1):
+        for j in range(1, len(candidate) + 1):
             if token[i - 1] == candidate[j - 1]:
                 levenshtein_matrix[i][j] = levenshtein_matrix[i - 1][j - 1]
             else:
