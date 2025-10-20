@@ -74,10 +74,10 @@ def main() -> None:
         }
         has_correct = any(corr in correct_words for corr in corrections.values())
         if not has_correct:
-            msg = ("The word is spelled correctly for the given context,"
+            msg = ("The word is spelled correctly for the given context, "
             "but it is not in the vocabulary." 
                    if error_word in correct_words else
-                   "The word is spelled incorrectly for the given context,"
+                   "The word is spelled incorrectly for the given context, "
                    "and it is not in the vocabulary.")
             print(msg)
         else:
