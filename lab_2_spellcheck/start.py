@@ -37,7 +37,7 @@ def main() -> None:
     tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
     vocabulary = build_vocabulary(tokens_without_stopwords) or {}
 
-    correct_words = ["спорили","шумном","прохожие", "усталый",
+    correct_words = ["спорили","шумном", "патритича", "прохожие", "усталый",
                     "саду","моста", "ждала", "обсуждая", "сидели",
                     "принёс","толстую","тёмной","записывал",
                     "представления", "найти","литературы","одобрение",
@@ -56,27 +56,28 @@ def main() -> None:
 
     print(" These mispelled words are out of vocabulary:\n", out_of_vocab_words)
 
-    jaccard_corrections = {}
-    frequency_based_corrections = {}
-    levenshtein_corrections = {}
+
+    final_corrections = {}
 
     for word in out_of_vocab_words:
         print(f'\nCorrections for the word "{word}"')
-
+        corrections = {}
         jaccard_correction = find_correct_word(word, vocabulary, "jaccard", alphabet)
-        jaccard_corrections['jaccard'] = jaccard_correction
+        corrections['jaccard'] = jaccard_correction
         print(f' By Jaccard: "{jaccard_correction}"')
 
         frequency_based_correction = find_correct_word(word, vocabulary,"frequency-based", alphabet)
-        frequency_based_corrections['frequency-based'] = frequency_based_correction
+        corrections['frequency-based'] = frequency_based_correction
         print(f' By frequency: "{frequency_based_correction}"')
 
         levenshtein_correction = find_correct_word(word, vocabulary, "levenshtein", alphabet)
-        levenshtein_corrections['levenshtein'] = levenshtein_correction
+        corrections['levenshtein'] = levenshtein_correction
         print(f' By Levenshtein: "{levenshtein_correction}"')
+        final_corrections[word] = corrections
 
-    result = jaccard_corrections, frequency_based_corrections, levenshtein_corrections
-    print(result)
+    result = final_corrections
+    print(f'\n Total results: {result}')
+
     assert result, "Result is None"
 
 
