@@ -11,7 +11,6 @@ from lab_2_spellcheck.main import (
     build_vocabulary,
     find_correct_word,
     find_out_of_vocab_words,
-    get_top_corrections
 )
 
 
@@ -51,7 +50,7 @@ def main() -> None:
     corrected_words = {}
 
     for token in finded_out_of_vocab_words:
-        jaccard_corrected=find_correct_word(token, vocabulary, 'jaccard', russian_alphabet)
+        jaccard_correct=find_correct_word(token, vocabulary, 'jaccard', russian_alphabet)
         frequency_corrected=find_correct_word(
             token, vocabulary, 'frequency-based', russian_alphabet
             )
@@ -63,17 +62,11 @@ def main() -> None:
             )
 
         corrected_words[token] = {
-        'jaccard': jaccard_corrected,
+        'jaccard': jaccard_correct,
         'frequency-based': frequency_corrected,
         'levenshtein': levenshtein_corrected,
         'jaro-winkler': jaro_winkler_corrected
     }
-
-    top_jaccard = get_top_corrections(corrected_words, 'jaccard', 8)
-    top_jaro_winkler = get_top_corrections(corrected_words, 'jaro-winkler', 8)
-
-    print('Метод Jaccard: ', top_jaccard)
-    print('Метод Jaro-Winkler: ', top_jaro_winkler)
 
     for word, corrections in corrected_words.items():
         print(f"\nСлово: '{word}'")

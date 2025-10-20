@@ -11,22 +11,6 @@ from lab_1_keywords_tfidf.main import (
 )
 
 
-def get_top_corrections(
-    corrected_words: dict[str, dict[str, any]], 
-    method: str, 
-    top_n: int = 8
-) -> list[tuple[str, any]]:
-    """
-    Возвращает топ-N слов для указанного метода.
-    """
-    method_corrections = []
-
-    for word, corrections in corrected_words.items():
-        correction = corrections[method]
-        method_corrections.append((word, correction))
-
-    return method_corrections[:top_n]
-
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
     Build a vocabulary from the documents.
