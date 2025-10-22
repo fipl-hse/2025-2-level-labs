@@ -6,7 +6,7 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
-
+import string
 
 class TextProcessor:
     """
@@ -24,6 +24,7 @@ class TextProcessor:
         Args:
             end_of_word_token (str): A token denoting word boundary
         """
+        self._end_of_word_token = end_of_word_token
 
     def _tokenize(self, text: str) -> tuple[str, ...] | None:
         """
@@ -42,6 +43,24 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if (not isinstance(text, str)
+            or not text):
+            return None
+        tokens = []
+        current_word = []
+        words = text.lower()
+        for char in words:
+            if char.isalpha():
+                current_word.append(char)
+            else:
+                if current_word:
+                    tokens.extend(current_word)
+                    tokens.append(self._end_of_word_token)
+                    current_word = []
+        if current_word:
+            tokens.extend(current_word)
+            tokens.append(self._end_of_word_token)
+        return tuple(tokens)
 
     def get_id(self, element: str) -> int | None:
         """
