@@ -76,7 +76,7 @@ def check_float(user_input: Any) -> bool:
     return isinstance(user_input, float)
 
 
-def clean_and_tokenize(text: str) -> list[str] | None:
+def clean_and_tokenize(text: str, stop_words) -> list[str] | None:
     """
     Remove punctuation, convert to lowercase, and split into tokens.
 
@@ -97,7 +97,15 @@ def clean_and_tokenize(text: str) -> list[str] | None:
             if symbol.isalnum())
         if cleaned_word:
             tokens.append(cleaned_word)
-    return tokens
+    tokens = [token for token in tokens if token not in set(stop_words)]
+    bigrams = []
+    for i, token in enumerate(tokens):
+        if i < len(tokens) - 1:
+            bigram = [token, tokens[i + 1]]
+            bigrams.append(bigram)
+        else:
+            break
+    return bigrams
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:

@@ -3,12 +3,83 @@ Lab 2.
 """
 
 # pylint:disable=unused-argument
-from typing import Literal
+from typing import Literal, Any
 
-from lab_1_keywords_tfidf.main import check_dict, check_list
+# from lab_1_keywords_tfidf.main import check_dict, check_list
+
+def clean_and_tokenize(text: str, stop_words) -> list[str] | None:
+    """
+    Remove punctuation, convert to lowercase, and split into tokens.
+
+    Args:
+        text (str): Original text
+
+    Returns:
+        list[str] | None: A list of lowercase tokens without punctuation.
+        In case of corrupt input arguments, None is returned.
+    """
+    if not isinstance(text, str):
+        return None
+    words = text.lower().split()
+    tokens = []
+    for word in words:
+        cleaned_word = ''.join(
+            symbol for symbol in word
+            if symbol.isalnum())
+        if cleaned_word:
+            tokens.append(cleaned_word)
+    tokens = [token for token in tokens if token not in set(stop_words)]
+    bigrams = []
+    for i, token in enumerate(tokens):
+        if i < len(tokens) - 1:
+            bigram = token, tokens[i + 1]
+            bigrams.append(bigram)
+        else:
+            break
+    return bigrams
+def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+    """
+    Check if the object is a list containing elements of a certain type.
+
+    Args:
+        user_input (Any): Object to check
+        elements_type (type): Expected type of list elements
+        can_be_empty (bool): Whether an empty list is allowed
+
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    if not isinstance(user_input, list):
+        return False
+    if not user_input:
+        return can_be_empty
+    return all(isinstance(element, elements_type) for element in user_input)
 
 
-def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
+
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    """
+    Check if the object is a dictionary with keys and values of given types.
+
+    Args:
+        user_input (Any): Object to check
+        key_type (type): Expected type of dictionary keys
+        value_type (type): Expected type of dictionary values
+        can_be_empty (bool): Whether an empty dictionary is allowed
+
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    if not isinstance(user_input, dict):
+        return False
+    if not user_input:
+        return can_be_empty
+    return (all(isinstance(key, key_type) for key in user_input) and
+        all(isinstance(value, value_type) for value in user_input.values()))
+
+
+
+def build_vocabulary(bigrams) -> dict[str, float] | None:
     """
     Build a vocabulary from the documents.
 
@@ -21,13 +92,11 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False):
-        return None
 
-    unique_tokens = set(tokens)
-    all_tokens = len(tokens)
+    unique_tokens = set(bigrams)
+    all_tokens = len(bigrams)
 
-    return {token : tokens.count(token) / all_tokens for token in unique_tokens}
+    return {token : bigrams.count(token) / all_tokens for token in unique_tokens}
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
@@ -504,28 +573,35 @@ def count_transpositions(
     if  len(token_matches) != len(token) or len(candidate_matches) != len(candidate):
         return None
 
-    token_match_els = []
-    for i, el in enumerate(token):
-        if token_matches[i]:
-            token_match_els.append(el)
-    if not token_match_els:
-        return 0
+    token_match_els = [el for i, el in enumerate(token) if token_matches[i]] #if token_match_els else 0
+    # for i, el in enumerate(token):
+    #     if token_matches[i]:
+    #         token_match_els.append(el)
+    # if not token_match_els:
+    #     return 0
 
-    candidate_match_els = []
-    for i, el in enumerate(candidate):
-        if candidate_matches[i]:
-            candidate_match_els.append(el)
-    if not candidate_match_els:
-        return 0
+    candidate_match_els = [el for i, el in enumerate(candidate) if candidate_matches[i]] #if candidate_match_els else 0
+    # for i, el in enumerate(candidate):
+    #     if candidate_matches[i]:
+    #         candidate_match_els.append(el)
+    # if not candidate_match_els:
+    #     return 0
+            
+    if len(token_match_els) == len(candidate_match_els):
+        transpositions = 0
+        for i, el in enumerate(token_match_els):
+            if el != candidate_match_els[i]:
+                transpositions += 1
+        result = transpositions // 2
+    else: result = 0
+    return result
 
-    if len(token_match_els) != len(candidate_match_els):
-        return 0
 
-    transpositions = 0
-    for i, el in enumerate(token_match_els):
-        if el != candidate_match_els[i]:
-            transpositions += 1
-    return transpositions // 2
+    # transpositions = 0
+    # for i, el in enumerate(token_match_els):
+    #     if el != candidate_match_els[i]:
+    #         transpositions += 1
+    # result = transpositions // 2
 
 
 def calculate_jaro_distance(

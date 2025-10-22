@@ -30,8 +30,9 @@ def main() -> None:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    tokens = clean_and_tokenize(target_text) or []
-    tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
+    # tokens = clean_and_tokenize(target_text, stop_words) or []
+    # tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
+    tokens_without_stopwords = clean_and_tokenize(target_text, stop_words) or []
     print(tokens_without_stopwords)
     frequencies = calculate_frequencies(tokens_without_stopwords) or {}
     term_freq_tf = calculate_tf(frequencies) or {}
