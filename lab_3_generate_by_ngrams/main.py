@@ -7,7 +7,9 @@ Beam-search and natural language generation evaluation
 # pylint:disable=too-few-public-methods, unused-import
 import json
 from math import log
-from lab_1_keywords_tfidf.main import check_positive_int, check_list, check_dict
+
+from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
+
 
 class TextProcessor:
     """
@@ -540,6 +542,7 @@ class BeamSearcher:
             and len(next_tokens) <= self._beam_width
         ):
             return None
+
 
         updated_candidates = {}
 
