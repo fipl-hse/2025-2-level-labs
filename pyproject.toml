@@ -6,6 +6,7 @@ markers = [
     "mark10: tests for level 10",
     "lab_1_keywords_tfidf: tests for lab 1",
     "lab_2_spellcheck: tests for lab 2",
+    "lab_3_generate_by_ngrams: tests for lab 3",
 ]
 norecursedirs = [
     "venv*"
@@ -63,7 +64,8 @@ src_paths = [
     "core_utils",
     "config",
     "lab_1_keywords_tfidf",
-    "lab_2_spellcheck"
+    "lab_2_spellcheck",
+    "lab_3_generate_by_ngrams",
 ]
 
 [tool.mypy]
