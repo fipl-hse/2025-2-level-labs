@@ -46,6 +46,7 @@ def main() -> None:
             "frequency-based", correct_frequency,
             "jaro-winkler", correct_jaro_winkler
         }
+        print(fixed_words)
     result = fixed_words
     assert result, "Result is None"
 
