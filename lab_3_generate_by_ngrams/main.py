@@ -6,6 +6,7 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
+from string import punctuation
 
 
 class TextProcessor:
@@ -16,6 +17,8 @@ class TextProcessor:
         _end_of_word_token (str): A token denoting word boundary
         _storage (dict): Dictionary in the form of <token: identifier>
     """
+    _end_of_word_token = "_"
+    _storage = {"_" : 0}
 
     def __init__(self, end_of_word_token: str) -> None:
         """
@@ -42,6 +45,18 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(text, str):
+            return None
+        tokenized_text_letters = []
+        for i in text:
+            if (i == " " or i in punctuation) and tokenized_text_letters[-1] != self._end_of_word_token:
+                tokenized_text_letters.append(self._end_of_word_token)
+            if i.isalpha():
+                tokenized_text_letters.append(i.lower())
+        tokenized_text = tuple(tokenized_text_letters)
+        if tokenized_text == ():
+            return None
+        return tokenized_text
 
     def get_id(self, element: str) -> int | None:
         """
@@ -49,13 +64,18 @@ class TextProcessor:
 
         Args:
             element (str): String element to retrieve identifier for
-
         Returns:
             int | None: Integer identifier that corresponds to the given element
 
         In case of corrupt input arguments or arguments not included in storage,
         None is returned
         """
+        if not isinstance(element, str):
+            return None
+        if element in self._storage:
+            return self._storage[element]
+        else:
+            return None
 
     def get_end_of_word_token(self) -> str:  # type: ignore[empty-body]
         """
@@ -64,6 +84,7 @@ class TextProcessor:
         Returns:
             str: EoW token
         """
+        return self._end_of_word_token
 
     def get_token(self, element_id: int) -> str | None:
         """
@@ -77,6 +98,12 @@ class TextProcessor:
 
         In case of corrupt input arguments or arguments not included in storage, None is returned
         """
+        if not isinstance(element_id, int):
+            return None
+        for key, val in self._storage.items():
+            if val == element_id:
+                return key
+        return None
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -94,6 +121,20 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(text, str):
+            return None #why is this wrong? when I don't check it says it's None, when I check it confirms it as None but complains why did it not decode, so please help
+        normal_text = self._tokenize(text)
+        if not normal_text:
+            return None
+        encoded_text_letters = []
+        for i in normal_text:
+            if i not in self._storage:
+                self._put(i)
+            encoded_text_letters.append(self.get_id(i))
+            if not self.get_id(i):
+                return None
+        encoded_text = tuple(encoded_text_letters)
+        return encoded_text
 
     def _put(self, element: str) -> None:
         """
@@ -105,6 +146,11 @@ class TextProcessor:
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
+        if not isinstance(element, str) or len(element) > 1:
+            return None
+        if element in self._storage:
+            return None
+        self._storage.update({element : len(self._storage)})
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
@@ -122,6 +168,16 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not encoded_corpus:
+            return None
+        if not [isinstance(x, int) for x in tuple(encoded_corpus)]:
+            return None
+        new_text = ""
+        for i in encoded_corpus:
+            if i not in self._storage.values():
+                return None
+            new_text += self.get_token(i)
+        return new_text
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
