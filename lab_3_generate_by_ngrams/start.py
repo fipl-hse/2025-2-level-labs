@@ -4,6 +4,8 @@ Generation by NGrams starter
 from lab_3_generate_by_ngrams.main import (
     TextProcessor,
     NGramLanguageModel,
+    GreedyTextGenerator,
+    BeamSearchTextGenerator,
 )
 # pylint:disable=unused-import, unused-variable
 
@@ -17,30 +19,30 @@ def main() -> None:
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
 
-    text_test = (
-            "She is happy. He is happy"
-        )
+    # text_test = "She is happy. He is happy"
     # Шаг 1.10. Продемонстрировать результаты в start.py
 
-    text_test_numbers = "123456"
-    t = ('s', 'h', 'e', '_', 'i', 's', '_', 'h', 'a', 'p', 'p', 'y', '_',
-        'h', 'e', '_', 'i', 's', '_', 'h', 'a', 'p', 'p', 'y', '_')
+    # text_processor = TextProcessor("_")
+    # encoded = text_processor.encode(text)
+    # language_model = NGramLanguageModel(encoded, 7)
+    # language_model.build()
+    # # print(encoded)
+    # greedy_generator = GreedyTextGenerator(language_model, text_processor)
+    # print(greedy_generator.run(51, "Vernon"))
 
-    encoded = (1, 2, 3, 0, 4, 1, 0, 2, 5, 6, 6, 7, 0, 2, 3, 0, 4, 1, 0, 2, 5, 6, 6, 7, 0)
+    text_processor = TextProcessor("_")
+    encoded_text = text_processor.encode(text) or None
+    language_model = NGramLanguageModel(encoded_text, 7)
+    if language_model.build():
+        return None
 
-    ngram_model = NGramLanguageModel(None, 20)
+    greedy_text_generator = GreedyTextGenerator(language_model, text_processor)
+    beam_text_generator = BeamSearchTextGenerator(language_model, text_processor, beam_width=3)
 
-    # processor = TextProcessor("_")
-    # proocessed_text = processor._postprocess_decoded_text(t)
-    # print(proocessed_text)
-
-    extracted_n_grams = ngram_model._extract_n_grams(encoded_corpus=encoded)
-    print(extracted_n_grams)
-
-    # tokens = processor._tokenize(text_test)
-
-    # result = None
-    # assert result
+    greedy_generated = greedy_text_generator.run(51, "Vernon") or None
+    beam_generated = beam_text_generator.run("Vernon", 56) or None
+    print(f"Generated with greedy algorithm: '{greedy_generated}'")
+    print(f"Generated with beam algorithm: '{beam_generated}'")
 
 
 if __name__ == "__main__":
