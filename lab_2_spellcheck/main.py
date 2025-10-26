@@ -195,6 +195,7 @@ def initialize_levenshtein_matrix(
         levenshtein_matrix[0][c_index] = c_index
     return levenshtein_matrix
 
+
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
     """
     Fill a Levenshtein matrix with edit distances between all prefixes.
@@ -224,6 +225,7 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
             )
     return matrix
 
+
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     """
     Calculate the Levenshtein edit distance between two strings.
@@ -242,6 +244,7 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     if matrix is None:
         return None
     return matrix[-1][-1]
+
 
 def delete_letter(word: str) -> list[str]:
     """
@@ -476,6 +479,7 @@ def get_matches(
                 break
     return (matching_letters, token_matches, candidate_matches)
 
+
 def count_transpositions(
     token: str, candidate: str, token_matches: list[bool], candidate_matches: list[bool]
 ) -> int | None:
@@ -517,6 +521,7 @@ def count_transpositions(
             transpositions += 1
     return transpositions // 2
 
+
 def calculate_jaro_distance(
     token: str, candidate: str, matches: int, transpositions: int
 ) -> float | None:
@@ -554,6 +559,7 @@ def calculate_jaro_distance(
                           match_fraction_candidate + order_fraction)
     return 1.0 - standard_similarity
 
+
 def winkler_adjustment(
     token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
 ) -> float | None:
@@ -588,6 +594,7 @@ def winkler_adjustment(
             break
     adjustment = prefix_length * prefix_scaling * jaro_distance
     return adjustment
+
 
 def calculate_jaro_winkler_distance(
     token: str, candidate: str, prefix_scaling: float = 0.1
