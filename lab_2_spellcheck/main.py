@@ -11,6 +11,8 @@ from lab_1_keywords_tfidf.main import(
     check_list
 )
 
+from lab_1_keywords_tfidf.main import check_dict, check_list
+
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
@@ -575,6 +577,29 @@ def count_transpositions(
 
     In case of corrupt input arguments, None is returned.
     """
+    if (
+        not isinstance(token, str)
+        or not isinstance(candidate, str)
+        or not check_list(token_matches, bool, False)
+        or not check_list(candidate_matches, bool, False)
+        ):
+        return None
+    matched_token_indexes = []
+    matched_candidate_indexes = []
+    max_len = max(len(token), len(candidate))
+    for index in range(max_len):
+        if index < len(token) and index < len(token_matches) and token_matches[index]:
+            matched_token_indexes.append(index)
+        if index < len(candidate) and index < len(candidate_matches) and candidate_matches[index]:
+            matched_candidate_indexes.append(index)
+    transpositions = 0
+    min_length = min(len(matched_token_indexes), len(matched_candidate_indexes))
+    for index in range(min_length):
+        matched_token_symbol = token[matched_token_indexes[index]]
+        matched_candidate_symbol = candidate[matched_candidate_indexes[index]]
+        if matched_token_symbol != matched_candidate_symbol:
+            transpositions += 1
+    return transpositions // 2
 
 
 
@@ -595,6 +620,25 @@ def calculate_jaro_distance(
 
     In case of corrupt input arguments, None is returned.
     """
+    if (
+        not isinstance(token, str)
+        or not isinstance(candidate, str)
+        or not isinstance(matches, int)
+        or not isinstance(transpositions, int)
+        ):
+        return None
+    if matches < 0 or transpositions < 0:
+        return None
+    if matches == 0:
+        return 1.0
+    len_token = len(token)
+    len_candidate = len(candidate)
+    match_fraction_token = matches / len_token
+    match_fraction_candidate = matches / len_candidate
+    order_fraction = (matches - transpositions) / matches
+    standard_similarity = (1/3) * (match_fraction_token +
+                          match_fraction_candidate + order_fraction)
+    return 1.0 - standard_similarity
 
 
 def winkler_adjustment(
@@ -614,6 +658,23 @@ def winkler_adjustment(
 
     In case of corrupt input arguments, None is returned.
     """
+    if (
+        not isinstance(token, str)
+        or not isinstance(candidate, str)
+        or not isinstance(jaro_distance, float)
+        or not isinstance(prefix_scaling, float)
+        ):
+        return None
+    if not all([0 <= jaro_distance <= 1, 0 <= prefix_scaling <= 1]):
+        return None
+    prefix_length = 0
+    for i in range(min(len(token), len(candidate), 4)):
+        if token[i] == candidate[i]:
+            prefix_length += 1
+        else:
+            break
+    adjustment = prefix_length * prefix_scaling * jaro_distance
+    return adjustment
 
 
 def calculate_jaro_winkler_distance(
@@ -632,3 +693,26 @@ def calculate_jaro_winkler_distance(
 
     In case of corrupt input arguments or corrupt outputs of used functions, None is returned.
     """
+    if (not isinstance(token, str)
+        or not isinstance(candidate, str)
+        or not isinstance(prefix_scaling, (float, int))
+        ):
+        return None
+    if not token or not candidate:
+        return 1.0
+    match_distance = max(len(token), len(candidate)) // 2 - 1
+    all_matches = get_matches(token, candidate, match_distance)
+    if all_matches is None:
+        return None
+    matches, token_matches, candidate_matches = all_matches
+    transpositions = count_transpositions(token, candidate, token_matches, candidate_matches)
+    if transpositions is None:
+        return None
+    jaro_distance = calculate_jaro_distance(token, candidate, matches, transpositions)
+    if jaro_distance is None:
+        return None
+    adjustment = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
+    if adjustment is None:
+        return None
+    jaro_winkler_distance = jaro_distance - adjustment
+    return jaro_winkler_distance
