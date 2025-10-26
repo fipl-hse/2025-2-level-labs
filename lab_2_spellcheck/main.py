@@ -195,6 +195,7 @@ def initialize_levenshtein_matrix(
         levenshtein_matrix[0][c_index] = c_index
     return levenshtein_matrix
 
+
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
     """
     Fill a Levenshtein matrix with edit distances between all prefixes.
@@ -265,11 +266,6 @@ def delete_letter(word: str) -> list[str]:
         candidates_without_letter.append(candidate)
     return sorted(candidates_without_letter)
 
-    list_of_words=[]
-    for i in range(0, len(word)):
-        deleted=word[:i]+word[i+1:]
-        list_of_words.append(deleted)
-    return sorted(list_of_words)
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
     """
@@ -297,12 +293,6 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
             candidates_with_letter.append(candidate)
     return sorted(candidates_with_letter)
 
-    list_of_words=[]
-    for i in range(0, len(word)+1):
-        for a in alphabet:
-            added=word[:i]+a+word[i:]
-            list_of_words.append(added)
-    return sorted(list_of_words)
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     """

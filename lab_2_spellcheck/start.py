@@ -77,5 +77,6 @@ def main() -> None:
             print(f"jaro-winkler: {correct_word}")
     assert result, "Result is None"
 
+
 if __name__ == "__main__":
     main()
