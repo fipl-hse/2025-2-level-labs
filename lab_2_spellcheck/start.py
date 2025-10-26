@@ -78,26 +78,5 @@ def main() -> None:
     assert result, "Result is None"
 
 
-    print(incorrect_words)
-    alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
-    jaccard=[]
-    frequency_based=[]
-    levenshtein=[]
-    for incorrect_word in incorrect_words:
-        jaccard_correct_words = find_correct_word(incorrect_word, freq_vocab, "jaccard")
-        jaccard.append(jaccard_correct_words)
-        frequency_based_correct_words = (
-            find_correct_word(incorrect_word, freq_vocab, "frequency-based", alphabet)
-            )
-        frequency_based.append(frequency_based_correct_words)
-        lev_correct_words = find_correct_word(incorrect_word, freq_vocab, "levenshtein")
-        levenshtein.append(lev_correct_words)
-    correct_words = (
-        f"JACCARD : {jaccard} \nFREQUENCY_BAESD: {frequency_based} \nLEVENSHTEIN: {levenshtein}"
-        )
-    print(correct_words)
-    result = correct_words
-    assert result, "Result is None"
-
 if __name__ == "__main__":
     main()
