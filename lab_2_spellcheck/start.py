@@ -14,21 +14,11 @@ from lab_2_spellcheck.main import (
     find_out_of_vocab_words,
 )
 
-from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
-from lab_2_spellcheck.main import (
-    build_vocabulary,
-    find_correct_word,
-    find_out_of_vocab_words,
-)
-
 
 def main() -> None:
     """
     Launches an implementation.
     """
-    text_without_stop_words = None
-    vocabulary = None
-    absent_words = None
     with open("assets/Master_and_Margarita_chapter1.txt", "r", encoding="utf-8") as file:
         text = file.read()
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
