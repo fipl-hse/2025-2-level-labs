@@ -89,7 +89,6 @@ def extract_older_people(people: dict[str, int], threshold: int) -> list[str]:
     """
     # student realisation goes here
 
-
 # Function calls with expected result:
 # assert extract_older_people({'Andrej': 22, 'Alexander': 28, 'Irine': 20},
 #                             20) == ['Andrej', 'Alexander']
@@ -110,7 +109,6 @@ def sum_values(data: dict[str, int]) -> int | float:
     """
     # student realisation goes here
 
-
 # Function calls with expected result:
 # assert sum_values({'a': 300, 'b': 15, 'c': 430}) == 745
 
@@ -128,8 +126,6 @@ def find_key(data: dict[str, int]) -> str:
         str: Key with the largest value.
     """
     # student realisation goes here
-
-
 # Function calls with expected result:
 # assert find_key({'Andrej': 10000, 'Artyom': 15000, 'Alexander': 100000}) == 'Alexander'
 
@@ -170,7 +166,6 @@ def count_letters(sequence: str) -> dict[str, int]:
         dict[str, int]: Dictionary with letters as keys and counts as values.
     """
     # student realisation goes here
-
 
 # Function calls with expected result:
 # assert count_letters('Hello there') == {'h': 2, 'e': 3, 'l': 2, 'o': 1, 't': 1, 'r': 1}
