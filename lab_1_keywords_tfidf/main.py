@@ -152,7 +152,6 @@ def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None
     """
     if not all([isinstance(frequencies, dict), check_positive_int(top), frequencies]):
         return None
-
     for key, value in frequencies.items():
         if not isinstance(value, (int, float)) or not isinstance(key, str):
             return None
@@ -244,7 +243,6 @@ def calculate_chi_values(
         return None
     return {term: ((observed[term] - expected[term]) ** 2) /
             expected[term] for term in observed}
-
 
 
 def extract_significant_words(

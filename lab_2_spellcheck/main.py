@@ -559,14 +559,6 @@ def calculate_jaro_distance(
                           match_fraction_candidate + order_fraction)
     return 1.0 - standard_similarity
 
-    if matches == 0:
-        return 1.0
-    jaro_sim = 1/3 * (matches / len(token) +
-                          matches / len(candidate) +
-                          (matches - transpositions) / matches
-                          )
-    jaro_distance = 1 - jaro_sim
-    return jaro_distance
 
 def winkler_adjustment(
     token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
@@ -603,13 +595,6 @@ def winkler_adjustment(
     adjustment = prefix_length * prefix_scaling * jaro_distance
     return adjustment
 
-    prefix_len = 0
-    for i in range(min(4, len(token), len(candidate))):
-        if token[i] == candidate[i]:
-            prefix_len += 1
-        else:
-            break
-    return prefix_len * prefix_scaling * jaro_distance
 
 def calculate_jaro_winkler_distance(
     token: str, candidate: str, prefix_scaling: float = 0.1

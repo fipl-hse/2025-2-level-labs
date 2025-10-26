@@ -14,7 +14,6 @@ from lab_2_spellcheck.main import (
     find_out_of_vocab_words,
 )
 
-russian = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
 
 def main() -> None:
     """
