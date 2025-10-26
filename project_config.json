@@ -7,6 +7,10 @@
         {
             "name": "lab_2_spellcheck",
             "coverage": 100
+        },
+        {
+            "name": "lab_3_generate_by_ngrams",
+            "coverage": 99
         }
     ],
     "addons": [
