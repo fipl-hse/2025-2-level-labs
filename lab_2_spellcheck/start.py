@@ -14,14 +14,6 @@ from lab_2_spellcheck.main import (
     find_out_of_vocab_words,
 )
 
-from lab_2_spellcheck.main import (
-    build_vocabulary,
-    clean_and_tokenize,
-    find_correct_word,
-    find_out_of_vocab_words,
-    remove_stop_words,
-)
-
 
 def main() -> None:
     """
