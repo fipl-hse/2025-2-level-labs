@@ -47,7 +47,6 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
         return None
     return [token for token in tokens if token not in vocabulary]
 
-    return [token for token in tokens if not vocabulary.get(token)]
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     """
@@ -168,20 +167,6 @@ def find_correct_word(
     return sorted(min_length_candidates)[0]
 
 
-    calculated_distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
-
-    if calculated_distances is None:
-        return None
-
-    best_value = min(calculated_distances.values())
-
-    candidates = [word for word, value in calculated_distances.items() if value == best_value]
-
-    if len(candidates) > 1:
-        candidates.sort(key=lambda word: (abs(len(word) - len(wrong_word)), word))
-
-    return candidates[0]
-
 def initialize_levenshtein_matrix(
     token_length: int, candidate_length: int
 ) -> list[list[int]] | None:
@@ -210,15 +195,6 @@ def initialize_levenshtein_matrix(
         levenshtein_matrix[0][c_index] = c_index
     return levenshtein_matrix
 
-    levenshtein_matrix = [[0 for _ in range(candidate_length + 1)] for _ in range(token_length + 1)]
-
-    for i in range(candidate_length + 1):
-        levenshtein_matrix[0][i] = i
-
-    for j in range(token_length + 1):
-        levenshtein_matrix[j][0] = j
-
-    return levenshtein_matrix
 
 def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | None:
     """
@@ -249,22 +225,6 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
             )
     return matrix
 
-    levenshtein_matrix = initialize_levenshtein_matrix(len(token), len(candidate))
-
-    if not levenshtein_matrix:
-        return None
-
-    for i in range(1, len(token) + 1):
-        for j in range(1, len(candidate) + 1):
-            cost = 0 if token[i - 1] == candidate[j - 1] else 1
-
-            levenshtein_matrix[i][j] = min(
-                levenshtein_matrix[i - 1][j] + 1,
-                levenshtein_matrix[i][j - 1] + 1,
-                levenshtein_matrix[i - 1][j - 1] + cost,
-             )
-
-    return levenshtein_matrix
 
 def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     """
@@ -284,13 +244,6 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
     if matrix is None:
         return None
     return matrix[-1][-1]
-
-    levenshtein_matrix = fill_levenshtein_matrix(token, candidate)
-
-    if not levenshtein_matrix:
-        return None
-
-    return levenshtein_matrix[-1][-1]
 
 
 def delete_letter(word: str) -> list[str]:
@@ -313,10 +266,6 @@ def delete_letter(word: str) -> list[str]:
         candidates_without_letter.append(candidate)
     return sorted(candidates_without_letter)
 
-    if not isinstance(word, str):
-        return []
-
-    return sorted([word[:i] + word[i + 1 :] for i in range(len(word))])
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
     """
@@ -344,10 +293,6 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
             candidates_with_letter.append(candidate)
     return sorted(candidates_with_letter)
 
-    return sorted(
-    [word[:i] + letter + word[i:]
-    for i in range(len(word) + 1) for letter in alphabet]
-    )
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     """
@@ -377,10 +322,6 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
             replaced_candidates.append(candidate)
     return sorted(replaced_candidates)
 
-    return sorted([word[:i] + letter + word[i + 1:]
-        for i in range(len(word))
-        for letter in alphabet]
-    )
 
 def swap_adjacent(word: str) -> list[str]:
     """
@@ -403,10 +344,6 @@ def swap_adjacent(word: str) -> list[str]:
         swapped_candidates.append(candidate)
     return sorted(swapped_candidates)
 
-    return sorted(
-        [word[:i] + word[i + 1] + word[i] + word[i + 2 :]
-    for i in range(len(word) - 1)]
-    )
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     """
@@ -434,16 +371,6 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
         generated_candidates.extend(replace_letter(word, alphabet))
     return sorted(generated_candidates)
 
-
-    if not word:
-        return alphabet
-
-    return sorted(
-            delete_letter(word)
-            + add_letter(word, alphabet)
-            + replace_letter(word, alphabet)
-            + swap_adjacent(word)
-    )
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
     """
@@ -476,20 +403,6 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         all_candidates.update(second_level_candidates)
     return tuple(sorted(all_candidates))
 
-    candidates = generate_candidates(word, alphabet)
-
-    if not check_list(candidates, str, True):
-        return None
-
-    proposed_candidates = set()
-
-    for candidate in candidates:
-        generated_candidate = generate_candidates(candidate, alphabet)
-        if not check_list(generated_candidate, str, True) or not generated_candidate:
-            return None
-        proposed_candidates.update(generated_candidate)
-
-    return tuple(sorted(proposed_candidates))
 
 def calculate_frequency_distance(
     word: str, frequencies: dict, alphabet: list[str]
