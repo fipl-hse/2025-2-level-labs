@@ -121,29 +121,6 @@ def calculate_distance(
         distance[token] = distance_value
     return distance
 
-    distances = {}
-
-    if method == "jaccard":
-        for candidate in vocabulary:
-            distance = calculate_jaccard_distance(first_token, candidate)
-            if distance is None:
-                return None
-            distances[candidate] = distance
-        return distances
-    if method == "levenshtein":
-        for candidate in vocabulary:
-            distance = calculate_levenshtein_distance(first_token, candidate)
-            if distance is None:
-                return None
-            distances[candidate] = distance
-        return distances
-    if method == "jaro-winkler":
-        for candidate in vocabulary:
-            distance = calculate_jaro_winkler_distance(first_token, candidate)
-            if distance is None:
-                return None
-            distances[candidate] = distance
-    return distances
 
 def find_correct_word(
     wrong_word: str,
@@ -370,11 +347,11 @@ def swap_adjacent(word: str) -> list[str]:
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     """
-    Generate all possible word words for a given word using
+    Generate all possible candidate words for a given word using
     four basic operations.
 
     Args:
-        candidate (str): The input word.
+        word (str): The input word.
         alphabet (list[str]): Alphabet for candidates creation.
 
     Returns:
@@ -513,7 +490,7 @@ def count_transpositions(
         token (str): The first string to compare.
         candidate (str): The second string to compare.
         token_matches (list[bool]): Boolean list indicating matches in token.
-        candidate_matches (list[bool]): Boolean list indicating matches in word.
+        candidate_matches (list[bool]): Boolean list indicating matches in candidate.
 
     Returns:
         int | None: Number of transpositions.
