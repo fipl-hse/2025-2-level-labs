@@ -521,11 +521,6 @@ def count_transpositions(
             transpositions += 1
     return transpositions // 2
 
-            if token[i] != candidate[point]:
-                transpositions += 1
-            point += 1
-    transpositions = transpositions//2
-    return transpositions
 
 def calculate_jaro_distance(
     token: str, candidate: str, matches: int, transpositions: int
