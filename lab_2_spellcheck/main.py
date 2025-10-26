@@ -60,7 +60,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         float | None: Jaccard distance score in range [0, 1].
 
     In case of corrupt input arguments, None is returned.
-    In case of both strings being empty, 1.0 is returned.
+    In case of both strings being empty, 0.0 is returned.
     """
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
