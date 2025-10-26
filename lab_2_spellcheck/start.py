@@ -76,5 +76,7 @@ def main() -> None:
         if correct_word and correct_word != wrong_word:
             print(f"jaro-winkler: {correct_word}")
     assert result, "Result is None"
+
+
 if __name__ == "__main__":
     main()

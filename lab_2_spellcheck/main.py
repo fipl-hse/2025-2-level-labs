@@ -480,7 +480,6 @@ def get_matches(
     return (matching_letters, token_matches, candidate_matches)
 
 
-
 def count_transpositions(
     token: str, candidate: str, token_matches: list[bool], candidate_matches: list[bool]
 ) -> int | None:
