@@ -62,6 +62,40 @@ def main() -> None:
             'levenshtein': levenshtein_correction,
             'jaro-winkler': jaro_winkler_correction
         }
+    right_corrections = ['тёмной', 'московской', 'улице', 'профессор', 'квартире',
+                     'думал', 'странностях', 'записывал', 'наблюдения', 'тетрадь',
+                     'вечером', 'шумном', 'проспекте', 'патриса', 'лумумбы', 'собирались',
+                     'прохожие', 'обсуждая', 'последние', 'московские', 'новости',
+                     'деревянной', 'скамье', 'саду', 'под', 'фонарём', 'сидели', 'двое',
+                     'оживлённо', 'спорили', 'судьбах', 'литературы', 'трамвай', 'заскрипел',
+                     'повороте', 'остановился', 'парящего', 'моста', 'толпа', 'ждала', 'вечернего',
+                     'представления', 'усталый', 'редактор', 'принёс', 'толстую', 'рукопись',
+                     'контору', 'надеясь', 'наконец-то', 'найти', 'одобрение', 'коллег']
+    scores = {
+    'jaccard': 0,
+    'frequency-based': 0,
+    'levenshtein': 0,
+    'jaro-winkler': 0
+    }
+    total_evaluated_errors = 0
+    for i, error_word in enumerate(error_words):
+        if i < len(right_corrections) and right_corrections[i] is not None:
+            correct_word = right_corrections[i]
+            total_evaluated_errors += 1
+            corrections = all_results[error_word]
+            for method, suggested_correction in corrections.items():
+                if isinstance(suggested_correction, dict) and 'word' in suggested_correction:
+                    if suggested_correction['word'] == correct_word:
+                        scores[method] += 1
+                elif suggested_correction == correct_word:
+                    scores[method] += 1       
+    total_evaluated_errors = min(len(error_words), len(right_corrections))
+    print(f"ошибок для оценки: {total_evaluated_errors}")
+    for method, score in scores.items():
+        print(f"{method} | {score}/{total_evaluated_errors}")   
+    if total_evaluated_errors > 0:
+        best_method, best_score = max(scores.items(), key=lambda x: x[1])
+        print(f"\nЛучший метод: {best_method} ({best_score}/{total_evaluated_errors})")
     result = all_results
     assert result, "Result is None"
 
