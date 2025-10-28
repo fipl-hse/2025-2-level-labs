@@ -226,7 +226,7 @@ class TextProcessor:
         decoded_text = ''.join(decoded_corpus).replace('_', ' ').capitalize()
         if decoded_text[-1] == ' ':
             return decoded_text[:-1] + '.'
-        return {decoded_text} + '.'
+        return decoded_text + '.'
 
 
 class NGramLanguageModel:
