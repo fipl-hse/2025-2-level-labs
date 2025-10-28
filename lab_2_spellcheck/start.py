@@ -34,7 +34,7 @@ def main() -> None:
     tokens = clean_and_tokenize(text) or []
     tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
     tokens_vocab = build_vocabulary(tokens_without_stopwords) or {}
-    print(tokens_vocab)
+    print(sorted(tokens_vocab))
 
     tokens_not_in_vocab = find_out_of_vocab_words(tokens_without_stopwords, tokens_vocab) or []
     print(tokens_not_in_vocab)
@@ -58,7 +58,8 @@ def main() -> None:
     for sentence in sentences:
         sentence_tokens = clean_and_tokenize(sentence) or []
         out_of_vocab = find_out_of_vocab_words(sentence_tokens, tokens_vocab) or []
-        all_wrong_words.extend(out_of_vocab)
+        filtered_out_of_vocab = [word for word in out_of_vocab if word not in stop_words]
+        all_wrong_words.extend(filtered_out_of_vocab)
     unique_wrong_words = sorted(set(all_wrong_words))
 
     for wrong_word in unique_wrong_words:
