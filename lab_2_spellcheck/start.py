@@ -3,12 +3,13 @@ Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
-from lab_1_keywords_tfidf.main import (
-    clean_and_tokenize,
-    remove_stop_words,
-)
+from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 from lab_2_spellcheck.main import (
     build_vocabulary,
+    calculate_distance,
+    calculate_frequency_distance,
+    calculate_jaro_winkler_distance,
+    calculate_levenshtein_distance,
     find_correct_word,
     find_out_of_vocab_words,
 )
@@ -30,78 +31,50 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
-    vocabulary = build_vocabulary(remove_stop_words(clean_and_tokenize(text) or [],
-                                                    stop_words) or []) or {}
-    print(vocabulary)
+    tokens = clean_and_tokenize(text) or []
+    tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
+    tokens_vocab = build_vocabulary(tokens_without_stopwords) or {}
+    print(tokens_vocab)
 
-    all_sentence_tokens = [
-        token
-        for sentence in sentences
-        for token in remove_stop_words(clean_and_tokenize(sentence) or [], stop_words)
-    ]
-    error_words = find_out_of_vocab_words(all_sentence_tokens, vocabulary) or []
-    print(f"\n{error_words}")
+    tokens_not_in_vocab = find_out_of_vocab_words(tokens_without_stopwords, tokens_vocab) or []
+    print(tokens_not_in_vocab)
 
-    correct_words = ['тёмной', 'московской', 'улице', 'профессор', 'квартире',
-                     'думал', 'странностях', 'записывал', 'наблюдения', 'тетрадь',
-                     'вечером', 'шумном', 'проспекте', 'патриса', 'лумумбы', 'собирались',
-                     'прохожие', 'обсуждая', 'последние', 'московские', 'новости',
-                     'деревянной', 'скамье', 'саду', 'под', 'фонарём', 'сидели', 'двое',
-                     'оживлённо', 'спорили', 'судьбах', 'литературы', 'трамвай', 'заскрипел',
-                     'повороте', 'остановился', 'парящего', 'моста', 'толпа', 'ждала', 'вечернего',
-                     'представления', 'усталый', 'редактор', 'принёс', 'толстую', 'рукопись',
-                     'контору', 'надеясь', 'наконец-то', 'найти', 'одобрение', 'коллег']
-    jaccard_correct = frequency_correct = levenshtein_correct = jaro_winkler_correct = 0
+    jaccard_distance = calculate_distance("кот", {"кот": 0.5, "пёс": 0.5},
+                                                 method = "jaccard") or {}
+    print(jaccard_distance)
 
-    alphabet = [chr(i) for i in range(1072, 1104)]
-    all_results = {}
-    real_incorrect_words = 0
-    for error_word in error_words:
-        print(f"\nCorrection for '{error_word}':")
-        jaccard_correction = find_correct_word(error_word, vocabulary,
-                                               'jaccard', alphabet) or ""
-        frequency_correction = find_correct_word(error_word, vocabulary,
-                                                 'frequency-based', alphabet) or ""
-        levenshtein_correction = find_correct_word(error_word, vocabulary,
-                                                   'levenshtein', alphabet) or ""
-        jaro_winkler_correction = find_correct_word(error_word, vocabulary,
-                                                    'jaro-winkler', alphabet) or ""
-        corrections = {
-            'jaccard': jaccard_correction,
-            'frequency-based': frequency_correction,
-            'levenshtein': levenshtein_correction,
-            'jaro-winkler': jaro_winkler_correction
-        }
-        has_correct = any(corr in correct_words for corr in corrections.values())
-        if not has_correct:
-            msg = ("The word is spelled correctly for the given context, "
-            "but it is not in the vocabulary." 
-                   if error_word in correct_words else
-                   "The word is spelled incorrectly for the given context, "
-                   "and it is not in the vocabulary.")
-            print(msg)
-        else:
-            print("The word is spelled incorrectly. There are corrections for it.")
-            real_incorrect_words += 1
-            if jaccard_correction in correct_words:
-                jaccard_correct += 1
-            if frequency_correction in correct_words:
-                frequency_correct += 1
-            if levenshtein_correction in correct_words:
-                levenshtein_correct += 1
-            if jaro_winkler_correction in correct_words:
-                jaro_winkler_correct += 1
-        print(f"  Jaccard: {jaccard_correction}")
-        print(f"  Frequency-based: {frequency_correction}")
-        print(f"  Levenshtein: {levenshtein_correction}")
-        print(f"  Jaro-Winkler: {jaro_winkler_correction}")
-        all_results[error_word] = corrections
-    print("\nEfficiency of methods:")
-    print(f"Jaccard: {jaccard_correct}/{real_incorrect_words}")
-    print(f"Frequency-based: {frequency_correct}/{real_incorrect_words}")
-    print(f"Levenshtein: {levenshtein_correct}/{real_incorrect_words}")
-    print(f"Jaro-Winkler: {jaro_winkler_correct}/{real_incorrect_words}")
-    result = all_results
+    alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+    freq_distances = calculate_frequency_distance("маладой", tokens_vocab, alphabet) or {}
+    print(freq_distances)
+
+    levenshtein_distance = calculate_levenshtein_distance("кот", "кто")
+    print(levenshtein_distance)
+
+    jaro_winkler_distance = calculate_jaro_winkler_distance("кот", "кто")
+    print(jaro_winkler_distance)
+    result = jaro_winkler_distance
+
+    all_wrong_words = []
+    for sentence in sentences:
+        sentence_tokens = clean_and_tokenize(sentence) or []
+        out_of_vocab = find_out_of_vocab_words(sentence_tokens, tokens_vocab) or []
+        all_wrong_words.extend(out_of_vocab)
+    unique_wrong_words = sorted(set(all_wrong_words))
+
+    for wrong_word in unique_wrong_words:
+        print(f"Исправления для слова '{wrong_word}':")
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "jaccard", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"jaccard: {correct_word}")
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "frequency-based", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"frequency-based: {correct_word}")
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "levenshtein", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"levenshtein: {correct_word}")
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "jaro-winkler", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"jaro-winkler: {correct_word}")
     assert result, "Result is None"
 
 
