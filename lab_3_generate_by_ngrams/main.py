@@ -313,6 +313,9 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        self._encoded_corpus = encoded_corpus
+        self._n_gram_size = n_gram_size
+        self._n_gram_frequencies = None
 
     def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
         """
@@ -321,6 +324,7 @@ class NGramLanguageModel:
         Returns:
             int: Size of stored n_grams
         """
+        return self._n_gram_size
 
     def set_n_grams(self, frequencies: dict) -> None:
         """
@@ -342,6 +346,35 @@ class NGramLanguageModel:
         In case of corrupt input arguments or methods used return None,
         1 is returned
         """
+        if not isinstance(self._encoded_corpus, tuple):
+            return 1
+
+        if not self._encoded_corpus:
+            return 1
+
+        n_grams = self._extract_n_grams(self._encoded_corpus)
+        if n_grams is None:
+            return 1
+        
+        counter_of_n_gram = {}
+        counter_of_context = {}
+
+        for n_gram in n_grams:
+            counter_of_n_gram[n_gram] = counter_of_n_gram.get(n_gram, 0) + 1
+
+            context = n_gram[:-1]
+            counter_of_context[context] = counter_of_context.get(context, 0) + 1
+
+        self._n_gram_frequencies = {}
+        for n_gram, value in counter_of_n_gram.items():
+            context = n_gram[:-1]
+            count_of_context = counter_of_context.get(n_gram, 0)
+
+            if counter_of_context > 0:
+                frequency = value / count_of_context
+                self._n_gram_frequencies[n_gram] = frequency
+
+        return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
@@ -355,6 +388,8 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if not isinstance(sequence, tuple) or not sequence:
+            return None
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -372,7 +407,18 @@ class NGramLanguageModel:
         """
         if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
+
+        n_size = self._n_gram_size
+
+        if len(encoded_corpus) < n_size:
+            return tuple()
         
+        n_grams = []
+        for i in range(len(encoded_corpus) - n_size + 1):
+            n_gram = encoded_corpus[i:i + n_size]
+            n_grams.append(n_gram)
+
+        return tuple(n_gram)
 
 
 class GreedyTextGenerator:
