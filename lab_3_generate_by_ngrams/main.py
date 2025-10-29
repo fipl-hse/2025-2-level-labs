@@ -188,7 +188,7 @@ class TextProcessor:
             return None
         for ngram in content:
             for letter in ngram:
-                if isinstance(letter, str):
+                if isinstance(letter, str) and len(letter) != 1 and letter.isalpha():
                     self._put(letter)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
