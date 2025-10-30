@@ -4,8 +4,10 @@ Generation by NGrams starter
 
 # pylint:disable=unused-import, unused-variable
 from lab_3_generate_by_ngrams.main import (
-    TextProcessor
-)
+                                            GreedyTextGenerator,
+                                            NGramLanguageModel,
+                                            TextProcessor
+                                            )
 
 
 def main() -> None:
@@ -21,7 +23,13 @@ def main() -> None:
     print(encoded_text)
     decoded_text = processor.decode(encoded_text)
     print(decoded_text)
-    result = decoded_text
+    model = NGramLanguageModel(encoded_text, 7)
+    frequency = model.build()
+    print(frequency)
+    greedy_generator = GreedyTextGenerator(model, processor)
+    result_greedy_generator = greedy_generator.run(51, 'Vernon')
+    print(result_greedy_generator)
+    result = result_greedy_generator
     assert result
 
 if __name__ == "__main__":
