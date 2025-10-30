@@ -24,6 +24,9 @@ class TextProcessor:
         Args:
             end_of_word_token (str): A token denoting word boundary
         """
+        self._end_of_word_token = "_"
+        self._storage = {"_": 0}
+
 
     def _tokenize(self, text: str) -> tuple[str, ...] | None:
         """
@@ -42,6 +45,26 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(text, str):
+            return None
+        #tokenized_text = list(text.lower().replace(" ", "_").replace("\t", "_").replace("\n", "_"))
+        tokenized_text = list("_".join(text.lower().split()))
+        if tokenized_text[len(tokenized_text) - 1] in ".,-?!:;":
+            tokenized_text[len(tokenized_text) - 1] = "_"
+        for index, symbol in enumerate(tokenized_text):
+            if symbol in "234567890.?!,:;-":
+                tokenized_text[index] = "1"
+        while "1" in tokenized_text:
+            tokenized_text.remove("1")
+        for index, symbol in enumerate(tokenized_text):
+            if tokenized_text[index] == "_" and tokenized_text[index + 1] == "_":
+                tokenized_text[index] = "1"
+        while "1" in tokenized_text:
+            tokenized_text.remove("1")
+        if tokenized_text is None or tokenized_text == ():
+            return None
+        return tuple(tokenized_text)
+
 
     def get_id(self, element: str) -> int | None:
         """
