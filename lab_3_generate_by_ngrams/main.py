@@ -7,6 +7,7 @@ Beam-search and natural language generation evaluation
 # pylint:disable=too-few-public-methods, unused-import
 import json
 
+
 class TextProcessor:
     """
     Handle text tokenization, encoding and decoding.
@@ -368,6 +369,8 @@ class GreedyTextGenerator:
             language_model (NGramLanguageModel): A language model to use for text generation
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
         """
+        self._model = language_model
+        self._text_processor = text_processor
 
     def run(self, seq_len: int, prompt: str) -> str | None:
         """
@@ -383,6 +386,25 @@ class GreedyTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
+        if (
+            not isinstance(seq_len, int)
+            or not isinstance(prompt, str)
+            or not prompt
+            ):
+            return None
+        seq = self._text_processor.encode(prompt)
+        n_gram_size = self._model.get_n_gram_size()
+        if not seq or not n_gram_size:
+            return None
+        for _ in range(seq_len):
+            next_tokens = self._model.generate_next_token(seq[-(n_gram_size + 1):])
+            if not next_tokens:
+                return self._text_processor.decode(seq)
+            next_token = sorted(next_tokens.items(),
+                                key=lambda item: (item[1], item[0]),
+                                reverse=True)[0][0]
+            seq += (next_token,)
+        return self._text_processor.decode(seq)
 
 
 class BeamSearcher:
