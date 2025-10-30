@@ -17,15 +17,15 @@ class TextProcessor:
         _storage (dict): Dictionary in the form of <token: identifier>
     """
 
-    def __init__(self, end_of_word_token: str) -> None:
+    def __init__(self, _end_of_word_token: str) -> None:
         """
         Initialize an instance of LetterStorage.
 
         Args:
             end_of_word_token (str): A token denoting word boundary
         """
-        self.end_of_word_token = end_of_word_token
-        self._storage = {self.end_of_word_token: 0}
+        self._end_of_word_token = _end_of_word_token
+        self._storage = {self._end_of_word_token: 0}
 
     def _tokenize(self, text: str) -> tuple[str, ...] | None:
         """
@@ -52,15 +52,15 @@ class TextProcessor:
             cleaned_word = ''.join(symbol for symbol in word if symbol.isalpha())
             for el in ["-", "'"]:
                 if el in cleaned_word:
-                    cleaned_word = cleaned_word.replace(el, self.end_of_word_token)
+                    cleaned_word = cleaned_word.replace(el, self._end_of_word_token)
             if cleaned_word:
                 tokens.append(cleaned_word)
-        tokens = self.end_of_word_token.join(word for word in tokens)
+        tokens = self._end_of_word_token.join(word for word in tokens)
         tokens = [symbol for symbol in tokens]
         if not tokens:
             return None
-        if tokens[-1] != self.end_of_word_token:
-            tokens.append(self.end_of_word_token)
+        if tokens[-1] != self._end_of_word_token:
+            tokens.append(self._end_of_word_token)
         return tuple(tokens)
 
     def get_id(self, element: str) -> int | None:
@@ -91,6 +91,7 @@ class TextProcessor:
         Returns:
             str: EoW token
         """
+        return self._end_of_word_token
 
     def get_token(self, element_id: int) -> str | None:
         """
@@ -157,7 +158,7 @@ class TextProcessor:
         """
         if not isinstance(element, str) or len(element) != 1:
             return None
-        if element not in self._storage and element != self.end_of_word_token:
+        if element not in self._storage and element != self._end_of_word_token:
             self._storage[element] = len(self._storage)
         return None
 
@@ -177,6 +178,16 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if (not isinstance(encoded_corpus, tuple) or
+            not all(isinstance(i, int) for i in encoded_corpus)):
+            return None
+        decoded_corpus = self._decode(encoded_corpus)
+        if not decoded_corpus:
+            return None
+        decoded_corpus = self._postprocess_decoded_text(decoded_corpus)
+        if not decoded_corpus:
+            return None
+        return decoded_corpus
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
@@ -236,7 +247,7 @@ class TextProcessor:
         for i, el in enumerate(decoded_corpus):
             if i == 0:
                 el = el.upper()
-            if el == self.end_of_word_token:
+            if el == self._end_of_word_token:
                 el = " "
             text.append(el)
         if text[-1] == " ":

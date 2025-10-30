@@ -12,16 +12,18 @@ def main() -> None:
 
     In any case returns, None is returned
     """
-    with open("lab_3_generate_by_ngrams/assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
+    with open("assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
 
     processor = TextProcessor(end_of_word_token="_")
-    tokenized_text = processor._tokenize(text)
-    for token in tokenized_text:
-        processor._storage = processor._put(token)
-    result = processor._storage
-    print("_storage =", processor._storage)
-    print(result)
+    encoded_text = processor.encode(text)
+    print("Encoded text: ", encoded_text)
+    print()
+    decoded_text = processor.decode(encoded_text)
+    print("Decoded text: ", decoded_text)
+    print()
+    print("End of word token: ", processor.end_of_word_token)
+    result = decoded_text
     assert result, "Result is None"
 
 
