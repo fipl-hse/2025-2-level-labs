@@ -3,7 +3,8 @@ Generation by NGrams starter
 """
 
 # pylint:disable=unused-import, unused-variable
-from lab_3_generate_by_ngrams.main import TextProcessor, NGramLanguageModel
+from lab_3_generate_by_ngrams.main import GreedyTextGenerator, NGramLanguageModel, TextProcessor
+
 
 def main() -> None:
     """
@@ -22,7 +23,12 @@ def main() -> None:
     if build_result == 0:
         n_gram_freq_dict = n_gram_model._n_gram_frequencies
     print(n_gram_freq_dict)
-    result = n_gram_freq_dict
+    generator_model = NGramLanguageModel(encoded_text, 7)
+    generator_model.build()
+    greedy_generator = GreedyTextGenerator(generator_model, processor)
+    greedy_algorithm = greedy_generator.run(51, 'Vernon')
+    print(greedy_algorithm)
+    result = greedy_algorithm
     assert result
 
 
