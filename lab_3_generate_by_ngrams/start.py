@@ -3,7 +3,7 @@ Generation by NGrams starter
 """
 
 # pylint:disable=unused-import, unused-variable
-from main import TextProcessor
+from main import NGramLanguageModel, TextProcessor
 
 
 def main() -> None:
@@ -23,7 +23,10 @@ def main() -> None:
     print("Decoded text: ", decoded_text)
     print()
     print("End of word token: ", processor._end_of_word_token)
-    result = decoded_text
+    n_gram_processor = NGramLanguageModel(encoded_text[:300], 3)
+
+    result = n_gram_processor.build()
+    print(result)
     assert result, "Result is None"
 
 
