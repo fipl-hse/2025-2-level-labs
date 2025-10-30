@@ -224,23 +224,20 @@ class TextProcessor:
 
         In case of corrupt input arguments, None is returned
         """
-        if not isinstance(decoded_corpus, tuple) and decoded_corpus != None:
+        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
-        if not decoded_corpus:
-            return None
-        encoded_text = ""
-        for i, j in enumerate(decoded_corpus):
-            if i == len(decoded_corpus) - 1 and j == "_":
-                encoded_text += "."
+        decoded_text = ""
+        for j, i in enumerate(decoded_corpus):
+            if j == 0:
+                decoded_text += i.upper()
                 continue
-            if j == "_":
-                encoded_text += " "
+            if i == self._end_of_word_token:
+                decoded_text += " "
                 continue
-            if i == 0:
-                encoded_text += j.upper()
-            else:
-                encoded_text += j
-        return encoded_text
+            decoded_text += i
+        decoded_text = decoded_text.strip()
+        decoded_text += "."
+        return decoded_text
 
 class NGramLanguageModel:
     """
@@ -413,7 +410,20 @@ class GreedyTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-
+        if not isinstance(seq_len, int) or not isinstance(prompt, str):
+            return None
+        encoded = self._text_processor.encode(prompt)
+        if encoded is None:
+            return None
+        sequence = list(encoded)
+        for _ in range(seq_len):
+            context = tuple(sequence[-(self._model.get_n_gram_size()-1):])
+            candidates = self._model.generate_next_token(context)
+            if not candidates:
+                break
+            token = max(candidates, key=lambda token: (candidates[token], token))
+            sequence.append(token)
+        return self._text_processor.decode(tuple(sequence))
 class BeamSearcher:
     """
     Beam Search algorithm for diverse text generation.
@@ -422,6 +432,8 @@ class BeamSearcher:
         _beam_width (int): Number of candidates to consider at each step
         _model (NGramLanguageModel): A language model to use for next token prediction
     """
+    _beam_width = 0
+    _model = None
 
     def __init__(self, beam_width: int, language_model: NGramLanguageModel) -> None:
         """
@@ -431,6 +443,8 @@ class BeamSearcher:
             beam_width (int): Number of candidates to consider at each step
             language_model (NGramLanguageModel): A language model to use for next token prediction
         """
+        self._beam_width = beam_width
+        self._model = language_model
 
     def get_next_token(self, sequence: tuple[int, ...]) -> list[tuple[int, float]] | None:
         """
@@ -450,7 +464,6 @@ class BeamSearcher:
 
         In case of corrupt input arguments or methods used return None.
         """
-
     def continue_sequence(
         self,
         sequence: tuple[int, ...],
