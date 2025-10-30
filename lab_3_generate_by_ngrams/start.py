@@ -15,14 +15,14 @@ def main() -> None:
     with open("assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
 
-    processor = TextProcessor(end_of_word_token="_")
+    processor = TextProcessor(_end_of_word_token="_")
     encoded_text = processor.encode(text)
     print("Encoded text: ", encoded_text)
     print()
     decoded_text = processor.decode(encoded_text)
     print("Decoded text: ", decoded_text)
     print()
-    print("End of word token: ", processor.end_of_word_token)
+    print("End of word token: ", processor._end_of_word_token)
     result = decoded_text
     assert result, "Result is None"
 
