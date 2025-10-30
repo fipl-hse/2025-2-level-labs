@@ -410,7 +410,7 @@ class GreedyTextGenerator:
         """
         if not isinstance(seq_len, int) or not isinstance(prompt, str):
             return None
-        encoded_prompt = self._text_processor.encode(prompt) # tuple[int...]
+        encoded_prompt = self._text_processor.encode(prompt)
         if not encoded_prompt:
             return None
         sequence = list(encoded_prompt)
