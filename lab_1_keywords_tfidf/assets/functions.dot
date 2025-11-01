@@ -1,0 +1,31 @@
+digraph FunctionDependencies {
+  rankdir="LR";
+  node [shape=box, style=filled, fillcolor="#E0F0FF"];
+  main [label="main.py", shape=folder, fillcolor="#FFE0E0"];
+  "calculate_chi_values" [label="calculate_chi_values()"];
+  main -> "calculate_chi_values";
+  "calculate_expected_frequency" [label="calculate_expected_frequency()"];
+  main -> "calculate_expected_frequency";
+  "calculate_frequencies" [label="calculate_frequencies()"];
+  main -> "calculate_frequencies";
+  "calculate_tf" [label="calculate_tf()"];
+  main -> "calculate_tf";
+  "calculate_tfidf" [label="calculate_tfidf()"];
+  main -> "calculate_tfidf";
+  "check_dict" [label="check_dict()"];
+  main -> "check_dict";
+  "check_float" [label="check_float()"];
+  main -> "check_float";
+  "check_list" [label="check_list()"];
+  main -> "check_list";
+  "check_positive_int" [label="check_positive_int()"];
+  main -> "check_positive_int";
+  "clean_and_tokenize" [label="clean_and_tokenize()"];
+  main -> "clean_and_tokenize";
+  "extract_significant_words" [label="extract_significant_words()"];
+  main -> "extract_significant_words";
+  "get_top_n" [label="get_top_n()"];
+  main -> "get_top_n";
+  "remove_stop_words" [label="remove_stop_words()"];
+  main -> "remove_stop_words";
+}
