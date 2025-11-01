@@ -18,7 +18,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_winkler_distance_ideal(self):
+    def test_calculate_jaro_winkler_distance_ideal(self) -> None:
         """
         Ideal scenario
         """
@@ -28,7 +28,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_winkler_distance_whole_word(self):
+    def test_calculate_jaro_winkler_distance_whole_word(self) -> None:
         """
         Ideal scenario
         """
@@ -38,7 +38,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_winkler_distance_no_prefix(self):
+    def test_calculate_jaro_winkler_distance_no_prefix(self) -> None:
         """
         Ideal scenario
         """
@@ -48,7 +48,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_winkler_distance_bad_input(self):
+    def test_calculate_jaro_winkler_distance_bad_input(self) -> None:
         """
         Bad input argument scenario
         """
@@ -68,7 +68,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_winkler_distance_value_check(self):
+    def test_calculate_jaro_winkler_distance_value_check(self) -> None:
         """
         Check returned value
         """
@@ -76,7 +76,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_winkler_distance_empty_strings(self):
+    def test_calculate_jaro_winkler_distance_empty_strings(self) -> None:
         """
         Scenario with empty strings
         """
@@ -86,7 +86,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_winkler_distance_zero_matches(self):
+    def test_calculate_jaro_winkler_distance_zero_matches(self) -> None:
         """
         Zero matches scenario
         """
@@ -94,7 +94,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_winkler_distance_matches_none(self):
+    def test_calculate_jaro_winkler_distance_matches_none(self) -> None:
         """
         Case of matches function returning None
         """
@@ -104,7 +104,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_winkler_distance_transpositions_none(self):
+    def test_calculate_jaro_winkler_distance_transpositions_none(self) -> None:
         """
         Case of transpositions count function returning None
         """
@@ -114,7 +114,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_winkler_distance_jaro_distance_none(self):
+    def test_calculate_jaro_winkler_distance_jaro_distance_none(self) -> None:
         """
         Case of jaro distance function returning None
         """
@@ -124,7 +124,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_winkler_distance_adjustment_none(self):
+    def test_calculate_jaro_winkler_distance_adjustment_none(self) -> None:
         """
         Case of Winkler adjustment function returning None
         """
