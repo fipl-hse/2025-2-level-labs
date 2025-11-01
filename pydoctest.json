@@ -4,12 +4,6 @@
         "**/*.py"
     ],
     "exclude_paths": [
-        "lab_1_keywords_tfidf/**/*.py",
-        "lab_1_keywords_tfidf\\**\\*.py",
-        "lab_1_keywords_tfidf/assets/freq_and_idf_dictionary_creation.py",
-        "lab_1_keywords_tfidf\\assets\\freq_and_idf_dictionary_creation.py",
-        "lab_2_spellcheck/**/*.py",
-        "lab_2_spellcheck\\**\\*.py",
         "seminars/**/*.py",
         "seminars\\**\\*.py",
         "config/**/*.py",
@@ -20,5 +14,6 @@
     ],
     "fail_on_missing_docstring": true,
     "fail_on_missing_summary": true,
-    "fail_on_raises_section": false
+    "fail_on_raises_section": false,
+    "verbosity": 2
 }
