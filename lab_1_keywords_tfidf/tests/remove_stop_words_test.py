@@ -21,7 +21,7 @@ class RemoveStopWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_remove_stop_words_ideal(self):
+    def test_remove_stop_words_ideal(self) -> None:
         """
         Ideal removing stop words scenario
         """
@@ -37,7 +37,7 @@ class RemoveStopWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_remove_stop_words_bad_input(self):
+    def test_remove_stop_words_bad_input(self) -> None:
         """
         Remove stop words bad input scenario
         """
@@ -57,7 +57,7 @@ class RemoveStopWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_remove_stop_words_no_stop_words(self):
+    def test_remove_stop_words_no_stop_words(self) -> None:
         """
         Remove stop words without stop words scenario
         """
@@ -70,7 +70,7 @@ class RemoveStopWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_remove_stop_words_all_words(self):
+    def test_remove_stop_words_all_words(self) -> None:
         """
         Remove stop words as the whole text scenario
         """
