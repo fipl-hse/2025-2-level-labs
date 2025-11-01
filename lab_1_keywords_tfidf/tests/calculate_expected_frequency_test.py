@@ -16,7 +16,7 @@ class CalculateExpectedFrequencyTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_expected_frequency_ideal(self):
+    def test_calculate_expected_frequency_ideal(self) -> None:
         """
         Ideal calculate expected frequency scenario
         """
@@ -64,7 +64,7 @@ class CalculateExpectedFrequencyTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_expected_frequency_no_tf_doc(self):
+    def test_calculate_expected_frequency_no_tf_doc(self) -> None:
         """
         calculate expected frequency, empty tf_doc
         """
@@ -90,7 +90,7 @@ class CalculateExpectedFrequencyTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_expected_frequency_no_tf_corpus(self):
+    def test_calculate_expected_frequency_no_tf_corpus(self) -> None:
         """
         calculate expected frequency, empty tf_corpus
         """
@@ -127,7 +127,7 @@ class CalculateExpectedFrequencyTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_expected_frequency_bad_input(self):
+    def test_calculate_expected_frequency_bad_input(self) -> None:
         """
         calculate expected frequency invalid input
         """
@@ -143,7 +143,7 @@ class CalculateExpectedFrequencyTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_expected_frequency_containing_bad_input(self):
+    def test_calculate_expected_frequency_containing_bad_input(self) -> None:
         """
         calculate expected frequency scenario with tf_doc containing bad input
         """
@@ -181,7 +181,7 @@ class CalculateExpectedFrequencyTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_expected_frequency_no_tf_for_term(self):
+    def test_calculate_expected_frequency_no_tf_for_term(self) -> None:
         """
         calculate expected frequency when no tf in corpus
         """

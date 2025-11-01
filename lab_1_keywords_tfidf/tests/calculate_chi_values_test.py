@@ -16,7 +16,7 @@ class CalculateChiValuesTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_ideal(self):
+    def test_calculate_chi_values_ideal(self) -> None:
         """
         Ideal calculate chi values scenario
         """
@@ -31,7 +31,7 @@ class CalculateChiValuesTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_no_tf_doc(self):
+    def test_calculate_chi_values_no_tf_doc(self) -> None:
         """
         calculate chi values, empty expected
         """
@@ -46,7 +46,7 @@ class CalculateChiValuesTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_no_tf_corpus(self):
+    def test_calculate_chi_values_no_tf_corpus(self) -> None:
         """
         calculate chi values, empty observed
         """
@@ -61,7 +61,7 @@ class CalculateChiValuesTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_bad_input(self):
+    def test_calculate_chi_values_bad_input(self) -> None:
         """
         calculate chi values invalid input
         """
@@ -77,7 +77,7 @@ class CalculateChiValuesTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_expected_containing_bad_input(self):
+    def test_calculate_chi_values_expected_containing_bad_input(self) -> None:
         """
         calculate chi values scenario with expected containing bad input
         """
@@ -100,7 +100,7 @@ class CalculateChiValuesTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_observed_containing_bad_input(self):
+    def test_calculate_chi_values_observed_containing_bad_input(self) -> None:
         """
         calculate chi values scenario with observed containing bad input
         """
