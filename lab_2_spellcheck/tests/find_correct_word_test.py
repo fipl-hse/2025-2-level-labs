@@ -16,6 +16,9 @@ class FindCorrectWordTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        """
+        Set up for word search tests class.
+        """
         self.vocabulary = {
             "35": 0.04,
             "across": 0.08,
@@ -47,7 +50,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_bad_input(self):
+    def test_find_correct_word_bad_input(self) -> None:
         """
         Bad input scenario
         """
@@ -81,7 +84,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_return_check(self):
+    def test_find_correct_word_return_check(self) -> None:
         """
         Check return value
         """
@@ -93,7 +96,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_by_jaccard(self):
+    def test_find_correct_word_by_jaccard(self) -> None:
         """
         Jaccard distance metric scenario
         """
@@ -106,7 +109,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_by_frequency(self):
+    def test_find_correct_word_by_frequency(self) -> None:
         """
         Frequency distance metric scenario
         """
@@ -121,7 +124,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_by_levenshtein(self):
+    def test_find_correct_word_by_levenshtein(self) -> None:
         """
         Levenshtein distance metric scenario
         """
@@ -132,7 +135,7 @@ class FindCorrectWordTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_find_correct_word_by_jaro_winkler(self):
+    def test_find_correct_word_by_jaro_winkler(self) -> None:
         """
         Jaro-Winkler distance metric scenario
         """
@@ -146,7 +149,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_calculate_distance_none(self):
+    def test_find_correct_word_calculate_distance_none(self) -> None:
         """
         Calculate distance function returning None scenario
         """
@@ -159,7 +162,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_by_frequency_several_candidates(self):
+    def test_find_correct_word_by_frequency_several_candidates(self) -> None:
         """
         Case of several candidates being close.
         """
