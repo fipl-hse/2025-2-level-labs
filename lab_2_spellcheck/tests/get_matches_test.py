@@ -16,7 +16,7 @@ class GetMatchesTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_get_matches_distance_ideal(self):
+    def test_get_matches_distance_ideal(self) -> None:
         """
         Ideal scenario for getting matches
         """
@@ -41,7 +41,7 @@ class GetMatchesTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_get_matches_small_distance(self):
+    def test_get_matches_small_distance(self) -> None:
         """
         Ideal scenario for getting matches when the match distance is small
         """
@@ -66,7 +66,7 @@ class GetMatchesTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_get_matches_value_check(self):
+    def test_get_matches_value_check(self) -> None:
         """
         Check returned values
         """
@@ -82,7 +82,7 @@ class GetMatchesTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_get_matches_bad_input(self):
+    def test_get_matches_bad_input(self) -> None:
         """
         Bad input argument scenario
         """
@@ -100,7 +100,7 @@ class GetMatchesTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_get_matches_match_distance_zero(self):
+    def test_get_matches_match_distance_zero(self) -> None:
         """
         Zero match distance scenario
         """
@@ -112,7 +112,7 @@ class GetMatchesTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_get_matches_empty_string(self):
+    def test_get_matches_empty_string(self) -> None:
         """
         Check return value for the empty string input
         """
