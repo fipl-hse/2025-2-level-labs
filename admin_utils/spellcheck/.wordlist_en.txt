@@ -42,6 +42,7 @@ greedytextgeneratortest
 https
 idf
 init
+inv
 iterable
 jaccard
 jaro
@@ -62,6 +63,7 @@ ngramlanguagemodelreader
 ngramlanguagemodelreadertest
 ngramlanguagemodeltest
 ngrams
+ngramtrie
 oov
 parametersmodel
 pathlib

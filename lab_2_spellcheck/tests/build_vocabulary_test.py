@@ -18,6 +18,9 @@ class BuildVocabularyTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        """
+        Set up for vocabulary build tests class.
+        """
         self.documents = {
             "texts": [
                 "There was a boy. He was smart and kind. He had a cat.",
@@ -60,7 +63,7 @@ class BuildVocabularyTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_build_vocabulary_ideal(self):
+    def test_build_vocabulary_ideal(self) -> None:
         """
         Ideal scenario
         """
@@ -94,7 +97,7 @@ class BuildVocabularyTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_build_vocabulary_bad_input(self):
+    def test_build_vocabulary_bad_input(self) -> None:
         """
         Bad input scenario
         """
@@ -110,7 +113,7 @@ class BuildVocabularyTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_build_vocabulary_return_value(self):
+    def test_build_vocabulary_return_value(self) -> None:
         """
         Function return value check
         """
