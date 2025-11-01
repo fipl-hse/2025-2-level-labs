@@ -18,7 +18,7 @@ class GetTopNWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_get_top_n_ideal(self):
+    def test_get_top_n_ideal(self) -> None:
         """
         Ideal get top number of words scenario
         """
@@ -30,7 +30,7 @@ class GetTopNWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_get_top_n_same_frequency(self):
+    def test_get_top_n_same_frequency(self) -> None:
         """
         Get top number of words with the same frequency check
         """
@@ -45,7 +45,7 @@ class GetTopNWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_get_top_n_more_number(self):
+    def test_get_top_n_more_number(self) -> None:
         """
         Get top number of words with bigger number of words than in dictionary
         """
@@ -57,7 +57,7 @@ class GetTopNWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_get_top_n_bad_inputs(self):
+    def test_get_top_n_bad_inputs(self) -> None:
         """
         Get top number of words with bad argument inputs
         """
@@ -77,7 +77,7 @@ class GetTopNWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_get_top_n_empty(self):
+    def test_get_top_n_empty(self) -> None:
         """
         Get top number of words with empty arguments
         """
@@ -89,7 +89,7 @@ class GetTopNWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_get_top_n_incorrect_numbers(self):
+    def test_get_top_n_incorrect_numbers(self) -> None:
         """
         Get top number of words using incorrect number of words parameter
         """
