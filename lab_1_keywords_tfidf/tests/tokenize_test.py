@@ -19,7 +19,7 @@ class TokenizeTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_tokenize_ideal(self):
+    def test_tokenize_ideal(self) -> None:
         """
         Ideal tokenize scenario
         """
@@ -32,7 +32,7 @@ class TokenizeTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_tokenize_punctuation_marks(self):
+    def test_tokenize_punctuation_marks(self) -> None:
         """
         Tokenize text with different punctuation marks
         """
@@ -45,7 +45,7 @@ class TokenizeTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_tokenize_dirty_text(self):
+    def test_tokenize_dirty_text(self) -> None:
         """
         Tokenize dirty text
         """
@@ -58,7 +58,7 @@ class TokenizeTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_tokenize_with_numbers(self):
+    def test_tokenize_with_numbers(self) -> None:
         """
         Tokenize text with several parts with numbers
         """
@@ -84,7 +84,7 @@ class TokenizeTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_tokenize_bad_input(self):
+    def test_tokenize_bad_input(self) -> None:
         """
         Tokenize bad input argument scenario
         """
