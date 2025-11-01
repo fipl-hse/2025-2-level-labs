@@ -18,7 +18,7 @@ class CalculateFrequenciesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequencies_ideal(self):
+    def test_calculate_frequencies_ideal(self) -> None:
         """
         Ideal calculate frequencies scenario
         """
@@ -30,7 +30,7 @@ class CalculateFrequenciesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequencies_complex(self):
+    def test_calculate_frequencies_complex(self) -> None:
         """
         Calculate frequencies with several same tokens
         """
@@ -42,7 +42,7 @@ class CalculateFrequenciesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequencies_bad_input(self):
+    def test_calculate_frequencies_bad_input(self) -> None:
         """
         Calculate frequencies invalid input tokens check
         """
@@ -56,7 +56,7 @@ class CalculateFrequenciesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequencies_return_value(self):
+    def test_calculate_frequencies_return_value(self) -> None:
         """
         Calculate frequencies return values check
         """

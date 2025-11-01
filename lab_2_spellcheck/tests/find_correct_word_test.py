@@ -16,6 +16,9 @@ class FindCorrectWordTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        """
+        Set up for word search tests class.
+        """
         self.vocabulary = {
             "35": 0.04,
             "across": 0.08,
@@ -40,13 +43,14 @@ class FindCorrectWordTest(unittest.TestCase):
         self.expected = ["boy", "street", "coffee", "cat"]
 
         self.methods = ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        self.alphabet_en = list("abcdefghijklmnopqrstuvwxyz")
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark4
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_bad_input(self):
+    def test_find_correct_word_bad_input(self) -> None:
         """
         Bad input scenario
         """
@@ -80,7 +84,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_return_check(self):
+    def test_find_correct_word_return_check(self) -> None:
         """
         Check return value
         """
@@ -92,7 +96,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_by_jaccard(self):
+    def test_find_correct_word_by_jaccard(self) -> None:
         """
         Jaccard distance metric scenario
         """
@@ -105,21 +109,22 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_by_frequency(self):
+    def test_find_correct_word_by_frequency(self) -> None:
         """
         Frequency distance metric scenario
         """
-        alphabet_en = list("abcdefghijklmnopqrstuvwxyz")
         for misspelled_token, expected_word in zip(self.misspelled, self.expected):
             self.assertEqual(
-                find_correct_word(misspelled_token, self.vocabulary, self.methods[1], alphabet_en),
+                find_correct_word(
+                    misspelled_token, self.vocabulary, self.methods[1], self.alphabet_en
+                ),
                 expected_word,
             )
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_by_levenshtein(self):
+    def test_find_correct_word_by_levenshtein(self) -> None:
         """
         Levenshtein distance metric scenario
         """
@@ -130,7 +135,7 @@ class FindCorrectWordTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_find_correct_word_by_jaro_winkler(self):
+    def test_find_correct_word_by_jaro_winkler(self) -> None:
         """
         Jaro-Winkler distance metric scenario
         """
@@ -144,7 +149,7 @@ class FindCorrectWordTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_correct_word_calculate_distance_none(self):
+    def test_find_correct_word_calculate_distance_none(self) -> None:
         """
         Calculate distance function returning None scenario
         """
@@ -152,3 +157,17 @@ class FindCorrectWordTest(unittest.TestCase):
             result = find_correct_word("word", self.vocabulary, self.methods[0])
 
         self.assertIsNone(result)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_find_correct_word_by_frequency_several_candidates(self) -> None:
+        """
+        Case of several candidates being close.
+        """
+        actual = find_correct_word("laved", self.vocabulary, "frequency-based", self.alphabet_en)
+        # there are several non 1.0 candidates in the dictionary:
+        # "lived": 0.96, "loved": 0.92, "named": 0.96
+        # "loved" is the closest by distance
+        self.assertEqual("loved", actual)

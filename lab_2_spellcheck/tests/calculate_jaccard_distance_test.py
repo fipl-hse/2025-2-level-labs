@@ -20,7 +20,7 @@ class CalculateJaccardDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_jaccard_distance_ideal(self):
+    def test_calculate_jaccard_distance_ideal(self) -> None:
         """
         Ideal scenario
         """
@@ -36,7 +36,7 @@ class CalculateJaccardDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_jaccard_distance_bad_input(self):
+    def test_calculate_jaccard_distance_bad_input(self) -> None:
         """
         Bad input argument scenario
         """
@@ -50,7 +50,7 @@ class CalculateJaccardDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_jaccard_distance_value_check(self):
+    def test_calculate_jaccard_distance_value_check(self) -> None:
         """
         Check returned value
         """
@@ -61,7 +61,7 @@ class CalculateJaccardDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_jaccard_distance_empty_string(self):
+    def test_calculate_jaccard_distance_empty_string(self) -> None:
         """
         Check return value for the empty string input
         """

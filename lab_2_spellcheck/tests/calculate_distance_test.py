@@ -19,6 +19,9 @@ class CalculateDistanceTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        """
+        Set up for distance calculation tests class.
+        """
         self.vocabulary = {
             "35": 0.04,
             "across": 0.08,
@@ -50,7 +53,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_bad_input(self):
+    def test_calculate_distance_bad_input(self) -> None:
         """
         Bad input scenario
         """
@@ -76,7 +79,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_return_check(self):
+    def test_calculate_distance_return_check(self) -> None:
         """
         Check return value
         """
@@ -92,7 +95,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_by_jaccard(self):
+    def test_calculate_distance_by_jaccard(self) -> None:
         """
         Jaccard distance metric scenario
         """
@@ -183,7 +186,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_by_frequency(self):
+    def test_calculate_distance_by_frequency(self) -> None:
         """
         Frequency distance metric scenario
         """
@@ -191,7 +194,7 @@ class CalculateDistanceTest(unittest.TestCase):
             {
                 "35": 1.0,
                 "across": 1.0,
-                "boy": 0.04,
+                "boy": 0.96,
                 "cat": 1.0,
                 "coffee": 1.0,
                 "friend": 1.0,
@@ -224,14 +227,14 @@ class CalculateDistanceTest(unittest.TestCase):
                 "smart": 1.0,
                 "stories": 1.0,
                 "stories101": 1.0,
-                "street": 0.08,
+                "street": 0.92,
             },
             {
                 "35": 1.0,
                 "across": 1.0,
                 "boy": 1.0,
                 "cat": 1.0,
-                "coffee": 0.04,
+                "coffee": 0.96,
                 "friend": 1.0,
                 "kind": 1.0,
                 "library": 1.0,
@@ -249,7 +252,7 @@ class CalculateDistanceTest(unittest.TestCase):
                 "35": 1.0,
                 "across": 1.0,
                 "boy": 1.0,
-                "cat": 0.16,
+                "cat": 0.84,
                 "coffee": 1.0,
                 "friend": 1.0,
                 "kind": 1.0,
@@ -276,7 +279,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_by_levenshtein(self):
+    def test_calculate_distance_by_levenshtein(self) -> None:
         """
         Levenshtein distance scenario
         """
@@ -365,7 +368,7 @@ class CalculateDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_distance_by_jaro_winkler(self):
+    def test_calculate_distance_by_jaro_winkler(self) -> None:
         """
         Jaro-Winkler distance scenario
         """
@@ -457,7 +460,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_jaccard_none(self):
+    def test_calculate_distance_jaccard_none(self) -> None:
         """
         Jaccard distance metric returning None scenario
         """
@@ -470,7 +473,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_frequency_none(self):
+    def test_calculate_distance_frequency_none(self) -> None:
         """
         Frequency distance metric returning None scenario
         """
@@ -482,7 +485,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_levenshtein_none(self):
+    def test_calculate_distance_levenshtein_none(self) -> None:
         """
         Levenshtein distance returning None scenario
         """
@@ -493,7 +496,7 @@ class CalculateDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_distance_jaro_winkler_none(self):
+    def test_calculate_distance_jaro_winkler_none(self) -> None:
         """
         Jaro-Winkler distance returning None scenario
         """
@@ -506,7 +509,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_frequency_no_alphabet(self):
+    def test_calculate_distance_frequency_no_alphabet(self) -> None:
         """
         Frequency distance metric scenario with no alphabet passed
         """
@@ -516,3 +519,34 @@ class CalculateDistanceTest(unittest.TestCase):
         self.assertDictEqual(result, expected)
         for token, value in result.items():
             self.assertAlmostEqual(expected[token], value)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_distance_frequency_several_candidates(self) -> None:
+        """
+        Case of several candidates being close
+        """
+        expected = {
+            "35": 1.0,
+            "across": 1.0,
+            "boy": 1.0,
+            "cat": 1.0,
+            "coffee": 1.0,
+            "friend": 1.0,
+            "kind": 1.0,
+            "library": 1.0,
+            "lived": 0.96,
+            "loved": 0.92,
+            "named": 0.96,
+            "opened": 1.0,
+            "shops": 1.0,
+            "smart": 1.0,
+            "stories": 1.0,
+            "stories101": 1.0,
+            "street": 1.0,
+        }
+        actual = calculate_distance("laved", self.vocabulary, self.methods[1], self.alphabet)
+        for token, freq in actual.items():
+            self.assertAlmostEqual(expected[token], freq, FLOAT_TOLERANCE)

@@ -19,6 +19,9 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        """
+        Set up for frequency distance calculation tests class.
+        """
         self.alphabet = list("abcdefghijklmnopqrstuvwxyz")
 
         self.vocabulary = {
@@ -50,13 +53,13 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_ideal(self):
+    def test_calculate_frequency_distance_ideal(self) -> None:
         """
         Ideal scenario
         """
         for misspelled_word, correct_word in zip(self.misspelled, self.correct_words):
             expected_dict = dict(self.empty_dict)
-            expected_dict[correct_word] = self.vocabulary.get(correct_word, 0.0)
+            expected_dict[correct_word] = 1 - self.vocabulary.get(correct_word, 0.0)
 
             probable_words = calculate_frequency_distance(
                 misspelled_word, self.vocabulary, self.alphabet
@@ -69,7 +72,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_bad_input(self):
+    def test_calculate_frequency_distance_bad_input(self) -> None:
         """
         Bad input argument scenario
         """
@@ -90,7 +93,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_value_check(self):
+    def test_calculate_frequency_distance_value_check(self) -> None:
         """
         Check returned value
         """
@@ -104,7 +107,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_empty_string(self):
+    def test_calculate_frequency_distance_empty_string(self) -> None:
         """
         Check return value for the empty string input
         """
@@ -116,7 +119,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_empty_alphabet(self):
+    def test_calculate_frequency_distance_empty_alphabet(self) -> None:
         """
         Check return value for the empty string input
         """
@@ -124,7 +127,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
         actual = calculate_frequency_distance("libbrary", self.vocabulary, [])
         for token, score in actual.items():
             if token == "library":
-                self.assertAlmostEqual(score, 0.12, FLOAT_TOLERANCE)
+                self.assertAlmostEqual(score, 0.88, FLOAT_TOLERANCE)
             else:
                 self.assertAlmostEqual(score, 1.0, FLOAT_TOLERANCE)
 
@@ -132,9 +135,9 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_adjustment_none(self):
+    def test_calculate_frequency_distance_propose_candidates_none(self) -> None:
         """
-        Case of Winkler adjustment function returning None
+        Case of candidate proposal method returning None
         """
         with mock.patch("lab_2_spellcheck.main.propose_candidates", return_value=None):
             result = calculate_frequency_distance("boyi", self.vocabulary, [])
@@ -143,3 +146,34 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
 
         for token, value in result.items():
             self.assertAlmostEqual(self.empty_dict[token], value)
+
+    @pytest.mark.lab_2_spellcheck
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_calculate_frequency_distance_several_candidates(self) -> None:
+        """
+        Case of several candidates being close
+        """
+        expected = {
+            "35": 1.0,
+            "across": 1.0,
+            "boy": 1.0,
+            "cat": 1.0,
+            "coffee": 1.0,
+            "friend": 1.0,
+            "kind": 1.0,
+            "library": 1.0,
+            "lived": 0.96,
+            "loved": 0.92,
+            "named": 0.96,
+            "opened": 1.0,
+            "shops": 1.0,
+            "smart": 1.0,
+            "stories": 1.0,
+            "stories101": 1.0,
+            "street": 1.0,
+        }
+        actual = calculate_frequency_distance("laved", self.vocabulary, self.alphabet)
+        for token, freq in actual.items():
+            self.assertAlmostEqual(expected[token], freq, FLOAT_TOLERANCE)
