@@ -73,6 +73,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     return 1 - len(tok & cand)/len(tok | cand)
 
 
+
 def calculate_distance(
     first_token: str,
     vocabulary: dict[str, float],
@@ -502,6 +503,22 @@ def count_transpositions(
 
     if  len(token_matches) != len(token) or len(candidate_matches) != len(candidate):
         return None
+    
+    i = j = transpositions = 0
+
+    while i < len(token) and j < len(candidate):
+        while i < len(token) and not token_matches[i]:
+            i += 1
+        while j < len(candidate) and not candidate_matches[j]:
+            j += 1
+        if i >= len(token) or j >= len(candidate):
+            break
+        if token[i] != candidate[j]:
+            transpositions += 1
+        i += 1
+        j += 1
+    
+    return transpositions // 2
 
     token_match_els = []
     for i, el in enumerate(token):
