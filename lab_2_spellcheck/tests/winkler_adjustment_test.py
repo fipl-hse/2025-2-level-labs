@@ -17,7 +17,7 @@ class WinklerAdjustmentDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_winkler_adjustment_ideal(self):
+    def test_winkler_adjustment_ideal(self) -> None:
         """
         Ideal scenario
         """
@@ -27,7 +27,7 @@ class WinklerAdjustmentDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_winkler_adjustment_whole_word(self):
+    def test_winkler_adjustment_whole_word(self) -> None:
         """
         Ideal scenario
         """
@@ -37,7 +37,7 @@ class WinklerAdjustmentDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_winkler_adjustment_no_prefix(self):
+    def test_winkler_adjustment_no_prefix(self) -> None:
         """
         Ideal scenario
         """
@@ -47,7 +47,7 @@ class WinklerAdjustmentDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_winkler_adjustment_bad_input(self):
+    def test_winkler_adjustment_bad_input(self) -> None:
         """
         Bad input argument scenario
         """
@@ -65,7 +65,7 @@ class WinklerAdjustmentDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_winkler_adjustment_value_check(self):
+    def test_winkler_adjustment_value_check(self) -> None:
         """
         Check returned value
         """
