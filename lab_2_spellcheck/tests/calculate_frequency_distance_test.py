@@ -19,6 +19,9 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        """
+        Set up for frequency distance calculation tests class.
+        """
         self.alphabet = list("abcdefghijklmnopqrstuvwxyz")
 
         self.vocabulary = {
@@ -50,7 +53,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_ideal(self):
+    def test_calculate_frequency_distance_ideal(self) -> None:
         """
         Ideal scenario
         """
@@ -69,7 +72,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_bad_input(self):
+    def test_calculate_frequency_distance_bad_input(self) -> None:
         """
         Bad input argument scenario
         """
@@ -90,7 +93,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_value_check(self):
+    def test_calculate_frequency_distance_value_check(self) -> None:
         """
         Check returned value
         """
@@ -104,7 +107,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_empty_string(self):
+    def test_calculate_frequency_distance_empty_string(self) -> None:
         """
         Check return value for the empty string input
         """
@@ -116,7 +119,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_empty_alphabet(self):
+    def test_calculate_frequency_distance_empty_alphabet(self) -> None:
         """
         Check return value for the empty string input
         """
@@ -132,9 +135,9 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_adjustment_none(self):
+    def test_calculate_frequency_distance_propose_candidates_none(self) -> None:
         """
-        Case of Winkler adjustment function returning None
+        Case of candidate proposal method returning None
         """
         with mock.patch("lab_2_spellcheck.main.propose_candidates", return_value=None):
             result = calculate_frequency_distance("boyi", self.vocabulary, [])
@@ -148,7 +151,7 @@ class CalculateFrequencyDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_frequency_distance_several_candidates(self):
+    def test_calculate_frequency_distance_several_candidates(self) -> None:
         """
         Case of several candidates being close
         """

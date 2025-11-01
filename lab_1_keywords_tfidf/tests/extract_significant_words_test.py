@@ -16,7 +16,7 @@ class ExtractSignificantWordsTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_extract_significant_words_ideal(self):
+    def test_extract_significant_words_ideal(self) -> None:
         """
         Ideal extract significant words scenarios with different alpha values
         """
@@ -56,7 +56,7 @@ class ExtractSignificantWordsTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_extract_significant_words_no_words(self):
+    def test_extract_significant_words_no_words(self) -> None:
         """
         extract significant words, no words with smaller criterion
         """
@@ -71,7 +71,7 @@ class ExtractSignificantWordsTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_extract_significant_words_no_chi_values(self):
+    def test_extract_significant_words_no_chi_values(self) -> None:
         """
         extract significant words, empty chi values
         """
@@ -86,7 +86,7 @@ class ExtractSignificantWordsTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_extract_significant_words_no_critical_chi_value(self):
+    def test_extract_significant_words_no_critical_chi_value(self) -> None:
         """
         extract significant words with no corresponding critical chi value for alpha
         """
@@ -101,7 +101,7 @@ class ExtractSignificantWordsTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_extract_significant_words_bad_input(self):
+    def test_extract_significant_words_bad_input(self) -> None:
         """
         extract significant words invalid input
         """
@@ -117,7 +117,7 @@ class ExtractSignificantWordsTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_extract_significant_words_containing_bad_input(self):
+    def test_extract_significant_words_containing_bad_input(self) -> None:
         """
         extract significant words scenario with chi_values containing bad input
         """

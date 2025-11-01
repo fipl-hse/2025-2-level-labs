@@ -18,7 +18,7 @@ class CalculateTFIDFTest(unittest.TestCase):
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_tfidf_ideal(self):
+    def test_calculate_tfidf_ideal(self) -> None:
         """
         Ideal calculate tf-idf scenario
         """
@@ -66,7 +66,7 @@ class CalculateTFIDFTest(unittest.TestCase):
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_tfidf_no_tf(self):
+    def test_calculate_tfidf_no_tf(self) -> None:
         """
         calculate tf-idf, empty tf
         """
@@ -104,7 +104,7 @@ class CalculateTFIDFTest(unittest.TestCase):
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_tfidf_no_idf(self):
+    def test_calculate_tfidf_no_idf(self) -> None:
         """
         calculate tf-idf, empty idf
         """
@@ -130,7 +130,7 @@ class CalculateTFIDFTest(unittest.TestCase):
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_tfidf_bad_input(self):
+    def test_calculate_tfidf_bad_input(self) -> None:
         """
         calculate tf-idf invalid input
         """
@@ -147,7 +147,7 @@ class CalculateTFIDFTest(unittest.TestCase):
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_tfidf_containing_bad_input(self):
+    def test_calculate_tfidf_containing_bad_input(self) -> None:
         """
         calculate tf-idf scenario with text containing bad input
         """
@@ -196,7 +196,7 @@ class CalculateTFIDFTest(unittest.TestCase):
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_tfidf_no_idf_for_term(self):
+    def test_calculate_tfidf_no_idf_for_term(self) -> None:
         """
         calculate tf-idf when no idf for a term
         """
