@@ -14,7 +14,10 @@ class CountTranspositionsTest(unittest.TestCase):
     Tests function for counting transpositions.
     """
 
-    def setUp(self):
+    def setUp(self) -> None:
+        """
+        Set up for transpositions counting tests class.
+        """
         self.matches = {
             "word": (4, [True, True, True, True], [True, True, True, True]),
             "ord": (3, [True, True, True], [False, True, True, True]),
@@ -31,7 +34,7 @@ class CountTranspositionsTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_get_count_transpositions_ideal(self):
+    def test_get_count_transpositions_ideal(self) -> None:
         """
         Ideal scenario
         """
@@ -51,7 +54,7 @@ class CountTranspositionsTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_get_count_transpositions_value_check(self):
+    def test_get_count_transpositions_value_check(self) -> None:
         """
         Check return value
         """
@@ -60,7 +63,7 @@ class CountTranspositionsTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_get_count_transpositions_bad_input(self):
+    def test_get_count_transpositions_bad_input(self) -> None:
         """
         Check return value
         """

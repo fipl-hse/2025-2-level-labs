@@ -17,7 +17,7 @@ class CalculateTFTest(unittest.TestCase):
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_tf_ideal(self):
+    def test_calculate_tf_ideal(self) -> None:
         """
         Ideal calculate term frequencies scenario
         """
@@ -30,7 +30,7 @@ class CalculateTFTest(unittest.TestCase):
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_tf_ideal_2(self):
+    def test_calculate_tf_ideal_2(self) -> None:
         """
         Ideal calculate term frequencies scenario #2
         """
@@ -61,7 +61,7 @@ class CalculateTFTest(unittest.TestCase):
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_tf_bad_input(self):
+    def test_calculate_tf_bad_input(self) -> None:
         """
         calculate term frequencies invalid input tokens check
         """
@@ -74,7 +74,7 @@ class CalculateTFTest(unittest.TestCase):
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_tf_containing_bad_input(self):
+    def test_calculate_tf_containing_bad_input(self) -> None:
         """
         calculate term frequencies scenario with frequencies containing bad input
         """
@@ -97,7 +97,7 @@ class CalculateTFTest(unittest.TestCase):
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_tf_only_bad_inputs(self):
+    def test_calculate_tf_only_bad_inputs(self) -> None:
         """
         calculate term frequencies scenario with text containing only bad inputs
         """
