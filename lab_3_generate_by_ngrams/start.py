@@ -23,7 +23,7 @@ def main() -> None:
     sample_decoded = processor.decode(sample_encoded) if sample_encoded else None
     print(f"Original sample: {sample_text}")
     print(f"Encoded sample: {sample_encoded}")
-    print(f"Decoded sample: {sample_decoded}")    
+    print(f"Decoded sample: {sample_decoded}")
     result = sample_decoded
     assert result
 
