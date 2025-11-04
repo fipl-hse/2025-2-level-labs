@@ -15,7 +15,7 @@ def main() -> None:
     with open("assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
 
-    processor = TextProcessor(_end_of_word_token="_")
+    processor = TextProcessor(end_of_word_token="_")
     encoded_text = processor.encode(text)
     print("Encoded text: ", encoded_text)
     print()
@@ -28,9 +28,9 @@ def main() -> None:
     print("N_gram building dict return: ", n_gram_processor.build())
 
     greedy_text_processor = GreedyTextGenerator(n_gram_processor, processor)
-    test_sequense = greedy_text_processor.run(51, "Vernon")
+    test_sequense = greedy_text_processor.run(51, "Potter")
 
-    print("Run HreedyTextGenerator for 'Vernon', 51: ", test_sequense)
+    print("Run HreedyTextGenerator for 'Potter', 51: ", test_sequense)
 
     result = test_sequense
     assert result, "Result is None"
