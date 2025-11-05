@@ -191,10 +191,9 @@ class TextProcessor:
             content (dict): ngrams from external JSON
         """
         if not isinstance(content, dict) or not content:
-            return None
+            return
         for n_gram in content['freq']:
-            return [self._put(char) for char in n_gram.lower() if char.isalpha()]
-        return None
+            [self._put(char) for char in n_gram.lower() if char.isalpha()]
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
