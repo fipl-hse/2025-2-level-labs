@@ -3,7 +3,12 @@ Generation by NGrams starter
 """
 
 # pylint:disable=unused-import, unused-variable
-from lab_3_generate_by_ngrams.main import GreedyTextGenerator, NGramLanguageModel, TextProcessor, BeamSearchTextGenerator
+from lab_3_generate_by_ngrams.main import (
+    BeamSearchTextGenerator,
+    GreedyTextGenerator,
+    NGramLanguageModel,
+    TextProcessor,
+)
 
 
 def main() -> None:
@@ -16,6 +21,8 @@ def main() -> None:
         text = text_file.read()
     processor = TextProcessor(end_of_word_token='_')
     encoded_text = processor.encode(text)
+    if not isinstance(encoded_text, tuple) and not encoded_text:
+        return
     print(encoded_text)
     decoded_text = processor.decode(encoded_text)
     print(decoded_text)
@@ -26,7 +33,7 @@ def main() -> None:
     result_greedy_generator = greedy_generator.run(51, 'Vernon')
     print(result_greedy_generator)
     beam_search_generator = BeamSearchTextGenerator(model, processor, 3)
-    print(beam_search_generator.run(51, 'Vernon'))
+    print(beam_search_generator.run('Vernon', 51))
     result = result_greedy_generator
     assert result
 
