@@ -6,6 +6,7 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
+import string
 
 
 class TextProcessor:
@@ -50,7 +51,7 @@ class TextProcessor:
         for token in text.lower():
             if token.isalpha():
                 tokens.append(token)
-            elif token.isspace() or token in '.,;:?!':
+            elif token.isspace() or token in string.punctuation:
                 if tokens[-1] != "_":
                     tokens.append("_")
                 else:
@@ -246,7 +247,7 @@ class NGramLanguageModel:
         _encoded_corpus (tuple): Encoded text
     """
 
-    def __init__(self, encoded_corpus: tuple | None, n_gram_size: int) -> None:
+    def __init__(self, _encoded_corpus: tuple | None, _n_gram_size: int) -> None:
         """
         Initialize an instance of NGramLanguageModel.
 
@@ -254,6 +255,9 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        self._encoded_corpus = _encoded_corpus
+        self._n_gram_size = _n_gram_size
+        self._n_gram_frequencies = {}
 
     def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
         """
@@ -262,6 +266,8 @@ class NGramLanguageModel:
         Returns:
             int: Size of stored n_grams
         """
+        return self._n_gram_size
+
 
     def set_n_grams(self, frequencies: dict) -> None:
         """
@@ -284,6 +290,7 @@ class NGramLanguageModel:
         1 is returned
         """
 
+
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
         Retrieve tokens that can continue the given sequence along with their probabilities.
@@ -298,7 +305,7 @@ class NGramLanguageModel:
         """
 
     def _extract_n_grams(
-        self, encoded_corpus: tuple[int, ...]
+        self, _encoded_corpus: tuple[int, ...]
     ) -> tuple[tuple[int, ...], ...] | None:
         """
         Split encoded sequence into n-grams.
@@ -311,6 +318,18 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if not isinstance(_encoded_corpus, tuple) or len(_encoded_corpus) == 0:
+            return None
+        result = []
+        start = 0
+        for _ in range(len(_encoded_corpus) - (self._n_gram_size-1)):
+            added_object = []
+            for j in range(start, self._n_gram_size):
+                added_object.append(_encoded_corpus[j])
+            start += 1
+            #self._n_gram_size += 1
+            result.append(tuple(added_object))
+        return tuple(result)
 
 
 class GreedyTextGenerator:
