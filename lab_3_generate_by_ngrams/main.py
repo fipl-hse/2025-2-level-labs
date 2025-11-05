@@ -51,24 +51,14 @@ class TextProcessor:
         for word in words:
             if word:
                 word += self._end_of_word_token
-        symbols_list = []
-        for symbol in word:
-            if symbol.isalpha():
-                symbols_list.append(symbol)
-        cleaned_word = ''.join(symbols_list)
-        for el in ["-", "'"]:
-            if el in cleaned_word:
-                cleaned_word = cleaned_word.replace(el, self._end_of_word_token)
-        if cleaned_word:
-            tokens.append(cleaned_word)
-        tokens_join = []
-        for word in tokens:
-            tokens_join.append(word)
-        tokens = self._end_of_word_token.join(tokens_join)
-        tokens_list = []
-        for symbol in tokens:
-            tokens_list.append(symbol)
-        tokens = tokens_list
+            cleaned_word = ''.join(symbol for symbol in word if symbol.isalpha())
+            for el in ["-", "'"]:
+                if el in cleaned_word:
+                    cleaned_word = cleaned_word.replace(el, self._end_of_word_token)
+            if cleaned_word:
+                tokens.append(cleaned_word)
+        tokens = self._end_of_word_token.join(word for word in tokens)
+        tokens = [symbol for symbol in tokens]
         if not tokens:
             return None
         for i, token in enumerate(tokens):
