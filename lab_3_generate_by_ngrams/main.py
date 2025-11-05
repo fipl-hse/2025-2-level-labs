@@ -193,7 +193,9 @@ class TextProcessor:
         if not isinstance(content, dict) or not content:
             return
         for n_gram in content['freq']:
-            [self._put(char) for char in n_gram.lower() if char.isalpha()]
+            for char in n_gram.lower():
+                if char.isalpha():
+                    self._put(char)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
