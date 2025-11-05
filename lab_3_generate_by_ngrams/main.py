@@ -105,6 +105,7 @@ class TextProcessor:
         for element, value in self._storage.items():
             if value == element_id:
                 return element
+        return None
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -174,7 +175,10 @@ class TextProcessor:
         """
         if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
-        result = self._postprocess_decoded_text(self._decode(encoded_corpus))
+        encoded_result = self._decode(encoded_corpus)
+        if encoded_result is None:
+            return None
+        result = self._postprocess_decoded_text(encoded_result)
         if result is None:
             return None
         return str(result)
@@ -189,7 +193,8 @@ class TextProcessor:
         if not isinstance(content, dict) or not content:
             return None
         for n_gram in content['freq']:
-            [self._put(char) for char in n_gram.lower() if char.isalpha()]
+            return [self._put(char) for char in n_gram.lower() if char.isalpha()]
+        return None
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
@@ -278,6 +283,7 @@ class NGramLanguageModel:
         if not isinstance(frequencies, dict) or not frequencies:
             return None
         self._n_gram_frequencies = frequencies
+        return None
 
     def build(self) -> int:  # type: ignore[empty-body]
         """
@@ -487,14 +493,17 @@ class BeamSearcher:
         """
         if (
             not isinstance(sequence, tuple)
-            or not sequence
             or not isinstance(next_tokens, list)
-            or not next_tokens
             or not isinstance(sequence_candidates, dict)
-            or not sequence_candidates
             or not len(next_tokens) <= self._beam_width
             or not sequence in sequence_candidates
             ):
+            return None
+        if (
+            not sequence
+            or not next_tokens
+            or not sequence_candidates
+        ):
             return None
         for token in next_tokens:
             new_seq = sequence + (token[0],)
@@ -656,12 +665,6 @@ class NGramLanguageModelReader:
 
         In case of corrupt input arguments or unexpected behaviour of methods used, return 1.
         """
-        if (
-            not isinstance(n_gram_size, int)
-            or not n_gram_size
-            or n_gram_size < 2
-            ):
-            return None
 
     def get_text_processor(self) -> TextProcessor:  # type: ignore[empty-body]
         """
@@ -693,7 +696,7 @@ class BackOffGenerator:
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
         """
         self.language_models = {model.get_n_gram_size: model for model in language_models}
-        self.text_processor = TextProcessor()
+        self.text_processor = text_processor
 
     def run(self, seq_len: int, prompt: str) -> str | None:
         """
