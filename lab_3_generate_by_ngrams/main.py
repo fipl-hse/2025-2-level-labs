@@ -247,7 +247,7 @@ class NGramLanguageModel:
         _encoded_corpus (tuple): Encoded text
     """
 
-    def __init__(self, _encoded_corpus: tuple | None, _n_gram_size: int) -> None:
+    def __init__(self, encoded_corpus: tuple | None, _n_gram_size: int) -> None:
         """
         Initialize an instance of NGramLanguageModel.
 
@@ -255,7 +255,7 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
-        self._encoded_corpus = _encoded_corpus
+        self._encoded_corpus = encoded_corpus
         self._n_gram_size = _n_gram_size
         self._n_gram_frequencies = {}
 
@@ -305,7 +305,7 @@ class NGramLanguageModel:
         """
 
     def _extract_n_grams(
-        self, _encoded_corpus: tuple[int, ...]
+        self, encoded_corpus: tuple[int, ...]
     ) -> tuple[tuple[int, ...], ...] | None:
         """
         Split encoded sequence into n-grams.
@@ -318,17 +318,12 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
-        if not isinstance(_encoded_corpus, tuple) or len(_encoded_corpus) == 0:
+        if not isinstance(encoded_corpus, tuple) or len(encoded_corpus) == 0:
             return None
         result = []
-        start = 0
-        for _ in range(len(_encoded_corpus) - (self._n_gram_size-1)):
-            added_object = []
-            for j in range(start, self._n_gram_size):
-                added_object.append(_encoded_corpus[j])
-            start += 1
-            #self._n_gram_size += 1
-            result.append(tuple(added_object))
+        for i in range(len(encoded_corpus) - self._n_gram_size + 1):
+            n = encoded_corpus[i:i + self._n_gram_size]
+            result.append(n)
         return tuple(result)
 
 
