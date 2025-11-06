@@ -100,7 +100,7 @@ class TextProcessor:
         if not isinstance(element_id, int):
             return None
         return list(self._storage.keys())[element_id]
-    
+
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
         Encode text.
@@ -171,7 +171,7 @@ class TextProcessor:
         if not m_postprocess:
             return None
         return m_postprocess
-        
+
     def fill_from_ngrams(self, content: dict) -> None:
         """
         Fill internal storage with letters from external JSON.
@@ -244,6 +244,9 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        self._encoded_corpus = encoded_corpus
+        self._n_gram_size = n_gram_size
+        self._n_gram_frequencies = {}
 
     def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
         """
@@ -273,6 +276,16 @@ class NGramLanguageModel:
         In case of corrupt input arguments or methods used return None,
         1 is returned
         """
+        n_gram_corpus = self._extract_n_grams(self._encoded_corpus)
+        if not isinstance(n_gram_corpus, tuple) or not n_gram_corpus:
+            return 1
+        beginnings_corpus = []
+        for n_gram in n_gram_corpus:
+            beginnings_corpus.append(n_gram[:-1])
+        for n_gram in n_gram_corpus:
+            for beginning in beginnings_corpus:
+                self._n_gram_frequencies[n_gram] = n_gram_corpus.count(n_gram)/beginnings_corpus.count(beginning)
+        return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
@@ -301,6 +314,14 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
+            return None
+        result = []
+        for i in range(len(encoded_corpus)-1):
+            n_gram = [encoded_corpus[i]]
+            n_gram.append(encoded_corpus[i+1])
+            result.append(tuple(n_gram))
+        return tuple(result)
 
 
 class GreedyTextGenerator:
