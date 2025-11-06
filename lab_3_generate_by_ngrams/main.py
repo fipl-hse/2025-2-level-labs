@@ -342,8 +342,8 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
-        if (not isinstance(sequence, tuple) or 
-            not sequence or 
+        if (not isinstance(sequence, tuple) or
+            not sequence or
             len(sequence) < self._n_gram_size - 1):
             return None
         context = sequence[-(self._n_gram_size - 1):]
@@ -373,8 +373,8 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
-        if (not isinstance(encoded_corpus, tuple) or 
-            not encoded_corpus or 
+        if (not isinstance(encoded_corpus, tuple) or
+            not encoded_corpus or
             len(encoded_corpus) < self._n_gram_size):
             return None
         n_grams = []
@@ -419,9 +419,9 @@ class GreedyTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if (not isinstance(seq_len, int) or 
-            seq_len <= 0 or 
-            not isinstance(prompt, str) or 
+        if (not isinstance(seq_len, int) or
+            seq_len <= 0 or
+            not isinstance(prompt, str) or
             not prompt):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
