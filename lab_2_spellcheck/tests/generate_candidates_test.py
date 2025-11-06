@@ -16,6 +16,9 @@ class GenerateCandidatesTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        """
+        Set up for the candidate generation tests class.
+        """
         with open(
             Path(__file__).parent / r"assets/generate_candidates_example.txt", "r", encoding="utf-8"
         ) as f:
@@ -28,7 +31,7 @@ class GenerateCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_generate_candidates_ideal(self):
+    def test_generate_candidates_ideal(self) -> None:
         """
         Ideal scenario
         """
@@ -38,7 +41,7 @@ class GenerateCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_generate_candidates_length_check(self):
+    def test_generate_candidates_length_check(self) -> None:
         """
         Check length of candidates list
         """
@@ -56,7 +59,7 @@ class GenerateCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_generate_candidates_value_check(self):
+    def test_generate_candidates_value_check(self) -> None:
         """
         Return value check
         """
@@ -69,7 +72,7 @@ class GenerateCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_generate_candidates_bad_input(self):
+    def test_generate_candidates_bad_input(self) -> None:
         """
         Bad input scenario
         """
@@ -85,7 +88,7 @@ class GenerateCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_generate_candidates_empty_word(self):
+    def test_generate_candidates_empty_word(self) -> None:
         """
         Empty word scenario
         """
@@ -95,7 +98,7 @@ class GenerateCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_generate_candidates_empty_inputs(self):
+    def test_generate_candidates_empty_inputs(self) -> None:
         """
         Empty word scenario
         """
@@ -105,7 +108,7 @@ class GenerateCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_generate_candidates_alphabet_en(self):
+    def test_generate_candidates_alphabet_en(self) -> None:
         """
         Ideal scenario
         """

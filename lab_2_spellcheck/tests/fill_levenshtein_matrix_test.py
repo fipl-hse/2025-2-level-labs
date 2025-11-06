@@ -17,6 +17,9 @@ class FillLevenshteinMatrixTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
+        """
+        Set up Levenshtein metric calculation tests class.
+        """
         self.vocabulary = {
             "35": 0.04,
             "across": 0.08,
@@ -42,7 +45,7 @@ class FillLevenshteinMatrixTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_fill_levenshtein_matrix_ideal(self):
+    def test_fill_levenshtein_matrix_ideal(self) -> None:
         """
         Ideal scenario
         """
@@ -83,7 +86,7 @@ class FillLevenshteinMatrixTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_fill_levenshtein_matrix_bad_input(self):
+    def test_fill_levenshtein_matrix_bad_input(self) -> None:
         """
         Bad input argument scenario
         """
@@ -95,7 +98,7 @@ class FillLevenshteinMatrixTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_fill_levenshtein_matrix_value_check(self):
+    def test_fill_levenshtein_matrix_value_check(self) -> None:
         """
         Check returned value
         """
@@ -110,7 +113,7 @@ class FillLevenshteinMatrixTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_fill_levenshtein_matrix_empty_string(self):
+    def test_fill_levenshtein_matrix_empty_string(self) -> None:
         """
         Check return value for the empty string input
         """
@@ -132,7 +135,7 @@ class FillLevenshteinMatrixTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_fill_levenshtein_matrix_initialization_none(self):
+    def test_fill_levenshtein_matrix_initialization_none(self) -> None:
         """
         Matrix initialization function returning None scenario
         """
