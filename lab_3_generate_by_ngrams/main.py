@@ -671,6 +671,10 @@ class BeamSearchTextGenerator:
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
             beam_width (int): Beam width parameter for generation
         """
+        self._text_processor = text_processor
+        self._beam_width = beam_width
+        self.beam_searchers = BeamSearcher(self._beam_width, language_model)
+        self._language_model = language_model
 
     def run(self, prompt: str, seq_len: int) -> str | None:
         """
@@ -686,6 +690,18 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
+        if not isinstance(prompt, str) or not prompt:
+            return None
+
+        if not isinstance(seq_len, int) or seq_len <= 0:
+            return None
+
+        encoded_sequence = self._text_processor.encode(prompt)
+        if encoded_sequence is None:
+            return None
+        
+        candidates_of_sequence = {encoded_sequence: 0.0}
+
 
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
@@ -702,6 +718,14 @@ class BeamSearchTextGenerator:
 
         In case of corrupt input arguments return None.
         """
+        if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
+            return None
+
+        next_token = self.beam_searchers.get_next_token(sequence_to_continue)
+        if next_token is None:
+            return None
+
+        return next_token
 
 
 class NGramLanguageModelReader:
