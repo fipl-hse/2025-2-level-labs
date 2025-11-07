@@ -106,7 +106,9 @@ class TextProcessor:
             or element_id >= len(self._storage)
             ):
             return None
-        return list(self._storage.keys())[element_id]
+        for token, token_id in self._storage.items():
+            if token_id == element_id:
+                return token
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
