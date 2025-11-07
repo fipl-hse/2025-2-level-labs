@@ -249,9 +249,9 @@ class TextProcessor:
                 if not prev_was_space and result_chars:
                     result_chars.append(' ')
                     prev_was_space = True
-            else:
-                result_chars.append(token)
-                prev_was_space = False
+                continue
+            result_chars.append(token)
+            prev_was_space = False
         result_str = ''.join(result_chars).strip()
         if not result_str:
             return None
