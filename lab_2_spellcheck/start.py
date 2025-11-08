@@ -1,5 +1,5 @@
 """
-Frequency-driven keyword extraction starter
+Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
@@ -16,9 +16,11 @@ from lab_2_spellcheck.main import (
 
 
 def main() -> None:
+    """
+    Launches an implementation.
+    """
     with open("assets/Master_and_Margarita_chapter1.txt", "r", encoding="utf-8") as file:
         text = file.read()
-
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
     with (
@@ -37,7 +39,8 @@ def main() -> None:
     tokens_not_in_vocab = find_out_of_vocab_words(tokens_without_stopwords, tokens_vocab) or []
     print(tokens_not_in_vocab)
 
-    jaccard_distance = calculate_distance("кот", {"кот": 0.5, "пёс": 0.5}, method="jaccard") or {}
+    jaccard_distance = calculate_distance("кот", {"кот": 0.5, "пёс": 0.5},
+                                                 method = "jaccard") or {}
     print(jaccard_distance)
 
     alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")

@@ -146,7 +146,7 @@ def remove_duplicates(data: dict[str, int]) -> dict[str, int]:
     Returns:
         dict[str, int]: Dictionary without duplicates.
     """
-    # student realisation goes he
+    # student realisation goes here
 
 
 # Function calls with expected result
@@ -159,7 +159,6 @@ def remove_duplicates(data: dict[str, int]) -> dict[str, int]:
 # Task 5
 # medium level
 def count_letters(sequence: str) -> dict[str, int]:
-
     """
     Count how many times each letter appears in the string.
     Case-insensitive (e.g. 'A' and 'a' are treated the same).
@@ -171,18 +170,6 @@ def count_letters(sequence: str) -> dict[str, int]:
         dict[str, int]: Dictionary with letters as keys and counts as values.
     """
     # student realisation goes here
-    letter_count = {}
-    
-    for char in sequence:
-        lower_char = char.lower()
-
-        if lower_char.isalpha():
-            if lower_char in letter_count:
-                letter_count[lower_char] += 1
-            else:
-                letter_count[lower_char] = 1
-    
-    return letter_count
 
 
 # Function calls with expected result:
@@ -208,7 +195,6 @@ def decipher(sentence: str, special_characters: dict[int, str]) -> str:
         str: Deciphered text.
     """
     # student realisation goes here
-    
 
 
 # Function calls with expected result:

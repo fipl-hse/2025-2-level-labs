@@ -73,20 +73,6 @@ class Board:
         get_size(self, ...): Get size of board
 
     """
-    def _init_(self, size: int = 3):
-        self._size = size
-        self._moves_left_ = size ** 2
-        self._moves = []
-    
-    def add_move(self, move: Move) -> None:
-        for previous_move in self._moves:
-            if previous_move.row == move.row and previous_move.label == move.row:
-                
-                if move in self._moves:
-                    self._moves.append(move)
-                    return True
-                return False
-
 
 
 def main() -> None:
