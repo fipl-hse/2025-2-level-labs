@@ -56,8 +56,8 @@ class TextProcessor:
                 tokenized_text.append(symbol)
                 inside_word = True
             elif inside_word and symbol.isspace():
-                    tokenized_text.append(self._end_of_word_token)
-                    inside_word = False
+                tokenized_text.append(self._end_of_word_token)
+                inside_word = False
         if inside_word:
             tokenized_text.append(self._end_of_word_token)
         if not tokenized_text:
@@ -90,6 +90,7 @@ class TextProcessor:
         """
         if self._end_of_word_token:
             return self._end_of_word_token
+        return None
 
     def get_token(self, element_id: int) -> str | None:
         """
@@ -111,6 +112,7 @@ class TextProcessor:
         for token, token_id in self._storage.items():
             if token_id == element_id:
                 return token
+        return None
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -194,7 +196,7 @@ class TextProcessor:
             content (dict): ngrams from external JSON
         """
         if not isinstance(content, dict):
-            return None
+            return
         ngrams_freq = content.get('freq', {})
         for ngram in ngrams_freq.keys():
             for char in ngram:
@@ -332,9 +334,9 @@ class NGramLanguageModel:
         else:
             context = sequence[-context_length:]
         generated_tokens = {}
-        for n_gram in self._n_gram_frequencies:
+        for n_gram, probability in self._n_gram_frequencies.items():
             if n_gram[:len(context)] == context:
-                generated_tokens[n_gram[-1]] = self._n_gram_frequencies.get(n_gram)
+                generated_tokens[n_gram[-1]] = probability
         sorted_tokens = dict(sorted(generated_tokens.items(), key=lambda x: (-x[1], -x[0])))
         return sorted_tokens
 
@@ -494,7 +496,7 @@ class BeamSearcher:
             or not isinstance(next_tokens, list)
             or not next_tokens
             ):
-                return None
+            return None
         if (
             not isinstance(sequence_candidates, dict)
             or sequence not in sequence_candidates
@@ -585,10 +587,10 @@ class BeamSearchTextGenerator:
         encoded_prompt = self._text_processor.encode(prompt)
         if encoded_prompt is None:
             return None
-        seq_candidates = {encoded_prompt: 0.0}
+        sequence_candidates = {encoded_prompt: 0.0}
         for _ in range(seq_len):
             next_sequence_candidates = {}
-            for sequence, probability in seq_candidates.items():
+            for sequence, probability in sequence_candidates.items():
                 next_tokens = self._get_next_token(sequence)
                 if not next_tokens:
                     return None
@@ -600,10 +602,14 @@ class BeamSearchTextGenerator:
                     next_sequence_candidates.update(updated_candidates)
             if not next_sequence_candidates:
                 break
-            seq_candidates = self.beam_searcher.prune_sequence_candidates(next_sequence_candidates)
-            if not seq_candidates:
+            pruned_candidates = self.beam_searcher.prune_sequence_candidates(
+                next_sequence_candidates)
+            if pruned_candidates is None:
                 return None
-        best_sequence = min(seq_candidates.items(), key=lambda x: x[1])[0]
+            sequence_candidates = pruned_candidates
+            if not sequence_candidates:
+                return None
+        best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
         decoded_sequence = self._text_processor.decode(best_sequence)
         return decoded_sequence
 
