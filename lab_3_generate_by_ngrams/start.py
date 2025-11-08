@@ -21,23 +21,28 @@ def main() -> None:
         text = text_file.read()
     processor = TextProcessor("_")
     encoded_text = processor.encode(text)
-    processed_text = processor.decode(encoded_text) or ()
+    if encoded_text is None:
+        return
+    processed_text = processor.decode(encoded_text)
     print(processed_text)
+    
     n_gram_model = NGramLanguageModel(encoded_text, 3)
     build_result = n_gram_model.build()
     n_gram_freq_dict = {}
     if build_result == 0:
-        n_gram_freq_dict = n_gram_model._n_gram_frequencies
+        n_gram_freq_dict = n_gram_model.n_gram_frequencies
     print(n_gram_freq_dict)
+
     generator_model = NGramLanguageModel(encoded_text, 7)
     generator_model.build()
     greedy_generator = GreedyTextGenerator(generator_model, processor)
     greedy_algorithm = greedy_generator.run(51, 'Vernon')
     print(greedy_algorithm)
+
     beam_search_generator = BeamSearchTextGenerator(generator_model, processor, beam_width=3)
-    beam_search_result = beam_search_generator.run('Vernon', 56)
-    print(beam_search_result)
-    result = beam_search_result
+    beam_search_algorithm = beam_search_generator.run('Vernon', 56)
+    print(beam_search_algorithm)
+    result = beam_search_algorithm
     assert result
 
 

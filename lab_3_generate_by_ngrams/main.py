@@ -88,9 +88,7 @@ class TextProcessor:
         Returns:
             str: EoW token
         """
-        if self._end_of_word_token:
-            return self._end_of_word_token
-        return None
+        return self._end_of_word_token
 
     def get_token(self, element_id: int) -> str | None:
         """
@@ -111,8 +109,7 @@ class TextProcessor:
             return None
         for token, token_id in self._storage.items():
             if token_id == element_id:
-                return token
-        return None
+                return str(token)
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -269,7 +266,7 @@ class NGramLanguageModel:
         """
         self._encoded_corpus = encoded_corpus
         self._n_gram_size = n_gram_size
-        self._n_gram_frequencies = {}
+        self.n_gram_frequencies = {}
 
     def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
         """
@@ -288,7 +285,7 @@ class NGramLanguageModel:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
         if isinstance(frequencies, dict) and frequencies:
-            self._n_gram_frequencies = frequencies
+            self.n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
         """
@@ -302,6 +299,8 @@ class NGramLanguageModel:
         In case of corrupt input arguments or methods used return None,
         1 is returned
         """
+        if not isinstance(self._encoded_corpus, tuple) or not self._encoded_corpus:
+            return 1
         n_gramms = self._extract_n_grams(self._encoded_corpus)
         if n_gramms is None:
             return 1
@@ -311,7 +310,7 @@ class NGramLanguageModel:
             n_gram_abs_freqs[n_gram] = n_gram_abs_freqs.get(n_gram, 0) + 1
             n_gram_prefix_counts[n_gram[:-1]] = n_gram_prefix_counts.get(n_gram[:-1], 0) + 1
         for n_gram, abs_freq in n_gram_abs_freqs.items():
-            self._n_gram_frequencies[n_gram] = abs_freq / n_gram_prefix_counts[n_gram[:-1]]
+            self.n_gram_frequencies[n_gram] = abs_freq / n_gram_prefix_counts[n_gram[:-1]]
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
