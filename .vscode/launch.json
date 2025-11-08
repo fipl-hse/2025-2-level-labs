@@ -27,6 +27,17 @@
             }
         },
         {
+            "name": "[LAB 3] Start",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "start.py",
+            "cwd": "${workspaceFolder}/lab_3_generate_by_ngrams",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
             "name": "[SEMINAR 1] Learn debug",
             "type": "debugpy",
             "request": "launch",
@@ -91,6 +102,26 @@
             "type": "debugpy",
             "request": "launch",
             "program": "seminars/listing_7_functions.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 8] Learn classes",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_8_classes.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 9] Tic tac toe",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_9_tic_tac_toe.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
