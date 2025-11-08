@@ -115,19 +115,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | N
     if not all([check_list(tokens, str, True),
         check_list(stop_words, str, True)]):
         return None
-<<<<<<< HEAD
-    if not all(isinstance(token, str) for token in tokens):
-        return None
-
-    if not isinstance(stop_words, list):
-        return None
-    if not all(isinstance(word, str) for word in stop_words):
-        return None
-
-    return [token for token in tokens if token not in stop_words]
-=======
     return [token for token in tokens if token not in set(stop_words)]
->>>>>>> d2be7061ebb6dad052277e92cf5b6dd16cca2cc3
 
 
 def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
@@ -143,12 +131,6 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
     """
     if not check_list(tokens, str, True):
         return None
-<<<<<<< HEAD
-    if not all(isinstance(token, str) for token in tokens):
-        return None
-
-=======
->>>>>>> d2be7061ebb6dad052277e92cf5b6dd16cca2cc3
     frequencies = {}
     for token in tokens:
         frequencies[token] = frequencies.get(token, 0) + 1
