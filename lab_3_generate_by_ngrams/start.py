@@ -30,7 +30,7 @@ def main() -> None:
     build_result = n_gram_model.build()
     n_gram_freq_dict = {}
     if build_result == 0:
-        n_gram_freq_dict = n_gram_model._n_gram_frequencies
+        n_gram_freq_dict = n_gram_model._n_gram_frequencies # type: ignore[attr-defined]
     print(n_gram_freq_dict)
 
     generator_model = NGramLanguageModel(encoded_text, 7)
