@@ -88,7 +88,7 @@ class TextProcessor:
         Returns:
             str: EoW token
         """
-        return self._end_of_word_token
+        return str(self._end_of_word_token)
 
     def get_token(self, element_id: int) -> str | None:
         """
@@ -266,7 +266,7 @@ class NGramLanguageModel:
         """
         self._encoded_corpus = encoded_corpus
         self._n_gram_size = n_gram_size
-        self.n_gram_frequencies = {}
+        self._n_gram_frequencies = {}
 
     def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
         """
@@ -285,7 +285,7 @@ class NGramLanguageModel:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
         if isinstance(frequencies, dict) and frequencies:
-            self.n_gram_frequencies = frequencies
+            self._n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
         """
@@ -310,7 +310,7 @@ class NGramLanguageModel:
             n_gram_abs_freqs[n_gram] = n_gram_abs_freqs.get(n_gram, 0) + 1
             n_gram_prefix_counts[n_gram[:-1]] = n_gram_prefix_counts.get(n_gram[:-1], 0) + 1
         for n_gram, abs_freq in n_gram_abs_freqs.items():
-            self.n_gram_frequencies[n_gram] = abs_freq / n_gram_prefix_counts[n_gram[:-1]]
+            self._n_gram_frequencies[n_gram] = abs_freq / n_gram_prefix_counts[n_gram[:-1]]
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:

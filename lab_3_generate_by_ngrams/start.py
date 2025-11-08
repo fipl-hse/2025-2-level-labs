@@ -25,12 +25,12 @@ def main() -> None:
         return
     processed_text = processor.decode(encoded_text)
     print(processed_text)
-    
+
     n_gram_model = NGramLanguageModel(encoded_text, 3)
     build_result = n_gram_model.build()
     n_gram_freq_dict = {}
     if build_result == 0:
-        n_gram_freq_dict = n_gram_model.n_gram_frequencies
+        n_gram_freq_dict = n_gram_model._n_gram_frequencies
     print(n_gram_freq_dict)
 
     generator_model = NGramLanguageModel(encoded_text, 7)
