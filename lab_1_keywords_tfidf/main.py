@@ -228,15 +228,14 @@ def calculate_chi_values(
     expected: dict[str, float], observed: dict[str, int]
 ) -> dict[str, float] | None:
     """
-    Calculate chi-squared values for tokens.
+        Calculate chi-squared values for tokens.
 
-    Args:
-        expected (dict[str, float]): Expected frequencies
-        observed (dict[str, int]): Observed frequencies
-
+        Args:
+            expected (dict[str, float]): Expected frequencies
+            observed (dict[str, int]): Observed frequencies
     Returns:
-        dict[str, float] | None: Dictionary with chi-squared values.
-        In case of corrupt input arguments, None is returned.
+            dict[str, float] | None: Dictionary with chi-squared values.
+            In case of corrupt input arguments, None is returned.
     """
     if not all([check_dict(expected, str, float, False),
                 check_dict(observed, str, int, False)]):
