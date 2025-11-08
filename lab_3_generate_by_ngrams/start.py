@@ -21,10 +21,11 @@ def main() -> None:
         text = text_file.read()
     processor = TextProcessor("_")
     encoded_text = processor.encode(text)
-    processed_text = processor.decode(encoded_text)
+    processed_text = processor.decode(encoded_text) or ()
     print(processed_text)
     n_gram_model = NGramLanguageModel(encoded_text, 3)
     build_result = n_gram_model.build()
+    n_gram_freq_dict = {}
     if build_result == 0:
         n_gram_freq_dict = n_gram_model._n_gram_frequencies
     print(n_gram_freq_dict)

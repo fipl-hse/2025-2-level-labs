@@ -88,7 +88,8 @@ class TextProcessor:
         Returns:
             str: EoW token
         """
-        return self._end_of_word_token
+        if self._end_of_word_token:
+            return self._end_of_word_token
 
     def get_token(self, element_id: int) -> str | None:
         """
@@ -157,7 +158,7 @@ class TextProcessor:
             and len(element) == 1
             and element not in self._storage
             ):
-                self._storage[element] = len(self._storage)
+            self._storage[element] = len(self._storage)
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
@@ -358,7 +359,7 @@ class NGramLanguageModel:
             n_gram = encoded_corpus[code_index:code_index + self._n_gram_size]
             n_grams.append(n_gram)
         return tuple(n_grams)
-    
+
 
 class GreedyTextGenerator:
     """
@@ -492,11 +493,14 @@ class BeamSearcher:
             or not sequence
             or not isinstance(next_tokens, list)
             or not next_tokens
-            or not isinstance(sequence_candidates, dict)
+            ):
+                return None
+        if (
+            not isinstance(sequence_candidates, dict)
             or sequence not in sequence_candidates
             or len(next_tokens) > self._beam_width
             ):
-                return None
+            return None
         seq_probability = sequence_candidates[sequence]
         if not isinstance(seq_probability, (int, float)):
             return None
@@ -581,28 +585,28 @@ class BeamSearchTextGenerator:
         encoded_prompt = self._text_processor.encode(prompt)
         if encoded_prompt is None:
             return None
-        sequence_candidates = {encoded_prompt: 0.0}
+        seq_candidates = {encoded_prompt: 0.0}
         for _ in range(seq_len):
             next_sequence_candidates = {}
-            for sequence in sequence_candidates:
+            for sequence, probability in seq_candidates.items():
                 next_tokens = self._get_next_token(sequence)
                 if not next_tokens:
                     return None
                 updated_candidates = self.beam_searcher.continue_sequence(
                     sequence, next_tokens,
-                    {sequence: sequence_candidates[sequence]}
+                    {sequence: probability}
                     )
                 if updated_candidates:
                     next_sequence_candidates.update(updated_candidates)
             if not next_sequence_candidates:
                 break
-            sequence_candidates = self.beam_searcher.prune_sequence_candidates(next_sequence_candidates)
-            if not sequence_candidates:
+            seq_candidates = self.beam_searcher.prune_sequence_candidates(next_sequence_candidates)
+            if not seq_candidates:
                 return None
-        best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
+        best_sequence = min(seq_candidates.items(), key=lambda x: x[1])[0]
         decoded_sequence = self._text_processor.decode(best_sequence)
         return decoded_sequence
-    
+
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
     ) -> list[tuple[int, float]] | None:
