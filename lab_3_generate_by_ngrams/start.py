@@ -28,10 +28,7 @@ def main() -> None:
 
     n_gram_model = NGramLanguageModel(encoded_text, 3)
     build_result = n_gram_model.build()
-    n_gram_freq_dict = {}
-    if build_result == 0:
-        n_gram_freq_dict = n_gram_model._n_gram_frequencies # type: ignore[attr-defined]
-    print(n_gram_freq_dict)
+    print(build_result)
 
     generator_model = NGramLanguageModel(encoded_text, 7)
     generator_model.build()
