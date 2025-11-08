@@ -70,3 +70,15 @@ class Person:
         add_funds(amount: float) -> None:
             Adds money to the person's account.
     """
+
+
+def main() -> None:
+    """
+    Launch listing.
+    """
+    # Work here
+    print("Created classes")
+
+
+if __name__ == "__main__":
+    main()
