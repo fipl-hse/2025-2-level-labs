@@ -59,36 +59,33 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
-        return None
-    return [token for token in tokens if token not in vocabulary]
+    def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
+        if not isinstance(tokens, list):
+            return None
 
-    if not isinstance(tokens, list):
-        return None
+        if not tokens:
+            return None
 
-    if not tokens:
-        return None
+        if not all(isinstance(token, str) for token in tokens):
+            return None
 
-    if not all(isinstance(token, str) for token in tokens):
-        return None
+        if not isinstance(vocabulary, dict):
+            return None
 
-    if not isinstance(vocabulary, dict):
-        return None
+        if not vocabulary:
+            return None
 
-    if not vocabulary:
-        return None
+        if not all(
+            isinstance(key, str) and isinstance(value, float) for key, value in vocabulary.items()
+        ):
+            return None
 
-    if not all(
-        isinstance(key, str) and isinstance(value, float) for key, value in vocabulary.items()
-    ):
-        return None
-
-    out_of_vocab_words = []
-    for token in tokens:
-        if token not in vocabulary:
-            out_of_vocab_words.append(token)
-
-    return out_of_vocab_words
+        out_of_vocab_words = []
+        for token in tokens:
+            if token not in vocabulary:
+                out_of_vocab_words.append(token)
+    
+        return out_of_vocab_words
 
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
