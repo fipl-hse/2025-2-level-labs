@@ -8,6 +8,7 @@ Beam-search and natural language generation evaluation
 import json
 import math
 
+
 class TextProcessor:
     """
     Handle text tokenization, encoding and decoding.
@@ -56,7 +57,7 @@ class TextProcessor:
                 tokens.append(self._end_of_word_token)
         if not tokens:
             return None
-        if (tokens and 
+        if (tokens and
             tokens[-1] == self._end_of_word_token and
             (text[-1].isdigit() or text[-1].isalpha())):
             tokens = tokens[:-1]
@@ -75,7 +76,7 @@ class TextProcessor:
         In case of corrupt input arguments or arguments not included in storage,
         None is returned
         """
-        if (not isinstance(element, str) 
+        if (not isinstance(element, str)
             or element not in self._storage):
             return None
         return self._storage[element]
@@ -106,7 +107,8 @@ class TextProcessor:
         for token, token_id in self._storage.items():
             if token_id == element_id:
                 return token
-        
+        return None
+
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
         Encode text.
@@ -175,7 +177,7 @@ class TextProcessor:
         if decoded_text is None:
             return None
         return self._postprocess_decoded_text(decoded_text)
-    
+
     def fill_from_ngrams(self, content: dict) -> None:
         """
         Fill internal storage with letters from external JSON.
@@ -184,7 +186,7 @@ class TextProcessor:
             content (dict): ngrams from external JSON
         """
         if not isinstance(content, dict):
-            return None
+            return
         ngrams_freq = content.get('freq', {})
         for ngram in ngrams_freq.keys():
             for char in ngram:
@@ -285,7 +287,7 @@ class NGramLanguageModel:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
         if not isinstance(frequencies, dict) or not frequencies:
-            return None
+            return
         self._n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
@@ -331,7 +333,7 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
-        if (not isinstance(sequence, tuple) 
+        if (not isinstance(sequence, tuple)
             or not sequence
             or not len(sequence) >= self._n_gram_size - 1):
             return None
@@ -343,7 +345,7 @@ class NGramLanguageModel:
                 if token not in next_token_freq:
                     next_token_freq[token] = freq
         return next_token_freq
-        
+
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
     ) -> tuple[tuple[int, ...], ...] | None:
@@ -458,12 +460,12 @@ class BeamSearcher:
 
         In case of corrupt input arguments or methods used return None.
         """
-        if not isinstance(sequence, tuple) or not tuple:
+        if not isinstance(sequence, tuple) or not sequence:
             return None
         next_tokens = self._model.generate_next_token(sequence)
         if next_tokens is None :
             return None
-        candidates = [(token, prob) for token, prob in (dict(next_tokens)).items()]
+        candidates = list(dict(next_tokens).items())
         candidates.sort(key=lambda item: item[1], reverse=True)
         return candidates[:self._beam_width]
 
@@ -513,7 +515,7 @@ class BeamSearcher:
             else:
                 sequence_candidates[new_sequence] = new_probability
         return sequence_candidates
-    
+
     def prune_sequence_candidates(
         self, sequence_candidates: dict[tuple[int, ...], float]
     ) -> dict[tuple[int, ...], float] | None:
