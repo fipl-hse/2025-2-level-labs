@@ -84,14 +84,14 @@ class Bank:
             self.next_number = next_account_number
 
     def create_account(self, user_name: str):
-        account = {owner_name: BankAccount(owner_name)}
+        account = {user_name: BankAccount(user_name)}
 
     def generate_account_number(self):
         self.__next_account_number += 1
 
     def deposit_to_account(self, account_number, amount):
         self._accounts[account_number] += amount
-        self.
+
 
 
 class Person:
