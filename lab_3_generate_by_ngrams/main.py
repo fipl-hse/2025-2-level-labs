@@ -18,7 +18,6 @@ class TextProcessor:
         _end_of_word_token (str): A token denoting word boundary
         _storage (dict): Dictionary in the form of <token: identifier>
     """
-    _end_of_word_token = "_"
     _storage = {"_" : 0}
 
     def __init__(self, end_of_word_token: str) -> None:
@@ -55,7 +54,7 @@ class TextProcessor:
         for element in text:
             if element.isalpha():
                 tokens.append(element.lower())
-            elif element.isspace() or element in ".,'/:;\\|[](){}!?\"":
+            elif element.isspace() or element in ".,:;!?()/\"{}[]":
                 if tokens and tokens[-1] != self._end_of_word_token:
                     tokens.append(self._end_of_word_token)
         if not tokens:
@@ -182,6 +181,12 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
+        if not isinstance(content, dict) or not content:
+            return
+        for ngram in content.values():
+            for token in str(ngram):
+                if token.isalpha() and token == token.lower():
+                    self._put(token)
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
         Decode sentence by replacing ids with corresponding letters.
@@ -342,18 +347,6 @@ class NGramLanguageModel:
                 if token not in result:
                     result[token] = freq
         return result
-        # if not (isinstance(sequence, tuple)
-        #     and sequence
-        #     and len(sequence) >= self._n_gram_size - 1
-        # ):
-        #     return None
-        # all_sequence = sequence[-(self._n_gram_size-1):]
-
-        # # return {
-        # #     n_gram[-1] : frequency
-        # #     for n_gram, frequency in self._n_gram_frequencies.items()
-        # #     if n_gram[:-1] == all_sequence
-        # # }
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
     ) -> tuple[tuple[int, ...], ...] | None:
@@ -368,22 +361,15 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
-        # (1, 0), (0, 4), (4, 2), (2, 5), (5, 2), (2, 6[867 chars], 0)) != ((1, [19 chars] (1, 2), (0, 4), (4, 2), (2, 3), (5, 2), (2, 3[863 chars], 4))
         if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
-        one_gram = []
-        all_grams = []
-        new_gram = encoded_corpus
-        for _ in range(len(encoded_corpus)):
-            for j in range(self._n_gram_size):
-                if len(new_gram) > j:
-                    one_gram.append(new_gram[j])
-            new_gram = new_gram[1:]
-            all_grams.append(tuple(one_gram))
-            if len(new_gram) < self._n_gram_size:
+        extracted_ngrams = []
+        for i, _ in enumerate(encoded_corpus):
+            ngram = encoded_corpus[i: i + self._n_gram_size]
+            if len(ngram) < self._n_gram_size:
                 break
-            one_gram = []
-        return tuple(all_grams)
+            extracted_ngrams.append(ngram)
+        return tuple(extracted_ngrams)
 
 class GreedyTextGenerator:
     """
@@ -393,8 +379,6 @@ class GreedyTextGenerator:
         _model (NGramLanguageModel): A language model to use for text generation
         _text_processor (TextProcessor): A TextProcessor instance to handle text processing
     """
-    _model = None
-    _text_processor = None
 
     def __init__(self, language_model: NGramLanguageModel, text_processor: TextProcessor) -> None:
         """
@@ -443,8 +427,6 @@ class BeamSearcher:
         _beam_width (int): Number of candidates to consider at each step
         _model (NGramLanguageModel): A language model to use for next token prediction
     """
-    _beam_width = 0
-    _model = None
 
     def __init__(self, beam_width: int, language_model: NGramLanguageModel) -> None:
         """
@@ -478,8 +460,6 @@ class BeamSearcher:
         if not isinstance(sequence, tuple) or not sequence:
             return None
         candidates = self._model.generate_next_token(sequence)
-        if not candidates:
-            return None
         if not candidates:
             return []
         best_candidates = sorted(candidates.items(), key=lambda item: item[1], reverse=True)
@@ -551,7 +531,7 @@ class BeamSearchTextGenerator:
         _language_model (tuple[NGramLanguageModel]): Language models for next token prediction
         _text_processor (NGramLanguageModel): A TextProcessor instance to handle text processing
         _beam_width (NGramLanguageModel): Beam width parameter for generation
-        beam_searcher (NGramLanguageModel): Searcher instances for each language model
+        beam_searcherer (NGramLanguageModel): Searcher instances for each language model
     """
     def __init__(
         self, language_model: NGramLanguageModel, text_processor: TextProcessor, beam_width: int
@@ -566,7 +546,7 @@ class BeamSearchTextGenerator:
         self._language_model = language_model
         self._text_processor = text_processor
         self._beam_width = beam_width
-        self.beam_searchers = BeamSearcher(beam_width, language_model)
+        self.beam_searcher = BeamSearcher(beam_width, language_model)
 
 
     def run(self, prompt: str, seq_len: int) -> str | None:
@@ -595,12 +575,12 @@ class BeamSearchTextGenerator:
                 next_tokens = self._get_next_token(sequence)
                 if next_tokens is None:
                     return None
-                new_candidates = self.beam_searchers.continue_sequence(sequence, next_tokens, candidates)
+                new_candidates = self.beam_searcher.continue_sequence(sequence, next_tokens, candidates)
                 if new_candidates is not None:
                     extended_candidates.update(new_candidates)
             if not extended_candidates:
                 break
-            candidates = self.beam_searchers.prune_sequence_candidates(extended_candidates)
+            candidates = self.beam_searcher.prune_sequence_candidates(extended_candidates)
             if candidates is None:
                 return None
         return self._text_processor.decode(min(candidates, key=candidates.get))
@@ -622,7 +602,7 @@ class BeamSearchTextGenerator:
             return None
 
 
-        return self.beam_searchers.get_next_token(sequence_to_continue) or None
+        return self.beam_searcher.get_next_token(sequence_to_continue) or None
 
 class NGramLanguageModelReader:
     """
@@ -633,10 +613,6 @@ class NGramLanguageModelReader:
         _eow_token (str): Special token for text processor
         _text_processor (TextProcessor): A TextProcessor instance to handle text processing
     """
-    _json_path = ""
-    _eow_token = ""
-    _content = ""
-    _text_processer = None
 
     def __init__(self, json_path: str, eow_token: str) -> None:
         """
@@ -646,9 +622,9 @@ class NGramLanguageModelReader:
             json_path (str): Local path to assets file
             eow_token (str): Special token for text processor
         """
-        _json_path = json_path
-        _eow_token = eow_token
-        _text_processor = TextProcessor(_eow_token)
+        self._json_path = json_path
+        self._eow_token = eow_token
+        self._text_processor = TextProcessor(self._eow_token)
 
     def load(self, n_gram_size: int) -> NGramLanguageModel | None:
         """
