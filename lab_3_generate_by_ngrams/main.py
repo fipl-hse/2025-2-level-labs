@@ -678,13 +678,12 @@ class NGramLanguageModelReader:
                 if char.isspace():
                     processed_chars.append(0)
                 elif char.isalpha():
-                    char_lower = char.lower()
-                    self._text_processor._put(char_lower)
-                    char_id = self._text_processor.get_id(char_lower)
+                    char_id = self._text_processor.get_id(char.lower())
                     if char_id is not None:
                         processed_chars.append(char_id)
             if processed_chars:
-                n_grams[tuple(processed_chars)] = n_grams.get(tuple(processed_chars), 0.0) + self._content['freq'][ngram]
+                n_grams[tuple(processed_chars)] = (n_grams.get(tuple(processed_chars), 0.0) +
+                                                   self._content['freq'][ngram])
         context_frequencies = {}
         for ngram, freq in n_grams.items():
             if len(ngram) == n_gram_size:
@@ -700,7 +699,7 @@ class NGramLanguageModelReader:
         model = NGramLanguageModel(None, n_gram_size)
         model.set_n_grams(conditional_probabilities)
         return model
-        
+
     def get_text_processor(self) -> TextProcessor:  # type: ignore[empty-body]
         """
         Get method for the processor created for the current JSON file.
@@ -747,7 +746,12 @@ class BackOffGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if not (isinstance(seq_len, int) and isinstance(prompt, str) and prompt):
+        if (
+            not isinstance(seq_len, int)
+            or not isinstance(prompt, str)
+            or not prompt
+            or not seq_len
+            ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if not encoded_prompt:
@@ -777,7 +781,11 @@ class BackOffGenerator:
 
         In case of corrupt input arguments return None.
         """
-        if not (isinstance(sequence_to_continue, tuple) and sequence_to_continue and self._language_models):
+        if (
+            not isinstance(sequence_to_continue, tuple)
+            or not sequence_to_continue
+            or not self._language_models
+            ):
             return None
         n_gram_sizes = sorted(self._language_models.keys(), reverse=True)
         for n_gram_size in n_gram_sizes:
