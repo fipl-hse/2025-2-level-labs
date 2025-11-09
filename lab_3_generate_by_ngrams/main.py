@@ -92,6 +92,7 @@ class TextProcessor:
         Returns:
             str: EoW token
         """
+        return self._end_of_word_token
 
     def get_token(self, element_id: int) -> str | None:
         """
@@ -174,6 +175,15 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if isinstance(encoded_corpus, tuple) is False or encoded_corpus == ():
+            return None
+        decoded_corpus = self._decode(encoded_corpus)
+        if decoded_corpus is None:
+            return None
+        postprocessed_decoded_corpus = self._postprocess_decoded_text(decoded_corpus)
+        if postprocessed_decoded_corpus is None:
+            return None
+        return postprocessed_decoded_corpus
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
@@ -196,6 +206,17 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if isinstance(corpus, tuple) is False or corpus == ():
+            return None
+        decoded_text = []
+        for element_id in corpus:
+            if element_id is None:
+                return None
+            token = self.get_token(element_id)
+            if token is None:
+                return None
+            decoded_text.append(token)
+        return tuple(decoded_text)
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
         """
@@ -212,6 +233,15 @@ class TextProcessor:
 
         In case of corrupt input arguments, None is returned
         """
+        if isinstance(decoded_corpus, tuple) is False or decoded_corpus == ():
+            return None
+        list_decoded = list(decoded_corpus)
+        list_decoded[0] = list_decoded[0].upper()
+        if list_decoded[len(list_decoded) - 1] == "_":
+            list_decoded[len(list_decoded) - 1] = "."
+        else:
+            list_decoded.append(".")
+        return "".join(list_decoded).replace("_", " ")
 
 
 class NGramLanguageModel:
