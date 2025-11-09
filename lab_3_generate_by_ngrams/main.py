@@ -6,7 +6,7 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
-
+import math
 
 class TextProcessor:
     """
@@ -46,20 +46,21 @@ class TextProcessor:
         """
         if not isinstance(text, str):
             return None
+        words = text.lower().split()
         tokens = []
         current_word = []
-        for char in text.lower():
-            if char.isalpha():
-                current_word.append(char)
-            elif current_word:
+        for word in words:
+            current_word = [char for char in word if char.isalpha()]
+            if current_word:
                 tokens.extend(current_word)
-                if char.isspace() or not char.isalnum():
-                    tokens.append(self._end_of_word_token)
-                current_word = []
-        if current_word:
-            tokens.extend(current_word)
-            tokens.append(self._end_of_word_token)
-        return tuple(tokens) if tokens else None
+                tokens.append(self._end_of_word_token)
+        if not tokens:
+            return None
+        if (tokens and 
+            tokens[-1] == self._end_of_word_token and
+            (text[-1].isdigit() or text[-1].isalpha())):
+            tokens = tokens[:-1]
+        return tuple(tokens)
 
     def get_id(self, element: str) -> int | None:
         """
@@ -489,22 +490,30 @@ class BeamSearcher:
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
         if (
-            not isinstance(sequence, tuple) 
+            not isinstance(sequence, tuple)
             or not isinstance(next_tokens, list)
             or not isinstance(sequence_candidates, dict)
-            or not sequence
+            or not len(next_tokens) <= self._beam_width
+            or not sequence in sequence_candidates
+            ):
+            return None
+        if (
+            not sequence
             or not next_tokens
+            or not sequence_candidates
         ):
             return None
         if sequence in sequence_candidates:
             del sequence_candidates[sequence]
-        for token, prob in next_tokens:
-            if not isinstance(token, int) or not isinstance(prob, float):
-                return None
+        for token, token_prob in next_tokens:
             new_sequence = sequence + (token,)
-            sequence_candidates[new_sequence] = prob
+            new_probability = sequence_candidates.get(sequence, 1.0) * token_prob
+            if new_sequence in sequence_candidates:
+                sequence_candidates[new_sequence] += new_probability
+            else:
+                sequence_candidates[new_sequence] = new_probability
         return sequence_candidates
-
+    
     def prune_sequence_candidates(
         self, sequence_candidates: dict[tuple[int, ...], float]
     ) -> dict[tuple[int, ...], float] | None:
@@ -521,16 +530,8 @@ class BeamSearcher:
         """
         if not isinstance(sequence_candidates, dict) or not sequence_candidates:
             return None
-        sorted_candidates = sorted(
-            sequence_candidates.items(),
-            key=lambda item: item[1],
-            reverse=True
-        )
-        pruned_candidates = {}
-        for i in range(min(self._beam_width, len(sorted_candidates))):
-            sequence, prob = sorted_candidates[i]
-            pruned_candidates[sequence] = prob
-        return pruned_candidates
+        sorted_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
+        return dict(sorted_candidates[:self._beam_width])
 
 
 class BeamSearchTextGenerator:
@@ -589,17 +590,20 @@ class BeamSearchTextGenerator:
             new_beam = {}
             for sequence, prob in beam.items():
                 next_tokens = self._get_next_token(sequence)
-                if next_tokens is None:
-                    continue
-                for token, token_prob in next_tokens:
-                    new_sequence = sequence + (token,)
-                    new_prob = prob * token_prob
-                    new_beam[new_sequence] = new_beam.get(new_sequence, 0.0) + new_prob
+                if not next_tokens:
+                    return None
+                updated_beam = self.beam_searcher.continue_sequence(
+                    sequence, next_tokens,
+                    {sequence: prob}
+                    )
+                if updated_beam:
+                    new_beam.update(updated_beam)
             if not new_beam:
                 break
-            beam = self.beam_searcher.prune_sequence_candidates(new_beam)
-            if beam is None:
+            pruned = self.beam_searcher.prune_sequence_candidates(new_beam)
+            if pruned is None:
                 return None
+            beam = pruned
         if not beam:
             return None
         best_sequence = max(beam.items(), key=lambda item: item[1])[0]
