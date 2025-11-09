@@ -100,45 +100,29 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     return jaccard_distance
 
 
-def calculate_distance(
-    first_token: str,
-    vocabulary: dict[str, float],
-    method: Literal["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
-    alphabet: list[str] | None = None,
-) -> dict[str, float] | None:
-    """
-    Calculate distance between two strings using the specified method.
-
-    Args:
-        first_token (str): First string to compare.
-        vocabulary (dict[str, float]): Dictionary mapping words to their relative frequencies.
-        method (str): Method to use for comparison.
-        alphabet (list[str]): The alphabet with letters.
-
-    Returns:
-        dict[str, float] | None: Calculated distance score.
-
-    In case of corrupt input arguments or unsupported method, None is returned.
-    """
+def _validate_calculate_distance_inputs(
+    first_token: str, vocabulary: dict[str, float], method: str, alphabet: list[str] | None
+) -> bool:
+    """Validate inputs for calculate_distance function."""
     if not isinstance(first_token, str) or not isinstance(vocabulary, dict):
-        return None
-
+        return False
     if not vocabulary:
-        return None
-
+        return False
     for key, value in vocabulary.items():
         if not isinstance(key, str) or not isinstance(value, (int, float)):
-            return None
-
+            return False
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
-        return None
-
+        return False
     if method == "frequency-based" and alphabet is not None:
-        if not isinstance(alphabet, list) or not all(
-            isinstance(letter, str) for letter in alphabet
-        ):
-            return None
+        if not isinstance(alphabet, list) or not all(isinstance(letter, str) for letter in alphabet):
+            return False
+    return True
 
+
+def _calculate_distance_by_method(
+    first_token: str, vocabulary: dict[str, float], method: str, alphabet: list[str] | None
+) -> dict[str, float] | None:
+    """Calculate distance using specific method."""
     result = {}
 
     if method == "jaccard":
@@ -175,6 +159,76 @@ def calculate_distance(
     return result
 
 
+def calculate_distance(
+    first_token: str,
+    vocabulary: dict[str, float],
+    method: Literal["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
+    alphabet: list[str] | None = None,
+) -> dict[str, float] | None:
+    """
+    Calculate distance between two strings using the specified method.
+
+    Args:
+        first_token (str): First string to compare.
+        vocabulary (dict[str, float]): Dictionary mapping words to their relative frequencies.
+        method (str): Method to use for comparison.
+        alphabet (list[str]): The alphabet with letters.
+
+    Returns:
+        dict[str, float] | None: Calculated distance score.
+
+    In case of corrupt input arguments or unsupported method, None is returned.
+    """
+    if not _validate_calculate_distance_inputs(first_token, vocabulary, method, alphabet):
+        return None
+
+    return _calculate_distance_by_method(first_token, vocabulary, method, alphabet)
+
+
+def _validate_find_correct_word_inputs(
+    wrong_word: str, vocabulary: dict[str, float], method: str, alphabet: list[str] | None
+) -> bool:
+    """Validate inputs for find_correct_word function."""
+    if not isinstance(wrong_word, str) or not isinstance(vocabulary, dict):
+        return False
+    if not vocabulary:
+        return False
+    for key, value in vocabulary.items():
+        if not isinstance(key, str) or not isinstance(value, (int, float)):
+            return False
+    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
+        return False
+    if alphabet is not None:
+        if not isinstance(alphabet, list) or not all(isinstance(letter, str) for letter in alphabet):
+            return False
+    return True
+
+
+def _select_best_candidate(distances: dict[str, float], wrong_word: str) -> str | None:
+    """Select the best candidate from distances."""
+    if not distances:
+        return None
+
+    min_distance = float("inf")
+    best_candidates = []
+
+    for candidate, distance in distances.items():
+        if distance < min_distance:
+            min_distance = distance
+            best_candidates = [candidate]
+        elif distance == min_distance:
+            best_candidates.append(candidate)
+
+    if not best_candidates:
+        return None
+
+    if len(best_candidates) == 1:
+        return best_candidates[0]
+
+    best_candidates.sort(key=lambda word: (abs(len(word) - len(wrong_word)), word))
+    return best_candidates[0]
+
+
 def find_correct_word(
     wrong_word: str,
     vocabulary: dict[str, float],
@@ -196,47 +250,14 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if not isinstance(wrong_word, str) or not isinstance(vocabulary, dict):
+    if not _validate_find_correct_word_inputs(wrong_word, vocabulary, method, alphabet):
         return None
-
-    if not vocabulary:
-        return None
-
-    for key, value in vocabulary.items():
-        if not isinstance(key, str) or not isinstance(value, (int, float)):
-            return None
-
-    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
-        return None
-
-    if alphabet is not None:
-        if not isinstance(alphabet, list) or not all(
-            isinstance(letter, str) for letter in alphabet
-        ):
-            return None
 
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if distances is None:
         return None
 
-    min_distance = float("inf")
-    best_candidates = []
-
-    for candidate, distance in distances.items():
-        if distance < min_distance:
-            min_distance = distance
-            best_candidates = [candidate]
-        elif distance == min_distance:
-            best_candidates.append(candidate)
-
-    if not best_candidates:
-        return None
-
-    if len(best_candidates) == 1:
-        return best_candidates[0]
-
-    best_candidates.sort(key=lambda word: (abs(len(word) - len(wrong_word)), word))
-    return best_candidates[0]
+    return _select_best_candidate(distances, wrong_word)
 
 
 def initialize_levenshtein_matrix(
