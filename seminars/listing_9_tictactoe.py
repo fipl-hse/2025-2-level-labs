@@ -46,6 +46,7 @@ class Player:
         self.label = label
 
     def make_move(self, row: int, col: int) -> Move:
+        """Create a new move instance."""
         return Move(row, col, self.label)
 
 
@@ -63,6 +64,7 @@ class Board:
         add_move(self, move: Move) -> bool: Add new valid move
         get_moves(self) -> list[Move]: Get already made moves
         get_size(self) -> int: Get size of board
+        get_moves_left(self) -> int: Get number of moves left
     """
 
     def __init__(self, size: int = 3) -> None:
@@ -95,6 +97,10 @@ class Board:
     def get_size(self) -> int:
         """Get board size."""
         return self._size
+
+    def get_moves_left(self) -> int:
+        """Get number of moves left on the board."""
+        return self._moves_left
 
     def show(self) -> None:
         """Print current state of the board."""
@@ -159,7 +165,15 @@ class Game:
         return False
 
     def _check_win_condition(self, label: MarkerType) -> bool:
-        """Check if player with given label has won."""
+        """
+        Check if player with given label has won.
+        
+        Args:
+            label (MarkerType): Player label to check
+            
+        Returns:
+            bool: True if player has won, False otherwise
+        """
         moves = [move for move in self._board.get_moves() if move.label == label]
 
         for row in range(self._size):
@@ -207,7 +221,7 @@ class Game:
             self._finished = True
             return False
 
-        if self._board._moves_left == 0:
+        if self._board.get_moves_left() == 0:
             print("It's a tie!")
             self._finished = True
             return False
@@ -220,7 +234,6 @@ def main() -> None:
     """
     Launch tic-tac-toe game.
     """
-
     print("Created players")
 
     game = Game(3)

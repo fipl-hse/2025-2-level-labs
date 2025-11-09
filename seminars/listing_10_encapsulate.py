@@ -163,7 +163,7 @@ def main() -> None:
     print(account.get_balance())
     account.deposit(300)
     print(account.get_balance())
-    print(account._balance)
+    #print(account._balance)
 
     is_valid = account.validate_transaction(-700)
     print(f"Is transaction valid: {is_valid}")
