@@ -18,15 +18,15 @@ class TextProcessor:
         _storage (dict): Dictionary in the form of <token: identifier>
     """
 
-    def __init__(self, _end_of_word_token: str) -> None:
+    def __init__(self, end_of_word_token: str) -> None:
         """
         Initialize an instance of LetterStorage.
 
         Args:
             end_of_word_token (str): A token denoting word boundary
         """
-        self._end_of_word_token = _end_of_word_token
-        self._storage = {_end_of_word_token: 0}
+        self._end_of_word_token = end_of_word_token
+        self._storage = {self._end_of_word_token: 0}
 
     def _tokenize(self, text: str) -> tuple[str, ...] | None:
         """
@@ -247,7 +247,7 @@ class NGramLanguageModel:
         _encoded_corpus (tuple): Encoded text
     """
 
-    def __init__(self, encoded_corpus: tuple | None, _n_gram_size: int) -> None:
+    def __init__(self, encoded_corpus: tuple | None, n_gram_size: int) -> None:
         """
         Initialize an instance of NGramLanguageModel.
 
@@ -256,7 +256,7 @@ class NGramLanguageModel:
             n_gram_size (int): A size of n-grams to use for language modelling
         """
         self._encoded_corpus = encoded_corpus
-        self._n_gram_size = _n_gram_size
+        self._n_gram_size = n_gram_size
         self._n_gram_frequencies = {}
 
     def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
@@ -289,7 +289,18 @@ class NGramLanguageModel:
         In case of corrupt input arguments or methods used return None,
         1 is returned
         """
-
+        if not isinstance(self._encoded_corpus, tuple) or not self._encoded_corpus:
+            return 1
+        current_encoded_corpus = self._extract_n_grams(self._encoded_corpus)
+        if not current_encoded_corpus:
+            return 1
+        help_storage =[i[:-1] for i in current_encoded_corpus]
+        for element in current_encoded_corpus:
+            common_part = element[:-1]
+            count_ = help_storage.count(common_part)
+            self._n_gram_frequencies[element] = current_encoded_corpus.count(element)/count_
+        return 0 
+        
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
@@ -303,6 +314,17 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if (not isinstance(sequence, tuple) 
+            or not sequence): #add len!! 
+            return None
+        result = {}
+        context = sequence[-(self._n_gram_size - 1):]
+        for element in self._n_gram_frequencies:
+            if element[:self._n_gram_size-1] == context:
+                result[element[-1]] = self._n_gram_frequencies.get(element)
+        sorted_result = dict(sorted(result.items(),  key=lambda x: (-x[1], -x[0])))
+        return sorted_result
+        
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -318,12 +340,13 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
-        if not isinstance(encoded_corpus, tuple) or len(encoded_corpus) == 0:
+        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
         result = []
         for i in range(len(encoded_corpus) - self._n_gram_size + 1):
-            n = encoded_corpus[i:i + self._n_gram_size]
-            result.append(n)
+            n_gram = encoded_corpus[i:i + self._n_gram_size]
+            if 0 not in n_gram:
+                result.append(tuple(n_gram)) 
         return tuple(result)
 
 
