@@ -1,6 +1,9 @@
 """
 Generation by NGrams starter
 """
+from lab_3_generate_by_ngrams.main import (
+    TextProcessor
+)
 
 # pylint:disable=unused-import, unused-variable
 
@@ -15,6 +18,9 @@ def main() -> None:
         text = text_file.read()
     result = None
     assert result
+    text_processor =  TextProcessor(end_of_word_token = '_')
+    encoded_text = text_processor.encode(text)
+    decoded_text = text_processor.decode(encoded_text)
 
 
 if __name__ == "__main__":
