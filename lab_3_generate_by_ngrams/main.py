@@ -24,8 +24,8 @@ class TextProcessor:
         Args:
             end_of_word_token (str): A token denoting word boundary
         """
-        self._end_of_word_token = "_"
-        self._storage = {"_": 0}
+        self._end_of_word_token = end_of_word_token
+        self._storage = {end_of_word_token: 0}
 
 
     def _tokenize(self, text: str) -> tuple[str, ...] | None:
@@ -45,26 +45,28 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(text, str):
+        if not isinstance(text, str) or text == '':
             return None
-        #tokenized_text = list(text.lower().replace(" ", "_").replace("\t", "_").replace("\n", "_"))
-        tokenized_text = list("_".join(text.lower().split()))
-        if tokenized_text[len(tokenized_text) - 1] in ".,-?!:;":
-            tokenized_text[len(tokenized_text) - 1] = "_"
-        for index, symbol in enumerate(tokenized_text):
-            if symbol in "234567890.?!,:;-":
-                tokenized_text[index] = "1"
-        while "1" in tokenized_text:
-            tokenized_text.remove("1")
-        for index, symbol in enumerate(tokenized_text):
-            if tokenized_text[index] == "_" and tokenized_text[index + 1] == "_":
-                tokenized_text[index] = "1"
-        while "1" in tokenized_text:
-            tokenized_text.remove("1")
-        if tokenized_text is None or tokenized_text == ():
-            return None
-        return tuple(tokenized_text)
 
+        processed_text = text.lower() or ""
+        processed_text = processed_text.split() or []
+        processed_text = self._end_of_word_token.join(processed_text) or ''
+        processed_text = list(processed_text)
+
+        if processed_text[len(processed_text) - 1] in ".?!,:;-":
+            processed_text[len(processed_text) - 1] = self._end_of_word_token
+
+        tokens_list = []
+        for index in range(len(processed_text)):
+            if (processed_text[index].isalpha() or
+                (processed_text[index] == self._end_of_word_token and
+                tokens_list[len(tokens_list) - 1] != self._end_of_word_token)
+            ):
+                tokens_list.append(processed_text[index])
+
+        if tokens_list == []:
+            return None
+        return tuple(tokens_list)
 
     def get_id(self, element: str) -> int | None:
         """
