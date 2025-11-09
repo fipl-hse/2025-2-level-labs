@@ -21,47 +21,50 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list):
+    if not check_list(tokens, str, can_be_empty=False):
         return None
 
-    if not all(isinstance(token, str) for token in tokens):
-        return None
-
-    if not tokens:
-        return None
-
-    frequency_dict = {}
     total_tokens = len(tokens)
+    vocabulary = {}
 
     for token in tokens:
-        if token in frequency_dict:
-            frequency_dict[token] += 1
-        else:
-            frequency_dict[token] = 1
-
-    vocabulary = {}
-    for token, count in frequency_dict.items():
-        vocabulary[token] = count / total_tokens
+        vocabulary[token] = vocabulary.get(token, 0) + 1 / total_tokens
 
     return vocabulary
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
     """
-    Found words out of vocabulary.
+    Find tokens that are not present in the vocabulary.
 
     Args:
-        tokens (list[str]): List of tokens.
-        vocabulary (dict[str, float]): Dictionary with unique words and their relative frequencies.
+        tokens (list[str]): List of tokens to check.
+        vocabulary (dict[str, float]): Vocabulary dictionary.
 
     Returns:
-        list[str] | None: List of incorrect words.
+        list[str] | None: List of tokens not found in vocabulary.
 
     In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
+    if not isinstance(tokens, list):
         return None
 
+    if not tokens:
+        return None
+
+    if not all(isinstance(token, str) for token in tokens):
+        return None
+
+    if not isinstance(vocabulary, dict):
+        return None
+
+    if not vocabulary:
+        return None
+
+    for key, value in vocabulary.items():
+        if not isinstance(key, str) or not isinstance(value, (int, float)):
+            return None
+    
     return [token for token in tokens if token not in vocabulary]
 
 
@@ -82,7 +85,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
 
-    if token == "" and candidate == "":
+    if not token and not candidate:
         return 1.0
 
     set1 = set(token)
@@ -94,29 +97,21 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     if not union:
         return 1.0
 
-    jaccard_similarity = len(intersection) / len(union)
-    jaccard_distance = 1.0 - jaccard_similarity
-
-    return jaccard_distance
+    return 1.0 - len(intersection) / len(union)
 
 
 def _validate_calculate_distance_inputs(
     first_token: str, vocabulary: dict[str, float], method: str, alphabet: list[str] | None
 ) -> bool:
     """Validate inputs for calculate_distance function."""
-    if not isinstance(first_token, str) or not isinstance(vocabulary, dict):
-        return False
-    if not vocabulary:
-        return False
-    for key, value in vocabulary.items():
-        if not isinstance(key, str) or not isinstance(value, (int, float)):
+    if method == "frequency-based" and alphabet is not None:
+        if not check_list(alphabet, str, can_be_empty=True):
             return False
+    
+    if not isinstance(first_token, str) or not check_dict(vocabulary, str, float, can_be_empty=False):
+        return False
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return False
-    if method == "frequency-based" and alphabet is not None:
-        if (not isinstance(alphabet, list) or
-                not all(isinstance(letter, str) for letter in alphabet)):
-            return False
     return True
 
 
@@ -161,8 +156,8 @@ def _calculate_frequency_distances(first_token: str, vocabulary: dict[str, float
     """Calculate frequency-based distances."""
     if alphabet is None:
         return {candidate: 1.0 for candidate in vocabulary}
-    freq_result = calculate_frequency_distance(first_token, vocabulary, alphabet)
-    return freq_result
+    
+    return calculate_frequency_distance(first_token, vocabulary, alphabet)
 
 
 def _calculate_distance_by_method(
@@ -170,15 +165,14 @@ def _calculate_distance_by_method(
 ) -> dict[str, float] | None:
     """Calculate distance using specific method."""
 
-    method_handlers = {
-        "jaccard": lambda: _calculate_jaccard_distances(first_token, vocabulary),
-        "levenshtein": lambda: _calculate_levenshtein_distances(first_token, vocabulary),
-        "jaro-winkler": lambda: _calculate_jaro_winkler_distances(first_token, vocabulary),
-        "frequency-based": lambda: _calculate_frequency_distances(first_token, vocabulary, alphabet)
-    }
-
-    if method in method_handlers:
-        return method_handlers[method]()
+    if method == "jaccard":
+        return _calculate_jaccard_distances(first_token, vocabulary)
+    if method == "levenshtein":
+        return _calculate_levenshtein_distances(first_token, vocabulary)
+    if method == "jaro-winkler":
+        return _calculate_jaro_winkler_distances(first_token, vocabulary)
+    if method == "frequency-based":
+        return _calculate_frequency_distances(first_token, vocabulary, alphabet)
 
     return None
 
@@ -213,36 +207,23 @@ def _validate_find_correct_word_inputs(
     wrong_word: str, vocabulary: dict[str, float], method: str, alphabet: list[str] | None
 ) -> bool:
     """Validate inputs for find_correct_word function."""
-    if not isinstance(wrong_word, str) or not isinstance(vocabulary, dict):
-        return False
-    if not vocabulary:
-        return False
-    for key, value in vocabulary.items():
-        if not isinstance(key, str) or not isinstance(value, (int, float)):
+    if alphabet is not None:
+        if not check_list(alphabet, str, can_be_empty=True):
             return False
+    
+    if not isinstance(wrong_word, str) or not check_dict(vocabulary, str, float, can_be_empty=False):
+        return False
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return False
-    if alphabet is not None:
-        if (not isinstance(alphabet, list) or
-                not all(isinstance(letter, str) for letter in alphabet)):
-            return False
     return True
-
 
 def _select_best_candidate(distances: dict[str, float], wrong_word: str) -> str | None:
     """Select the best candidate from distances."""
     if not distances:
         return None
 
-    min_distance = float("inf")
-    best_candidates = []
-
-    for candidate, distance in distances.items():
-        if distance < min_distance:
-            min_distance = distance
-            best_candidates = [candidate]
-        elif distance == min_distance:
-            best_candidates.append(candidate)
+    min_distance = min(distances.values())
+    best_candidates = [candidate for candidate, distance in distances.items() if distance == min_distance]
 
     if not best_candidates:
         return None
@@ -332,12 +313,9 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
         return None
     for i in range(1, len(matrix)):
         for j in range(1, len(matrix[0])):
-            if token[i - 1] == candidate[j - 1]:
-                cost = 0
-            else:
-                cost = 1
+            substitution_cost = 0 if token[i - 1] == candidate[j - 1] else 1
             matrix[i][j] = min(
-                matrix[i - 1][j] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j - 1] + cost
+                matrix[i - 1][j] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j - 1] + substitution_cost
             )
     return matrix
 
@@ -376,11 +354,7 @@ def delete_letter(word: str) -> list[str]:
     """
     if not isinstance(word, str) or word == "":
         return []
-    candidates_without_letter = []
-    for i in range(len(word)):
-        candidate = word[:i] + word[i + 1:]
-        candidates_without_letter.append(candidate)
-    return sorted(candidates_without_letter)
+    return sorted([word[:i] + word[i + 1:] for i in range(len(word))])
 
 
 def add_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -399,12 +373,7 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True) or not alphabet:
         return []
-    candidates_with_letter = []
-    for i in range(len(word) + 1):
-        for letter in alphabet:
-            candidate = word[:i] + letter + word[i:]
-            candidates_with_letter.append(candidate)
-    return sorted(candidates_with_letter)
+    return sorted([word[:i] + letter + word[i:] for i in range(len(word) + 1) for letter in alphabet])
 
 
 def replace_letter(word: str, alphabet: list[str]) -> list[str]:
@@ -428,12 +397,10 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
         or not alphabet
     ):
         return []
-    replaced_candidates = []
-    for i in range(len(word)):
-        for letter in alphabet:
-            candidate = word[:i] + letter + word[i + 1:]
-            replaced_candidates.append(candidate)
-    return sorted(replaced_candidates)
+    return sorted([word[:i] + letter + word[i + 1:] 
+                  for i in range(len(word)) 
+                  for letter in alphabet 
+                  if letter != word[i]])
 
 
 def swap_adjacent(word: str) -> list[str]:
@@ -451,11 +418,7 @@ def swap_adjacent(word: str) -> list[str]:
     """
     if not isinstance(word, str) or len(word) < 2:
         return []
-    swapped_candidates = []
-    for i in range(len(word) - 1):
-        candidate = word[:i] + word[i + 1] + word[i] + word[i + 2:]
-        swapped_candidates.append(candidate)
-    return sorted(swapped_candidates)
+    return sorted([word[:i] + word[i + 1] + word[i] + word[i + 2:] for i in range(len(word) - 1)])
 
 
 def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
@@ -617,21 +580,16 @@ def count_transpositions(
         or not check_list(candidate_matches, bool, False)
     ):
         return None
-    matched_token_indexes = []
-    matched_candidate_indexes = []
-    max_len = max(len(token), len(candidate))
-    for index in range(max_len):
-        if index < len(token) and index < len(token_matches) and token_matches[index]:
-            matched_token_indexes.append(index)
-        if index < len(candidate) and index < len(candidate_matches) and candidate_matches[index]:
-            matched_candidate_indexes.append(index)
+    
+    matched_token_indexes = [i for i, matched in enumerate(token_matches) if matched and i < len(token)]
+    matched_candidate_indexes = [i for i, matched in enumerate(candidate_matches) if matched and i < len(candidate)]
+    
     transpositions = 0
     min_length = min(len(matched_token_indexes), len(matched_candidate_indexes))
     for index in range(min_length):
-        matched_token_symbol = token[matched_token_indexes[index]]
-        matched_candidate_symbol = candidate[matched_candidate_indexes[index]]
-        if matched_token_symbol != matched_candidate_symbol:
+        if token[matched_token_indexes[index]] != candidate[matched_candidate_indexes[index]]:
             transpositions += 1
+    
     return transpositions // 2
 
 
@@ -661,7 +619,7 @@ def calculate_jaro_distance(
         return None
     if matches < 0 or transpositions < 0:
         return None
-    if matches == 0:
+    if not matches:
         return 1.0
     len_token = len(token)
     len_candidate = len(candidate)
@@ -673,41 +631,30 @@ def calculate_jaro_distance(
     )
     return 1.0 - standard_similarity
 
-
 def winkler_adjustment(
     token: str, candidate: str, jaro_distance: float, prefix_scaling: float = 0.1
 ) -> float | None:
     """
     Apply the Winkler adjustment to boost distance for strings with a common prefix.
-
-    Args:
-        token (str): The first string to compare.
-        candidate (str): The second string to compare.
-        jaro_distance (float): Jaro distance score.
-        prefix_scaling (float): Scaling factor for the prefix boost.
-
-    Returns:
-        float | None: Winkler adjustment score.
-
-    In case of corrupt input arguments, None is returned.
     """
     if (
         not isinstance(token, str)
         or not isinstance(candidate, str)
         or not isinstance(jaro_distance, float)
-        or not isinstance(prefix_scaling, float)
+        or not isinstance(prefix_scaling, float)  # Только float, не int
     ):
         return None
     if not all([0 <= jaro_distance <= 1, 0 <= prefix_scaling <= 1]):
         return None
+    if not token or not candidate:
+        return 0.0
     prefix_length = 0
     for i in range(min(len(token), len(candidate), 4)):
         if token[i] == candidate[i]:
             prefix_length += 1
         else:
             break
-    adjustment = prefix_length * prefix_scaling * jaro_distance
-    return adjustment
+    return prefix_length * prefix_scaling * jaro_distance
 
 
 def calculate_jaro_winkler_distance(
@@ -729,24 +676,33 @@ def calculate_jaro_winkler_distance(
     if (
         not isinstance(token, str)
         or not isinstance(candidate, str)
-        or not isinstance(prefix_scaling, (float, int))
+        or not isinstance(prefix_scaling, float)
     ):
         return None
+    
     if not token or not candidate:
         return 1.0
+    
     match_distance = max(len(token), len(candidate)) // 2 - 1
     all_matches = get_matches(token, candidate, match_distance)
+    
     if all_matches is None:
         return None
+    
     matches, token_matches, candidate_matches = all_matches
     transpositions = count_transpositions(token, candidate, token_matches, candidate_matches)
+    
     if transpositions is None:
         return None
+    
     jaro_distance = calculate_jaro_distance(token, candidate, matches, transpositions)
+    
     if jaro_distance is None:
         return None
+    
     adjustment = winkler_adjustment(token, candidate, jaro_distance, prefix_scaling)
+    
     if adjustment is None:
         return None
-    jaro_winkler_distance = jaro_distance - adjustment
-    return jaro_winkler_distance
+    
+    return jaro_distance - adjustment
