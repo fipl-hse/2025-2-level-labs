@@ -18,7 +18,7 @@ class SwapAdjacentTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_swap_adjacent_ideal(self) -> None:
+    def test_swap_adjacent_ideal(self):
         """
         Ideal scenario
         """
@@ -28,7 +28,7 @@ class SwapAdjacentTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_swap_adjacent_length_check(self) -> None:
+    def test_swap_adjacent_length_check(self):
         """
         Check length of new word list
         """
@@ -38,7 +38,7 @@ class SwapAdjacentTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_swap_adjacent_bad_input(self) -> None:
+    def test_swap_adjacent_bad_input(self):
         """
         Bad input scenario
         """
@@ -52,7 +52,7 @@ class SwapAdjacentTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_swap_adjacent_value_check(self) -> None:
+    def test_swap_adjacent_value_check(self):
         """
         Return value check
         """

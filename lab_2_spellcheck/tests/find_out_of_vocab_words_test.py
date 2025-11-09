@@ -16,9 +16,6 @@ class FindOutOfVocabWordsTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        """
-        Set up for document quantity tests class.
-        """
         self.example = {
             "text": "Kind boyi across the streat loved coffe and his cta!",
             "clean_tokens": ["kind", "boyi", "across", "streat", "loved", "coffe", "cta"],
@@ -48,7 +45,7 @@ class FindOutOfVocabWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_out_of_vocab_words_ideal(self) -> None:
+    def test_find_out_of_vocab_words_ideal(self):
         """
         Ideal scenario
         """
@@ -61,7 +58,7 @@ class FindOutOfVocabWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_out_of_vocab_words_bad_input(self) -> None:
+    def test_find_out_of_vocab_words_bad_input(self):
         """
         Bad input scenario
         """
@@ -82,7 +79,7 @@ class FindOutOfVocabWordsTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_find_out_of_vocab_words_return_value(self) -> None:
+    def test_find_out_of_vocab_words_return_value(self):
         """
         Function return value check
         """

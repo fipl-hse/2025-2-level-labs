@@ -18,7 +18,7 @@ class DeleteLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_delete_letter_ideal(self) -> None:
+    def test_delete_letter_ideal(self):
         """
         Ideal scenario
         """
@@ -29,7 +29,7 @@ class DeleteLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_delete_letter_length(self) -> None:
+    def test_delete_letter_length(self):
         """
         Check length of new word list
         """
@@ -39,7 +39,7 @@ class DeleteLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_delete_letter_bad_input(self) -> None:
+    def test_delete_letter_bad_input(self):
         """
         Bad input scenario
         """
@@ -53,7 +53,7 @@ class DeleteLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_delete_letter_value_check(self) -> None:
+    def test_delete_letter_value_check(self):
         """
         Return value check
         """

@@ -19,9 +19,6 @@ class ProposeCandidatesTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        """
-        Set up function of candidate proposal tests class.
-        """
         with open(
             Path(__file__).parent / r"assets/propose_candidates_example.txt", "r", encoding="utf-8"
         ) as f:
@@ -44,7 +41,7 @@ class ProposeCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_propose_candidates_ideal(self) -> None:
+    def test_propose_candidates_ideal(self):
         """
         Ideal scenario
         """
@@ -54,7 +51,7 @@ class ProposeCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_propose_candidates_length_check(self) -> None:
+    def test_propose_candidates_length_check(self):
         """
         Check length of candidates list
         """
@@ -64,7 +61,7 @@ class ProposeCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_propose_candidates_value_check(self) -> None:
+    def test_propose_candidates_value_check(self):
         """
         Return value check
         """
@@ -77,7 +74,7 @@ class ProposeCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_propose_candidates_bad_input(self) -> None:
+    def test_propose_candidates_bad_input(self):
         """
         Bad input scenario
         """
@@ -93,7 +90,7 @@ class ProposeCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_propose_candidates_russian(self) -> None:
+    def test_propose_candidates_russian(self):
         """
         Russian word scenario
         """
@@ -105,7 +102,7 @@ class ProposeCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_propose_candidates_empty_word(self) -> None:
+    def test_propose_candidates_empty_word(self):
         """
         Empty word scenario
         """
@@ -116,7 +113,7 @@ class ProposeCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_propose_candidates_empty_inputs(self) -> None:
+    def test_propose_candidates_empty_inputs(self):
         """
         Empty word scenario
         """
@@ -126,7 +123,7 @@ class ProposeCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_propose_candidates_generate_candidates_none(self) -> None:
+    def test_propose_candidates_generate_candidates_none(self):
         """
         Candidates generation function returning None scenario
         """
@@ -139,7 +136,7 @@ class ProposeCandidatesTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_propose_candidates_generate_secondary_candidates_none(self) -> None:
+    def test_propose_candidates_generate_secondary_candidates_none(self):
         """
         Candidates generation function returning None for new candidates scenario
         """

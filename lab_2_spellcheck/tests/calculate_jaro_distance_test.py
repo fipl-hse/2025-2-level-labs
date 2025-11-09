@@ -17,10 +17,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
     Tests function for Jaro distance calculation.
     """
 
-    def setUp(self) -> None:
-        """
-        Set up for Jaro distance calculation tests class.
-        """
+    def setUp(self):
         self.matches = {
             "word": (4, [True, True, True, True], [True, True, True, True]),
             "ord": (3, [True, True, True], [False, True, True, True]),
@@ -38,7 +35,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_distance_ideal(self) -> None:
+    def test_calculate_jaro_distance_ideal(self):
         """
         Ideal scenario
         """
@@ -55,7 +52,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_distance_bad_input(self) -> None:
+    def test_calculate_jaro_distance_bad_input(self):
         """
         Bad input argument scenario
         """
@@ -72,7 +69,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_distance_value_check(self) -> None:
+    def test_calculate_jaro_distance_value_check(self):
         """
         Check returned value
         """
@@ -80,7 +77,7 @@ class CalculateJaroDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_jaro_distance_zero_matches(self) -> None:
+    def test_calculate_jaro_distance_zero_matches(self):
         """
         Zero matches scenario
         """
