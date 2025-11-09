@@ -9,7 +9,6 @@ Brainstorm from the lecture on designing a TicTacToe game.
 # pylint:disable=too-few-public-methods
 from typing import Literal
 
-
 MarkerType = Literal["X", "O"]
 
 
@@ -154,11 +153,8 @@ class Game:
 
     def _check_for_winner(self) -> bool:
         """Check if win state is present."""
-        # Simplified win check - in real implementation would check rows, columns, diagonals
         moves = self._board.get_moves()
-        if len(moves) >= self._size * 2 - 1:  # Simple heuristic
-            # Check if any player has winning combination
-            # This is a simplified version
+        if len(moves) >= self._size * 2 - 1:
             return any(self._check_win_condition(player.label) for player in self._players)
         return False
 
@@ -166,17 +162,14 @@ class Game:
         """Check if player with given label has won."""
         moves = [move for move in self._board.get_moves() if move.label == label]
 
-        # Check rows
         for row in range(self._size):
             if sum(1 for move in moves if move.row == row) == self._size:
                 return True
 
-        # Check columns
         for col in range(self._size):
             if sum(1 for move in moves if move.col == col) == self._size:
                 return True
 
-        # Check diagonals
         if sum(1 for move in moves if move.row == move.col) == self._size:
             return True
         if sum(1 for move in moves if move.row + move.col == self._size - 1) == self._size:
@@ -227,18 +220,15 @@ def main() -> None:
     """
     Launch tic-tac-toe game.
     """
-    # 1. Create players
+
     print("Created players")
 
-    # 2. Create game
     game = Game(3)
     print("Created game")
 
-    # 3. Make moves
     print("Making moves...")
 
-    # Example moves
-    moves = [(0, 0), (1, 1), (0, 1), (2, 2), (0, 2)]  # X wins with first row
+    moves = [(0, 0), (1, 1), (0, 1), (2, 2), (0, 2)]
 
     for row, col in moves:
         if not game.play(row, col):
