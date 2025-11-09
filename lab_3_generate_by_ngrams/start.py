@@ -6,6 +6,7 @@ Generation by NGrams starter
 
 from main import TextProcessor
 
+
 def main() -> None:
     """
     Launches an implementation.
