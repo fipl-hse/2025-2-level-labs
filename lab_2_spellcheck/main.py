@@ -120,7 +120,8 @@ def _validate_calculate_distance_inputs(
     return True
 
 
-def _calculate_jaccard_distances(first_token: str, vocabulary: dict[str, float]) -> dict[str, float] | None:
+def _calculate_jaccard_distances(first_token: str,
+                                vocabulary: dict[str, float]) -> dict[str, float] | None:
     """Calculate Jaccard distances for all candidates."""
     result = {}
     for candidate in vocabulary:
@@ -131,7 +132,8 @@ def _calculate_jaccard_distances(first_token: str, vocabulary: dict[str, float])
     return result
 
 
-def _calculate_levenshtein_distances(first_token: str, vocabulary: dict[str, float]) -> dict[str, float] | None:
+def _calculate_levenshtein_distances(first_token: str,
+                                     vocabulary: dict[str, float]) -> dict[str, float] | None:
     """Calculate Levenshtein distances for all candidates."""
     result = {}
     for candidate in vocabulary:
@@ -142,7 +144,8 @@ def _calculate_levenshtein_distances(first_token: str, vocabulary: dict[str, flo
     return result
 
 
-def _calculate_jaro_winkler_distances(first_token: str, vocabulary: dict[str, float]) -> dict[str, float] | None:
+def _calculate_jaro_winkler_distances(first_token: str,
+                                      vocabulary: dict[str, float]) -> dict[str, float] | None:
     """Calculate Jaro-Winkler distances for all candidates."""
     result = {}
     for candidate in vocabulary:
@@ -166,17 +169,17 @@ def _calculate_distance_by_method(
     first_token: str, vocabulary: dict[str, float], method: str, alphabet: list[str] | None
 ) -> dict[str, float] | None:
     """Calculate distance using specific method."""
-    
+
     method_handlers = {
         "jaccard": lambda: _calculate_jaccard_distances(first_token, vocabulary),
         "levenshtein": lambda: _calculate_levenshtein_distances(first_token, vocabulary),
         "jaro-winkler": lambda: _calculate_jaro_winkler_distances(first_token, vocabulary),
         "frequency-based": lambda: _calculate_frequency_distances(first_token, vocabulary, alphabet)
     }
-    
+
     if method in method_handlers:
         return method_handlers[method]()
-    
+
     return None
 
 
@@ -375,7 +378,7 @@ def delete_letter(word: str) -> list[str]:
         return []
     candidates_without_letter = []
     for i in range(len(word)):
-        candidate = word[:i] + word[i + 1 :]
+        candidate = word[:i] + word[i + 1:]
         candidates_without_letter.append(candidate)
     return sorted(candidates_without_letter)
 
@@ -428,7 +431,7 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     replaced_candidates = []
     for i in range(len(word)):
         for letter in alphabet:
-            candidate = word[:i] + letter + word[i + 1 :]
+            candidate = word[:i] + letter + word[i + 1:]
             replaced_candidates.append(candidate)
     return sorted(replaced_candidates)
 
@@ -450,7 +453,7 @@ def swap_adjacent(word: str) -> list[str]:
         return []
     swapped_candidates = []
     for i in range(len(word) - 1):
-        candidate = word[:i] + word[i + 1] + word[i] + word[i + 2 :]
+        candidate = word[:i] + word[i + 1] + word[i] + word[i + 2:]
         swapped_candidates.append(candidate)
     return sorted(swapped_candidates)
 
