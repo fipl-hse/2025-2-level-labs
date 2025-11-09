@@ -4,16 +4,15 @@ Spellcheck starter
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
 from lab_1_keywords_tfidf.main import(
-    check_dict,
-    check_list,
     clean_and_tokenize,
     remove_stop_words,
 )
 from lab_2_spellcheck.main import (
     build_vocabulary,
     find_out_of_vocab_words,
-    calculate_jaccard_distance,
     calculate_distance,
+    calculate_frequency_distance,
+    calculate_jaccard_distance,
     find_correct_word,
 )
 
@@ -35,6 +34,9 @@ def main() -> None:
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
     
+    alphabet = ['а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 
+           'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я']
+
     cleaned_tokens = clean_and_tokenize(text)
     if not cleaned_tokens:
         return None
@@ -63,9 +65,20 @@ def main() -> None:
             
         corrections = []
         for wrong_word in out_of_vocab_words:
-            correct_word = find_correct_word(wrong_word, built_voc, "jaccard", None)
-            if correct_word:
-                corrections.append((wrong_word, correct_word))
+             correct_jaccard = find_correct_word(wrong_word, built_voc, "jaccard", None)
+             correct_frequency = find_correct_word(wrong_word, built_voc, "frequency-based", alphabet)
+    
+             dist_jaccard = calculate_jaccard_distance(wrong_word, correct_jaccard) if correct_jaccard else 1.0
+             dist_frequency = calculate_jaccard_distance(wrong_word, correct_frequency) if correct_frequency else 1.0
+    
+             if dist_jaccard < dist_frequency and dist_jaccard < 0.7:
+                corrections.append((wrong_word, correct_jaccard))
+                print(f"   ✅ Jaccard: {wrong_word} → {correct_jaccard} ({dist_jaccard:.2f})")
+             elif dist_frequency < 0.7:
+                corrections.append((wrong_word, correct_frequency))
+                print(f"   ✅ Frequency: {wrong_word} → {correct_frequency} ({dist_frequency:.2f})")
+             else:
+                print(f"   Оба метода плохи: {wrong_word}")
         
         if corrections:
             results.append({
