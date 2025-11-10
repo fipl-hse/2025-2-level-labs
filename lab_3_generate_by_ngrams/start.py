@@ -20,7 +20,7 @@ def main() -> None:
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
     processor = TextProcessor(end_of_word_token='_')
-    encoded_text = processor.encode(text)
+    encoded_text = processor.encode(text) or tuple()
     print(encoded_text)
     decoded_text = processor.decode(encoded_text) or tuple()
     print(decoded_text)
