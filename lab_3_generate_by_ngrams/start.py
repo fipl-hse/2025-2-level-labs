@@ -1,9 +1,12 @@
 """
 Generation by NGrams starter
 """
-
+#lab_3_generate_by_ngrams.
 # pylint:disable=unused-import, unused-variable
-from main import TextProcessor
+from main import (
+    TextProcessor, 
+    NGramLanguageModel, 
+    GreedyTextGenerator)
 
 def main() -> None:
     """
@@ -14,9 +17,13 @@ def main() -> None:
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
     processor = TextProcessor("_")
-    #tokenized_text = processor._tokenize(text)
     encoded_text = processor.encode(text)
-    result = processor.decode(encoded_text)
+    if encoded_text is None:
+        return None
+    model = NGramLanguageModel(encoded_text, 7)
+    build_result = model.build()
+    generator = GreedyTextGenerator(model, processor)
+    result = generator.run(51, "Vernon")
     print(result)
     assert result
 

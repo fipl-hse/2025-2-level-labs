@@ -48,10 +48,12 @@ class TextProcessor:
         if not isinstance(text, str):
             return None
         tokens = []
+        special_symbols = set(string.punctuation)
+        special_symbols.remove("-")
         for token in text.lower():
             if token.isalpha():
                 tokens.append(token)
-            elif token.isspace() or token in string.punctuation:
+            elif token.isspace() or token in special_symbols:
                 if tokens[-1] != "_":
                     tokens.append("_")
                 else:
@@ -147,7 +149,6 @@ class TextProcessor:
         """
         if not isinstance(element, str) or len(element) != 1:
             return None
-        self.element = element
         if element not in self._storage:
             self._storage[element] = len(self._storage)
 
@@ -222,20 +223,17 @@ class TextProcessor:
 
         In case of corrupt input arguments, None is returned
         """
-        if not isinstance(decoded_corpus, tuple) or len(decoded_corpus) == 0:
+        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
         result = ""
         for element in decoded_corpus:
             if element == "_":
-                if result != " ":
-                    result += " "
-                continue
-            result += element
-        if result[len(result) - 1] == " ":
-            result_string = result[:-1]
-        return result_string.capitalize() + "."
+                result += " "
+            else:
+                result += element
+        result = result.strip()
+        return result.capitalize() + "."
         
-
 
 class NGramLanguageModel:
     """
@@ -315,12 +313,12 @@ class NGramLanguageModel:
         In case of corrupt input arguments, None is returned
         """
         if (not isinstance(sequence, tuple) 
-            or not sequence): #add len!! 
+            or not sequence): #add len!!
             return None
         result = {}
         context = sequence[-(self._n_gram_size - 1):]
         for element in self._n_gram_frequencies:
-            if element[:self._n_gram_size-1] == context:
+            if element[:self._n_gram_size - 1] == context:
                 result[element[-1]] = self._n_gram_frequencies.get(element)
         sorted_result = dict(sorted(result.items(),  key=lambda x: (-x[1], -x[0])))
         return sorted_result
@@ -345,8 +343,7 @@ class NGramLanguageModel:
         result = []
         for i in range(len(encoded_corpus) - self._n_gram_size + 1):
             n_gram = encoded_corpus[i:i + self._n_gram_size]
-            if 0 not in n_gram:
-                result.append(tuple(n_gram)) 
+            result.append(tuple(n_gram))
         return tuple(result)
 
 
@@ -384,7 +381,25 @@ class GreedyTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-
+        if (not isinstance(seq_len, int)
+        or not isinstance(prompt, str)
+        or not prompt):
+            return None
+        encoded_prompt = self._text_processor.encode(prompt)
+        n_gram_size = self._model.get_n_gram_size()
+        if n_gram_size is None or encoded_prompt is None:
+            return None
+        sequence = list(encoded_prompt)
+        for _ in range(seq_len):
+            context = tuple(sequence[-(n_gram_size - 1):])
+            next_token_candidates = self._model.generate_next_token(context)
+            if next_token_candidates is None or not next_token_candidates:
+                break
+            next_token = list(next_token_candidates.keys())[0]
+            sequence.append(next_token)
+        decoded_text = self._text_processor.decode(tuple(sequence))
+        return decoded_text
+        
 
 class BeamSearcher:
     """
