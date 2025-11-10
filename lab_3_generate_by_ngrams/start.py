@@ -31,6 +31,7 @@ def main() -> None:
     print(beam)
     result = beam
     assert result
+    return beam
 
 
 if __name__ == "__main__":

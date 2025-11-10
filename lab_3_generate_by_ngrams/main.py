@@ -6,8 +6,8 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
-from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 from math import log
+from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 
 
 class TextProcessor:
@@ -147,6 +147,7 @@ class TextProcessor:
         if not isinstance(element, str) or len(element) > 1 or element in self._storage:
             return None
         self._storage[element] = len(self._storage)
+        return None
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
@@ -164,7 +165,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(encoded_corpus, tuple) and encoded_corpus != None:
+        if not isinstance(encoded_corpus, tuple) and encoded_corpus is not None:
             return None
         encoded_letters = self._decode(encoded_corpus)
         if not encoded_letters:
@@ -201,10 +202,10 @@ class TextProcessor:
         if not isinstance(corpus, tuple) or corpus == ():
             return None
         decoded_tokens_letters = []
-        if corpus == None:
+        if corpus is None:
             return None
         for i in corpus:
-            if i == None:
+            if i is None:
                 return None
             if not self.get_token(i):
                 return None
@@ -284,6 +285,7 @@ class NGramLanguageModel:
         if not isinstance(frequencies, dict) or not frequencies:
             return None
         self._n_gram_frequencies = frequencies
+        return None
 
     def build(self) -> int:  # type: ignore[empty-body]
         """
@@ -313,7 +315,7 @@ class NGramLanguageModel:
             if all_gram in all_grams:
                 all_grams[all_gram] += 1
             else:
-                all_grams[all_gram] = 1    
+                all_grams[all_gram] = 1
         self._n_gram_frequencies = {n_gram: n_grams[n_gram] /
                     all_grams[n_gram[:-1]] for n_gram in set(extracted)
         }
@@ -409,7 +411,8 @@ class GreedyTextGenerator:
             return None
         sequence = list(encoded)
         for _ in range(seq_len):
-            context = tuple(sequence[-(self._model.get_n_gram_size()-1):])
+            new_seq = sequence[-(self._model.get_n_gram_size()-1):]
+            context = tuple(new_seq)
             candidates = self._model.generate_next_token(context)
             if not candidates:
                 break
