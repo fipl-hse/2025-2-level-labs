@@ -494,12 +494,15 @@ class BeamSearcher:
         if (
             not isinstance(sequence, tuple)
             or not isinstance(next_tokens, list)
-            or not isinstance(sequence_candidates, dict)
             or not sequence
             or not next_tokens
-            or sequence not in sequence_candidates
             or not len(next_tokens) <= self._beam_width
             ):
+            return None
+        if (
+            not isinstance(sequence_candidates, dict)
+            or sequence not in sequence_candidates
+        ):
             return None
         seq_prob = sequence_candidates[sequence]
         new_sequences = {}
