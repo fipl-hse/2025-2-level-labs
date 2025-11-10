@@ -13,6 +13,7 @@ from lab_2_spellcheck.main import (
     calculate_distance,
     calculate_frequency_distance,
     calculate_jaccard_distance,
+    calculate_levenshtein_distance,
     find_correct_word,
 )
 
@@ -67,18 +68,11 @@ def main() -> None:
         for wrong_word in out_of_vocab_words:
              correct_jaccard = find_correct_word(wrong_word, built_voc, "jaccard", None)
              correct_frequency = find_correct_word(wrong_word, built_voc, "frequency-based", alphabet)
-    
-             dist_jaccard = calculate_jaccard_distance(wrong_word, correct_jaccard) if correct_jaccard else 1.0
-             dist_frequency = calculate_jaccard_distance(wrong_word, correct_frequency) if correct_frequency else 1.0
-    
-             if dist_jaccard < dist_frequency and dist_jaccard < 0.7:
-                corrections.append((wrong_word, correct_jaccard))
-                print(f"   ✅ Jaccard: {wrong_word} → {correct_jaccard} ({dist_jaccard:.2f})")
-             elif dist_frequency < 0.7:
-                corrections.append((wrong_word, correct_frequency))
-                print(f"   ✅ Frequency: {wrong_word} → {correct_frequency} ({dist_frequency:.2f})")
-             else:
-                print(f"   Оба метода плохи: {wrong_word}")
+             correct_levenshtein = find_correct_word(wrong_word, built_voc, "levenshtein", None)
+             correct_word = correct_frequency or correct_levenshtein or correct_jaccard
+            
+             if correct_word:
+                corrections.append((wrong_word, correct_word))
         
         if corrections:
             results.append({
