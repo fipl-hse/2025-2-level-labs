@@ -404,21 +404,21 @@ class GreedyTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if not isinstance(seq_len, int) or not isinstance(prompt, str):
+        if not isinstance(seq_len, int) or seq_len <= 0 or not isinstance(prompt, str):
             return None
         encoded = self._text_processor.encode(prompt)
-        if not encoded:
+        if encoded is None:
             return None
-        sequence = list(encoded)
+        result = list(encoded)
         for _ in range(seq_len):
-            new_seq = sequence[-(self._model.get_n_gram_size()-1):]
-            context = tuple(new_seq)
-            candidates = self._model.generate_next_token(context)
+            candidates = self._model.generate_next_token(tuple(result))
             if not candidates:
                 break
-            token = max(candidates, key=lambda token: (candidates[token], token))
-            sequence.append(token)
-        return self._text_processor.decode(tuple(sequence))
+            sorted_tokens = sorted(candidates.items(), key=lambda x: (-x[1], -x[0]))
+            token = sorted_tokens[0][0]
+            result.append(token)
+        decoded = self._text_processor.decode(tuple(result))
+        return decoded
 class BeamSearcher:
     """
     Beam Search algorithm for diverse text generation.
