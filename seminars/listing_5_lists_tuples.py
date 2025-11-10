@@ -222,6 +222,7 @@ def find_first_vowel(input_string: str) -> int:
             ind = vowels.index(i)
             break
     print(ind)
+    return ind
 find_first_vowel("hgllo")
 
 # Function calls with expected result:
@@ -259,6 +260,7 @@ def sum_until_zero(numbers: list) -> int:
     else:
         all_sum += 10
         print(all_sum)
+        return all_sum
 sum_until_zero([1, 2, -3, 4, 0, 5])
     # student implementation goes here
 
