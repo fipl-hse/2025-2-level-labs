@@ -663,7 +663,7 @@ def winkler_adjustment(
         not isinstance(token, str)
         or not isinstance(candidate, str)
         or not isinstance(jaro_distance, float)
-        or not isinstance(prefix_scaling, float)  # Только float, не int
+        or not isinstance(prefix_scaling, float)
     ):
         return None
     if not all([0 <= jaro_distance <= 1, 0 <= prefix_scaling <= 1]):
