@@ -22,9 +22,7 @@ def main() -> None:
     processor = TextProcessor(end_of_word_token='_')
     encoded_text = processor.encode(text)
     print(encoded_text)
-    if encoded_text is not None:
-        decoded_text = processor.decode(encoded_text)
-    decoded_text = tuple()
+    decoded_text = processor.decode(encoded_text) or tuple()
     print(decoded_text)
     model = NGramLanguageModel(encoded_text, 7)
     frequency = model.build()
