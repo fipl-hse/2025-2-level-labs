@@ -495,25 +495,21 @@ class BeamSearcher:
             not isinstance(sequence, tuple)
             or not isinstance(next_tokens, list)
             or not isinstance(sequence_candidates, dict)
+            or not sequence
+            or not next_tokens
+            or sequence not in sequence_candidates
             or not len(next_tokens) <= self._beam_width
-            or not sequence in sequence_candidates
             ):
             return None
-        if (
-            not sequence
-            or not next_tokens
-            or not sequence_candidates
-        ):
-            return None
-        if sequence in sequence_candidates:
-            del sequence_candidates[sequence]
-        for token, token_prob in next_tokens:
-            new_sequence = sequence + (token,)
-            new_probability = sequence_candidates.get(sequence, 1.0) * token_prob
-            if new_sequence in sequence_candidates:
-                sequence_candidates[new_sequence] += new_probability
-            else:
-                sequence_candidates[new_sequence] = new_probability
+        seq_prob = sequence_candidates[sequence]
+        new_sequences = {}
+        for token_id, token_prob in next_tokens:
+            new_seq = sequence + (token_id,)
+            new_prob = seq_prob - math.log(token_prob)
+            new_sequences[new_seq] = new_prob
+        del sequence_candidates[sequence]
+        for new_seq, new_prob in new_sequences.items():
+            sequence_candidates[new_seq] = new_prob
         return sequence_candidates
 
     def prune_sequence_candidates(
@@ -587,7 +583,7 @@ class BeamSearchTextGenerator:
         encoded_prompt = self._text_processor.encode(prompt)
         if encoded_prompt is None:
             return None
-        beam = {encoded_prompt: 1.0}
+        beam = {encoded_prompt: 0.0}
         for _ in range(seq_len):
             new_beam = {}
             for sequence, prob in beam.items():
@@ -608,7 +604,7 @@ class BeamSearchTextGenerator:
             beam = pruned
         if not beam:
             return None
-        best_sequence = max(beam.items(), key=lambda item: item[1])[0]
+        best_sequence = min(beam.items(), key=lambda item: item[1])[0]
         return self._text_processor.decode(best_sequence)
 
     def _get_next_token(
