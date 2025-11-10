@@ -1,12 +1,14 @@
 """
 Generation by NGrams starter
 """
-#lab_3_generate_by_ngrams.
+
 # pylint:disable=unused-import, unused-variable
-from main import (
+from lab_3_generate_by_ngrams.main import (
+    GreedyTextGenerator,
     TextProcessor, 
     NGramLanguageModel, 
-    GreedyTextGenerator)
+    )
+
 
 def main() -> None:
     """
@@ -20,10 +22,10 @@ def main() -> None:
     encoded_text = processor.encode(text)
     if encoded_text is None:
         return None
-    model = NGramLanguageModel(encoded_text, 7)
+    model = NGramLanguageModel(encoded_text[:2000], 7)
     build_result = model.build()
     generator = GreedyTextGenerator(model, processor)
-    result = generator.run(51, "Vernon")
+    result = generator.run(51, "Harry ")
     print(result)
     assert result
 
