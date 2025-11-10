@@ -21,18 +21,18 @@ def main() -> None:
         text = text_file.read()
     processor = TextProcessor(end_of_word_token='_')
     encoded_text = processor.encode(text)
-    if not isinstance(encoded_text, tuple) and not encoded_text:
-        return
     print(encoded_text)
     decoded_text = processor.decode(encoded_text)
     print(decoded_text)
-    ngram_model = NGramLanguageModel(encoded_text[:100], n_gram_size=3)
-    model_test = NGramLanguageModel(encoded_text, 7)
-    greedy_text_generator = GreedyTextGenerator(model_test, processor)
-    print(greedy_text_generator.run(51, 'Vernon'))
-    beam_search_generator = BeamSearchTextGenerator(model_test, processor, 7)
-    print(beam_search_generator.run('Vernon', 56))
-    result = beam_search_generator
+    model = NGramLanguageModel(encoded_text, 7)
+    frequency = model.build()
+    greedy_generator = GreedyTextGenerator(model, processor)
+    result_greedy_generator = greedy_generator.run(51, 'Vernon')
+    print(result_greedy_generator)
+    beam_search_generator = BeamSearchTextGenerator(model, processor, 3)
+    result_beam_search_generator = beam_search_generator.run('Vernon', 56)
+    print(result_beam_search_generator)
+    result = result_beam_search_generator
     assert result
 
 if __name__ == "__main__":
