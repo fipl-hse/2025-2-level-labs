@@ -133,9 +133,7 @@ class TextProcessor:
             if token_id is None:
                 return None
             encoded_text.append(token_id)
-
         return tuple(encoded_text)
-
     def _put(self, element: str) -> None:
         """
         Put an element into the storage, assign a unique id to it.
@@ -276,7 +274,6 @@ class NGramLanguageModel:
             int: Size of stored n_grams
         """
         return self._n_gram_size
-    
     def set_n_grams(self, frequencies: dict) -> None:
         """
         Setter method for n-gram frequencies.
@@ -316,8 +313,8 @@ class NGramLanguageModel:
             if all_gram in all_grams:
                 all_grams[all_gram] += 1
             else:
-                all_grams[all_gram] = 1     
-        self._n_gram_frequencies = {n_gram: n_grams[n_gram] / 
+                all_grams[all_gram] = 1    
+        self._n_gram_frequencies = {n_gram: n_grams[n_gram] /
                     all_grams[n_gram[:-1]] for n_gram in set(extracted)
         }
         return 0
@@ -464,7 +461,6 @@ class BeamSearcher:
             return []
         best_candidates = sorted(candidates.items(), key=lambda item: item[1], reverse=True)
         return best_candidates[:self._beam_width]
-        
     def continue_sequence(
         self,
         sequence: tuple[int, ...],
@@ -575,7 +571,8 @@ class BeamSearchTextGenerator:
                 next_tokens = self._get_next_token(sequence)
                 if next_tokens is None:
                     return None
-                new_candidates = self.beam_searcher.continue_sequence(sequence, next_tokens, candidates)
+                new_candidates = self.beam_searcher.continue_sequence(sequence,
+                                                                      next_tokens, candidates)
                 if new_candidates is not None:
                     extended_candidates.update(new_candidates)
             if not extended_candidates:
