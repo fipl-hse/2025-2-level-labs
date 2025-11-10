@@ -29,6 +29,17 @@ class BankAccount:
         validate_transaction(amount: float) -> bool:
             Checks if a transaction amount is valid.
     """
+    def __init__(self, owner: str, balance: float):
+        self._owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+
+    def withdraw(self, amount: float):
+        if a
+        self.balance -= balance
+
 
 
 class Bank:
