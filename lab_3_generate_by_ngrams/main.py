@@ -103,10 +103,9 @@ class TextProcessor:
             return None
         if element_id not in self._storage.values():
             return None
-        else:
-            for key, value in self._storage.items():
-                if value == element_id:
-                    element = key
+        for key, value in self._storage.items():
+            if value == element_id:
+                element = key
         return element
 
     def encode(self, text: str) -> tuple[int, ...] | None:
@@ -330,7 +329,7 @@ class NGramLanguageModel:
         if self._n_gram_frequencies:
             return 0
         return 1
-        
+
 
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
@@ -350,7 +349,7 @@ class NGramLanguageModel:
             return None
         next_token_freq = {}
         context = sequence[-self._n_gram_size + 1:]
-        for n_gram in self._n_gram_frequencies:
+        for n_gram in self._n_gram_frequencies.items():
             if n_gram[:-1] == context:
                 next_token_freq[n_gram[-1]] = self._n_gram_frequencies[n_gram]
         return next_token_freq
@@ -547,7 +546,7 @@ class BeamSearcher:
         """
         if not isinstance(sequence_candidates, dict) or not sequence_candidates:
             return None
-        
+
         sorted_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
         pruned_candidates = dict(sorted_candidates[:self._beam_width])
         return pruned_candidates

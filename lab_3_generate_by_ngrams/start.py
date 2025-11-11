@@ -22,13 +22,15 @@ def main() -> None:
 
     processor = TextProcessor("_")
     encoded_text = processor.encode(text)
+    if not encoded_text:
+        return
     print("Encoded text: ", encoded_text)
     print()
     decoded_text = processor.decode(encoded_text)
     print("Decoded text: ", decoded_text)
     print()
     print("End of word token: ", processor._end_of_word_token)
-    n_gram_processor = NGramLanguageModel(encoded_text[:300], 7)
+    n_gram_processor = NGramLanguageModel(tuple(list(encoded_text)[:300]), 7)
 
     print("N_gram building dict return: ", n_gram_processor.build())
 
@@ -37,7 +39,7 @@ def main() -> None:
 
     print("Run GreedyTextGenerator for 'Potter', 51: ", test_sequense)
 
-    beam_language_model = NGramLanguageModel(encoded_text[:300], 7)
+    beam_language_model = NGramLanguageModel(tuple(list(encoded_text)[:300]), 7)
     beam_language_model.build()
     beam_search_processor = BeamSearchTextGenerator(beam_language_model, processor, 7)
     test_sequense = beam_search_processor.run("Potter", 51)
