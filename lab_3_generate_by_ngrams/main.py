@@ -80,7 +80,7 @@ class TextProcessor:
         if not isinstance(element, str) or element not in self._storage:
             return None
         return self._storage.get(element)
-                    
+        
 
     def get_end_of_word_token(self) -> str:  # type: ignore[empty-body]
         """
@@ -106,7 +106,7 @@ class TextProcessor:
         if not isinstance(element_id, int):
             return None
         result = next((key for key, value in self._storage.items() if value == element_id), None)
-        return result 
+        return result
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -135,9 +135,10 @@ class TextProcessor:
             value_id = self.get_id(each_element)
             if value_id is None:
                 return None
-            list_with_id.append(self.get_id(each_element))
+            list_with_id.append(value_id)
         return tuple(list_with_id)
     
+
     def _put(self, element: str) -> None:
         """
         Put an element into the storage, assign a unique id to it.
@@ -234,7 +235,7 @@ class TextProcessor:
                 result += element
         result = result.strip()
         return result.capitalize() + "."
-        
+    
 
 class NGramLanguageModel:
     """
@@ -298,8 +299,8 @@ class NGramLanguageModel:
             common_part = element[:-1]
             count_ = help_storage.count(common_part)
             self._n_gram_frequencies[element] = current_encoded_corpus.count(element)/count_
-        return 0 
-        
+        return 0
+    
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
@@ -313,7 +314,7 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
-        if (not isinstance(sequence, tuple) 
+        if (not isinstance(sequence, tuple)
             or not sequence): #add len!!
             return None
         result = {}
@@ -323,7 +324,7 @@ class NGramLanguageModel:
                 result[element[-1]] = self._n_gram_frequencies.get(element)
         sorted_result = dict(sorted(result.items(), key=lambda x: (x[1], x[0]), reverse=True))
         return sorted_result
-        
+    
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -400,7 +401,7 @@ class GreedyTextGenerator:
             sequence.append(next_token)
         decoded_text = self._text_processor.decode(tuple(sequence))
         return decoded_text
-        
+    
 
 class BeamSearcher:
     """
@@ -485,7 +486,8 @@ class BeamSearcher:
             new_object = list(sequence)
             new_object.append(list(element)[0])
             new_key = tuple(new_object)
-            sequence_candidates[new_key] = sequence_candidates.get(sequence, 0.0) - math.log(list(element)[1])
+            first_part = sequence_candidates.get(sequence, 0.0)
+            sequence_candidates[new_key] = first_part - math.log(list(element)[1])
         if sequence in sequence_candidates:
             del sequence_candidates[sequence]
         return sequence_candidates
@@ -509,10 +511,11 @@ class BeamSearcher:
             return None
         if not sequence_candidates:
             return None
-        sorted_sequences = sorted(sequence_candidates.items(), key=lambda x: (x[1], tuple(-element for element in x[0])))
+        sorted_sequences = (sorted(sequence_candidates.items(), 
+        key=lambda x: (x[1], tuple(-element for element in x[0]))))
         result = dict(sorted_sequences[:self._beam_width])
         return result
-        
+    
 
 
 class BeamSearchTextGenerator:
