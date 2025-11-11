@@ -320,13 +320,18 @@ class NGramLanguageModel:
             same_body = n_gram[:-1] #determine the same part of n_gram to find similar
             same_body_ng_freq[same_body] = same_body_ng_freq.get(same_body, 0) + 1
 
-
         for n_gram, freq in exact_n_gram_freq.items():
             same_body = n_gram[:-1]
-            self._n_gram_frequencies[n_gram] = freq / same_body_ng_freq[same_body]
+            if same_body_ng_freq.get(same_body, 0) > 0:
+                self._n_gram_frequencies[n_gram] = freq / same_body_ng_freq[same_body]
+            else:
+                self._n_gram_frequencies[n_gram] = 0.0
+
+        if self._n_gram_frequencies:
             return 0
-        else:
-            return 1
+        return 1
+        
+
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
@@ -504,9 +509,13 @@ class BeamSearcher:
         """
         if (not isinstance(sequence, tuple) or
             not check_list(next_tokens ,tuple, False) or
-            not check_dict(sequence_candidates, tuple, float, False) or
-            not sequence in sequence_candidates or
-            not len(next_tokens) <= self._beam_width
+            not check_dict(sequence_candidates, tuple, float, False)):
+            return None
+
+        if (not sequence or
+            not next_tokens or
+            sequence not in sequence_candidates or
+            len(next_tokens) > self._beam_width
         ):
             return None
 
@@ -598,8 +607,7 @@ class BeamSearchTextGenerator:
             for sequence in list(candidates.keys()):
                 next_tokens = self._get_next_token(sequence)
                 if not next_tokens:
-                    extended_candidates[sequence] = candidates[sequence]
-                    continue
+                    return None
                 new_candidates = self.beam_searcher.continue_sequence(
                     sequence, next_tokens, candidates
                 )
