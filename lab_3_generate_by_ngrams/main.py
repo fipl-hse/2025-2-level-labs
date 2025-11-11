@@ -267,7 +267,7 @@ class TextProcessor:
 
         for i, element in enumerate(decoded_corpus):
             if element == '_':
-                if len(decoded_corpus) - 1 > i and not spaces:
+                if i < len(decoded_corpus) - 1 and not spaces:
                     result.append(' ')
                     spaces = True
             else:
@@ -309,7 +309,7 @@ class NGramLanguageModel:
         """
         self._encoded_corpus = encoded_corpus
         self._n_gram_size = n_gram_size
-        self._n_gram_frequencies = None
+        self._n_gram_frequencies = {}
 
     def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
         """
@@ -346,11 +346,14 @@ class NGramLanguageModel:
         n_grams = self._extract_n_grams(self._encoded_corpus)
         if n_grams is None:
             return 1
-        
+
         counter_of_n_gram = {}
         counter_of_context = {}
 
         for n_gram in n_grams:
+            if not isinstance(n_gram, tuple):
+                return 1
+
             counter_of_n_gram[n_gram] = counter_of_n_gram.get(n_gram, 0) + 1
 
             context = n_gram[:-1]
@@ -359,9 +362,9 @@ class NGramLanguageModel:
         self._n_gram_frequencies = {}
         for n_gram, value in counter_of_n_gram.items():
             context = n_gram[:-1]
-            count_of_context = counter_of_context.get(n_gram, 0)
+            count_of_context = counter_of_context.get(context, 0)
 
-            if counter_of_context > 0:
+            if count_of_context > 0:
                 frequency = value / count_of_context
                 self._n_gram_frequencies[n_gram] = frequency
 
@@ -387,19 +390,16 @@ class NGramLanguageModel:
         if len(sequence) < n_gram_size - 1:
             return None
 
-        context = sequence[len(sequence) - (n_gram_size - 1):]
+        context = sequence[-(n_gram_size - 1):]
 
         vocabulary_of_next_token = {}
 
-        for n_gram, frequency in self._encoded_corpus.items():
+        for n_gram, frequency in self._n_gram_frequencies.items():
             if n_gram[:n_gram_size - 1] == context:
                 next_element = n_gram[-1]
                 vocabulary_of_next_token[next_element] = frequency
 
-        sorted_vocabulary = sorted(vocabulary_of_next_token.items())
-        sorted_vocabulary = sorted(key = lambda x: (-x[1], -x[0]))
-
-        return sorted_vocabulary
+        return vocabulary_of_next_token
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -421,14 +421,14 @@ class NGramLanguageModel:
         n_size = self._n_gram_size
 
         if len(encoded_corpus) < n_size:
-            return tuple()
+            return None
         
         n_grams = []
         for i in range(len(encoded_corpus) - n_size + 1):
             n_gram = encoded_corpus[i:i + n_size]
             n_grams.append(n_gram)
 
-        return tuple(n_gram)
+        return tuple(n_grams)
 
 
 class GreedyTextGenerator:
@@ -486,7 +486,10 @@ class GreedyTextGenerator:
                 
             next_token = self._model.generate_next_token(context)
             if next_token is None:
-                return None
+                break
+
+            if not next_token:
+                break
 
             greedy_generator = max(next_token.items(), key = lambda x: (x[1], x[0]))[0]
 
@@ -538,7 +541,7 @@ class BeamSearcher:
         if not isinstance(sequence, tuple) or not sequence:
             return None
 
-        n_gram_size = self._model.get_n_gram_size
+        n_gram_size = self._model.get_n_gram_size()
         if n_gram_size is None:
             return None
 
@@ -602,13 +605,15 @@ class BeamSearcher:
 
         current_probability = sequence_candidates[sequence]
 
-        for token, frequency in next_tokens.items():
+        for token, frequency in next_tokens:
             sequence_list = list(sequence)
             sequence_list.append(token)
             new_sequence = tuple(sequence_list)
             probability = current_probability - log(frequency)
 
             sequence_candidates[new_sequence] = probability
+
+        del sequence_candidates[sequence]
 
         return sequence_candidates
 
@@ -700,7 +705,7 @@ class BeamSearchTextGenerator:
             for sequence in list(candidates_of_sequence.keys()):
                 next_token = self.beam_searchers.get_next_token(sequence)
                 if next_token is None:
-                    return None
+                    continue
 
                 updated_candidates = self.beam_searchers.continue_sequence(
                     sequence, next_token, candidates_of_sequence

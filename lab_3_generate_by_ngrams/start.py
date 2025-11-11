@@ -24,11 +24,19 @@ def main() -> None:
     encoded_text = text_processor.encode(text)
     if not isinstance(encoded_text, tuple) and not encoded_text:
         return
-    
-    print(encoded_text)
-    decoded_text = text_processor.decode(encoded_text)
-    print(decoded_text)
-    result = decoded_text
+
+    decoded_text = text_processor.decode(encoded_text) or tuple()
+    print('Decoded text: ', decoded_text)
+    language_model = NGramLanguageModel(encoded_text, 7)
+    builded_model = language_model.build()
+    text_generator = GreedyTextGenerator(builded_model, text_processor)
+    final_text_generator = text_generator.run(51, 'Vernon')
+    print('Final text generator: ', final_text_generator)
+
+    beam_search_text = BeamSearchTextGenerator(builded_model, text_processor, beam_width = 3)
+    final_beam_search_text = beam_search_text.run('Vernon', 56)
+    print('Final beam search text: ', final_beam_search_text)
+    result = final_beam_search_text
     assert result
 
 
