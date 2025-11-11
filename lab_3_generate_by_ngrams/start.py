@@ -6,8 +6,7 @@ Generation by NGrams starter
 from lab_3_generate_by_ngrams.main import (
     GreedyTextGenerator,
     NGramLanguageModel,
-    TextProcessor,
-)
+    TextProcessor)
 
 
 def main() -> None:

@@ -7,6 +7,7 @@ Beam-search and natural language generation evaluation
 # pylint:disable=too-few-public-methods, unused-import
 import json
 import string
+import math
 
 
 class TextProcessor:
@@ -320,7 +321,7 @@ class NGramLanguageModel:
         for element in self._n_gram_frequencies:
             if element[:self._n_gram_size - 1] == context:
                 result[element[-1]] = self._n_gram_frequencies.get(element)
-        sorted_result = dict(sorted(result.items(),  key=lambda x: (-x[1], -x[0])))
+        sorted_result = dict(sorted(result.items(), key=lambda x: (x[1], x[0]), reverse=True))
         return sorted_result
         
 
@@ -418,6 +419,8 @@ class BeamSearcher:
             beam_width (int): Number of candidates to consider at each step
             language_model (NGramLanguageModel): A language model to use for next token prediction
         """
+        self._beam_width = beam_width
+        self._model = language_model
 
     def get_next_token(self, sequence: tuple[int, ...]) -> list[tuple[int, float]] | None:
         """
@@ -437,6 +440,14 @@ class BeamSearcher:
 
         In case of corrupt input arguments or methods used return None.
         """
+        if not isinstance(sequence, tuple) or not sequence:
+            return None
+        frequency = self._model.generate_next_token(sequence)
+        if frequency is None:
+            return None
+        if not frequency:
+            return []
+        return list(frequency.items())
 
     def continue_sequence(
         self,
@@ -460,6 +471,25 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
+        if (not isinstance(sequence, tuple)
+        or not isinstance(next_tokens, list)
+        or not isinstance(sequence_candidates, dict)):
+            return None
+        if not next_tokens or not sequence_candidates or not sequence:
+            return None
+        if sequence not in sequence_candidates:
+            return None
+        if len(next_tokens) > self._beam_width:
+            return None
+        for element in next_tokens:
+            new_object = list(sequence)
+            new_object.append(list(element)[0])
+            new_key = tuple(new_object)
+            sequence_candidates[new_key] = sequence_candidates.get(sequence, 0.0) - math.log(list(element)[1])
+        if sequence in sequence_candidates:
+            del sequence_candidates[sequence]
+        return sequence_candidates
+
 
     def prune_sequence_candidates(
         self, sequence_candidates: dict[tuple[int, ...], float]
@@ -475,6 +505,14 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
+        if not isinstance(sequence_candidates, dict):
+            return None
+        if not sequence_candidates:
+            return None
+        sorted_sequences = sorted(sequence_candidates.items(), key=lambda x: (x[1], tuple(-element for element in x[0])))
+        result = dict(sorted_sequences[:self._beam_width])
+        return result
+        
 
 
 class BeamSearchTextGenerator:
@@ -499,6 +537,10 @@ class BeamSearchTextGenerator:
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
             beam_width (int): Beam width parameter for generation
         """
+        self._language_model = language_model
+        self._text_processor = text_processor
+        self._beam_width = beam_width
+        self.beam_searchers = BeamSearcher(beam_width, language_model)
 
     def run(self, prompt: str, seq_len: int) -> str | None:
         """
@@ -530,6 +572,14 @@ class BeamSearchTextGenerator:
 
         In case of corrupt input arguments return None.
         """
+        if not isinstance(sequence_to_continue, tuple):
+            return None
+        if not sequence_to_continue:
+            return None
+        next_token = self.beam_searchers.get_next_token(sequence_to_continue)
+        if not next_token:
+            return None
+        return next_token
 
 
 class NGramLanguageModelReader:
