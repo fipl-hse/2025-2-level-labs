@@ -29,23 +29,22 @@ def main() -> None:
     decoded_text = processor.decode(encoded_text)
     print("Decoded text: ", decoded_text)
     print()
-    print("End of word token: ", processor._end_of_word_token)
     n_gram_processor = NGramLanguageModel(tuple(list(encoded_text)[:300]), 7)
 
     print("N_gram building dict return: ", n_gram_processor.build())
 
     greedy_text_processor = GreedyTextGenerator(n_gram_processor, processor)
-    test_sequense = greedy_text_processor.run(51, "Potter")
+    test_sequense_greedy = greedy_text_processor.run(51, "Potter")
 
-    print("Run GreedyTextGenerator for 'Potter', 51: ", test_sequense)
+    print("Run GreedyTextGenerator for 'Potter', 51: ", test_sequense_greedy)
 
     beam_language_model = NGramLanguageModel(tuple(list(encoded_text)[:300]), 7)
     beam_language_model.build()
     beam_search_processor = BeamSearchTextGenerator(beam_language_model, processor, 7)
-    test_sequense = beam_search_processor.run("Potter", 51)
+    test_sequense_beam = beam_search_processor.run("Potter", 51)
 
-    print("Run BeamSearchTextGenerator for 'Potter', 51: ", test_sequense)
-    result = test_sequense
+    print("Run BeamSearchTextGenerator for 'Potter', 51: ", test_sequense_beam)
+    result = test_sequense_beam
     assert result, "Result is None"
 
 

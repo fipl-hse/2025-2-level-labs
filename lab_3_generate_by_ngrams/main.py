@@ -349,9 +349,11 @@ class NGramLanguageModel:
             return None
         next_token_freq = {}
         context = sequence[-self._n_gram_size + 1:]
-        for n_gram in self._n_gram_frequencies.items():
+        for n_gram, frequency in self._n_gram_frequencies.items():
+            if len(n_gram) != self._n_gram_size:
+                continue
             if n_gram[:-1] == context:
-                next_token_freq[n_gram[-1]] = self._n_gram_frequencies[n_gram]
+                next_token_freq[n_gram[-1]] = frequency
         return next_token_freq
 
     def _extract_n_grams(
@@ -423,8 +425,9 @@ class GreedyTextGenerator:
             if not next_token_freq:
                 break
 
-            next_tok = next_tok = max(
-                next_token_freq.items(), key=lambda item: (item[1], item[0])
+            next_tok = max(
+                next_token_freq.items(),
+                key=lambda item: (item[1], item[0])
                 )[0]
             sequence.append(next_tok)
         return self._text_processor.decode(tuple(sequence))
@@ -546,7 +549,8 @@ class BeamSearcher:
         """
         if not isinstance(sequence_candidates, dict) or not sequence_candidates:
             return None
-
+        if not sequence_candidates:
+            return {}
         sorted_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
         pruned_candidates = dict(sorted_candidates[:self._beam_width])
         return pruned_candidates
