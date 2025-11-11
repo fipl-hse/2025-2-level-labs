@@ -192,13 +192,12 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
-        if not isinstance(content, dict) or not content:
-            return None
-        ngrams_freq = content.get('freq')
-        for ngram in ngrams_freq.keys():
-            for char in ngram.lower():
-                if char.isalpha() or char == self._end_of_word_token:
-                    self._put(char)
+        if isinstance(content, dict) and content:
+            ngrams_freq = content.get('freq')
+            for ngram in ngrams_freq.keys():
+                for char in ngram.lower():
+                    if char.isalpha() or char == self._end_of_word_token:
+                        self._put(char)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
@@ -284,9 +283,8 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
-        if not isinstance(frequencies, dict) or not frequencies:
-            return None
-        self._n_gram_frequencies = frequencies
+        if isinstance(frequencies, dict) and frequencies:
+            self._n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
         """
@@ -416,7 +414,8 @@ class GreedyTextGenerator:
             candidates = self._model.generate_next_token(tuple(generated_seq))
             if not candidates:
                 break
-            best_candidate = sorted(candidates.items(), key=lambda x: (x[1], x[0]), reverse=True)[0][0]
+            best_candidate = sorted(candidates.items(), key=lambda x: (x[1], x[0]),
+                                    reverse=True)[0][0]
             generated_seq.append(best_candidate)
         decoded_seq = self._text_processor.decode(tuple(generated_seq))
         return decoded_seq
@@ -470,8 +469,8 @@ class BeamSearcher:
             return None
         if not candidates_for_generation:
             return []
-        return sorted([(token, freq) for token, freq in candidates_for_generation.items()],
-                  key=lambda x: x[1], reverse=True)[:self._beam_width]
+        return sorted(list(candidates_for_generation.items()),
+              key=lambda x: x[1], reverse=True)[:self._beam_width]
 
     def continue_sequence(
         self,
@@ -703,12 +702,11 @@ class NGramLanguageModelReader:
                 else:
                     continue
                 if sym_id is None:
-                        break
+                    break
                 encoded_ngram.append(sym_id)
             if len(encoded_ngram) == n_gram_size:
-                encoded_ngram_tuple = tuple(encoded_ngram)
-                ngram_abs_freqs[encoded_ngram_tuple] = frequency
-                prefix = encoded_ngram_tuple[:-1]
+                ngram_abs_freqs[tuple(encoded_ngram)] = frequency
+                prefix = tuple(encoded_ngram)[:-1]
                 ngram_prefix_counts[prefix] = ngram_prefix_counts.get(prefix, 0) + frequency
         n_gram_frequencies = {}
         for ngram, abs_freq in ngram_abs_freqs.items():
