@@ -7,6 +7,7 @@ Beam-search and natural language generation evaluation
 # pylint:disable=too-few-public-methods, unused-import
 import json
 from math import log
+from lab_1_keywords_tfidf.main import check_dict, check_list
 
 
 class TextProcessor:
@@ -234,18 +235,18 @@ class TextProcessor:
             not all(isinstance(i, str) for i in decoded_corpus) or
             not decoded_corpus):
             return None
-        text = []
+        text_list = []
         for i, el in enumerate(decoded_corpus):
             if i == 0:
                 el = el.upper()
             if el == self._end_of_word_token:
                 el = " "
-            text.append(el)
-        if text[-1] == " ":
-            text = text[:-1]
-        text.append(".")
-        text = "".join(text)
-        return text
+            text_list.append(el)
+        if text_list[-1] == " ":
+            text_list = text_list[:-1]
+        text_list.append(".")
+        result_text = "".join(text_list)
+        return result_text
 
 
 class NGramLanguageModel:
@@ -313,17 +314,16 @@ class NGramLanguageModel:
         for n_gram in n_grams:
             exact_n_gram_freq[n_gram] = exact_n_gram_freq.get(n_gram, 0) + 1 #count freq for n-gram
 
-        same_body_n_gram_freq = {}
+        same_body_ng_freq = {}
         for n_gram in n_grams:
             same_body = n_gram[:-1] #determine the same part of n_gram to find similar
-            same_body_n_gram_freq[same_body] = same_body_n_gram_freq.get(same_body, 0) + 1
-        
+            same_body_ng_freq[same_body] = same_body_ng_freq.get(same_body, 0) + 1
+
 
         for n_gram, freq in exact_n_gram_freq.items():
             same_body = n_gram[:-1]
-            self._n_gram_frequencies[n_gram] = freq / same_body_n_gram_freq[same_body] #write sb_freq in self attribute
-        if self._n_gram_frequencies:
-            return 0 
+            self._n_gram_frequencies[n_gram] = freq / same_body_ng_freq[same_body]
+            return 0
         else:
             return 1
 
@@ -418,7 +418,9 @@ class GreedyTextGenerator:
             if not next_token_freq:
                 break
 
-            next_tok = next_tok = max(next_token_freq.items(), key=lambda item: (item[1], item[0]))[0]
+            next_tok = next_tok = max(
+                next_token_freq.items(), key=lambda item: (item[1], item[0])
+                )[0]
             sequence.append(next_tok)
         return self._text_processor.decode(tuple(sequence))
 
@@ -500,12 +502,11 @@ class BeamSearcher:
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
         if (not isinstance(sequence, tuple) or
-            not sequence or
-            not isinstance(next_tokens, list) or
-            not next_tokens or
-            not isinstance(sequence_candidates, dict) or
-            sequence not in sequence_candidates or
-            len(next_tokens) > self._beam_width):
+            not check_list(next_tokens ,tuple, False) or
+            not check_dict(sequence_candidates, tuple, float, False) or
+            not sequence in sequence_candidates or
+            not len(next_tokens) <= self._beam_width
+        ):
             return None
 
         new_seq_candidates = {}
@@ -536,10 +537,10 @@ class BeamSearcher:
         """
         if not isinstance(sequence_candidates, dict) or not sequence_candidates:
             return None
-        sequence_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
-        if not sequence_candidates:
-            return {}
-        return dict(sequence_candidates[:self._beam_width])
+        
+        sorted_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
+        pruned_candidates = dict(sorted_candidates[:self._beam_width])
+        return pruned_candidates
 
 class BeamSearchTextGenerator:
     """
@@ -614,7 +615,8 @@ class BeamSearchTextGenerator:
             candidates = pruned_candidates
         if candidates is None:
             return None
-        return self._text_processor.decode(min(candidates, key=candidates.get))
+        best_sequence = min(candidates, key=lambda k: candidates[k])
+        return self._text_processor.decode(best_sequence)
 
 
     def _get_next_token(
@@ -634,7 +636,7 @@ class BeamSearchTextGenerator:
         """
         if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
             return None
-        
+
         next_token = self.beam_searcher.get_next_token(sequence_to_continue)
         return next_token
 
