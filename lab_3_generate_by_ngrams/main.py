@@ -118,6 +118,8 @@ class TextProcessor:
             if value == element_id:
                 return item
 
+        return None
+
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
         Encode text.
@@ -570,8 +572,8 @@ class BeamSearcher:
         if not check_dict(sequence_candidates, tuple, float, False):
             return None
 
-        sequence_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
-        pruned_sequence = sequence_candidates[: self._beam_width]
+        sorted_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
+        pruned_sequence = sorted_candidates[: self._beam_width]
         return dict(pruned_sequence)
 
 

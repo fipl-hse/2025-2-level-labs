@@ -38,23 +38,20 @@ def main() -> None:
 
 
     greedy_generator = GreedyTextGenerator(n_gram_models[7], text_processor)
-    output_greedy = greedy_generator.run(51, "Vernon")
+    output_greedy: str | None = greedy_generator.run(51, "Vernon")
 
     beam_generator = BeamSearchTextGenerator(n_gram_models[7], text_processor, 5)
-    output_beam = beam_generator.run("Vernon", 51)
+    output_beam: str | None = beam_generator.run("Vernon", 51)
 
     back_off_generator = BackOffGenerator(tuple(n_gram_models.values()), text_processor)
-    output_back_off = back_off_generator.run(51, "Vernon")
+    output_back_off:  str | None = back_off_generator.run(51, "Vernon")
 
 
     print(f"Greedy: {output_greedy}")
     print(f"Beam: {output_beam}")
     print(f"Back off: {output_back_off}")
 
-    result = ""
-    for text in (output_greedy, output_beam, output_back_off):
-        if text is not None:
-            result += text
+    result: str | None = output_back_off
 
     assert result
 
