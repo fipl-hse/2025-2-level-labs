@@ -4,7 +4,7 @@ Generation by NGrams starter
 
 # pylint:disable=unused-import, unused-variable
 
-from main import TextProcessor
+from main import NGramLanguageModel, TextProcessor
 
 
 def main() -> None:
@@ -18,7 +18,10 @@ def main() -> None:
     processor = TextProcessor("_")
     encoded_text = processor.encode(text) or ()
     decoded_text = processor.decode(encoded_text)
-    result = decoded_text
+    language_model = NGramLanguageModel(encoded_text, 3)
+    build_result = language_model.build()
+    result = build_result
+    print(language_model._n_gram_frequencies)
     assert result
 
 

@@ -262,6 +262,10 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        self._n_gram_size = n_gram_size
+        self._encoded_corpus = encoded_corpus
+        self._n_gram_frequencies = {}
+
 
     def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
         """
@@ -291,6 +295,25 @@ class NGramLanguageModel:
         In case of corrupt input arguments or methods used return None,
         1 is returned
         """
+        if (
+            isinstance(self._encoded_corpus, tuple) is False
+            or self._encoded_corpus == ()
+        ):
+            return 1
+        extracted_n_grams = self._extract_n_grams(self._encoded_corpus)
+        if extracted_n_grams is None:
+            return 1
+        modified_n_grams = [] #gotta make it less time-consuming
+        for n_gram in extracted_n_grams:
+            modified_n_grams.append(extracted_n_grams[:self._n_gram_size - 1])
+        for n_gram in extracted_n_grams:
+            n_gram = list(n_gram)
+            if modified_n_grams.count(n_gram[:self._n_gram_size - 1]) != 0:
+                self._n_gram_frequencies[n_gram] = (
+                    extracted_n_grams.count(n_gram) /
+                    extracted_n_grams.count(n_gram[:self._n_gram_size - 1])
+                )
+        return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
@@ -319,6 +342,14 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if isinstance(encoded_corpus,tuple) is False or encoded_corpus == ():
+            return None
+        extracted_n_grams = []
+        encoded_corpus = list(encoded_corpus)
+        for index in range(len(encoded_corpus) - 1):
+            next_n_gram = encoded_corpus[index:index+self._n_gram_size]
+            extracted_n_grams.append(tuple(next_n_gram))
+        return tuple(extracted_n_grams)
 
 
 class GreedyTextGenerator:
