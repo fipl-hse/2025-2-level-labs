@@ -647,7 +647,7 @@ class BeamSearchTextGenerator:
             if not candidates:
                 return
 
-        return self._text_processor.decode(min(candidates, key=candidates.get))
+        return self._text_processor.decode(min(candidates.items(), key=lambda item: item[1])[0])
 
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
@@ -851,4 +851,4 @@ class BackOffGenerator:
             if candidates is not None and candidates:
                 return candidates
 
-        return
+        return None
