@@ -151,7 +151,7 @@ class TextProcessor:
             not isinstance(element, str)
             or not element
             or len(element) != 1
-        ):
+            ):
             return
         if element not in self._storage:
             self._storage[element] = len(self._storage)
@@ -338,7 +338,7 @@ class NGramLanguageModel:
             not isinstance(sequence, tuple)
             or not sequence
             or len(sequence) < self._n_gram_size - 1
-        ):
+            ):
             return None
         context = sequence[-(self._n_gram_size - 1):]
         next_tokens = {}
@@ -411,7 +411,7 @@ class GreedyTextGenerator:
             not isinstance(seq_len, int)
             or not isinstance(prompt, str)
             or not prompt
-        ):
+            ):
             return None
         encoded = self._text_processor.encode(prompt)
         ngram_size = self._model.get_n_gram_size()
@@ -508,13 +508,13 @@ class BeamSearcher:
             or not isinstance(sequence_candidates, dict)
             or not len(next_tokens) <= self._beam_width
             or sequence not in sequence_candidates
-        ):
+            ):
             return None
         if (
             not sequence
             or not next_tokens
             or not sequence_candidates
-        ):
+            ):
             return None
         new_candidates = sequence_candidates.copy()
         for token in next_tokens:
@@ -592,7 +592,7 @@ class BeamSearchTextGenerator:
             or not prompt
             or not check_positive_int(seq_len)
             or not seq_len
-        ):
+            ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if not encoded_prompt:
@@ -605,7 +605,8 @@ class BeamSearchTextGenerator:
                     return None
                 continued = self.beam_searcher.continue_sequence(
                     sequence,
-                    next_tokens, 
+                    next_tokens,
+                    sequence_candidates
                     )
                 if continued is None:
                     continue
@@ -685,7 +686,7 @@ class NGramLanguageModelReader:
             not isinstance(n_gram_size, int)
             or not n_gram_size
             or n_gram_size < 2
-        ):
+            ):
             return None
         cleaned = {}
         for ngram in self._content['freq']:
@@ -770,7 +771,7 @@ class BackOffGenerator:
             or not isinstance(prompt, str)
             or not prompt
             or not seq_len
-        ):
+            ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if not encoded_prompt:
@@ -803,7 +804,7 @@ class BackOffGenerator:
             not isinstance(sequence_to_continue, tuple)
             or not sequence_to_continue
             or not self._language_models
-        ):
+            ):
             return None
         n_gram_sizes = sorted(self._language_models.keys(), reverse=True)
         for n_gram_size in n_gram_sizes:
