@@ -80,7 +80,6 @@ class TextProcessor:
         if not isinstance(element, str) or element not in self._storage:
             return None
         return self._storage.get(element)
-    
 
     def get_end_of_word_token(self) -> str:  # type: ignore[empty-body]
         """
@@ -129,6 +128,8 @@ class TextProcessor:
         tokenized_text = self._tokenize(text)
         if not tokenized_text:
             return None
+        if not isinstance(tokenized_text, (list, tuple)):
+            return None
         list_with_id = []
         for each_element in tokenized_text:
             self._put(each_element)
@@ -152,6 +153,7 @@ class TextProcessor:
             return None
         if element not in self._storage:
             self._storage[element] = len(self._storage)
+        return None
 
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
@@ -298,7 +300,7 @@ class NGramLanguageModel:
             count_ = help_storage.count(common_part)
             self._n_gram_frequencies[element] = current_encoded_corpus.count(element)/count_
         return 0
-    
+
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
         Retrieve tokens that can continue the given sequence along with their probabilities.
@@ -321,7 +323,7 @@ class NGramLanguageModel:
                 result[element[-1]] = self._n_gram_frequencies.get(element)
         sorted_result = dict(sorted(result.items(), key=lambda x: (x[1], x[0]), reverse=True))
         return sorted_result
-    
+
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
     ) -> tuple[tuple[int, ...], ...] | None:
@@ -397,7 +399,7 @@ class GreedyTextGenerator:
             sequence.append(next_token)
         decoded_text = self._text_processor.decode(tuple(sequence))
         return decoded_text
-    
+
 class BeamSearcher:
     """
     Beam Search algorithm for diverse text generation.
@@ -443,10 +445,10 @@ class BeamSearcher:
             return None
         if not next_token:
             return []
-        result = [(token, probability) for token, probability in next_token.items()]
+        result = list(next_token.items())
         result.sort(key=lambda x: (-x[1], x[0]))
         return result[:self._beam_width]
- 
+
     def continue_sequence(
         self,
         sequence: tuple[int, ...],
@@ -509,7 +511,7 @@ class BeamSearcher:
         key=lambda x: (x[1], tuple(-element for element in x[0]))))
         result = dict(sorted_sequences[:self._beam_width])
         return result
-    
+
 class BeamSearchTextGenerator:
     """
     Class for text generation with BeamSearch.
@@ -563,7 +565,6 @@ class BeamSearchTextGenerator:
         #candidates = {tuple(encoded_prompt): 0.0}
         #return candidates
 
-    
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
     ) -> list[tuple[int, float]] | None:
