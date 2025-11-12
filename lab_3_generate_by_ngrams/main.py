@@ -160,14 +160,9 @@ class TextProcessor:
         if not isinstance(element, str) or len(element) != 1:
             return None
 
-        if element == self._end_of_word_token:
-            self._storage[element] = 0
-            return
-
-        if element in self._storage:
-            return
-
-        self._storage[element] = len(self._storage)
+        if element not in self._storage:
+            self._storage[element] = len(self._storage)
+        return None
 
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
