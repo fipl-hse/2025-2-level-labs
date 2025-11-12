@@ -126,7 +126,7 @@ class TextProcessor:
         """
         if not isinstance(text, str) or not text:
             return None
-        tokenized_text = self._tokenize(text)
+        tokenized_text = self._tokenize(text) or []
         if not tokenized_text:
             return None
         encoded_corpus = []
@@ -401,7 +401,7 @@ class GreedyTextGenerator:
         if (
             not isinstance(seq_len, int)
             or not isinstance(prompt, str)
-            or not prompt
+            or not prompt.strip()
             ):
             return None
         seq = self._text_processor.encode(prompt)
@@ -574,7 +574,7 @@ class BeamSearchTextGenerator:
         """
         if (
             not isinstance(prompt, str)
-            or not prompt
+            or not prompt.strip()
             or not check_positive_int(seq_len)
             ):
             return None
