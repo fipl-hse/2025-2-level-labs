@@ -8,7 +8,7 @@ Beam-search and natural language generation evaluation
 import json
 from math import log
 
-from lab_1_keywords_tfidf.main import check_dict, check_list
+from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 
 
 class TextProcessor:
@@ -50,31 +50,19 @@ class TextProcessor:
         if not isinstance(text, str):
             return None
 
-        text = text.lower()
-
         punctuation = '1234567890!@#$%^&*()_+"№;:?{|-}[§]},.>—<~`\'„“«»‚‘'
-        text_without_punctuation = []
-        for element in text:
-            if element not in punctuation:
-                text_without_punctuation.append(element)
+        clean_text = ''.join(el for el in text.lower() if el not in punctuation)
+        words = clean_text.split()
 
-        text_without_punctuation = ''.join(text_without_punctuation)
-        if not text_without_punctuation:
-            return None
-
-        words = text_without_punctuation.split()
         if not words:
             return None
+        
+        text_without_punctuation = []
+        for word in words:
+            text_without_punctuation.extend(word)
+            text_without_punctuation.append(self._end_of_word_token)
 
-        result_list = []
-
-        for i, word in enumerate(words):
-            for char in word:
-                result_list.append(char)
-            if i < len(words) - 1:
-                result_list.append(self._end_of_word_token)
-
-        return tuple(result_list)
+        return tuple(text_without_punctuation)
 
 
     def get_id(self, element: str) -> int | None:
@@ -172,7 +160,7 @@ class TextProcessor:
         if not isinstance(element, str) or len(element) != 1:
             return None
 
-        if element == '_':
+        if element == self._end_of_word_token:
             self._storage[element] = 0
             return
 
@@ -205,11 +193,7 @@ class TextProcessor:
         if decoded_tokens is None:
             return None
 
-        postprocess_decode_text = self._postprocess_decoded_text(decoded_tokens)
-        if postprocess_decode_text is None:
-            return None
-
-        return postprocess_decode_text
+        return self._postprocess_decoded_text(decoded_tokens)
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
@@ -265,23 +249,20 @@ class TextProcessor:
         result = []
         spaces = False
 
-        for i, element in enumerate(decoded_corpus):
-            if element == '_':
-                if i < len(decoded_corpus) - 1 and not spaces:
+        for element in decoded_corpus:
+            if element == self._end_of_word_token:
+                if not spaces:
                     result.append(' ')
                     spaces = True
             else:
-                spaces = False
                 result.append(element)
+                spaces = False
 
         result_text = ''.join(result).strip()
         if not result_text:
             return None
 
-        if len(result_text) > 1:
-            result_text = result_text[0].upper() + result_text[1:]
-        else:
-            result_text = result_text.upper()
+        result_text = result_text[0].upper() + result_text[1:]
 
         if result_text and result_text[-1] != '.':
             result_text += '.'
@@ -594,8 +575,8 @@ class BeamSearcher:
         """
         if (
             not isinstance(sequence, tuple) or not sequence or
-            not isinstance(next_tokens, list) or not next_tokens or
-            not isinstance(sequence_candidates, dict) or
+            not check_list(next_tokens, tuple, False) or not next_tokens or
+            not check_dict(sequence_candidates, tuple, float, True) or
             sequence not in sequence_candidates
         ):
             return None
@@ -632,13 +613,16 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
-        if not isinstance(sequence_candidates, dict) or not sequence_candidates:
+        if not check_dict(
+            sequence_candidates, tuple, float, False
+            ) or not sequence_candidates:
             return None
 
         n_sequences = self._beam_width
         sorted_sequences = sorted(
             sequence_candidates.items(),
-            key = lambda x: (x[1], x[0])
+            key = lambda x: x[1],
+            reverse = True
             )
 
         top_n_sequences = sorted_sequences[:n_sequences]
@@ -670,7 +654,7 @@ class BeamSearchTextGenerator:
         """
         self._text_processor = text_processor
         self._beam_width = beam_width
-        self.beam_searchers = BeamSearcher(self._beam_width, language_model)
+        self.beam_searcher = BeamSearcher(self._beam_width, language_model)
         self._language_model = language_model
 
     def run(self, prompt: str, seq_len: int) -> str | None:
@@ -690,7 +674,7 @@ class BeamSearchTextGenerator:
         if not isinstance(prompt, str) or not prompt:
             return None
 
-        if not isinstance(seq_len, int) or seq_len <= 0:
+        if not check_positive_int(seq_len) or not seq_len:
             return None
 
         encoded_sequence = self._text_processor.encode(prompt)
@@ -701,33 +685,40 @@ class BeamSearchTextGenerator:
 
         for _ in range(seq_len):
             next_candidates = {}
+            valid_candidates = False
 
             for sequence in list(candidates_of_sequence.keys()):
-                next_token = self.beam_searchers.get_next_token(sequence)
-                if next_token is None:
+                next_token_list = self._get_next_token(sequence)
+                if next_token_list is None:
                     continue
 
-                updated_candidates = self.beam_searchers.continue_sequence(
-                    sequence, next_token, candidates_of_sequence
+                next_token_dict = dict(next_token_list)
+
+                updated_candidates = self.beam_searcher.continue_sequence(
+                    sequence, next_token_dict, candidates_of_sequence
                 )
-                if updated_candidates is None:
-                    return None
+                if updated_candidates is not None:
+                     next_candidates.update(updated_candidates)
+                     valid_candidates = True
 
-                next_candidates.update(updated_candidates)
+            if not valid_candidates:
+                break
 
-            sequence_candidates = self.beam_searchers.prune_sequence_candidates(next_candidates)
+            if not next_candidates:
+                break
+
+            sequence_candidates = self.beam_searcher.prune_sequence_candidates(next_candidates)
             if sequence_candidates is None:
                 return None
 
-            if not sequence_candidates:
-                break
+            candidates_of_sequence = sequence_candidates
 
-        if not sequence_candidates:
+        if not candidates_of_sequence:
             return None
 
-        best_sequence = min(sequence_candidates.items(), key = lambda x: (x[1], x[0]))[0]
-
+        best_sequence = max(candidates_of_sequence.items(), key = lambda x: x[1])[0]
         decoded_text = self._text_processor.decode(best_sequence)
+
         return decoded_text
 
 
@@ -749,7 +740,7 @@ class BeamSearchTextGenerator:
         if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
             return None
 
-        next_token = self.beam_searchers.get_next_token(sequence_to_continue)
+        next_token = self.beam_searcher.get_next_token(sequence_to_continue)
         if next_token is None:
             return None
 
