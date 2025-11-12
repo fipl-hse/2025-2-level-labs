@@ -22,6 +22,7 @@ def main() -> None:
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
 
+
     text_processor = TextProcessor("_")
     encoded_text = text_processor.encode(text) or None
 
@@ -47,7 +48,11 @@ def main() -> None:
     print(f"Beam: {output_beam}")
     print(f"Back off: {output_back_off}")
 
-    result = output_greedy + output_beam + output_back_off
+    result = ""
+    for text in (output_greedy, output_beam, output_back_off):
+        if text is not None:
+            result += text
+
     assert result
 
 if __name__ == "__main__":
