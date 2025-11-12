@@ -443,12 +443,15 @@ class BeamSearcher:
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
-        frequency = self._model.generate_next_token(sequence)
-        if frequency is None:
+        next_token = self._model.generate_next_token(sequence)
+        if next_token is None:
             return None
-        if not frequency:
+        if not next_token:
             return []
-        return list(frequency.items())
+        result = [(token, probability) for token, probability in next_token.items()]
+        result.sort(key=lambda x: (-x[1], x[0]))
+        return result[:self._beam_width]
+ 
 
     def continue_sequence(
         self,
@@ -482,15 +485,12 @@ class BeamSearcher:
             return None
         if len(next_tokens) > self._beam_width:
             return None
-        for element in next_tokens:
-            new_object = list(sequence)
-            new_object.append(list(element)[0])
-            new_key = tuple(new_object)
-            first_part = sequence_candidates.get(sequence, 0.0)
-            sequence_candidates[new_key] = first_part - math.log(list(element)[1])
-        if sequence in sequence_candidates:
-            del sequence_candidates[sequence]
-        return sequence_candidates
+        current_score = sequence_candidates[sequence]
+        new_candidates = {
+        **{seq: score for seq, score in sequence_candidates.items() if seq != sequence},
+        **{sequence + (token,): current_score - math.log(prob)
+           for token, prob in next_tokens}}
+        return new_candidates
 
 
     def prune_sequence_candidates(
@@ -511,12 +511,11 @@ class BeamSearcher:
             return None
         if not sequence_candidates:
             return None
-        sorted_sequences = (sorted(sequence_candidates.items(), 
+        sorted_sequences = (sorted(sequence_candidates.items(),
         key=lambda x: (x[1], tuple(-element for element in x[0]))))
         result = dict(sorted_sequences[:self._beam_width])
         return result
     
-
 
 class BeamSearchTextGenerator:
     """
@@ -559,7 +558,18 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
+        if not isinstance(seq_len, int) or not isinstance(prompt, str):
+            return None
+        if not prompt:
+            return None
+        if seq_len <= 0:
+            return None
+        encoded_prompt = self._text_processor.encode(prompt)
+        if encoded_prompt is None:
+            return None
+        candidates = {tuple(encoded_prompt): 0.0}
 
+            
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
     ) -> list[tuple[int, float]] | None:
