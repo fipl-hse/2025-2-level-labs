@@ -52,15 +52,16 @@ class TextProcessor:
         words = text.lower().split()
         tokens = []
         for word in words:
-            word_tokens = [char for char in word if char.isalpha()]
-            tokens.extend(word_tokens)
+            word_tokens = []
+            for char in word:
+                if char.isalpha():
+                    word_tokens.append(char)
             if word_tokens:
+                tokens.extend(word_tokens)
                 tokens.append(self._end_of_word_token)
-        if not tokens:
-            return None
-        if text[-1].isdigit() or text[-1].isalpha():
-            tokens.pop(-1)
-        return tuple(tokens)
+        if tokens and text[-1].isalnum():
+            tokens.pop()
+        return tuple(tokens) if tokens else None
 
     def get_id(self, element: str) -> int | None:
         """
@@ -307,11 +308,9 @@ class NGramLanguageModel:
         prefix_counts = {}
         for n_gram in n_grams:
             n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
-            prefix = n_gram[:-1]
-            prefix_counts[prefix] = prefix_counts.get(prefix, 0) + 1
+            prefix_counts[n_gram[:-1]] = prefix_counts.get(n_gram[:-1], 0) + 1
         for n_gram, amount in n_gram_counts.items():
-            prefix = n_gram[:-1]
-            prefix_count = prefix_counts.get(prefix, 0)
+            prefix_count = prefix_counts.get(n_gram[:-1], 0)
             if prefix_count == 0:
                 return 1
             self._n_gram_frequencies[n_gram] = amount / prefix_count
@@ -361,9 +360,11 @@ class NGramLanguageModel:
         if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
         n_gram_size = self._n_gram_size
-        n_grams = []
-        for i in range(len(encoded_corpus)-n_gram_size+1):
-            n_grams.append(encoded_corpus[i:(i+n_gram_size)])
+        corpus_len = len(encoded_corpus)
+        if corpus_len < n_gram_size:
+            return tuple()
+        n_grams = (encoded_corpus[i:i + n_gram_size]
+                   for i in range(corpus_len - n_gram_size + 1))
         return tuple(n_grams)
 
 
