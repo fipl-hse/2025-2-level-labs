@@ -10,6 +10,7 @@ import math
 
 from lab_1_keywords_tfidf.main import check_positive_int
 
+
 class TextProcessor:
     """
     Handle text tokenization, encoding and decoding.
@@ -602,7 +603,10 @@ class BeamSearchTextGenerator:
                 next_tokens = self._get_next_token(sequence)
                 if next_tokens is None:
                     return None
-                continued = self.beam_searcher.continue_sequence(sequence, next_tokens, sequence_candidates)
+                continued = self.beam_searcher.continue_sequence(
+                    sequence,
+                    next_tokens, 
+                    )
                 if continued is None:
                     continue
                 pruned_candidates = self.beam_searcher.prune_sequence_candidates(continued)
@@ -710,7 +714,6 @@ class NGramLanguageModelReader:
                 context_freq = context_frequencies.get(context, 0)
                 if context_freq > 0:
                     conditional_probabilities[ngram] = freq / context_freq
-                    
         model = NGramLanguageModel(None, n_gram_size)
         model.set_n_grams(conditional_probabilities)
         return model
@@ -773,15 +776,15 @@ class BackOffGenerator:
         if not encoded_prompt:
             return None
         result = list(encoded_prompt)
-        iter = 1
-        while iter <= seq_len:
+        it = 1
+        while it <= seq_len:
             next_probs = self._get_next_token(tuple(result))
             if next_probs is None or not next_probs:
                 break
             max_prob = max(next_probs.values())
             max_token = [token for token, prob in next_probs.items() if prob == max_prob][0]
             result.append(max_token)
-            iter += 1
+            it += 1
         return self._text_processor.decode(tuple(result))
 
     def _get_next_token(self, sequence_to_continue: tuple[int, ...]) -> dict[int, float] | None:

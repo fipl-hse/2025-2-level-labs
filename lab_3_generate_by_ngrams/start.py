@@ -7,7 +7,7 @@ from lab_3_generate_by_ngrams.main import (
     BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
-    TextProcessor
+    TextProcessor,
 )
 
 
