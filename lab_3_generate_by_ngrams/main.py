@@ -56,7 +56,7 @@ class TextProcessor:
 
         if not words:
             return None
-        
+
         text_without_punctuation = []
         for word in words:
             text_without_punctuation.extend(word)
@@ -135,7 +135,7 @@ class TextProcessor:
         tokenized_text = self._tokenize(text)
         if tokenized_text is None:
             return None
-        
+
         encoded_corpus = []
 
         for token in tokenized_text:
@@ -403,7 +403,7 @@ class NGramLanguageModel:
 
         if len(encoded_corpus) < n_size:
             return None
-        
+
         n_grams = []
         for i in range(len(encoded_corpus) - n_size + 1):
             n_gram = encoded_corpus[i:i + n_size]
@@ -464,7 +464,7 @@ class GreedyTextGenerator:
             else:
                 start_index = len(sequence) - (n_gram_size - 1)
                 context = tuple(sequence[start_index:])
-                
+
             next_token = self._model.generate_next_token(context)
             if next_token is None:
                 break
@@ -575,7 +575,10 @@ class BeamSearcher:
         """
         if (
             not isinstance(sequence, tuple) or not sequence or
-            not check_list(next_tokens, tuple, False) or not next_tokens or
+            not check_list(next_tokens, tuple, False) or not next_tokens
+        ):
+            return None
+        if (
             not check_dict(sequence_candidates, tuple, float, True) or
             sequence not in sequence_candidates
         ):
@@ -698,8 +701,8 @@ class BeamSearchTextGenerator:
                     sequence, next_token_dict, candidates_of_sequence
                 )
                 if updated_candidates is not None:
-                     next_candidates.update(updated_candidates)
-                     valid_candidates = True
+                    next_candidates.update(updated_candidates)
+                    valid_candidates = True
 
             if not valid_candidates:
                 break
