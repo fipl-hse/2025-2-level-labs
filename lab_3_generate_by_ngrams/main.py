@@ -5,8 +5,8 @@ Beam-search and natural language generation evaluation
 """
 
 # pylint:disable=too-few-public-methods, unused-import
-import math
 import json
+import math
 
 from lab_1_keywords_tfidf.main import clean_and_tokenize
 
@@ -63,6 +63,8 @@ class TextProcessor:
             tokens.append(self._end_of_word_token)
         result = []
         prev_was_eow = False
+        if not tokens:
+            return None
         for token in tokens:
             if token == self._end_of_word_token:
                 if not prev_was_eow:
@@ -613,29 +615,41 @@ class BeamSearchTextGenerator:
         encoded_prompt = self._text_processor.encode(prompt)
         if encoded_prompt is None:
             return None
-        sequence_candidates = {encoded_prompt: 0.0}
+        sequence_candidates: dict[tuple[int, ...], float] = {encoded_prompt: 0.0}
+        initial_length = len(encoded_prompt)
         for step in range(seq_len):
-            new_candidates = {}
+            new_candidates: dict[tuple[int, ...], float] = {}
+            found_any_candidates = False
             for sequence, current_prob in sequence_candidates.items():
                 next_tokens = self._get_next_token(sequence)
+                if next_tokens is None:
+                    continue
                 if not next_tokens:
                     new_candidates[sequence] = current_prob
                     continue
+                found_any_candidates = True
                 temp_candidates = {sequence: current_prob}
                 updated = self.beam_searcher.continue_sequence(
                     sequence, next_tokens, temp_candidates
                 )
                 if updated:
                     new_candidates.update(updated)
-            if new_candidates:
-                pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
-                if pruned_candidates is not None:
-                    sequence_candidates = pruned_candidates
                 else:
-                    break
+                    new_candidates[sequence] = current_prob
+            if not found_any_candidates and not new_candidates:
+                break
+            if not new_candidates:
+                break
+            pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+            if pruned_candidates is not None:
+                sequence_candidates = pruned_candidates
+            else:
+                break
         if not sequence_candidates:
             return None
         best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
+        if len(best_sequence) == initial_length:
+            return None
         return self._text_processor.decode(best_sequence)
 
     def _get_next_token(

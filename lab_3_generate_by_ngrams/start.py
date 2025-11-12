@@ -3,7 +3,11 @@ Generation by NGrams starter
 """
 
 # pylint:disable=unused-import, unused-variable
-from lab_3_generate_by_ngrams.main import GreedyTextGenerator, TextProcessor, NGramLanguageModel
+from lab_3_generate_by_ngrams.main import (
+    GreedyTextGenerator,
+    NGramLanguageModel,
+    TextProcessor,
+)
 
 
 def main() -> None:
@@ -68,9 +72,9 @@ def main() -> None:
     print("3.2. Generating text...")
     prompt = "Vernon"
     seq_len = 51
-    print(f"   Prompt: '{prompt}'")
-    print(f"   Sequence length: {seq_len}")
-    print(f"   N-gram size: {n_gram_size}")
+    print(f"Prompt: '{prompt}'")
+    print(f"Sequence length: {seq_len}")
+    print(f"N-gram size: {n_gram_size}")
     generated_text = text_generator.run(seq_len, prompt)
     print("3.3. Generation result:")
     if generated_text:
