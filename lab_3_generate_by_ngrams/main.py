@@ -126,7 +126,7 @@ class TextProcessor:
         """
         if not isinstance(text, str) or not text:
             return None
-        tokenized_text = self._tokenize(text) or []
+        tokenized_text = self._tokenize(text)
         if not tokenized_text:
             return None
         encoded_corpus = []
@@ -148,11 +148,7 @@ class TextProcessor:
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
-        if (
-            not isinstance(element, str)
-                    or not element
-                    or len(element) != 1
-            ):
+        if (not isinstance(element, str) or len(element) != 1):
             return None
         if element not in self._storage:
             self._storage[element] = len(self._storage)
@@ -302,7 +298,7 @@ class NGramLanguageModel:
         if not isinstance(self._encoded_corpus, tuple) or not self._encoded_corpus:
             return 1
         n_grams = self._extract_n_grams(self._encoded_corpus)
-        if not isinstance(n_grams, tuple) or not n_grams:
+        if not n_grams:
             return 1
         n_gram_counts = {}
         prefix_counts = {}
@@ -505,7 +501,7 @@ class BeamSearcher:
             not sequence
             or not next_tokens
             or not sequence_candidates
-        ):
+            ):
             return None
         copy_seq_candidates = sequence_candidates.copy()
         for token in next_tokens:
@@ -580,7 +576,6 @@ class BeamSearchTextGenerator:
             not isinstance(prompt, str)
             or not prompt
             or not check_positive_int(seq_len)
-            or not seq_len
             ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
@@ -666,11 +661,7 @@ class NGramLanguageModelReader:
 
         In case of corrupt input arguments or unexpected behaviour of methods used, return 1.
         """
-        if (
-            not isinstance(n_gram_size, int)
-            or not n_gram_size
-            or n_gram_size < 2
-            ):
+        if (not isinstance(n_gram_size, int) or n_gram_size < 2):
             return None
         n_grams = {}
         for ngram in self._content['freq']:
@@ -750,8 +741,8 @@ class BackOffGenerator:
         if (
             not isinstance(seq_len, int)
             or not isinstance(prompt, str)
-            or not prompt
-            or not seq_len
+            or not prompt.strip()
+            or seq_len < 0
             ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
