@@ -5,11 +5,11 @@ Beam-search and natural language generation evaluation
 """
 
 # pylint:disable=too-few-public-methods, unused-import
+import math
 import json
 
 from lab_1_keywords_tfidf.main import clean_and_tokenize
 
-import math
 
 class TextProcessor:
     """
@@ -628,11 +628,11 @@ class BeamSearchTextGenerator:
                 if updated:
                     new_candidates.update(updated)
             if new_candidates:
-                sequence_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
-                if sequence_candidates is None:
+                pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+                if pruned_candidates is not None:
+                    sequence_candidates = pruned_candidates
+                else:
                     break
-            else:
-                break
         if not sequence_candidates:
             return None
         best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
@@ -722,7 +722,6 @@ class BackOffGenerator:
                 Language models to use for text generation
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
         """
-        
 
     def run(self, seq_len: int, prompt: str) -> str | None:
         """

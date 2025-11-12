@@ -3,7 +3,7 @@ Generation by NGrams starter
 """
 
 # pylint:disable=unused-import, unused-variable
-from lab_3_generate_by_ngrams.main import TextProcessor, NGramLanguageModel, GreedyTextGenerator
+from lab_3_generate_by_ngrams.main import GreedyTextGenerator, TextProcessor, NGramLanguageModel
 
 
 def main() -> None:
