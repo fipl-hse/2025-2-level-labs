@@ -24,7 +24,10 @@ def main() -> None:
 
 
     text_processor = TextProcessor("_")
-    encoded_text = text_processor.encode(text) or None
+    encoded_text = text_processor.encode(text)
+    if encoded_text is None:
+        return
+
 
     n_gram_models = {}
     for n_gram_size in range(14):

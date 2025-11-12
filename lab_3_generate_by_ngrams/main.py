@@ -61,7 +61,7 @@ class TextProcessor:
                 tokens.append(self._end_of_word_token)
 
         if not tokens:
-            return
+            return None
 
         if text and text[-1].isalpha():
             tokens.pop()
@@ -571,8 +571,8 @@ class BeamSearcher:
             return None
 
         sequence_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
-
-        return dict(sequence_candidates[: self._beam_width])
+        pruned_sequence = sequence_candidates[: self._beam_width]
+        return dict(pruned_sequence)
 
 
 class BeamSearchTextGenerator:
