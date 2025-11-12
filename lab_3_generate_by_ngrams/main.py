@@ -617,7 +617,7 @@ class BeamSearchTextGenerator:
             return None
         sequence_candidates: dict[tuple[int, ...], float] = {encoded_prompt: 0.0}
         initial_length = len(encoded_prompt)
-        for step in range(seq_len):
+        for _ in range(seq_len):
             new_candidates: dict[tuple[int, ...], float] = {}
             found_any_candidates = False
             for sequence, current_prob in sequence_candidates.items():
