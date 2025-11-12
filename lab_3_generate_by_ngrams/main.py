@@ -126,9 +126,7 @@ class TextProcessor:
         if not isinstance(text, str) or text == "":
             return None
         tokenized_text = self._tokenize(text)
-        if not tokenized_text:
-            return None
-        if not isinstance(tokenized_text, (list, tuple)):
+        if tokenized_text is None:
             return None
         list_with_id = []
         for each_element in tokenized_text:
