@@ -8,7 +8,7 @@ Beam-search and natural language generation evaluation
 import json
 from math import log
 
-from lab_1_keywords_tfidf.main import check_positive_int, check_list, check_dict
+from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 
 
 class TextProcessor:
@@ -361,7 +361,7 @@ class NGramLanguageModel:
         ):
             return None
 
-        context = sequence[-(self._n_gram_size - 1):]
+        context = sequence[-(self._n_gram_size - 1) :]
         next_token = {
             n_gram[-1]: frequency
             for n_gram, frequency in self._n_gram_frequencies.items()
@@ -392,8 +392,7 @@ class NGramLanguageModel:
             return None
 
         extracted_n_grams = [
-            encoded_corpus[index : index + self._n_gram_size]
-            for index in range(limit)
+            encoded_corpus[index : index + self._n_gram_size] for index in range(limit)
         ]
 
         return tuple(extracted_n_grams)
@@ -507,7 +506,7 @@ class BeamSearcher:
 
         best_candidates = sorted(candidates.items(), key=lambda item: item[1], reverse=True)
 
-        return best_candidates[:self._beam_width]
+        return best_candidates[: self._beam_width]
 
     def continue_sequence(
         self,
@@ -573,7 +572,7 @@ class BeamSearcher:
 
         sequence_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
 
-        return dict(sequence_candidates[:self._beam_width])
+        return dict(sequence_candidates[: self._beam_width])
 
 
 class BeamSearchTextGenerator:
@@ -617,10 +616,7 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if not (check_positive_int(seq_len)
-                and isinstance(prompt, str)
-                and prompt
-        ):
+        if not (check_positive_int(seq_len) and isinstance(prompt, str) and prompt):
             return None
 
         encoded_prompt = self._text_processor.encode(prompt)
@@ -733,7 +729,9 @@ class NGramLanguageModelReader:
 
             if processed_n_gram:
                 n_gram_tuple = tuple(processed_n_gram)
-                n_grams_frequencies[n_gram_tuple] = n_grams_frequencies.get(n_gram_tuple, 0.0) + frequency
+                n_grams_frequencies[n_gram_tuple] = (
+                    n_grams_frequencies.get(n_gram_tuple, 0.0) + frequency
+                )
 
                 if len(processed_n_gram) == n_gram_size:
                     context = n_gram_tuple[:-1]
@@ -753,7 +751,6 @@ class NGramLanguageModelReader:
         model.set_n_grams(conditional_probabilities)
 
         return model
-
 
     def get_text_processor(self) -> TextProcessor:  # type: ignore[empty-body]
         """
@@ -785,8 +782,9 @@ class BackOffGenerator:
                 Language models to use for text generation
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
         """
-        self._language_models = {language_model.get_n_gram_size(): language_model
-                                 for language_model in language_models}
+        self._language_models = {
+            language_model.get_n_gram_size(): language_model for language_model in language_models
+        }
         self._text_processor = text_processor
 
     def run(self, seq_len: int, prompt: str) -> str | None:
@@ -812,7 +810,6 @@ class BackOffGenerator:
 
         generated_sequence = list(encoded_prompt)
 
-
         for _ in range(seq_len):
 
             candidates = self._get_next_token(tuple(generated_sequence))
@@ -824,7 +821,6 @@ class BackOffGenerator:
             generated_sequence.append(token)
 
         return self._text_processor.decode(tuple(generated_sequence))
-
 
     def _get_next_token(self, sequence_to_continue: tuple[int, ...]) -> dict[int, float] | None:
         """

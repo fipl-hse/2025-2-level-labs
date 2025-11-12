@@ -7,6 +7,7 @@ from lab_3_generate_by_ngrams.main import (
     NGramLanguageModel,
     GreedyTextGenerator,
     BeamSearchTextGenerator,
+    BackOffGenerator
 )
 
 # pylint:disable=unused-import, unused-variable
@@ -40,16 +41,27 @@ def main() -> None:
     text_processor = TextProcessor("_")
     encoded_text = text_processor.encode(text) or None
 
-    ngram_model = NGramLanguageModel(encoded_text, 7)
-    if ngram_model.build():
-        print("Model building failed.")
-        return None
+    n_gram_models = {}
+    for n_gram_size in range(14):
+        n_gram_model = NGramLanguageModel(encoded_text, n_gram_size)
+        n_gram_model.build()
 
-    greedy_generator = GreedyTextGenerator(ngram_model, text_processor)
-    output = greedy_generator.run(51, "Vernon")
+        n_gram_models[n_gram_size] = n_gram_model
 
-    print(output)
 
+
+    greedy_generator = GreedyTextGenerator(n_gram_models[7], text_processor)
+    output_greedy = greedy_generator.run(51, "Vernon")
+
+    beam_generator = BeamSearchTextGenerator(n_gram_models[7], text_processor, 5)
+    output_beam = beam_generator.run("Vernon", 51)
+
+    back_off_generator = BackOffGenerator(n_gram_models.values(), text_processor)
+    output_back_off = back_off_generator.run(51, "Vernon")
+    print(f"Greedy: {output_greedy}", f"Beam: {output_beam}", f"Back off: {output_back_off}", sep="\n")
+
+    result = output_greedy + output_beam + output_back_off
+    assert result
 
 if __name__ == "__main__":
     main()
