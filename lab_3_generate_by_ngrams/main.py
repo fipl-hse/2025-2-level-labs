@@ -80,7 +80,7 @@ class TextProcessor:
         if not isinstance(element, str) or element not in self._storage:
             return None
         return self._storage.get(element)
-        
+    
 
     def get_end_of_word_token(self) -> str:  # type: ignore[empty-body]
         """
@@ -137,7 +137,6 @@ class TextProcessor:
                 return None
             list_with_id.append(value_id)
         return tuple(list_with_id)
-    
 
     def _put(self, element: str) -> None:
         """
@@ -235,7 +234,6 @@ class TextProcessor:
                 result += element
         result = result.strip()
         return result.capitalize() + "."
-    
 
 class NGramLanguageModel:
     """
@@ -301,7 +299,6 @@ class NGramLanguageModel:
             self._n_gram_frequencies[element] = current_encoded_corpus.count(element)/count_
         return 0
     
-
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
         Retrieve tokens that can continue the given sequence along with their probabilities.
@@ -325,7 +322,6 @@ class NGramLanguageModel:
         sorted_result = dict(sorted(result.items(), key=lambda x: (x[1], x[0]), reverse=True))
         return sorted_result
     
-
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
     ) -> tuple[tuple[int, ...], ...] | None:
@@ -402,7 +398,6 @@ class GreedyTextGenerator:
         decoded_text = self._text_processor.decode(tuple(sequence))
         return decoded_text
     
-
 class BeamSearcher:
     """
     Beam Search algorithm for diverse text generation.
@@ -452,7 +447,6 @@ class BeamSearcher:
         result.sort(key=lambda x: (-x[1], x[0]))
         return result[:self._beam_width]
  
-
     def continue_sequence(
         self,
         sequence: tuple[int, ...],
@@ -516,7 +510,6 @@ class BeamSearcher:
         result = dict(sorted_sequences[:self._beam_width])
         return result
     
-
 class BeamSearchTextGenerator:
     """
     Class for text generation with BeamSearch.
@@ -558,18 +551,19 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if not isinstance(seq_len, int) or not isinstance(prompt, str):
-            return None
-        if not prompt:
-            return None
-        if seq_len <= 0:
-            return None
-        encoded_prompt = self._text_processor.encode(prompt)
-        if encoded_prompt is None:
-            return None
-        candidates = {tuple(encoded_prompt): 0.0}
+        #if not isinstance(seq_len, int) or not isinstance(prompt, str):
+        #    return None
+        #if not prompt:
+        #    return None
+        #if seq_len <= 0:
+        #    return None
+        #encoded_prompt = self._text_processor.encode(prompt)
+        #if encoded_prompt is None:
+        #    return None
+        #candidates = {tuple(encoded_prompt): 0.0}
+        #return candidates
 
-            
+    
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
     ) -> list[tuple[int, float]] | None:
