@@ -100,89 +100,6 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     return 1.0 - len(intersection) / len(union)
 
 
-def _validate_calculate_distance_inputs(
-    first_token: str, vocabulary: dict[str, float], method: str, alphabet: list[str] | None
-) -> bool:
-    """Validate inputs for calculate_distance function."""
-    if method == "frequency-based" and alphabet is not None:
-        if not check_list(alphabet, str, can_be_empty=True):
-            return False
-
-    if not isinstance(first_token, str) or not check_dict(
-        vocabulary, str, float, can_be_empty=False
-    ):
-        return False
-    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
-        return False
-    return True
-
-
-def _calculate_jaccard_distances(
-    first_token: str, vocabulary: dict[str, float]
-) -> dict[str, float] | None:
-    """Calculate Jaccard distances for all candidates."""
-    result = {}
-    for candidate in vocabulary:
-        distance = calculate_jaccard_distance(first_token, candidate)
-        if distance is None:
-            return None
-        result[candidate] = distance
-    return result
-
-
-def _calculate_levenshtein_distances(
-    first_token: str, vocabulary: dict[str, float]
-) -> dict[str, float] | None:
-    """Calculate Levenshtein distances for all candidates."""
-    result = {}
-    for candidate in vocabulary:
-        distance = calculate_levenshtein_distance(first_token, candidate)
-        if distance is None:
-            return None
-        result[candidate] = float(distance)
-    return result
-
-
-def _calculate_jaro_winkler_distances(
-    first_token: str, vocabulary: dict[str, float]
-) -> dict[str, float] | None:
-    """Calculate Jaro-Winkler distances for all candidates."""
-    result = {}
-    for candidate in vocabulary:
-        distance = calculate_jaro_winkler_distance(first_token, candidate)
-        if distance is None:
-            return None
-        result[candidate] = distance
-    return result
-
-
-def _calculate_frequency_distances(
-    first_token: str, vocabulary: dict[str, float], alphabet: list[str] | None
-) -> dict[str, float] | None:
-    """Calculate frequency-based distances."""
-    if alphabet is None:
-        return {candidate: 1.0 for candidate in vocabulary}
-
-    return calculate_frequency_distance(first_token, vocabulary, alphabet)
-
-
-def _calculate_distance_by_method(
-    first_token: str, vocabulary: dict[str, float], method: str, alphabet: list[str] | None
-) -> dict[str, float] | None:
-    """Calculate distance using specific method."""
-
-    if method == "jaccard":
-        return _calculate_jaccard_distances(first_token, vocabulary)
-    if method == "levenshtein":
-        return _calculate_levenshtein_distances(first_token, vocabulary)
-    if method == "jaro-winkler":
-        return _calculate_jaro_winkler_distances(first_token, vocabulary)
-    if method == "frequency-based":
-        return _calculate_frequency_distances(first_token, vocabulary, alphabet)
-
-    return None
-
-
 def calculate_distance(
     first_token: str,
     vocabulary: dict[str, float],
@@ -203,47 +120,50 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if not _validate_calculate_distance_inputs(first_token, vocabulary, method, alphabet):
-        return None
-
-    return _calculate_distance_by_method(first_token, vocabulary, method, alphabet)
-
-
-def _validate_find_correct_word_inputs(
-    wrong_word: str, vocabulary: dict[str, float], method: str, alphabet: list[str] | None
-) -> bool:
-    """Validate inputs for find_correct_word function."""
-    if alphabet is not None:
+    if method == "frequency-based" and alphabet is not None:
         if not check_list(alphabet, str, can_be_empty=True):
-            return False
+            return None
 
-    if not isinstance(wrong_word, str) or not check_dict(
+    if not isinstance(first_token, str) or not check_dict(
         vocabulary, str, float, can_be_empty=False
     ):
-        return False
+        return None
     if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
-        return False
-    return True
-
-
-def _select_best_candidate(distances: dict[str, float], wrong_word: str) -> str | None:
-    """Select the best candidate from distances."""
-    if not distances:
         return None
 
-    min_distance = min(distances.values())
-    best_candidates = [
-        candidate for candidate, distance in distances.items() if distance == min_distance
-    ]
+    if method == "jaccard":
+        result = {}
+        for candidate in vocabulary:
+            distance = calculate_jaccard_distance(first_token, candidate)
+            if distance is None:
+                return None
+            result[candidate] = distance
+        return result
 
-    if not best_candidates:
-        return None
+    if method == "levenshtein":
+        result = {}
+        for candidate in vocabulary:
+            distance = calculate_levenshtein_distance(first_token, candidate)
+            if distance is None:
+                return None
+            result[candidate] = float(distance)
+        return result
 
-    if len(best_candidates) == 1:
-        return best_candidates[0]
+    if method == "jaro-winkler":
+        result = {}
+        for candidate in vocabulary:
+            distance = calculate_jaro_winkler_distance(first_token, candidate)
+            if distance is None:
+                return None
+            result[candidate] = distance
+        return result
 
-    best_candidates.sort(key=lambda word: (abs(len(word) - len(wrong_word)), word))
-    return best_candidates[0]
+    if method == "frequency-based":
+        if alphabet is None:
+            return {candidate: 1.0 for candidate in vocabulary}
+        return calculate_frequency_distance(first_token, vocabulary, alphabet)
+
+    return None
 
 
 def find_correct_word(
@@ -267,14 +187,37 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if not _validate_find_correct_word_inputs(wrong_word, vocabulary, method, alphabet):
+    if alphabet is not None:
+        if not check_list(alphabet, str, can_be_empty=True):
+            return False
+
+    if not isinstance(wrong_word, str) or not check_dict(
+        vocabulary, str, float, can_be_empty=False
+    ):
+        return None
+    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
         return None
 
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if distances is None:
         return None
 
-    return _select_best_candidate(distances, wrong_word)
+    if not distances:
+        return None
+
+    min_distance = min(distances.values())
+    best_candidates = [
+        candidate for candidate, distance in distances.items() if distance == min_distance
+    ]
+
+    if not best_candidates:
+        return None
+
+    if len(best_candidates) == 1:
+        return best_candidates[0]
+
+    best_candidates.sort(key=lambda word: (abs(len(word) - len(wrong_word)), word))
+    return best_candidates[0]
 
 
 def initialize_levenshtein_matrix(
