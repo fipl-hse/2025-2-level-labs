@@ -121,7 +121,27 @@
             "name": "[SEMINAR 9] Tic tac toe",
             "type": "debugpy",
             "request": "launch",
-            "program": "seminars/listing_9_tic_tac_toe.py",
+            "program": "seminars/listing_9_tictactoe.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 10] Learn encapsulation",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_10_encapsulate.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 11] Learn inheritance",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_11_inheritance.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
