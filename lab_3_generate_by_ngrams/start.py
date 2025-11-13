@@ -8,7 +8,8 @@ from main import (
     BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
-    TextProcessor)
+    TextProcessor,
+)
 
 
 def main() -> None:
