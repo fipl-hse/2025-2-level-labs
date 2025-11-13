@@ -71,6 +71,9 @@ class TextProcessor:
         In case of corrupt input arguments or arguments not included in storage,
         None is returned
         """
+        if not isinstance(element, str):
+            return None
+        return self._storage.get(element)
 
     def get_end_of_word_token(self) -> str:  # type: ignore[empty-body]
         """
@@ -92,6 +95,13 @@ class TextProcessor:
 
         In case of corrupt input arguments or arguments not included in storage, None is returned
         """
+        if not isinstance(element_id, int):
+            return None
+        for token, id in self._storage.items():
+            if id == element_id:
+                return token
+        return None
+
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
