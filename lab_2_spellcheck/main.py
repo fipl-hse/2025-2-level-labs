@@ -120,50 +120,35 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if method == "frequency-based" and alphabet is not None:
-        if not check_list(alphabet, str, can_be_empty=True):
-            return None
-
-    if not isinstance(first_token, str) or not check_dict(
-        vocabulary, str, float, can_be_empty=False
+    if (
+        not isinstance(first_token, str)
+        or not check_dict(vocabulary, str, float, False)
+        or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        or (alphabet is not None and not check_list(alphabet, str, False))
     ):
         return None
-    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
-        return None
-
-    if method == "jaccard":
-        result = {}
-        for candidate in vocabulary:
-            distance = calculate_jaccard_distance(first_token, candidate)
-            if distance is None:
-                return None
-            result[candidate] = distance
-        return result
-
-    if method == "levenshtein":
-        result = {}
-        for candidate in vocabulary:
-            distance = calculate_levenshtein_distance(first_token, candidate)
-            if distance is None:
-                return None
-            result[candidate] = float(distance)
-        return result
-
-    if method == "jaro-winkler":
-        result = {}
-        for candidate in vocabulary:
-            distance = calculate_jaro_winkler_distance(first_token, candidate)
-            if distance is None:
-                return None
-            result[candidate] = distance
-        return result
-
     if method == "frequency-based":
         if alphabet is None:
-            return {candidate: 1.0 for candidate in vocabulary}
-        return calculate_frequency_distance(first_token, vocabulary, alphabet)
-
-    return None
+            return {token: 1.0 for token in vocabulary}
+        freq_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if freq_distance is None:
+            return None
+        return freq_distance
+    distance = {}
+    if method == "jaccard":
+        calc_distance = calculate_jaccard_distance
+    elif method == "levenshtein":
+        calc_distance = calculate_levenshtein_distance
+    elif method == "jaro-winkler":
+        calc_distance = calculate_jaro_winkler_distance
+    else:
+        return None
+    for token in vocabulary:
+        distance_value = calc_distance(first_token, token)
+        if distance_value is None:
+            return None
+        distance[token] = distance_value
+    return distance
 
 
 def find_correct_word(
