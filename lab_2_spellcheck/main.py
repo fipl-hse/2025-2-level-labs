@@ -498,14 +498,14 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
 
 def calculate_frequency_distance(
-    word: str, frequencies: dict, alphabet: list[str]
+    word: str, frequencies: dict[str, float], alphabet: list[str]
 ) -> dict[str, float] | None:
     """
     Suggest the most probable correct spelling for the word.
 
     Args:
         word (str): The input incorrect word.
-        frequencies (dict): A dictionary with frequencies.
+        frequencies (dict[str, float]): A dictionary with frequencies.
         alphabet (list[str]): Alphabet for candidates creation.
 
     Returns:
