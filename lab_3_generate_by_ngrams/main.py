@@ -126,15 +126,16 @@ class TextProcessor:
         if not isinstance(text, str) or text == "":
             return None
         tokenized_text = self._tokenize(text)
-        if tokenized_text is None:
+        if tokenized_text is not None:
+            list_with_id = []
+            for each_element in tokenized_text:
+                self._put(each_element)
+                value_id = self.get_id(each_element)
+                if value_id is None:
+                    return None
+                list_with_id.append(value_id)
+        else:
             return None
-        list_with_id = []
-        for each_element in tokenized_text:
-            self._put(each_element)
-            value_id = self.get_id(each_element)
-            if value_id is None:
-                return None
-            list_with_id.append(value_id)
         return tuple(list_with_id)
 
     def _put(self, element: str) -> None:
@@ -551,17 +552,6 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if not isinstance(seq_len, int) or not isinstance(prompt, str):
-            return None
-        if not prompt:
-            return None
-        if seq_len <= 0:
-            return None
-        encoded_prompt = self._text_processor.encode(prompt)
-        if encoded_prompt is None:
-            return None
-        candidates = {encoded_prompt: 0.0}
-        return candidates
 
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
@@ -606,6 +596,7 @@ class NGramLanguageModelReader:
             json_path (str): Local path to assets file
             eow_token (str): Special token for text processor
         """
+        self._eow_token = eow_token
 
     def load(self, n_gram_size: int) -> NGramLanguageModel | None:
         """
