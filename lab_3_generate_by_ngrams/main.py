@@ -552,6 +552,38 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
+        if not isinstance(seq_len, int) or not isinstance(prompt, str):
+            return None
+        if not prompt:
+            return None
+        if seq_len <= 0:
+            return None
+        encoded_prompt = self._text_processor.encode(prompt)
+        if encoded_prompt is None:
+            return None
+        sequence_candidates = {encoded_prompt: 0.0}
+        for _ in range(seq_len):
+            new_candidates = {}
+            for sequence, probability in sequence_candidates.items():
+                next_tokens = self._get_next_token(sequence)
+                if next_tokens is None:
+                    return None
+                updated_candidates = self.beam_searcher.continue_sequence(
+                    sequence, next_tokens, {sequence: probability}
+                )
+                if updated_candidates is not None:
+                    for seq, prob in updated_candidates.items():
+                        if seq not in new_candidates or prob < new_candidates[seq]:
+                            new_candidates[seq] = prob
+            if not new_candidates:
+                break
+            sequence_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+            if sequence_candidates is None:
+                return None
+        if not sequence_candidates:
+            return None
+        best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
+        return self._text_processor.decode(best_sequence)
 
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
@@ -596,7 +628,6 @@ class NGramLanguageModelReader:
             json_path (str): Local path to assets file
             eow_token (str): Special token for text processor
         """
-        self._eow_token = eow_token
 
     def load(self, n_gram_size: int) -> NGramLanguageModel | None:
         """
