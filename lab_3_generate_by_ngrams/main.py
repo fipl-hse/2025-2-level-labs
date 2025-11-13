@@ -714,8 +714,8 @@ class NGramLanguageModelReader:
 
         In case of corrupt input arguments or unexpected behaviour of methods used, return 1.
         """
-        if (not isinstance(n_gram_size, int) or 
-            n_gram_size < 2 or 
+        if (not isinstance(n_gram_size, int) or
+            n_gram_size < 2 or
             not self._content):
             return None
         freq_dict = self._content.get('freq', {})
@@ -806,9 +806,9 @@ class BackOffGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if (not isinstance(seq_len, int) or 
-            seq_len <= 0 or 
-            not isinstance(prompt, str) or 
+        if (not isinstance(seq_len, int) or
+            seq_len <= 0 or
+            not isinstance(prompt, str) or
             not prompt):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
