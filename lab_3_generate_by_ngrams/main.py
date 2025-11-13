@@ -554,9 +554,7 @@ class BeamSearchTextGenerator:
         """
         if not isinstance(seq_len, int) or not isinstance(prompt, str):
             return None
-        if not prompt:
-            return None
-        if seq_len <= 0:
+        if not prompt or seq_len <= 0 :
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if encoded_prompt is None:
@@ -577,7 +575,7 @@ class BeamSearchTextGenerator:
                             new_candidates[seq] = prob
             if not new_candidates:
                 break
-            sequence_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+            sequence_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates) or {}
             if sequence_candidates is None:
                 return None
         if not sequence_candidates:
