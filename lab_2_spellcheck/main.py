@@ -153,6 +153,8 @@ def calculate_distance(
             lev_distance = calculate_levenshtein_distance(first_token, word)
             if lev_distance is not None:
                 dist[word] = float(lev_distance)
+        if not dist:
+            return None
         return dist 
     
     return None
@@ -160,7 +162,7 @@ def calculate_distance(
 def find_correct_word(
     wrong_word: str,
     vocabulary: dict[str, float],
-    method: Literal["jaccard", "frequency-based", "levenshtein", "jaro-winkler"],
+    method: Literal["jaccard", "frequency-based", "levenshtein"],
     alphabet: list[str] | None = None,
 ) -> str | None:
     """
@@ -187,7 +189,7 @@ def find_correct_word(
         if not check_list(alphabet, str, False):
             return None
         
-    if method not in ["jaccard", "frequency-based"]:
+    if method not in ["jaccard", "frequency-based", "levenshtein"]:
         return None
     
     dist_dict = calculate_distance(wrong_word, vocabulary, method, alphabet)
@@ -461,10 +463,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     if swap_candidates is not None:
         candidates.update(swap_candidates)
 
-    if candidates:
-        return sorted(list(candidates))
-    else:
-        return None
+    return sorted(list(candidates)) if candidates else []
 
 
 def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None:
@@ -487,6 +486,8 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         return None
     if not all(isinstance(syb, str) for syb in alphabet):
         return None
+    if not alphabet:
+        return ()
     
     candidates = set()
     first_step = generate_candidates(word, alphabet)
@@ -499,9 +500,10 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         second_step = generate_candidates(candidate, alphabet)
         if second_step is None:
             return None
-        candidates.update(second_step)
+        if second_step is not None:
+            candidates.update(second_step)
     
-    return tuple(sorted(candidates))
+    return tuple(sorted(candidates)) 
 
 
 def calculate_frequency_distance(
@@ -564,12 +566,6 @@ def get_matches(
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(token, str):
-        return None
-    if not isinstance(candidate, str):
-        return None
-    if not isinstance(match_distance, int):
-        return None
     
 
 
