@@ -33,12 +33,10 @@ def main() -> None:
 
     generator_model = NGramLanguageModel(encoded_text, 7)
     generator_model.build()
-    greedy_generator = GreedyTextGenerator(generator_model, processor)
-    greedy_algorithm = greedy_generator.run(51, 'Vernon')
+    greedy_algorithm = GreedyTextGenerator(generator_model, processor).run(51, 'Vernon')
     print(greedy_algorithm)
 
-    beam_search_generator = BeamSearchTextGenerator(generator_model, processor, beam_width=3)
-    beam_search_algorithm = beam_search_generator.run('Vernon', 56)
+    beam_search_algorithm = BeamSearchTextGenerator(generator_model, processor, 3).run('Vernon', 56)
     print(beam_search_algorithm)
 
     models = []
@@ -46,8 +44,7 @@ def main() -> None:
         model = NGramLanguageModel(encoded_text, n_gram_size)
         model.build()
         models.append(model)
-    back_off_generator = BackOffGenerator(tuple(models), processor)
-    back_off_algorithm = back_off_generator.run(60, 'Vernon shouted that')
+    back_off_algorithm = BackOffGenerator(tuple(models), processor).run(60, 'Vernon shouted that')
     print(back_off_algorithm)
 
     result = back_off_algorithm

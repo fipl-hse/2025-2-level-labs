@@ -705,7 +705,8 @@ class NGramLanguageModelReader:
                     break
                 encoded_ngram.append(sym_id)
             if len(encoded_ngram) == n_gram_size:
-                ngram_abs_freqs[tuple(encoded_ngram)] = ngram_abs_freqs.get(tuple(encoded_ngram), 0) + frequency
+                ngram_abs_freqs[tuple(encoded_ngram)] = ngram_abs_freqs.get(
+                    tuple(encoded_ngram), 0) + frequency
                 prefix = tuple(encoded_ngram)[:-1]
                 ngram_prefix_counts[prefix] = ngram_prefix_counts.get(prefix, 0) + frequency
         n_gram_frequencies = {}
