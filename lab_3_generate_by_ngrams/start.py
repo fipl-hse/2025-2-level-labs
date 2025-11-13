@@ -7,7 +7,8 @@ from lab_3_generate_by_ngrams.main import (
     BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
-    TextProcessor)
+    TextProcessor
+)
 
 
 def main() -> None:
@@ -21,7 +22,7 @@ def main() -> None:
     processor = TextProcessor("_")
     encoded_text = processor.encode(text)
     if encoded_text is None:
-        return None
+        return
     model = NGramLanguageModel(encoded_text[:5000], 7)
     model.build()
     generator = GreedyTextGenerator(model, processor)
@@ -30,7 +31,7 @@ def main() -> None:
     beam_search_ = beam_search.run("Harry ", 56)
     result = beam_search_
     print(result)
-    assert result    
+    assert result
 
 
 if __name__ == "__main__":
