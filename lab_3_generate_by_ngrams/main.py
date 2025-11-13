@@ -535,7 +535,7 @@ class BeamSearchTextGenerator:
         self._language_model = language_model
         self._text_processor = text_processor
         self._beam_width = beam_width
-        self.beam_searchers = BeamSearcher(beam_width, language_model)
+        self.beam_searcher = BeamSearcher(beam_width, language_model)
 
     def run(self, prompt: str, seq_len: int) -> str | None:
         """
@@ -551,17 +551,17 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        #if not isinstance(seq_len, int) or not isinstance(prompt, str):
-        #    return None
-        #if not prompt:
-        #    return None
-        #if seq_len <= 0:
-        #    return None
-        #encoded_prompt = self._text_processor.encode(prompt)
-        #if encoded_prompt is None:
-        #    return None
-        #candidates = {tuple(encoded_prompt): 0.0}
-        #return candidates
+        if not isinstance(seq_len, int) or not isinstance(prompt, str):
+            return None
+        if not prompt:
+            return None
+        if seq_len <= 0:
+            return None
+        encoded_prompt = self._text_processor.encode(prompt)
+        if encoded_prompt is None:
+            return None
+        candidates = {encoded_prompt: 0.0}
+        return candidates
 
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
@@ -582,7 +582,7 @@ class BeamSearchTextGenerator:
             return None
         if not sequence_to_continue:
             return None
-        next_token = self.beam_searchers.get_next_token(sequence_to_continue)
+        next_token = self.beam_searcher.get_next_token(sequence_to_continue)
         if not next_token:
             return None
         return next_token
