@@ -1,9 +1,11 @@
 """
 Generation by NGrams starter
 """
-
+#lab_3_generate_by_ngrams.
 # pylint:disable=unused-import, unused-variable
-from lab_3_generate_by_ngrams.main import (
+from main import (
+    BeamSearcher,
+    BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
     TextProcessor)
@@ -21,10 +23,11 @@ def main() -> None:
     encoded_text = processor.encode(text)
     if encoded_text is None:
         return None
-    model = NGramLanguageModel(encoded_text[:2000], 7)
-    build_result = model.build()
-    generator = GreedyTextGenerator(model, processor)
-    result = generator.run(51, "Harry ")
+    model = NGramLanguageModel(encoded_text[:5000], 7)
+    #generator = GreedyTextGenerator(model, processor)
+    #result = generator.run(51, "Harry ")
+    beam_searcher = BeamSearchTextGenerator(model, processor, 7)
+    result = beam_searcher.run("Harry ", 56)
     print(result)
     assert result
 

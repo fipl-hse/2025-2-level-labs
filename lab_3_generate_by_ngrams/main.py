@@ -554,7 +554,7 @@ class BeamSearchTextGenerator:
         """
         if not isinstance(seq_len, int) or not isinstance(prompt, str):
             return None
-        if not prompt or seq_len <= 0 :
+        if not prompt or seq_len <= 0:
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if encoded_prompt is None:
