@@ -24,6 +24,9 @@ class TextProcessor:
         Args:
             end_of_word_token (str): A token denoting word boundary
         """
+        self._end_of_word_token = end_of_word_token
+        self._storage = {end_of_word_token: 0}
+
 
     def _tokenize(self, text: str) -> tuple[str, ...] | None:
         """
@@ -42,6 +45,18 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(text, str) or text is None:
+            return None
+        tokens = []
+        for char in text:
+            if char.isalpha():
+                tokens.append(char.lower())
+            else:
+                if tokens and tokens[-1] != self._end_of_word_token:
+                    tokens.append(self._end_of_word_token)
+        if not tokens:
+            return None
+        return tuple(tokens)
 
     def get_id(self, element: str) -> int | None:
         """
@@ -105,6 +120,13 @@ class TextProcessor:
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
+        if not isinstance(element, str) or len(element) != 1:
+            return None
+        if (element == self._end_of_word_token
+            and self._end_of_word_token not in self._storage):
+                self._storage['_'] = 0
+        else:
+            self._storage[element] = len(self._storage)
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
