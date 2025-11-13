@@ -189,7 +189,7 @@ def find_correct_word(
     """
     if alphabet is not None:
         if not check_list(alphabet, str, can_be_empty=True):
-            return False
+            return None  # ← ИЗМЕНИТЬ С False НА None
 
     if not isinstance(wrong_word, str) or not check_dict(
         vocabulary, str, float, can_be_empty=False
