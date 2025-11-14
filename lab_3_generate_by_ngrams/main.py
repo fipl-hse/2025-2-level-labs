@@ -8,7 +8,7 @@ Beam-search and natural language generation evaluation
 import json
 import math
 
-from lab_1_keywords_tfidf.main import check_positive_int
+from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 
 
 class TextProcessor:
@@ -234,7 +234,7 @@ class TextProcessor:
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
-        decoded_text = ''.join(decoded_corpus).replace('_', ' ').capitalize()
+        decoded_text = ''.join(decoded_corpus).replace(self._end_of_word_token, ' ').capitalize()
         if decoded_text[-1] == ' ':
             return decoded_text[:-1] + '.'
         return decoded_text + '.'
@@ -278,7 +278,7 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
-        if not isinstance(frequencies, dict) or not frequencies:
+        if not check_dict(frequencies, tuple, float, True) or not frequencies:
             return None
         self._n_gram_frequencies = frequencies
         return None
@@ -464,7 +464,7 @@ class BeamSearcher:
             return None
         if not result:
             return []
-        return sorted([(token, float(freq)) for token, freq in result.items()],
+        return sorted([(token, freq) for token, freq in result.items()],
                       key=lambda item: item[1], reverse=True)[:self._beam_width]
 
     def continue_sequence(
@@ -491,8 +491,8 @@ class BeamSearcher:
         """
         if (
             not isinstance(sequence, tuple)
-            or not isinstance(next_tokens, list)
-            or not isinstance(sequence_candidates, dict)
+            or not check_list(next_tokens, tuple, False)
+            or not check_dict(sequence_candidates, tuple, float, True)
             or not len(next_tokens) <= self._beam_width
             or not sequence in sequence_candidates
             ):
@@ -525,7 +525,7 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
-        if (not isinstance(sequence_candidates, dict) or not sequence_candidates):
+        if not check_dict(sequence_candidates, tuple, float, True) or not sequence_candidates:
             return None
         return dict(sorted(sequence_candidates.items(),
                       key=lambda item: item[1], reverse=False)[:self._beam_width])
