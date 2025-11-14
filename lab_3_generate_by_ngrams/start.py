@@ -29,6 +29,7 @@ def main() -> None:
     beam = beam_generator.run("Vernon", 56) or None
     result = beam
     assert result
+    return beam
 
 
 if __name__ == "__main__":

@@ -38,6 +38,8 @@ nitpick_ignore = [
     ("py:class", "spacy.tokens.Token"),
     ("py:class", "stanza.models.common.doc.Document"),
     ("py:class", "DiGraph"),
+    ("py:class", "optional"),
+    ("py:class", "Methods"),
 ]
 
 exclude_patterns = ["venv/*", "docs/private/*"]
