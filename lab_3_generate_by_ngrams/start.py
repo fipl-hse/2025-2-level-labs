@@ -28,7 +28,7 @@ def main() -> None:
 
     model = NGramLanguageModel(encoded_text, 7)
     model.build()
-    
+
     greedy_generator = GreedyTextGenerator(model, processor)
     greedy_text = greedy_generator.run(51, 'Vernon')
     print(greedy_text)
@@ -36,7 +36,7 @@ def main() -> None:
     beam_search_generator = BeamSearchTextGenerator(model, processor, 3)
     beam_search_text = beam_search_generator.run('Vernon', 56)
     print(beam_search_text)
-    
+
     result = beam_search_text
     assert result
 
