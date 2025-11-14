@@ -305,22 +305,11 @@ class NGramLanguageModel:
         if extracted_n_grams is None:
             return 1
         for n_gram in extracted_n_grams:
-            n_gram = (n_gram)
-            if str(extracted_n_grams).count(str(n_gram)[:self._n_gram_size]-2) != 0:
+            if str(extracted_n_grams).count(str(n_gram)[:self._n_gram_size - 2]) != 0:
                 self._n_gram_frequencies[n_gram] = (
                     extracted_n_grams.count(n_gram) /
-                    str(extracted_n_grams).count(str(n_gram)[:self._n_gram_size]-2)
+                    str(extracted_n_grams).count(str(n_gram)[:self._n_gram_size - 2])
                 )
-        # modified_n_grams = [] #gotta make it less time-consuming
-        # for n_gram in extracted_n_grams:
-        #     modified_n_grams.append(extracted_n_grams[:self._n_gram_size - 1])
-        # for n_gram in extracted_n_grams:
-        #     n_gram = list(n_gram)
-        #     if modified_n_grams.count(n_gram[:self._n_gram_size - 1]) != 0:
-        #         self._n_gram_frequencies[n_gram] = (
-        #             extracted_n_grams.count(n_gram) /
-        #             extracted_n_grams.count(n_gram[:self._n_gram_size - 1])
-        #         )
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:

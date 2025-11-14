@@ -18,10 +18,9 @@ def main() -> None:
     processor = TextProcessor("_")
     encoded_text = processor.encode(text) or ()
     decoded_text = processor.decode(encoded_text)
-    language_model = NGramLanguageModel(encoded_text, 3)
-    #build_result = language_model.build()
-    result = decoded_text
-    #print(language_model._n_gram_frequencies)
+    n_gram_language_model = NGramLanguageModel(encoded_text, 3)
+    build_result = n_gram_language_model.build()
+    result = build_result
     assert result
 
 
