@@ -6,6 +6,7 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
+import string
 
 
 class TextProcessor:
@@ -53,7 +54,7 @@ class TextProcessor:
         processed_text = self._end_of_word_token.join(processed_text) or ''
         processed_text = list(processed_text)
 
-        if processed_text[len(processed_text) - 1] in ".?!,:;-":
+        if processed_text[len(processed_text) - 1] in string.punctuation:
             processed_text[len(processed_text) - 1] = self._end_of_word_token
 
         tokens_list = []
@@ -237,11 +238,11 @@ class TextProcessor:
             return None
         list_decoded = list(decoded_corpus)
         list_decoded[0] = list_decoded[0].upper()
-        if list_decoded[len(list_decoded) - 1] == "_":
+        if list_decoded[len(list_decoded) - 1] == self._end_of_word_token:
             list_decoded[len(list_decoded) - 1] = "."
         else:
             list_decoded.append(".")
-        return "".join(list_decoded).replace("_", " ")
+        return "".join(list_decoded).replace(self._end_of_word_token, " ")
 
 
 class NGramLanguageModel:
