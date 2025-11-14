@@ -32,14 +32,14 @@ def main() -> None:
     for n_size in (2, 3):
         loaded_model = reader.load(n_size)
         if loaded_model:
-            result = GreedyTextGenerator(loaded_model, reader.get_text_processor()).run(10, 'Vernon')
+            result = GreedyTextGenerator(loaded_model,
+                                         reader.get_text_processor()).run(10, 'Vernon')
             print(f"Загруженная модель {n_size}-gram: {result}")
 
     model_with_7 = NGramLanguageModel(encoded_text, 7)
     model_with_7.build()
 
-    greedy_generator = GreedyTextGenerator(model_with_7, processor).run(51, 'Vernon')
-    print(f'\n Greedy Algorithm: {greedy_generator}')
+    print(f'\n Greedy Algorithm: {GreedyTextGenerator(model_with_7, processor).run(51, 'Vernon')}')
 
     beam_search_generator = BeamSearchTextGenerator(model_with_7, processor, 3).run('Vernon', 56)
     print(f'\n Beam Search Algorithm: {beam_search_generator}')
@@ -52,7 +52,8 @@ def main() -> None:
     back_off_generator = BackOffGenerator(tuple(models), processor).run(55, 'Vernon')
     print(f'\n BackOff Algorithm: {back_off_generator}\n')
 
-    assert back_off_generator
+    result = back_off_generator
+    assert result
 
 if __name__ == "__main__":
     main()
