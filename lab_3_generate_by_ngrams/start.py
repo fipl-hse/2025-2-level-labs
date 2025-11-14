@@ -9,6 +9,7 @@ from main import (
     TextProcessor,
 )
 
+
 def main() -> None:
     """
     Launches an implementation.
@@ -30,7 +31,7 @@ def main() -> None:
     greedy_generator = GreedyTextGenerator(model, processor)
     result_greedy_generator = greedy_generator.run(51, "Vernon")
     print(result_greedy_generator)
-    result = None
+    result = result_greedy_generator
     assert result
 
 
