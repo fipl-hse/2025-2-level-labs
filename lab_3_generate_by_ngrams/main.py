@@ -459,13 +459,14 @@ class BeamSearcher:
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
-        result = self._model.generate_next_token(sequence)
-        if result is None:
+        next_tokens = self._model.generate_next_token(sequence)
+        if next_tokens is None:
             return None
-        if not result:
+        if not next_tokens:
             return []
-        return sorted([(token, freq) for token, freq in result.items()],
+        result = sorted([(token, freq) for token, freq in next_tokens.items()],
                       key=lambda item: item[1], reverse=True)[:self._beam_width]
+        return list(result)
 
     def continue_sequence(
         self,
