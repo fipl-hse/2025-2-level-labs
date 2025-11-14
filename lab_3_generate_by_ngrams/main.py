@@ -545,7 +545,7 @@ class BeamSearcher:
 
         for token, frequency in next_tokens:
 
-            if frequency <= 0:
+            if frequency == 0:
                 continue
 
             new_sequence = sequence + (token,)
@@ -669,7 +669,7 @@ class BeamSearchTextGenerator:
         if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
             return None
 
-        return self.beam_searcher.get_next_token(sequence_to_continue) or None
+        return self.beam_searcher.get_next_token(sequence_to_continue)
 
 
 class NGramLanguageModelReader:

@@ -23,7 +23,7 @@ def main() -> None:
         text = text_file.read()
 
 
-    text_processor = TextProcessor("_")
+    text_processor = TextProcessor(end_of_word_token="_")
     encoded_text = text_processor.encode(text)
     if encoded_text is None:
         return
