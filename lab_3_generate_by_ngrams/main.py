@@ -173,14 +173,12 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(encoded_corpus, tuple):
+        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
         decoded_corpus = self._decode(encoded_corpus)
-        if not decoded_corpus:
+        if decoded_corpus is None:
             return None
         result = self._postprocess_decoded_text(decoded_corpus)
-        if not result:
-            return None
         return result
 
     def fill_from_ngrams(self, content: dict) -> None:
@@ -262,7 +260,10 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
-        self._encoded_corpus: tuple | None = encoded_corpus if isinstance(encoded_corpus, tuple) and encoded_corpus else None
+        if isinstance(encoded_corpus, tuple) and encoded_corpus:
+            self._encoded_corpus = encoded_corpus
+        else:
+            self._encoded_corpus = None
         self._n_gram_size = n_gram_size
         self._n_gram_frequencies = {}
 
