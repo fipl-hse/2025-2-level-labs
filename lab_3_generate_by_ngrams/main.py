@@ -517,25 +517,15 @@ class BeamSearcher:
         if not isinstance(sequence, tuple) or not sequence:
             return None
 
-        n_gram_size = self._model.get_n_gram_size()
-        if n_gram_size is None:
+        next_tokens = self._model.generate_next_token(sequence)
+        if next_tokens is None:
             return None
 
-        context_length = n_gram_size - 1
-        if len(sequence) < context_length:
-            context = sequence
-        else:
-            context = sequence[-context_length:]
-
-        generated_token = self._model.generate_next_token(context)
-        if generated_token is None:
-            return None
-
-        if not generated_token:
+        if not next_tokens:
             return []
 
         letters_candidates = []
-        for candidate, frequency in generated_token.items():
+        for candidate, frequency in next_tokens.items():
             letters_candidates.append((candidate, frequency))
 
         letters_candidates.sort(key = lambda x: (-x[1], x[0]))
@@ -544,7 +534,6 @@ class BeamSearcher:
         result = letters_candidates[:beam_width]
 
         return result
-
 
     def continue_sequence(
         self,
@@ -620,7 +609,6 @@ class BeamSearcher:
         sorted_sequences = sorted(
             sequence_candidates.items(),
             key = lambda x: x[1],
-            reverse = True
             )
 
         top_n_sequences = sorted_sequences[:n_sequences]
@@ -691,10 +679,9 @@ class BeamSearchTextGenerator:
                     continue
 
                 found_any_tokens = True
-                next_token_dict = dict(next_token_list)
 
                 updated_candidates = self.beam_searcher.continue_sequence(
-                    sequence, next_token_dict, candidates_of_sequence
+                    sequence, next_token_list, candidates_of_sequence
                 )
                 if updated_candidates is not None:
                     next_candidates.update(updated_candidates)
@@ -714,7 +701,7 @@ class BeamSearchTextGenerator:
         if not candidates_of_sequence:
             return None
 
-        best_sequence = max(candidates_of_sequence.items(), key = lambda x: x[1])[0]
+        best_sequence = min(candidates_of_sequence.items(), key = lambda x: x[1])[0]
         decoded_text = self._text_processor.decode(best_sequence)
 
         return decoded_text
