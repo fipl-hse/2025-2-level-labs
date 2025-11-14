@@ -4,9 +4,11 @@ Generation by NGrams starter
 
 # pylint:disable=unused-import, unused-variable
 from lab_3_generate_by_ngrams.main import (
+    BackOffGenerator,
     BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
+    NGramLanguageModelReader,
     TextProcessor,
 )
 
@@ -19,20 +21,45 @@ def main() -> None:
     """
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
+    
     processor = TextProcessor(end_of_word_token='_')
     encoded_text = processor.encode(text) or tuple()
-    print(encoded_text)
+
     decoded_text = processor.decode(encoded_text) or tuple()
-    print(decoded_text)
-    model = NGramLanguageModel(encoded_text, 7)
-    frequency = model.build()
-    greedy_generator = GreedyTextGenerator(model, processor)
+
+    reader = NGramLanguageModelReader('./assets/en_own.json', '_')
+
+    for n_size in (2, 3):
+        loaded_model = reader.load(n_size)
+        if loaded_model:
+            text_processor_from_reader = reader.get_text_processor()
+            greedy_loaded = GreedyTextGenerator(loaded_model, text_processor_from_reader)
+            result = greedy_loaded.run(10, 'Vernon')
+            print(f" Загруженная модель {n_size}-gram: {result}")
+        else:
+            print(f" Не удалось загрузить модель {n_size}-gram")
+
+    model_with_7 = NGramLanguageModel(encoded_text, 7)
+    model_with_7.build()
+
+    greedy_generator = GreedyTextGenerator(model_with_7, processor)
     result_greedy_generator = greedy_generator.run(51, 'Vernon')
-    print(result_greedy_generator)
-    beam_search_generator = BeamSearchTextGenerator(model, processor, 3)
+    print(f'\n Greedy Algorithm: {result_greedy_generator}')
+
+    beam_search_generator = BeamSearchTextGenerator(model_with_7, processor, 3)
     result_beam_search_generator = beam_search_generator.run('Vernon', 56)
-    print(result_beam_search_generator)
-    result = result_beam_search_generator
+    print(f'\n Beam Search Algorithm: {result_beam_search_generator}')
+
+    models = []
+    for ngram_size in (4, 5, 6):
+        model = NGramLanguageModel(encoded_text, ngram_size)
+        model.build()
+        models.append(model)
+    back_off_generator = BackOffGenerator(tuple(models), processor)
+    result_back_off = back_off_generator.run(55, 'Vernon')
+    print(f'\n BackOff Algorithm: {result_back_off}\n')
+
+    result = result_back_off
     assert result
 
 if __name__ == "__main__":
