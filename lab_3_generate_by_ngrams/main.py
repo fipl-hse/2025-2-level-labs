@@ -178,10 +178,10 @@ class TextProcessor:
         decoded_corpus = self._decode(encoded_corpus)
         if not decoded_corpus:
             return None
-        decoded_corpus = self._postprocess_decoded_text(decoded_corpus)
-        if not decoded_corpus:
+        result = self._postprocess_decoded_text(decoded_corpus)
+        if not result:
             return None
-        return decoded_corpus
+        return result
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
@@ -337,6 +337,7 @@ class NGramLanguageModel:
         In case of corrupt input arguments, None is returned
         """
         if (not isinstance(sequence, tuple) or
+            not sequence or
             len(sequence) < self._n_gram_size - 1):
             return None
         next_token_freq = {}
