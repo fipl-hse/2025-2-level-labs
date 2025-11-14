@@ -683,13 +683,14 @@ class BeamSearchTextGenerator:
 
         for _ in range(seq_len):
             next_candidates = {}
-            valid_candidates = False
+            found_any_tokens = False
 
             for sequence in list(candidates_of_sequence.keys()):
                 next_token_list = self._get_next_token(sequence)
                 if next_token_list is None:
                     continue
 
+                found_any_tokens = True
                 next_token_dict = dict(next_token_list)
 
                 updated_candidates = self.beam_searcher.continue_sequence(
@@ -697,10 +698,9 @@ class BeamSearchTextGenerator:
                 )
                 if updated_candidates is not None:
                     next_candidates.update(updated_candidates)
-                    valid_candidates = True
 
-            if not valid_candidates:
-                break
+            if not found_any_tokens:
+                return None
 
             if not next_candidates:
                 break
