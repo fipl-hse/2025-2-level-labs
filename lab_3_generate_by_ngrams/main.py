@@ -6,6 +6,9 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
+from math import log
+
+from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 
 
 class TextProcessor:
@@ -24,6 +27,8 @@ class TextProcessor:
         Args:
             end_of_word_token (str): A token denoting word boundary
         """
+        self._end_of_word_token = end_of_word_token
+        self._storage = {end_of_word_token: 0}
 
     def _tokenize(self, text: str) -> tuple[str, ...] | None:
         """
@@ -42,6 +47,26 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(text, str) or not text:
+            return None
+
+        tokens = []
+        for word in text.lower().split():
+
+            letters = [element for element in word if element.isalpha()]
+
+            tokens.extend(letters)
+
+            if letters:
+                tokens.append(self._end_of_word_token)
+
+        if not tokens:
+            return None
+
+        if text and text[-1].isalpha():
+            tokens.pop()
+
+        return tuple(tokens)
 
     def get_id(self, element: str) -> int | None:
         """
@@ -56,6 +81,10 @@ class TextProcessor:
         In case of corrupt input arguments or arguments not included in storage,
         None is returned
         """
+        if not isinstance(element, str) or element not in self._storage:
+            return None
+
+        return self._storage[element]
 
     def get_end_of_word_token(self) -> str:  # type: ignore[empty-body]
         """
@@ -64,6 +93,7 @@ class TextProcessor:
         Returns:
             str: EoW token
         """
+        return self._end_of_word_token
 
     def get_token(self, element_id: int) -> str | None:
         """
@@ -77,6 +107,18 @@ class TextProcessor:
 
         In case of corrupt input arguments or arguments not included in storage, None is returned
         """
+        if not (
+            isinstance(element_id, int)
+            and not isinstance(element_id, bool)
+            and element_id in self._storage.values()
+        ):
+            return None
+
+        for item, value in self._storage.items():
+            if value == element_id:
+                return item
+
+        return None
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -94,6 +136,24 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(text, str) or not text:
+            return None
+
+        tokenized_text = self._tokenize(text)
+        if tokenized_text is None:
+            return None
+
+        for token in tokenized_text:
+            self._put(token)
+
+        encoded_text = []
+        for token in tokenized_text:
+            token_id = self.get_id(token)
+            if token_id is None:
+                return None
+            encoded_text.append(token_id)
+
+        return tuple(encoded_text)
 
     def _put(self, element: str) -> None:
         """
@@ -105,6 +165,11 @@ class TextProcessor:
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
+        if not isinstance(element, str) or len(element) != 1:
+            return
+
+        if element not in self._storage:
+            self._storage[element] = len(self._storage)
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
@@ -122,6 +187,14 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
+            return None
+
+        decoded_text = self._decode(encoded_corpus)
+        if decoded_text is None:
+            return None
+
+        return self._postprocess_decoded_text(decoded_text)
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
@@ -130,6 +203,13 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
+        if not isinstance(content, dict) or not content:
+            return
+
+        for n_gram in content["freq"]:
+            for symbol in n_gram.lower():
+                if symbol.isalpha():
+                    self._put(symbol)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
@@ -144,6 +224,17 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(corpus, tuple) or not corpus:
+            return None
+
+        decoded_text = []
+        for element in corpus:
+            decoded_element = self.get_token(element)
+            if decoded_element is None:
+                return None
+            decoded_text.append(decoded_element)
+
+        return tuple(decoded_text)
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
         """
@@ -160,6 +251,19 @@ class TextProcessor:
 
         In case of corrupt input arguments, None is returned
         """
+        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
+            return None
+
+        decoded_string = "".join(decoded_corpus).replace(self._end_of_word_token, " ")
+
+        decoded_string = decoded_string.strip()
+
+        decoded_string = decoded_string.capitalize()
+
+        if not decoded_string.endswith("."):
+            return f"{decoded_string}."
+
+        return decoded_string
 
 
 class NGramLanguageModel:
@@ -180,6 +284,9 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        self._encoded_corpus = encoded_corpus
+        self._n_gram_size = n_gram_size
+        self._n_gram_frequencies = {}
 
     def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
         """
@@ -188,6 +295,7 @@ class NGramLanguageModel:
         Returns:
             int: Size of stored n_grams
         """
+        return self._n_gram_size
 
     def set_n_grams(self, frequencies: dict) -> None:
         """
@@ -196,6 +304,10 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
+        if not isinstance(frequencies, dict) or not frequencies:
+            return
+
+        self._n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
         """
@@ -209,6 +321,30 @@ class NGramLanguageModel:
         In case of corrupt input arguments or methods used return None,
         1 is returned
         """
+        if not isinstance(self._encoded_corpus, tuple) or not self._encoded_corpus:
+            return 1
+
+        extracted_n_grams = self._extract_n_grams(self._encoded_corpus)
+        if extracted_n_grams is None:
+            return 1
+
+        n_gram_counts = {}
+        context_counts = {}
+        for n_gram in extracted_n_grams:
+            context = n_gram[:-1]
+            n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
+            context_counts[context] = context_counts.get(context, 0) + 1
+
+        self._n_gram_frequencies = {
+            n_gram: count / context_counts[n_gram[:-1]]
+            for n_gram, count in n_gram_counts.items()
+            if context_counts.get(n_gram[:-1], 0)
+        }
+
+        if not self._n_gram_frequencies:
+            return 1
+
+        return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
@@ -222,6 +358,19 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if not (
+            isinstance(sequence, tuple) and sequence and len(sequence) >= self._n_gram_size - 1
+        ):
+            return None
+
+        context = sequence[-(self._n_gram_size - 1) :]
+        next_token = {
+            n_gram[-1]: frequency
+            for n_gram, frequency in self._n_gram_frequencies.items()
+            if n_gram[:-1] == context
+        }
+
+        return next_token or None
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -237,6 +386,18 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
+            return None
+
+        limit = len(encoded_corpus) - self._n_gram_size + 1
+        if limit <= 0:
+            return None
+
+        extracted_n_grams = [
+            encoded_corpus[index : index + self._n_gram_size] for index in range(limit)
+        ]
+
+        return tuple(extracted_n_grams)
 
 
 class GreedyTextGenerator:
@@ -256,6 +417,8 @@ class GreedyTextGenerator:
             language_model (NGramLanguageModel): A language model to use for text generation
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
         """
+        self._model = language_model
+        self._text_processor = text_processor
 
     def run(self, seq_len: int, prompt: str) -> str | None:
         """
@@ -271,6 +434,28 @@ class GreedyTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
+        if not (check_positive_int(seq_len) and isinstance(prompt, str) and prompt):
+            return None
+
+        encoded_prompt = self._text_processor.encode(prompt)
+        if encoded_prompt is None:
+            return None
+
+        generated_sequence = list(encoded_prompt)
+
+        for _ in range(seq_len):
+
+            context = tuple(generated_sequence[-(self._model.get_n_gram_size() - 1) :])
+
+            candidates = self._model.generate_next_token(context)
+            if not candidates:
+                break
+
+            token, _ = max(candidates.items(), key=lambda item: (item[1], item[0]))
+
+            generated_sequence.append(token)
+
+        return self._text_processor.decode(tuple(generated_sequence))
 
 
 class BeamSearcher:
@@ -290,6 +475,8 @@ class BeamSearcher:
             beam_width (int): Number of candidates to consider at each step
             language_model (NGramLanguageModel): A language model to use for next token prediction
         """
+        self._beam_width = beam_width
+        self._model = language_model
 
     def get_next_token(self, sequence: tuple[int, ...]) -> list[tuple[int, float]] | None:
         """
@@ -309,6 +496,19 @@ class BeamSearcher:
 
         In case of corrupt input arguments or methods used return None.
         """
+        if not isinstance(sequence, tuple) or not sequence:
+            return None
+
+        candidates = self._model.generate_next_token(sequence)
+        if candidates is None:
+            return None
+
+        if not candidates:
+            return []
+
+        best_candidates = sorted(candidates.items(), key=lambda item: item[1], reverse=True)
+
+        return best_candidates[: self._beam_width]
 
     def continue_sequence(
         self,
@@ -332,6 +532,28 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
+        if not (
+            isinstance(sequence, tuple)
+            and check_list(next_tokens, tuple, False)
+            and check_dict(sequence_candidates, tuple, float, False)
+            and sequence in sequence_candidates
+            and len(next_tokens) <= self._beam_width
+        ):
+            return None
+
+        updated_candidates = sequence_candidates.copy()
+
+        for token, frequency in next_tokens:
+
+            if frequency == 0:
+                continue
+
+            new_sequence = sequence + (token,)
+            updated_candidates[new_sequence] = sequence_candidates[sequence] - log(frequency)
+
+        del updated_candidates[sequence]
+
+        return updated_candidates
 
     def prune_sequence_candidates(
         self, sequence_candidates: dict[tuple[int, ...], float]
@@ -347,6 +569,12 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
+        if not check_dict(sequence_candidates, tuple, float, False):
+            return None
+
+        sorted_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
+        pruned_sequence = sorted_candidates[: self._beam_width]
+        return dict(pruned_sequence)
 
 
 class BeamSearchTextGenerator:
@@ -371,6 +599,10 @@ class BeamSearchTextGenerator:
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
             beam_width (int): Beam width parameter for generation
         """
+        self._language_model = language_model
+        self._text_processor = text_processor
+        self._beam_width = beam_width
+        self.beam_searcher = BeamSearcher(beam_width, language_model)
 
     def run(self, prompt: str, seq_len: int) -> str | None:
         """
@@ -386,6 +618,38 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
+        if not (check_positive_int(seq_len) and isinstance(prompt, str) and prompt):
+            return None
+
+        encoded_prompt = self._text_processor.encode(prompt)
+        if not encoded_prompt:
+            return None
+
+        candidates = {encoded_prompt: 0.0}
+
+        for _ in range(seq_len):
+
+            for sequence in candidates:
+                next_tokens = self._get_next_token(sequence)
+                if next_tokens is None:
+                    return None
+
+                new_candidates = self.beam_searcher.continue_sequence(
+                    sequence, next_tokens, candidates
+                )
+                if new_candidates is None:
+                    continue
+
+                pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+                if pruned_candidates is None:
+                    return None
+
+                candidates = pruned_candidates
+
+            if not candidates:
+                return None
+
+        return self._text_processor.decode(min(candidates.items(), key=lambda item: item[1])[0])
 
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
@@ -402,6 +666,10 @@ class BeamSearchTextGenerator:
 
         In case of corrupt input arguments return None.
         """
+        if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
+            return None
+
+        return self.beam_searcher.get_next_token(sequence_to_continue)
 
 
 class NGramLanguageModelReader:
@@ -422,6 +690,13 @@ class NGramLanguageModelReader:
             json_path (str): Local path to assets file
             eow_token (str): Special token for text processor
         """
+        self._json_path = json_path
+        self._eow_token = eow_token
+        self._text_processor = TextProcessor(eow_token)
+
+        with open(self._json_path, "r", encoding="utf-8") as file:
+            self._content = json.load(file)
+        self._text_processor.fill_from_ngrams(self._content)
 
     def load(self, n_gram_size: int) -> NGramLanguageModel | None:
         """
@@ -438,6 +713,46 @@ class NGramLanguageModelReader:
 
         In case of corrupt input arguments or unexpected behaviour of methods used, return 1.
         """
+        if not check_positive_int(n_gram_size) or n_gram_size < 2:
+            return None
+
+        n_grams_frequencies = {}
+        context_frequencies = {}
+        for n_gram, frequency in self._content["freq"].items():
+
+            processed_n_gram = []
+            for symbol in n_gram:
+                if symbol.isspace():
+                    processed_n_gram.append(0)
+                elif symbol.isalpha():
+                    symbol_id = self._text_processor.get_id(symbol.lower())
+                    if symbol_id:
+                        processed_n_gram.append(symbol_id)
+
+            if processed_n_gram:
+                n_gram_tuple = tuple(processed_n_gram)
+                n_grams_frequencies[n_gram_tuple] = (
+                    n_grams_frequencies.get(n_gram_tuple, 0.0) + frequency
+                )
+
+                if len(processed_n_gram) == n_gram_size:
+                    context = n_gram_tuple[:-1]
+                    context_frequencies[context] = context_frequencies.get(context, 0.0) + frequency
+
+        if not n_grams_frequencies:
+            return None
+
+        conditional_probabilities = {}
+        for n_gram, n_gram_frequency in n_grams_frequencies.items():
+            context_frequency = context_frequencies.get(n_gram[:-1], 0.0)
+
+            if context_frequency > 0:
+                conditional_probabilities[n_gram] = n_gram_frequency / context_frequency
+
+        model = NGramLanguageModel(None, n_gram_size)
+        model.set_n_grams(conditional_probabilities)
+
+        return model
 
     def get_text_processor(self) -> TextProcessor:  # type: ignore[empty-body]
         """
@@ -446,6 +761,7 @@ class NGramLanguageModelReader:
         Returns:
             TextProcessor: processor created for the current JSON file.
         """
+        return self._text_processor
 
 
 class BackOffGenerator:
@@ -468,6 +784,10 @@ class BackOffGenerator:
                 Language models to use for text generation
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
         """
+        self._language_models = {
+            language_model.get_n_gram_size(): language_model for language_model in language_models
+        }
+        self._text_processor = text_processor
 
     def run(self, seq_len: int, prompt: str) -> str | None:
         """
@@ -483,6 +803,26 @@ class BackOffGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
+        if not (check_positive_int(seq_len) and isinstance(prompt, str) and prompt):
+            return None
+
+        encoded_prompt = self._text_processor.encode(prompt)
+        if encoded_prompt is None:
+            return None
+
+        generated_sequence = list(encoded_prompt)
+
+        for _ in range(seq_len):
+
+            candidates = self._get_next_token(tuple(generated_sequence))
+            if not candidates:
+                break
+
+            token, _ = max(candidates.items(), key=lambda item: (item[1], item[0]))
+
+            generated_sequence.append(token)
+
+        return self._text_processor.decode(tuple(generated_sequence))
 
     def _get_next_token(self, sequence_to_continue: tuple[int, ...]) -> dict[int, float] | None:
         """
@@ -496,3 +836,21 @@ class BackOffGenerator:
 
         In case of corrupt input arguments return None.
         """
+        if not (
+            isinstance(sequence_to_continue, tuple)
+            and sequence_to_continue
+            and self._language_models
+        ):
+            return None
+
+        sizes = sorted(self._language_models.keys(), reverse=True)
+
+        for size in sizes:
+            language_model = self._language_models[size]
+
+            candidates = language_model.generate_next_token(sequence_to_continue)
+
+            if candidates is not None and candidates:
+                return candidates
+
+        return None
