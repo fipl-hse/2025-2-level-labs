@@ -41,9 +41,9 @@ def main() -> None:
     beam_language_model = NGramLanguageModel(tuple(list(encoded_text)[:300]), 7)
     beam_language_model.build()
     beam_search_processor = BeamSearchTextGenerator(beam_language_model, processor, 7)
-    test_sequense_beam = beam_search_processor.run("Potter", 51)
+    test_sequense_beam = beam_search_processor.run("Vernon", 51)
 
-    print("Run BeamSearchTextGenerator for 'Potter', 51: ", test_sequense_beam)
+    print("Run BeamSearchTextGenerator for 'Vernon', 56: ", test_sequense_beam)
     result = test_sequense_beam
     assert result, "Result is None"
 

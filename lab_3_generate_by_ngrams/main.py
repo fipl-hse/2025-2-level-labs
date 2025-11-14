@@ -235,18 +235,11 @@ class TextProcessor:
             not all(isinstance(i, str) for i in decoded_corpus) or
             not decoded_corpus):
             return None
-        text_list = []
-        for i, el in enumerate(decoded_corpus):
-            if i == 0:
-                el = el.upper()
-            if el == self._end_of_word_token:
-                el = " "
-            text_list.append(el)
-        if text_list[-1] == " ":
-            text_list = text_list[:-1]
-        text_list.append(".")
-        result_text = "".join(text_list)
-        return result_text
+        decoded_text = ''.join(decoded_corpus).replace('_', ' ').capitalize()
+        if decoded_text[-1] == " ":
+            decoded_text = decoded_text[:-1]
+        decoded = decoded_text + "." 
+        return decoded
 
 
 class NGramLanguageModel:
@@ -521,15 +514,16 @@ class BeamSearcher:
         ):
             return None
 
-        new_seq_candidates = {}
+        new_seq_candidates = sequence_candidates.copy()
 
         for token, probability in next_tokens:
+            if probability == 0:
+                continue
             new_sequence = sequence + (token,)
             new_seq_candidates[new_sequence] = (
                 sequence_candidates[sequence] - log(probability)
                 )
-        if not new_seq_candidates:
-            return None
+        del new_seq_candidates[sequence]
         return new_seq_candidates
 
 
@@ -549,11 +543,9 @@ class BeamSearcher:
         """
         if not isinstance(sequence_candidates, dict) or not sequence_candidates:
             return None
-        if not sequence_candidates:
-            return {}
         sorted_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
-        pruned_candidates = dict(sorted_candidates[:self._beam_width])
-        return pruned_candidates
+        pruned_sequence = sorted_candidates[: self._beam_width]
+        return dict(pruned_sequence)
 
 class BeamSearchTextGenerator:
     """
@@ -606,29 +598,23 @@ class BeamSearchTextGenerator:
 
         candidates = {encoded_prompt: 0.0}
         for _ in range(seq_len):
-            extended_candidates = {}
-            for sequence in list(candidates.keys()):
+            for sequence in candidates.keys():
                 next_tokens = self._get_next_token(sequence)
-                if not next_tokens:
+                if next_tokens is None:
                     return None
                 new_candidates = self.beam_searcher.continue_sequence(
                     sequence, next_tokens, candidates
                 )
                 if new_candidates is None:
-                    extended_candidates[sequence] = candidates[sequence]
-                else:
-                    for new_seq, new_score in new_candidates.items():
-                        extended_candidates[new_seq] = new_score
-            if not extended_candidates:
-                break
-            pruned_candidates = self.beam_searcher.prune_sequence_candidates(extended_candidates)
-            if pruned_candidates is None:
-                return None
-            candidates = pruned_candidates
-        if candidates is None:
+                    continue
+                pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+                if pruned_candidates is None:
+                    return None
+                candidates = pruned_candidates
+        if not candidates:
             return None
-        best_sequence = min(candidates, key=lambda k: candidates[k])
-        return self._text_processor.decode(best_sequence)
+        return self._text_processor.decode(
+            min(candidates.items(), key=lambda item: item[1])[0])
 
 
     def _get_next_token(
