@@ -27,8 +27,6 @@ def main() -> None:
     beam_generator = BeamSearchTextGenerator(model, text_processor, beam_width=3)
     greedy= greedy_generator.run(51, "Vernon") or None
     beam = beam_generator.run("Vernon", 56) or None
-    print(greedy)
-    print(beam)
     result = beam
     assert result
 

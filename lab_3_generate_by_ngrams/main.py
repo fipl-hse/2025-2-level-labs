@@ -48,8 +48,6 @@ class TextProcessor:
         """
         if not isinstance(text, str) or not text:
             return None
-
-
         tokens = []
         for element in text:
             if element.isalpha():
@@ -74,6 +72,7 @@ class TextProcessor:
         In case of corrupt input arguments or arguments not included in storage,
         None is returned
         """
+
         if not isinstance(element, str) or element not in self._storage:
             return None
         return self._storage[element]
@@ -85,6 +84,7 @@ class TextProcessor:
         Returns:
             str: EoW token
         """
+
         return self._end_of_word_token
 
     def get_token(self, element_id: int) -> str | None:
@@ -98,6 +98,7 @@ class TextProcessor:
 
         In case of corrupt input arguments or arguments not included in storage, None is returned
         """
+
         if not isinstance(element_id, int):
             return None
         for token, token_id in self._storage.items():
@@ -121,6 +122,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+
         if not isinstance(text, str) or not text:
             return None
         tokenized_text = self._tokenize(text)
@@ -146,6 +148,7 @@ class TextProcessor:
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
+
         if not isinstance(element, str) or len(element) > 1 or element in self._storage:
             return None
         self._storage[element] = len(self._storage)
@@ -166,6 +169,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+
         if not isinstance(encoded_corpus, tuple) and encoded_corpus != None:
             return None
         encoded_letters = self._decode(encoded_corpus)
@@ -200,6 +204,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+
         if not isinstance(corpus, tuple) or corpus == ():
             return None
         decoded_tokens_letters = []
@@ -229,6 +234,7 @@ class TextProcessor:
 
         In case of corrupt input arguments, None is returned
         """
+
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
         decoded_text = ""
@@ -265,6 +271,7 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+
         self._encoded_corpus = encoded_corpus
         self._n_gram_size = n_gram_size
 
@@ -275,6 +282,7 @@ class NGramLanguageModel:
         Returns:
             int: Size of stored n_grams
         """
+
         return self._n_gram_size
     
     def set_n_grams(self, frequencies: dict) -> None:
@@ -284,6 +292,7 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
+
         if not isinstance(frequencies, dict) or not frequencies:
             return None
         self._n_gram_frequencies = frequencies
@@ -531,7 +540,6 @@ class BeamSearchTextGenerator:
         _language_model (tuple[NGramLanguageModel]): Language models for next token prediction
         _text_processor (NGramLanguageModel): A TextProcessor instance to handle text processing
         _beam_width (NGramLanguageModel): Beam width parameter for generation
-        beam_searcherer (NGramLanguageModel): Searcher instances for each language model
     """
     def __init__(
         self, language_model: NGramLanguageModel, text_processor: TextProcessor, beam_width: int
