@@ -23,9 +23,7 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
     if not check_list(tokens, str, False):
         return None
-    token_number = len(tokens)
-    unique_tokens = set(tokens)
-    return {token: tokens.count(token) / token_number for token in unique_tokens}
+    return {token: tokens.count(token) / len(tokens) for token in set(tokens)}
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
     """
@@ -90,15 +88,10 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if not check_dict(vocabulary, str, float, False) or (
+    if (not check_dict(vocabulary, str, float, False) or
         not isinstance(first_token, str) or
-        not isinstance(method, str) or
-        not method in [
-            "frequency-based", 
-            "jaccard", 
-            "levenshtein", 
-            "jaro-winkler"]
-        ):
+        not isinstance(method, str) or 
+        method not in ["frequency-based", "jaccard", "levenshtein", "jaro-winkler"]):
         return None
     if method == "frequency-based":
         if alphabet is None:
@@ -157,10 +150,7 @@ def find_correct_word(
     if not candidate_list:
         return None
     if len(candidate_list) > 1:
-        min_len_diff = min(abs(len(candidate) - len(wrong_word)) for candidate in candidate_list)
-        closest_candidate = [candidate for candidate in candidate_list
-                             if abs(len(candidate) - len(wrong_word)) == min_len_diff]
-        return sorted(closest_candidate)[0]
+        return min(candidate_list, key=lambda candidate: abs(len(candidate) - len(wrong_word)))
     return candidate_list[0]
 
 def initialize_levenshtein_matrix(
@@ -231,14 +221,10 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
-    if not isinstance(token, str) or (
-        len(token) < 0 or
-        not isinstance(candidate, str) or
-        len(candidate) < 0
-        ):
+    if not isinstance(token, str) or not isinstance(candidate, str):
         return None
     matrix = fill_levenshtein_matrix(token, candidate)
-    if matrix is None:
+    if not matrix:
         return None
     return matrix[-1][-1]
 
@@ -413,8 +399,7 @@ def calculate_frequency_distance(
     for token, freq in frequencies.items():
         if proposed_cands and token in proposed_cands:
             distance[token] = 1.0 - float(freq)
-        else:
-            distance[token] = 1.0
+            continue
     return distance
 
 def get_matches(
