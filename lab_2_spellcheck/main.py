@@ -90,7 +90,7 @@ def calculate_distance(
     """
     if (not check_dict(vocabulary, str, float, False) or
         not isinstance(first_token, str) or
-        not isinstance(method, str) or 
+        not isinstance(method, str) or
         method not in ["frequency-based", "jaccard", "levenshtein", "jaro-winkler"]):
         return None
     if method == "frequency-based":
@@ -142,7 +142,7 @@ def find_correct_word(
     if alphabet is not None and not check_list(alphabet, str, False):
         return None
     wrong_word_distance = calculate_distance(wrong_word, vocabulary, method, alphabet)
-    if wrong_word_distance is None:
+    if not wrong_word_distance:
         return None
     minimal_distance = min(wrong_word_distance.values())
     candidate_list = [candidate for candidate, value in wrong_word_distance.items()
@@ -190,16 +190,11 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     Returns:
         list[list[int]] | None: Completed Levenshtein distance matrix.
     """
-    if not isinstance(token, str) or (
-        len(token) < 0 or
-        not isinstance(candidate, str) or
-        len(candidate) < 0
-        ):
+    if not isinstance(token, str) or not isinstance(candidate, str):
         return None
     matrix = initialize_levenshtein_matrix(len(token), len(candidate))
     if matrix is None:
         return None
-    cost = 0
     for i in range(1, len(token) + 1):
         for j in range(1, len(candidate) + 1):
             cost = 0 if token[i - 1] == candidate[j - 1] else 1
@@ -399,7 +394,8 @@ def calculate_frequency_distance(
     for token, freq in frequencies.items():
         if proposed_cands and token in proposed_cands:
             distance[token] = 1.0 - float(freq)
-            continue
+        else:
+            distance[token] = 1.0
     return distance
 
 def get_matches(
