@@ -260,10 +260,9 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
-        if isinstance(encoded_corpus, tuple) and encoded_corpus:
-            self._encoded_corpus = encoded_corpus
-        else:
-            self._encoded_corpus = None
+        if not isinstance(encoded_corpus, tuple) or not  encoded_corpus:
+            encoded_corpus = None
+        self._encoded_corpus = encoded_corpus
         self._n_gram_size = n_gram_size
         self._n_gram_frequencies = {}
 
