@@ -32,9 +32,7 @@ def main() -> None:
     for n_size in (2, 3):
         loaded_model = reader.load(n_size)
         if loaded_model:
-            text_processor_from_reader = reader.get_text_processor()
-            greedy_loaded = GreedyTextGenerator(loaded_model, text_processor_from_reader)
-            result = greedy_loaded.run(10, 'Vernon')
+            result = GreedyTextGenerator(loaded_model, reader.get_text_processor()).run(10, 'Vernon')
             print(f"Загруженная модель {n_size}-gram: {result}")
 
     model_with_7 = NGramLanguageModel(encoded_text, 7)
