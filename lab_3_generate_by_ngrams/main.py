@@ -464,9 +464,8 @@ class BeamSearcher:
             return None
         if not next_tokens:
             return []
-        result = sorted([(token, freq) for token, freq in next_tokens.items()],
-                      key=lambda item: item[1], reverse=True)[:self._beam_width]
-        return list(result)
+        token_freq_pairs = list(next_tokens.items())
+        return sorted(token_freq_pairs, key=lambda item: item[1], reverse=True)[:self._beam_width]
 
     def continue_sequence(
         self,
