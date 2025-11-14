@@ -103,6 +103,8 @@ class TextProcessor:
             return None
         if element_id not in self._storage.values():
             return None
+
+        element = None
         for key, value in self._storage.items():
             if value == element_id:
                 element = key
@@ -238,7 +240,7 @@ class TextProcessor:
         decoded_text = ''.join(decoded_corpus).replace('_', ' ').capitalize()
         if decoded_text[-1] == " ":
             decoded_text = decoded_text[:-1]
-        decoded = decoded_text + "." 
+        decoded = decoded_text + "."
         return decoded
 
 
@@ -260,10 +262,7 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
-        if isinstance(encoded_corpus, tuple) and encoded_corpus:
-            self._encoded_corpus = encoded_corpus
-        else:
-            self._encoded_corpus = None
+        self._encoded_corpus: tuple | None = encoded_corpus if isinstance(encoded_corpus, tuple) and encoded_corpus else None
         self._n_gram_size = n_gram_size
         self._n_gram_frequencies = {}
 
@@ -598,7 +597,7 @@ class BeamSearchTextGenerator:
 
         candidates = {encoded_prompt: 0.0}
         for _ in range(seq_len):
-            for sequence in candidates.keys():
+            for sequence in candidates:
                 next_tokens = self._get_next_token(sequence)
                 if next_tokens is None:
                     return None
