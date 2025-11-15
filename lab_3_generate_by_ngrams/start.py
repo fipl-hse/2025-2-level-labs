@@ -36,22 +36,8 @@ def main() -> None:
     build_result = language_model.build()
     if build_result != 0:
         return
-    test_prompt = "Vernon"
-    encoded_test = processor.encode(test_prompt)
-    if encoded_test:
-        next_tokens = language_model.generate_next_token(encoded_test)
-        if next_tokens:
-            print(f"   Prompt: '{test_prompt}'")
-            print(f"   Possible next tokens found: {len(next_tokens)}")
-            top_tokens = list(next_tokens.items())[:5]
-            for token_id, prob in top_tokens:
-                token = processor.get_token(token_id)
-                print(f"     '{token}': {prob:.4f}")
-    text_generator = GreedyTextGenerator(language_model, processor)
-    prompt = "Vernon"
-    seq_len = 51
-    generated_text = text_generator.run(seq_len, prompt)
-    print("3.3. Generation result:")
+    generated_text = GreedyTextGenerator(language_model, processor).run(51, "Vernon")
+    print("3.3. Greedy algorithm generation result:")
     if generated_text:
         print(generated_text)
     else:

@@ -139,7 +139,7 @@ class TextProcessor:
         if not isinstance(text, str) or not text:
             return None
         tokens = self._tokenize(text)
-        if tokens is None or not isinstance(tokens, tuple) or not tokens:
+        if not tokens:
             return None
         encoded_tokens = []
         for token in tokens:
@@ -729,34 +729,29 @@ class NGramLanguageModelReader:
         for ngram_str, count in freq_dict.items():
             if not isinstance(ngram_str, str):
                 continue
-            processed_chars = []
-            for char in ngram_str:
-                if char.isspace():
-                    processed_chars.append(self._eow_token)
-                elif char.isalpha() or char == self._eow_token:
-                    processed_chars.append(char.lower())
-            processed_ngram = ''.join(processed_chars)
+            processed_ngram = ''.join(
+                self._eow_token if char.isspace() else char.lower()
+                for char in ngram_str
+                if char.isalpha() or char == self._eow_token or char.isspace()
+            )
             if len(processed_ngram) != n_gram_size:
                 continue
             encoded_chars = []
-            encode_success = True
             for char in processed_ngram:
                 char_id = self._text_processor.get_id(char)
                 if char_id is None:
-                    encode_success = False
                     break
                 encoded_chars.append(char_id)
-            if not encode_success:
+            else:
+                encoded_ngram = tuple(encoded_chars)
+                ngram_frequencies[encoded_ngram] = count
+                context_counts[encoded_ngram[:-1]] = context_counts.get(encoded_ngram[:-1], 0) + count
                 continue
-            encoded_ngram = tuple(encoded_chars)
-            ngram_frequencies[encoded_ngram] = count
-            context = encoded_ngram[:-1]
-            context_counts[context] = context_counts.get(context, 0) + count
-        probabilities = {}
-        for ngram, count in ngram_frequencies.items():
-            context_total = context_counts.get(ngram[:-1], 0)
-            if context_total > 0:
-                probabilities[ngram] = count / context_total
+        probabilities = {
+            ngram: count / context_counts[ngram[:-1]]
+            for ngram, count in ngram_frequencies.items()
+            if context_counts.get(ngram[:-1], 0) > 0
+        }
         language_model = NGramLanguageModel(None, n_gram_size)
         language_model.set_n_grams(probabilities)
         return language_model
