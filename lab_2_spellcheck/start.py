@@ -10,10 +10,6 @@ from lab_1_keywords_tfidf.main import(
 from lab_2_spellcheck.main import (
     build_vocabulary,
     find_out_of_vocab_words,
-    calculate_distance,
-    calculate_frequency_distance,
-    calculate_jaccard_distance,
-    calculate_levenshtein_distance,
     find_correct_word,
 )
 
