@@ -19,8 +19,8 @@ def main() -> None:
     encoded_text = processor.encode(text) or ()
     decoded_text = processor.decode(encoded_text)
     n_gram_language_model = NGramLanguageModel(encoded_text, 3)
-    build_result = n_gram_language_model.build()
-    result = build_result
+    n_gram_language_model.build()
+    result = n_gram_language_model._n_gram_frequencies
     assert result
 
 

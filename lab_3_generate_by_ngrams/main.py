@@ -305,12 +305,15 @@ class NGramLanguageModel:
         extracted_n_grams = self._extract_n_grams(self._encoded_corpus)
         if extracted_n_grams is None:
             return 1
+        
+        n_gram_count = {}
+        context_count = {}
+
         for n_gram in extracted_n_grams:
-            if str(extracted_n_grams).count(str(n_gram)[:self._n_gram_size - 2]) != 0:
-                self._n_gram_frequencies[n_gram] = (
-                    extracted_n_grams.count(n_gram) /
-                    str(extracted_n_grams).count(str(n_gram)[:self._n_gram_size - 2])
-                )
+            n_gram_count[n_gram] = n_gram_count.get(n_gram, 0) + 1
+            context_count[n_gram[:-1]] = context_count.get(n_gram[:-1], 0) + 1
+            self._n_gram_frequencies[n_gram] = n_gram_count[n_gram] / context_count[n_gram[:-1]]
+        
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
@@ -325,6 +328,20 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if (isinstance(sequence, tuple) is False) or (sequence == ()):
+            return None
+        next_tokens = {}
+        context = sequence[len(sequence) - self._n_gram_size + 1:]
+        if len(sequence) < len(context):
+            return None
+        frequencies = self._n_gram_frequencies
+        for n_gram in frequencies:
+            if n_gram[:-1] == context:
+                next_tokens[n_gram[-1]] = frequencies[n_gram]
+        next_tokens = dict(
+            sorted(next_tokens.items(), key=lambda item: (item[1], item[0]), reverse=True)
+            )
+        return next_tokens
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
