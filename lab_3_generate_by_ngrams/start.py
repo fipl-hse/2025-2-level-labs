@@ -40,14 +40,6 @@ def main() -> None:
     build_result = language_model.build()
     if build_result != 0:
         return
-    print("2.4. N-gram examples (first 5):")
-    ngram_items = list(language_model._n_gram_frequencies.items())[:5]
-    for i, (ngram, freq) in enumerate(ngram_items):
-        decoded_ngram = []
-        for token_id in ngram:
-            token = processor.get_token(token_id)
-            decoded_ngram.append(f"'{token}'" if token else '?')
-        print(f"   {i+1}. {decoded_ngram}: {freq:.4f}")
     print("2.5. Testing next token generation")
     test_prompt = "Vernon"
     encoded_test = processor.encode(test_prompt)
@@ -56,7 +48,7 @@ def main() -> None:
         if next_tokens:
             print(f"   Prompt: '{test_prompt}'")
             print(f"   Possible next tokens found: {len(next_tokens)}")
-            print(f"   Top-5 candidates:")
+            print("   Top-5 candidates:")
             top_tokens = list(next_tokens.items())[:5]
             for token_id, prob in top_tokens:
                 token = processor.get_token(token_id)

@@ -63,7 +63,7 @@ class TextProcessor:
             tokens.append(self._end_of_word_token)
         result = []
         prev_was_eow = False
-        if not tokens:
+        if tokens is None or not tokens:
             return None
         for token in tokens:
             if token == self._end_of_word_token:
@@ -196,7 +196,7 @@ class TextProcessor:
             content (dict): ngrams from external JSON
         """
         if not isinstance(content, dict) or not content:
-            return None
+            return
         freq_dict = content.get('freq', {})
         if not isinstance(freq_dict, dict) or not freq_dict:
             return None
@@ -307,7 +307,7 @@ class NGramLanguageModel:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
         if not isinstance(frequencies, dict) or not frequencies:
-            return None
+            return
         self._n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
