@@ -41,10 +41,7 @@ def main() -> None:
     print(beam_search_algorithm)
 
     reader = NGramLanguageModelReader("./assets/en_own.json", "_")
-    model_2 = reader.load(2)
-    model_3 = reader.load(3)
-    model_4 = reader.load(4)
-    models = [model_2, model_3, model_4]
+    models = [reader.load(2), reader.load(3), reader.load(4)]
 
     back_off_algorithm = BackOffGenerator(tuple(models), processor).run(60, 'Vernon')
     print(back_off_algorithm)
