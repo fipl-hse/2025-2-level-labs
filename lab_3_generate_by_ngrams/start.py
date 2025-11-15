@@ -4,6 +4,7 @@ Generation by NGrams starter
 
 # pylint:disable=unused-import, unused-variable
 from lab_3_generate_by_ngrams.main import (
+    BackOffGenerator,
     BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
@@ -18,18 +19,29 @@ def main() -> None:
     """
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
-    text_processor = TextProcessor("_")
-    encoded = text_processor.encode(text) or None
+    text_processor = TextProcessor(end_of_word_token="_")
+    encoded = text_processor.encode(text)
+    if encoded is None:
+        return
     model = NGramLanguageModel(encoded, 7)
-    if model.build():
-        return None
+    model.build()
+    models = []
+    for ngram_size in range(7):
+        ngram_model = NGramLanguageModel(encoded, ngram_size)
+        ngram_model.build()
+        models.append(ngram_model)
     greedy_generator = GreedyTextGenerator(model, text_processor)
-    beam_generator = BeamSearchTextGenerator(model, text_processor, beam_width=3)
-    greedy= greedy_generator.run(51, "Vernon") or None
-    beam = beam_generator.run("Vernon", 56) or None
-    result = beam
+    beam_generator = BeamSearchTextGenerator(model, text_processor, 5)
+    back_off_generator = BackOffGenerator(tuple(models), text_processor)
+    greedy = greedy_generator.run(51, "Vernon")
+    beam = beam_generator.run("Vernon", 56)
+    back_off = back_off_generator.run(51, "Vernon")
+    print(greedy)
+    print(beam)
+    print(back_off)
+    result = back_off
     assert result
-    return beam
+
 
 
 if __name__ == "__main__":
