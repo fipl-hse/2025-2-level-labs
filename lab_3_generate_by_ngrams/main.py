@@ -171,11 +171,11 @@ class TextProcessor:
         """
         if not encoded_corpus or not isinstance(encoded_corpus, tuple):
             return None
-        decoded_corpus = self._decode(encoded_corpus)
-        if decoded_corpus is None:
+        decoded_tokens = self._decode(encoded_corpus)
+        if decoded_tokens is None:
             return None
-        decoded_corpus = self._postprocess_decoded_text(decoded_corpus)
-        return decoded_corpus
+        decoded_text = self._postprocess_decoded_text(decoded_tokens)
+        return decoded_text
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
