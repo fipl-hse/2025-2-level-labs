@@ -148,7 +148,7 @@ class TextProcessor:
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
-        if not isinstance(element, str) or len(element) != 1 or not element:
+        if not isinstance(element, str) or len(element) != 1:
             return None
         if element not in self._storage:
             self._storage[element] = len(self._storage)
@@ -288,17 +288,17 @@ class NGramLanguageModel:
         if not isinstance(n_grams, tuple) or not n_grams:
             return 1
         n_gram_counts = {}
-        beginning_match_counts = {}
+        start_match_counts = {}
         for n_gram in n_grams:
             n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
-            beginning_match = n_gram[:-1]
-            beginning_match_counts[beginning_match] = beginning_match_counts.get(beginning_match, 0) + 1
+            start_match = n_gram[:-1]
+            start_match_counts[start_match] = start_match_counts.get(start_match, 0) + 1
         for n_gram, amount in n_gram_counts.items():
-            beginning_match = n_gram[:-1]
-            beginning_match_count = beginning_match_counts.get(beginning_match, 0)
-            if beginning_match_count == 0:
+            start_match = n_gram[:-1]
+            start_match_count = start_match_counts.get(start_match, 0)
+            if start_match_count == 0:
                 return 1
-            self._n_gram_frequencies[n_gram] = amount / beginning_match_count
+            self._n_gram_frequencies[n_gram] = amount / start_match_count
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
@@ -385,7 +385,7 @@ class GreedyTextGenerator:
         None is returned
         """
         if (
-            not isinstance(seq_len, int) 
+            not isinstance(seq_len, int)
             or not isinstance(prompt, str)
             or not prompt
             ):
@@ -398,7 +398,12 @@ class GreedyTextGenerator:
             candidates = self._model.generate_next_token(sequence[-(n_gram_size + 1):])
             if not candidates:
                 return self._text_processor.decode(sequence)
-            next_token = sorted(candidates.items(), key=lambda item: (item[1], item[0]), reverse=True) [0][0] 
+            sorted_candidates = sorted(
+                candidates.items(),
+                key=lambda item: (item[1], item[0]),
+                reverse=True
+            )
+            next_token = sorted_candidates [0][0]
             sequence += (next_token, )
         return self._text_processor.decode(sequence)
 
