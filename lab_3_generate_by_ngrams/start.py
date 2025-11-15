@@ -28,7 +28,8 @@ def main() -> None:
     greedy_generator = GreedyTextGenerator(model, processor)
     greedy_generator_result = greedy_generator.run(51, 'Vernon')
     print(greedy_generator_result)
-    result = None
+    result = greedy_generator_result
+    #result = None
     assert result
 
 
