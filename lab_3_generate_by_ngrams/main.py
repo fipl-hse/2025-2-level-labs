@@ -7,6 +7,7 @@ Beam-search and natural language generation evaluation
 # pylint:disable=too-few-public-methods, unused-import
 import json
 import math
+
 from lab_1_keywords_tfidf.main import check_dict
 
 

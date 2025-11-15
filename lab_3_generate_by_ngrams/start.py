@@ -46,7 +46,7 @@ def main() -> None:
     model_4 = reader.load(4)
     models = (model_2, model_3, model_4)
 
-    back_off_algorithm = BackOffGenerator(models, processor).run(60, 'Vernon shouted that')
+    back_off_algorithm = BackOffGenerator(models, processor).run(60, 'Vernon')
     print(back_off_algorithm)
 
     result = back_off_algorithm
