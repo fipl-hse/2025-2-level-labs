@@ -15,10 +15,7 @@ class AddLetterTest(unittest.TestCase):
     Tests function for letter addition.
     """
 
-    def setUp(self) -> None:
-        """
-        Set up for letter addition tests class.
-        """
+    def setUp(self):
         self.alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
 
         with open(
@@ -32,7 +29,7 @@ class AddLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_add_letter_ideal(self) -> None:
+    def test_add_letter_ideal(self):
         """
         Ideal scenario
         """
@@ -42,7 +39,7 @@ class AddLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_add_letter_length_check(self) -> None:
+    def test_add_letter_length_check(self):
         """
         Check length of new word list
         """
@@ -52,7 +49,7 @@ class AddLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_add_letter_bad_input(self) -> None:
+    def test_add_letter_bad_input(self):
         """
         Bad input scenario
         """
@@ -69,7 +66,7 @@ class AddLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_add_letter_value_check(self) -> None:
+    def test_add_letter_value_check(self):
         """
         Return value check
         """

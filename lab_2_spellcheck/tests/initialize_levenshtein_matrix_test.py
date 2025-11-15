@@ -17,7 +17,7 @@ class InitMatrixTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_initialize_levenshtein_matrix_ideal(self) -> None:
+    def test_initialize_levenshtein_matrix_ideal(self):
         """
         Ideal scenario
         """
@@ -31,7 +31,7 @@ class InitMatrixTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_initialize_levenshtein_matrix_bad_input(self) -> None:
+    def test_initialize_levenshtein_matrix_bad_input(self):
         """
         Bad input argument scenario
         """
@@ -44,7 +44,7 @@ class InitMatrixTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_initialize_levenshtein_matrix_value_check(self) -> None:
+    def test_initialize_levenshtein_matrix_value_check(self):
         """
         Check returned value
         """
@@ -59,7 +59,7 @@ class InitMatrixTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_initialize_levenshtein_matrix_zero_input(self) -> None:
+    def test_initialize_levenshtein_matrix_zero_input(self):
         """
         Zero input scenario
         """

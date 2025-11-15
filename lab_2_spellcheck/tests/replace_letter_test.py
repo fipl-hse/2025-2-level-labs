@@ -15,10 +15,7 @@ class ReplaceLetterTest(unittest.TestCase):
     Tests function for letter replacement.
     """
 
-    def setUp(self) -> None:
-        """
-        Set up for letter replacement tests.
-        """
+    def setUp(self):
         self.alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
 
         with open(
@@ -32,7 +29,7 @@ class ReplaceLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_replace_letter_ideal(self) -> None:
+    def test_replace_letter_ideal(self):
         """
         Ideal scenario
         """
@@ -42,7 +39,7 @@ class ReplaceLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_replace_letter_length(self) -> None:
+    def test_replace_letter_length(self):
         """
         Check length of new word list
         """
@@ -52,7 +49,7 @@ class ReplaceLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_replace_letter_bad_input(self) -> None:
+    def test_replace_letter_bad_input(self):
         """
         Bad input scenario
         """
@@ -69,7 +66,7 @@ class ReplaceLetterTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_replace_letter_value_check(self) -> None:
+    def test_replace_letter_value_check(self):
         """
         Return value check
         """

@@ -19,9 +19,6 @@ class CalculateDistanceTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        """
-        Set up for distance calculation tests class.
-        """
         self.vocabulary = {
             "35": 0.04,
             "across": 0.08,
@@ -53,7 +50,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_bad_input(self) -> None:
+    def test_calculate_distance_bad_input(self):
         """
         Bad input scenario
         """
@@ -79,7 +76,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_return_check(self) -> None:
+    def test_calculate_distance_return_check(self):
         """
         Check return value
         """
@@ -95,7 +92,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_by_jaccard(self) -> None:
+    def test_calculate_distance_by_jaccard(self):
         """
         Jaccard distance metric scenario
         """
@@ -186,7 +183,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_by_frequency(self) -> None:
+    def test_calculate_distance_by_frequency(self):
         """
         Frequency distance metric scenario
         """
@@ -279,7 +276,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_by_levenshtein(self) -> None:
+    def test_calculate_distance_by_levenshtein(self):
         """
         Levenshtein distance scenario
         """
@@ -368,7 +365,7 @@ class CalculateDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_distance_by_jaro_winkler(self) -> None:
+    def test_calculate_distance_by_jaro_winkler(self):
         """
         Jaro-Winkler distance scenario
         """
@@ -460,7 +457,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_jaccard_none(self) -> None:
+    def test_calculate_distance_jaccard_none(self):
         """
         Jaccard distance metric returning None scenario
         """
@@ -473,7 +470,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_frequency_none(self) -> None:
+    def test_calculate_distance_frequency_none(self):
         """
         Frequency distance metric returning None scenario
         """
@@ -485,7 +482,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_levenshtein_none(self) -> None:
+    def test_calculate_distance_levenshtein_none(self):
         """
         Levenshtein distance returning None scenario
         """
@@ -496,7 +493,7 @@ class CalculateDistanceTest(unittest.TestCase):
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
-    def test_calculate_distance_jaro_winkler_none(self) -> None:
+    def test_calculate_distance_jaro_winkler_none(self):
         """
         Jaro-Winkler distance returning None scenario
         """
@@ -509,7 +506,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_frequency_no_alphabet(self) -> None:
+    def test_calculate_distance_frequency_no_alphabet(self):
         """
         Frequency distance metric scenario with no alphabet passed
         """
@@ -524,7 +521,7 @@ class CalculateDistanceTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_calculate_distance_frequency_several_candidates(self) -> None:
+    def test_calculate_distance_frequency_several_candidates(self):
         """
         Case of several candidates being close
         """
