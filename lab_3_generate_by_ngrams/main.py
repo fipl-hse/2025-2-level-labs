@@ -151,7 +151,7 @@ class TextProcessor:
             return None
         if (element == self._end_of_word_token
             and self._end_of_word_token not in self._storage):
-                self._storage['_'] = 0
+                self._storage[self._end_of_word_token] = 0
         else:
             self._storage[element] = len(self._storage)
 
@@ -226,10 +226,8 @@ class TextProcessor:
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
-        decoded_string = "".join(decoded_corpus).replace(self._end_of_word_token, " ")
-        decoded_string = decoded_string.strip()
-        decoded_string = decoded_string.capitalize()
-        return f'{decoded_string}.'
+        decoded_string = "".join(decoded_corpus).replace(self._end_of_word_token, " ").strip().capitalize()
+        return f"{decoded_string}."
 
 
 class NGramLanguageModel:
@@ -250,6 +248,9 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        self._encoded_corpus = encoded_corpus
+        self._n_gram_size = n_gram_size
+        self._n_gram_frequencies = {}
 
     def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
         """
@@ -307,8 +308,15 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
+            return None
+        limit = len(encoded_corpus) - self._n_gram_size + 1
+        if limit <= 0:
+            return None
+        extracted_n_grams = [encoded_corpus[index:index + self._n_gram_size] for index in range(limit)]
+        return tuple(extracted_n_grams)
 
-
+        
 class GreedyTextGenerator:
     """
     Greedy text generation by N-grams.
