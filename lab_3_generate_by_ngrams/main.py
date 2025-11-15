@@ -471,7 +471,7 @@ class BeamSearcher:
         if not probs:
             return []
         return sorted(
-            [(token, freq) for token, freq in probs.items()],
+            list(probs.items()),
             key=lambda item: item[1], reverse=True
             )[:self._beam_width]
 
