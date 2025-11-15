@@ -312,8 +312,10 @@ class NGramLanguageModel:
         for n_gram in extracted_n_grams:
             n_gram_count[n_gram] = n_gram_count.get(n_gram, 0) + 1
             context_count[n_gram[:-1]] = context_count.get(n_gram[:-1], 0) + 1
+
+        for n_gram in extracted_n_grams:
             self._n_gram_frequencies[n_gram] = n_gram_count[n_gram] / context_count[n_gram[:-1]]
-        
+#why doesn't it work when in one loop?? think when less eepy
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
