@@ -7,6 +7,7 @@ Beam-search and natural language generation evaluation
 # pylint:disable=too-few-public-methods, unused-import
 import json
 import math
+from lab_1_keywords_tfidf.main import check_dict
 
 
 class TextProcessor:
@@ -26,8 +27,7 @@ class TextProcessor:
             end_of_word_token (str): A token denoting word boundary
         """
         self._end_of_word_token = end_of_word_token
-        self._storage = {}
-        self._put(self._end_of_word_token)
+        self._storage = {self._end_of_word_token: 0}
 
     def _tokenize(self, text: str) -> tuple[str, ...] | None:
         """
@@ -105,7 +105,7 @@ class TextProcessor:
         if (
             not isinstance(element_id, int)
             or element_id >= len(self._storage)
-            ):
+        ):
             return None
         for token, token_id in self._storage.items():
             if token_id == element_id:
@@ -156,7 +156,7 @@ class TextProcessor:
             isinstance(element, str)
             and len(element) == 1
             and element not in self._storage
-            ):
+        ):
             self._storage[element] = len(self._storage)
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
@@ -193,11 +193,12 @@ class TextProcessor:
             content (dict): ngrams from external JSON
         """
         if isinstance(content, dict) and content:
-            ngrams_freq = content.get('freq')
-            for ngram in ngrams_freq.keys():
-                for char in ngram.lower():
-                    if char.isalpha() or char == self._end_of_word_token:
-                        self._put(char)
+            ngrams_freq = content.get("freq")
+            if check_dict(ngrams_freq, str, int, False) and ngrams_freq:
+                for ngram in ngrams_freq.keys():
+                    for char in ngram.lower():
+                        if char.isalpha() or char == self._end_of_word_token:
+                            self._put(char)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
@@ -283,7 +284,7 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
-        if isinstance(frequencies, dict) and frequencies:
+        if check_dict(frequencies, tuple, float, False) and frequencies:
             self._n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
@@ -327,19 +328,15 @@ class NGramLanguageModel:
         if (not isinstance(sequence, tuple)
             or not sequence
             or len(sequence) < self._n_gram_size - 1
-            ):
+        ):
             return None
-        context_length = self._n_gram_size-1
-        if len(sequence) < context_length:
-            context = sequence
-        else:
-            context = sequence[-context_length:]
+        context_length = self._n_gram_size - 1
+        context = sequence[-context_length:]
         generated_tokens = {}
         for n_gram, probability in self._n_gram_frequencies.items():
             if n_gram[:len(context)] == context:
                 if n_gram[-1] not in generated_tokens:
                     generated_tokens[n_gram[-1]] = probability
-        #sorted_tokens = dict(sorted(generated_tokens.items(), key=lambda x: (-x[1], -x[0])))
         return generated_tokens
 
     def _extract_n_grams(
@@ -404,7 +401,7 @@ class GreedyTextGenerator:
             or not prompt
             or not isinstance(seq_len, int)
             or seq_len <= 0
-            ):
+        ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if encoded_prompt is None:
@@ -462,7 +459,7 @@ class BeamSearcher:
         if (
             not isinstance(sequence, tuple)
             or not sequence
-            ):
+        ):
             return None
         candidates_for_generation = self._model.generate_next_token(sequence)
         if candidates_for_generation is None:
@@ -499,13 +496,13 @@ class BeamSearcher:
             or not sequence
             or not isinstance(next_tokens, list)
             or not next_tokens
-            ):
+        ):
             return None
         if (
-            not isinstance(sequence_candidates, dict)
+            not check_dict(sequence_candidates, tuple, float, False)
             or sequence not in sequence_candidates
             or len(next_tokens) > self._beam_width
-            ):
+        ):
             return None
         seq_probability = sequence_candidates[sequence]
         if not isinstance(seq_probability, (int, float)):
@@ -532,9 +529,9 @@ class BeamSearcher:
         In case of corrupt input arguments return None.
         """
         if (
-            not isinstance(sequence_candidates, dict)
+            not check_dict(sequence_candidates, tuple, float, False)
             or not sequence_candidates
-            ):
+        ):
             return None
         sorted_candidates = sorted(sequence_candidates.items(), key=lambda x: x[1])
         return dict(sorted_candidates[:self._beam_width])
@@ -586,7 +583,7 @@ class BeamSearchTextGenerator:
             or not prompt
             or not isinstance(seq_len, int)
             or seq_len <= 0
-            ):
+        ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if encoded_prompt is None:
@@ -635,7 +632,7 @@ class BeamSearchTextGenerator:
         if (
             not isinstance(sequence_to_continue, tuple)
             or not sequence_to_continue
-            ):
+        ):
             return None
         next_token = self.beam_searcher.get_next_token(sequence_to_continue)
         if next_token is None:
@@ -687,7 +684,7 @@ class NGramLanguageModelReader:
             not isinstance(n_gram_size, int)
             or not n_gram_size
             or n_gram_size < 2
-            ):
+        ):
             return None
         ngrams = self._content.get('freq', {})
         ngram_abs_freqs = {}
@@ -769,7 +766,7 @@ class BackOffGenerator:
             or seq_len <= 0
             or not isinstance(prompt, str)
             or not prompt
-            ):
+        ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if encoded_prompt is None:
@@ -799,7 +796,7 @@ class BackOffGenerator:
         if (
             not isinstance(sequence_to_continue, tuple)
             or not sequence_to_continue
-            ):
+        ):
             return None
         n_gram_sizes = sorted(self._language_models.keys(), reverse=True)
         for n_gram_size in n_gram_sizes:

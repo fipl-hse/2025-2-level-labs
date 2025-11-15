@@ -8,6 +8,7 @@ from lab_3_generate_by_ngrams.main import (
     BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
+    NGramLanguageModelReader,
     TextProcessor,
 )
 
@@ -39,12 +40,13 @@ def main() -> None:
     beam_search_algorithm = BeamSearchTextGenerator(generator_model, processor, 3).run('Vernon', 56)
     print(beam_search_algorithm)
 
-    models = []
-    for n_gram_size in [2, 3, 4]:
-        model = NGramLanguageModel(encoded_text, n_gram_size)
-        model.build()
-        models.append(model)
-    back_off_algorithm = BackOffGenerator(tuple(models), processor).run(60, 'Vernon shouted that')
+    reader = NGramLanguageModelReader("./assets/en_own.json", "_")
+    model_2 = reader.load(2)
+    model_3 = reader.load(3)
+    model_4 = reader.load(4)
+    models = (model_2, model_3, model_4)
+
+    back_off_algorithm = BackOffGenerator(models, processor).run(60, 'Vernon shouted that')
     print(back_off_algorithm)
 
     result = back_off_algorithm
