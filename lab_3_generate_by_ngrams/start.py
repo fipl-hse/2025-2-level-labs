@@ -27,8 +27,8 @@ def main() -> None:
     for n_size in (2, 3):
         model_n = reader.load(n_size)
         if model_n:
-            result = GreedyTextGenerator(model_n, reader.get_text_processor()).run(10, 'Vernon')
-            print(f"Loaded model {n_size}-gram: {result}")
+            greedy_result = GreedyTextGenerator(model_n, reader.get_text_processor()).run(10, 'Vernon')
+            print(f"Loaded model {n_size}-gram: {greedy_result}")
     model = NGramLanguageModel(encoded, 7)
     model.build()
     print(f'\nGreedy: {GreedyTextGenerator(model, processor).run(51, "Vernon")}')

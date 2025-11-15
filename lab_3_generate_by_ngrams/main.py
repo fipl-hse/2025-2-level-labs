@@ -286,11 +286,7 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
-        if not check_dict(frequencies, tuple, (int, float), False):
-            return
-        if not all(isinstance(key, tuple) for key in frequencies):
-            return
-        if not all(isinstance(value, (int, float)) for value in frequencies.values()):
+        if not check_dict(frequencies, tuple, float, False):
             return
         self._n_gram_frequencies = frequencies
 
