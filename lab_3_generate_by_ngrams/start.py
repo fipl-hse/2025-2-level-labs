@@ -4,7 +4,7 @@ Generation by NGrams starter
 
 # pylint:disable=unused-import, unused-variable
 
-from main import NGramLanguageModel, TextProcessor
+from main import GreedyTextGenerator, NGramLanguageModel, TextProcessor
 
 
 def main() -> None:
@@ -18,9 +18,11 @@ def main() -> None:
     processor = TextProcessor("_")
     encoded_text = processor.encode(text) or ()
     decoded_text = processor.decode(encoded_text)
-    n_gram_language_model = NGramLanguageModel(encoded_text, 3)
-    n_gram_language_model.build()
-    result = n_gram_language_model._n_gram_frequencies
+    language_model = NGramLanguageModel(encoded_text, 7)
+    language_model.build()
+    greedy_generator = GreedyTextGenerator(language_model, processor)
+    result = greedy_generator.run(51, "Vernon")
+    print(result)
     assert result
 
 

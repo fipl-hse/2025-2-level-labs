@@ -315,7 +315,8 @@ class NGramLanguageModel:
 
         for n_gram in extracted_n_grams:
             self._n_gram_frequencies[n_gram] = n_gram_count[n_gram] / context_count[n_gram[:-1]]
-#why doesn't it work when in one loop?? think when less eepy
+#because the amount of contexts could change
+#since we updated self._n_gram_frequencies[n_gram] for the last time!
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
@@ -386,6 +387,8 @@ class GreedyTextGenerator:
             language_model (NGramLanguageModel): A language model to use for text generation
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
         """
+        self._model = language_model
+        self._text_processor = text_processor
 
     def run(self, seq_len: int, prompt: str) -> str | None:
         """
@@ -401,6 +404,22 @@ class GreedyTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
+        if not isinstance(seq_len, int) or not isinstance(prompt, str) or prompt == "":
+            return None
+        encoded_prompt = self._text_processor.encode(prompt) or ()
+        n_gram_size = self._model.get_n_gram_size() or 0
+        context = list(encoded_prompt[len(encoded_prompt) - n_gram_size + 1:])
+        for _ in range(seq_len):
+            candidate_tokens = self._model.generate_next_token(tuple(context))
+            if candidate_tokens == {} or candidate_tokens is None:
+                break
+            for key, value in candidate_tokens.items():
+                if value == max(candidate_tokens.values()):
+                    next_token = key
+                    break
+            context.append(next_token)
+        generated_text = self._text_processor.decode(tuple(context))
+        return generated_text
 
 
 class BeamSearcher:
