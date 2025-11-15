@@ -200,9 +200,15 @@ class TextProcessor:
         freq_dict = content.get('freq', {})
         if not isinstance(freq_dict, dict) or not freq_dict:
             return None
+        unique_chars = []
         for ngram in freq_dict.keys():
-            if isinstance(ngram, str) and len(ngram) == 1 and ngram.isalpha():
-                self._put(ngram)
+            for char in ngram:
+                if char == self._end_of_word_token or char.isalpha():
+                    c = char.lower()
+                    if c not in unique_chars:
+                        unique_chars.append(c)
+        for char in unique_chars:
+            self._put(char)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
@@ -616,14 +622,13 @@ class BeamSearchTextGenerator:
         if encoded_prompt is None:
             return None
         sequence_candidates: dict[tuple[int, ...], float] = {encoded_prompt: 0.0}
-        initial_length = len(encoded_prompt)
         for _ in range(seq_len):
             new_candidates: dict[tuple[int, ...], float] = {}
             found_any_candidates = False
             for sequence, current_prob in sequence_candidates.items():
                 next_tokens = self._get_next_token(sequence)
                 if next_tokens is None:
-                    continue
+                    return None
                 if not next_tokens:
                     new_candidates[sequence] = current_prob
                     continue
@@ -636,15 +641,15 @@ class BeamSearchTextGenerator:
                     new_candidates.update(updated)
                 else:
                     new_candidates[sequence] = current_prob
-            if not found_any_candidates and not new_candidates:
+                    continue
+            if not found_any_candidates:
                 break
             if not new_candidates:
                 break
             pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
-            if pruned_candidates is not None:
-                sequence_candidates = pruned_candidates
-            else:
-                break
+            if pruned_candidates is None:
+                return None
+            sequence_candidates = pruned_candidates
         if not sequence_candidates:
             return None
         best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
@@ -819,7 +824,7 @@ class BackOffGenerator:
             next_token_candidates = self._get_next_token(tuple(current_sequence))
             if not next_token_candidates:
                 break
-            next_token = max(next_token_candidates.items(), key=lambda x: x[1])[0]
+            next_token = sorted(next_token_candidates.items(), key=lambda x: (-x[1], x[0]))[0][0]
             current_sequence.append(next_token)
         return self._text_processor.decode(tuple(current_sequence))
 
@@ -845,6 +850,6 @@ class BackOffGenerator:
             else:
                 context = sequence_to_continue
             next_tokens = model.generate_next_token(context)
-            if next_tokens is not None and isinstance(next_tokens, dict) and len(next_tokens) > 0:
+            if next_tokens and isinstance(next_tokens, dict):
                 return next_tokens
         return None
