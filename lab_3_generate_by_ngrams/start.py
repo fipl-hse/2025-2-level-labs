@@ -36,7 +36,7 @@ def main() -> None:
         model = NGramLanguageModel(encoded_text, n_gram_size)
         model.build()
         language_models.append(model)
-    back_off = BackOffGenerator(language_models, processor)
+    back_off = BackOffGenerator(tuple(language_models), processor)
     result = back_off.run(20, "Vernon")
     print(result_generator)
     print(result_beam)

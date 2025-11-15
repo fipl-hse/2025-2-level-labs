@@ -243,6 +243,7 @@ class TextProcessor:
             else:
                 result += element
         result = result.strip()
+        result = result.rstrip('.')
         return result.capitalize() + "."
 
 class NGramLanguageModel:
@@ -504,12 +505,12 @@ class BeamSearcher:
         if len(next_tokens) > self._beam_width:
             return None
         current_score = sequence_candidates[sequence]
-        new_candidates = {
-        **{seq: score for seq, score in sequence_candidates.items() if seq != sequence},
-        **{sequence + (token,): current_score - math.log(prob)
-           for token, prob in next_tokens}}
+        new_candidates = {seq: score 
+        for seq, score in sequence_candidates.items() if seq != sequence}
+        new_candidates.update(
+            (sequence + (token,), current_score - math.log(prob))
+            for token, prob in next_tokens)
         return new_candidates
-
 
     def prune_sequence_candidates(
         self, sequence_candidates: dict[tuple[int, ...], float]
