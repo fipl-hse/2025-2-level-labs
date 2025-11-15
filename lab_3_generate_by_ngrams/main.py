@@ -492,7 +492,7 @@ class BeamSearcher:
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
-        n_gram_size = self._model._n_gram_sizegit
+        n_gram_size = self._model._n_gram_size
         if len(sequence) < n_gram_size - 1:
             context = sequence
         else:
