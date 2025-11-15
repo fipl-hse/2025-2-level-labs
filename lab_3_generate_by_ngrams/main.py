@@ -493,9 +493,10 @@ class BeamSearcher:
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
-        try:
-            n_gram_size = self._model.get_n_gram_size() 
-        except AttributeError:
+        
+        if isinstance(self._model, NGramLanguageModel):
+            n_gram_size = self._model.get_n_gram_size()
+        else:
             n_gram_size = self._model._n_gram_size
         if len(sequence) < n_gram_size - 1:
             context = sequence
