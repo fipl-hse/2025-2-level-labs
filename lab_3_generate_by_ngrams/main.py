@@ -139,7 +139,7 @@ class TextProcessor:
         if not isinstance(text, str) or not text:
             return None
         tokens = self._tokenize(text)
-        if not tokens:
+        if tokens is None:
             return None
         encoded_tokens = []
         for token in tokens:
@@ -492,7 +492,7 @@ class BeamSearcher:
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
-        n_gram_size = self._model._n_gram_size
+        n_gram_size = self._model._n_gram_sizegit
         if len(sequence) < n_gram_size - 1:
             context = sequence
         else:
@@ -745,7 +745,8 @@ class NGramLanguageModelReader:
             else:
                 encoded_ngram = tuple(encoded_chars)
                 ngram_frequencies[encoded_ngram] = count
-                context_counts[encoded_ngram[:-1]] = context_counts.get(encoded_ngram[:-1], 0) + count
+                context_key = encoded_ngram[:-1]
+                context_counts[context_key] = context_counts.get(context_key, 0) + count
                 continue
         probabilities = {
             ngram: count / context_counts[ngram[:-1]]
