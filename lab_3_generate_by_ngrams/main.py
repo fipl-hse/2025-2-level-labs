@@ -125,17 +125,17 @@ class TextProcessor:
         """
         if not isinstance(text, str):
             return None
-        tokens = self._tokenize(text)
-        if tokens is None:
+        tokenized_text = self._tokenize(text) or []
+        if not tokenized_text:
             return None
         encoded_tokens = []
-        for token in tokens:
+        for token in tokenized_text:
             if token not in self._storage:
                 self._put(token)
-            token_id = self.get_id(token)
-            if token_id is None:
+            token = self.get_id(token)
+            if token is None:
                 return None
-            encoded_tokens.append(token_id)
+            encoded_tokens.append(token)
         return tuple(encoded_tokens)
 
     def _put(self, element: str) -> None:
