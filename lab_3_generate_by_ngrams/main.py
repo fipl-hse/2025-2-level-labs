@@ -8,7 +8,7 @@ Beam-search and natural language generation evaluation
 import json
 import math
 
-from lab_1_keywords_tfidf.main import check_positive_int, check_list
+from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 
 
 class TextProcessor:
@@ -286,7 +286,7 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
-        if not isinstance(frequencies, dict) or not frequencies:
+        if not check_dict(frequencies, tuple, (int, float), False):
             return
         self._n_gram_frequencies = frequencies
 
