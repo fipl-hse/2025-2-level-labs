@@ -670,36 +670,25 @@ class BeamSearchTextGenerator:
         candidates_of_sequence = {encoded_sequence: 0.0}
 
         for _ in range(seq_len):
-            next_candidates = {}
-            found_any_tokens = False
-
             for sequence in list(candidates_of_sequence.keys()):
                 next_token_list = self._get_next_token(sequence)
                 if next_token_list is None:
-                    continue
-
-                found_any_tokens = True
+                    return None
 
                 updated_candidates = self.beam_searcher.continue_sequence(
                     sequence, next_token_list, candidates_of_sequence
                 )
-                if updated_candidates is not None:
-                    next_candidates.update(updated_candidates)
+                if updated_candidates is None:
+                    continue
 
-            if not found_any_tokens:
+                prune_candidates = self.beam_searcher.prune_sequence_candidates(updated_candidates)
+                if prune_candidates is None:
+                    return None
+
+                candidates_of_sequence = prune_candidates
+
+            if not candidates_of_sequence:
                 return None
-
-            if not next_candidates:
-                break
-
-            sequence_candidates = self.beam_searcher.prune_sequence_candidates(next_candidates)
-            if sequence_candidates is None:
-                return None
-
-            candidates_of_sequence = sequence_candidates
-
-        if not candidates_of_sequence:
-            return None
 
         best_sequence = min(candidates_of_sequence.items(), key = lambda x: x[1])[0]
         decoded_text = self._text_processor.decode(best_sequence)
