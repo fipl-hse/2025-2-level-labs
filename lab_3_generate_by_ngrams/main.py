@@ -493,7 +493,7 @@ class BeamSearcher:
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
-        n_gram_size = getattr(self._model, 'get_n_gram_size', 
+        n_gram_size = getattr(self._model, 'get_n_gram_size',
                             lambda: getattr(self._model, '_n_gram_size', 0))()
         if len(sequence) < n_gram_size - 1:
             context = sequence
@@ -506,7 +506,7 @@ class BeamSearcher:
             return []
         next_tokens = sorted(
             next_tokens_dict.items(),
-            key=lambda x: (-x[1], x[0])
+            key=lambda x: (-x[1], -x[0])
         )
         return next_tokens[:self._beam_width]
 
@@ -820,7 +820,11 @@ class BackOffGenerator:
             next_token_candidates = self._get_next_token(tuple(current_sequence))
             if not next_token_candidates:
                 break
-            next_token = sorted(next_token_candidates.items(), key=lambda x: (-x[1], x[0]))[0][0]
+            sorted_candidates = sorted(
+                next_token_candidates.items(),
+                key=lambda x: (-x[1], x[0])
+            )
+            next_token = sorted_candidates[0][0]
             current_sequence.append(next_token)
         return self._text_processor.decode(tuple(current_sequence))
 
