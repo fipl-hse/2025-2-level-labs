@@ -41,7 +41,11 @@ def main() -> None:
     print(beam_search_algorithm)
 
     reader = NGramLanguageModelReader("./assets/en_own.json", "_")
-    models = [reader.load(2), reader.load(3), reader.load(4)]
+    models = []
+    for n_gram_size in [2, 3, 4]:
+        model = reader.load(n_gram_size)
+        if model is not None:
+            models.append(model)
 
     back_off_algorithm = BackOffGenerator(tuple(models), processor).run(60, 'Vernon')
     print(back_off_algorithm)
