@@ -556,16 +556,16 @@ class BeamSearchTextGenerator:
             return None
         candidates = {sequence: 0.0}
         for _ in range(seq_len):
-            tokens = self.beam_searcher.get_next_token(sequence)
+            tokens = self._get_next_token(sequence)
             if not tokens:
+                return None
+            sequence_candidates = self.beam_searcher.continue_sequence(sequence, tokens, candidates)
+            if not sequence_candidates:
                 break
-            candidates = self.beam_searcher.continue_sequence(sequence, tokens, candidates)
+            candidates = self.beam_searcher.prune_sequence_candidates(sequence_candidates)
             if not candidates:
-                break
-            candidates = self.beam_searcher.prune_sequence_candidates(candidates)
-            if not candidates:
-                break
-        best_sequence = tuple(list(candidates)[-1])
+                return None
+        best_sequence = list(candidates)[-1]
         return self._text_processor.decode(best_sequence)
 
 
