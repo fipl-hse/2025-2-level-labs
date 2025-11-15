@@ -41,7 +41,8 @@ def main() -> None:
         models.append(current_model)
     backoff_result = BackOffGenerator(tuple(models), processor).run(55, 'Vernon')
     print(f'\nBackOff: {backoff_result}')
-    assert backoff_result
+    result = backoff_result
+    assert result
 
 
 if __name__ == "__main__":

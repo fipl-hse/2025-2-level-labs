@@ -288,6 +288,10 @@ class NGramLanguageModel:
         """
         if not check_dict(frequencies, tuple, (int, float), False):
             return
+        if not all(isinstance(key, tuple) for key in frequencies):
+            return
+        if not all(isinstance(value, (int, float)) for value in frequencies.values()):
+            return
         self._n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
