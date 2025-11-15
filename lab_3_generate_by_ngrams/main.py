@@ -595,7 +595,7 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
-        if not check_dict(sequence_candidates, tuple, float, True):
+        if not check_dict(sequence_candidates, tuple, float, False):
             return None
 
         if not sequence_candidates:
@@ -674,6 +674,10 @@ class BeamSearchTextGenerator:
                 if next_token_list is None:
                     return None
 
+                if not next_token_list:
+                    new_candidates[sequence] = candidates_of_sequence[sequence]
+                    continue
+
                 updated_candidates = self.beam_searcher.continue_sequence(
                 sequence, next_token_list, candidates_of_sequence
                 )
@@ -690,11 +694,11 @@ class BeamSearchTextGenerator:
             candidates_of_sequence = prune_candidates
 
         if not candidates_of_sequence:
-                return None
+            return None
 
         best_sequence = min(candidates_of_sequence.items(), key=lambda x: x[1])[0]
         return self._text_processor.decode(best_sequence)
-    
+
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
     ) -> list[tuple[int, float]] | None:
