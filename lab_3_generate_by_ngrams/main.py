@@ -119,8 +119,6 @@ class TextProcessor:
             encoded_text.append(token_id)
         return tuple(encoded_text)
 
-        return tuple(encoded_text)
-
     def _put(self, element: str) -> None:
         """
         Put an element into the storage, assign a unique id to it.
@@ -151,7 +149,7 @@ class TextProcessor:
         encoded_letters = self._decode(encoded_corpus)
         if not encoded_letters:
             return None
-        encoded_text = ""
+
         encoded_text = self._postprocess_decoded_text(encoded_letters)
         return encoded_text
     def fill_from_ngrams(self, content: dict) -> None:
@@ -190,6 +188,8 @@ class TextProcessor:
             if not self.get_token(i):
                 return None
             decoded_tokens_letters.append(self.get_token(i))
+        if decoded_tokens_letters == []:
+            return None
         decoded_tokens = tuple(decoded_tokens_letters)
         return decoded_tokens
 
@@ -699,3 +699,4 @@ class BackOffGenerator:
             if candidates is not None and candidates:
                 return candidates
         return None
+    
