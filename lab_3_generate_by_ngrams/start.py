@@ -18,6 +18,7 @@ def main() -> None:
     """
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
+    #result = None
     processor = TextProcessor('_')
     encoded_text = processor.encode(text) or ()
     print(encoded_text)
@@ -30,7 +31,6 @@ def main() -> None:
     greedy_generator_result = greedy_generator.run(51, 'Vernon')
     print(greedy_generator_result)
     result = greedy_generator_result
-    #result = None
     assert result
 
 
