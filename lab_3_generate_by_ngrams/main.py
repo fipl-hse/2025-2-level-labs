@@ -7,6 +7,7 @@ Beam-search and natural language generation evaluation
 # pylint:disable=too-few-public-methods, unused-import
 import json
 from math import log
+
 from lab_1_keywords_tfidf.main import check_dict, check_list
 
 
@@ -594,28 +595,30 @@ class BeamSearchTextGenerator:
         None is returned
         """
         if (not isinstance(prompt, str) or
-        not isinstance(seq_len, int) or
-        not prompt or seq_len <= 0):
+            not isinstance(seq_len, int) or
+            not prompt or seq_len <= 0):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if not encoded_prompt:
             return None
         candidates = {encoded_prompt: 0.0}
         for _ in range(seq_len):
-            new_candidates = candidates.copy()
-        for sequence in list(candidates.keys()):
-            next_tokens = self._get_next_token(sequence)
-            if next_tokens is None:
-                return None
-            updated = self.beam_searcher.continue_sequence(
-                sequence, next_tokens, new_candidates
-            )
-            if updated is not None:
-                new_candidates = updated
-        pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
-        if pruned_candidates is None:
-            return None
-        candidates = pruned_candidates
+            new_candidates = {}
+            for sequence, cost in candidates.items():
+                next_tokens = self._get_next_token(sequence)
+                if next_tokens is None:
+                    continue
+                updated = self.beam_searcher.continue_sequence(
+                    sequence, next_tokens, {sequence: cost}
+                )
+                if updated:
+                    new_candidates.update(updated)
+            if not new_candidates:
+                break
+            pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+            if pruned_candidates is None:
+                break
+            candidates = pruned_candidates
         if not candidates:
             return None
         best_sequence = min(candidates.items(), key=lambda item: item[1])[0]
