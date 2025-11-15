@@ -565,8 +565,6 @@ class BeamSearchTextGenerator:
             candidates = self.beam_searcher.prune_sequence_candidates(candidates)
             if not candidates:
                 break
-        if not candidates:
-            break
         best_sequence = tuple(list(candidates)[-1])
         return self._text_processor.decode(best_sequence)
 
