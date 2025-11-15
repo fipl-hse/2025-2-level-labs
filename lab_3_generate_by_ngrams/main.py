@@ -493,11 +493,8 @@ class BeamSearcher:
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
-        
-        if isinstance(self._model, NGramLanguageModel):
-            n_gram_size = self._model.get_n_gram_size()
-        else:
-            n_gram_size = self._model._n_gram_size
+        n_gram_size = getattr(self._model, 'get_n_gram_size', 
+                            lambda: getattr(self._model, '_n_gram_size', 0))()
         if len(sequence) < n_gram_size - 1:
             context = sequence
         else:
@@ -509,7 +506,7 @@ class BeamSearcher:
             return []
         next_tokens = sorted(
             next_tokens_dict.items(),
-            key=lambda x: (-x[1], -x[0])
+            key=lambda x: (-x[1], x[0])
         )
         return next_tokens[:self._beam_width]
 
