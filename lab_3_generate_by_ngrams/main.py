@@ -6,9 +6,7 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
-
 from math import log
-
 from lab_1_keywords_tfidf.main import check_dict, check_list
 
 
@@ -80,8 +78,7 @@ class TextProcessor:
             return None
         if element in self._storage:
             return self._storage.get(element)
-        else:
-            return None
+        return None
 
     def get_end_of_word_token(self) -> str:  # type: ignore[empty-body]
         """
