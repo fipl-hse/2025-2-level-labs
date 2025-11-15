@@ -55,8 +55,8 @@ class TextProcessor:
             if token.isalpha():
                 tokens.append(token)
             elif token.isspace() or token in special_symbols:
-                if tokens[-1] != "_":
-                    tokens.append("_")
+                if tokens[-1] != self._end_of_word_token:
+                    tokens.append(self._end_of_word_token)
                 else:
                     continue
             elif token.isdigit():
@@ -238,7 +238,7 @@ class TextProcessor:
             return None
         result = ""
         for element in decoded_corpus:
-            if element == "_":
+            if element == self._end_of_word_token:
                 result += " "
             else:
                 result += element
@@ -308,11 +308,18 @@ class NGramLanguageModel:
         current_encoded_corpus = self._extract_n_grams(self._encoded_corpus)
         if not current_encoded_corpus:
             return 1
-        help_storage =[i[:-1] for i in current_encoded_corpus]
-        for element in current_encoded_corpus:
-            common_part = element[:-1]
-            count_ = help_storage.count(common_part)
-            self._n_gram_frequencies[element] = current_encoded_corpus.count(element)/count_
+        n_gram_counts = {}
+        prefix_counts = {}
+        for n_gram in current_encoded_corpus:
+            n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
+            prefix = n_gram[:-1]
+            prefix_counts[prefix] = prefix_counts.get(prefix, 0) + 1
+        for n_gram, count in n_gram_counts.items():
+            prefix = n_gram[:-1]
+            if prefix in prefix_counts and prefix_counts[prefix] > 0:
+                self._n_gram_frequencies[n_gram] = count / prefix_counts[prefix]
+            else:
+                return 1
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
@@ -396,8 +403,8 @@ class GreedyTextGenerator:
         None is returned
         """
         if (not isinstance(seq_len, int)
-        or not isinstance(prompt, str)
-        or not prompt):
+            or not isinstance(prompt, str)
+            or not prompt):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         n_gram_size = self._model.get_n_gram_size()
@@ -486,8 +493,8 @@ class BeamSearcher:
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
         if (not isinstance(sequence, tuple)
-        or not isinstance(next_tokens, list)
-        or not isinstance(sequence_candidates, dict)):
+            or not isinstance(next_tokens, list)
+            or not isinstance(sequence_candidates, dict)):
             return None
         if not next_tokens or not sequence_candidates or not sequence:
             return None
@@ -643,6 +650,10 @@ class NGramLanguageModelReader:
         """
         self._json_path = json_path
         self._eow_token = eow_token
+        self._text_processor = TextProcessor(eow_token)
+        with open(json_path, 'r', encoding='utf-8') as file:
+            self._content = json.load(file)
+        self._text_processor.fill_from_ngrams(self._content)
 
     def load(self, n_gram_size: int) -> NGramLanguageModel | None:
         """
@@ -659,6 +670,9 @@ class NGramLanguageModelReader:
 
         In case of corrupt input arguments or unexpected behaviour of methods used, return 1.
         """
+        if not isinstance(n_gram_size, int):
+            return None
+        
 
     def get_text_processor(self) -> TextProcessor:  # type: ignore[empty-body]
         """
@@ -667,6 +681,7 @@ class NGramLanguageModelReader:
         Returns:
             TextProcessor: processor created for the current JSON file.
         """
+        return self._text_processor
 
 
 class BackOffGenerator:
