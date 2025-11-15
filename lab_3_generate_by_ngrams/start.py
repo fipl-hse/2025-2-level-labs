@@ -39,11 +39,10 @@ def main() -> None:
 
     beam_search_algorithm = BeamSearchTextGenerator(generator_model, processor, 3).run('Vernon', 56)
     print(beam_search_algorithm)
-
-    reader = NGramLanguageModelReader("./assets/en_own.json", "_")
+    
     models = []
     for n_gram_size in [2, 3, 4]:
-        model = reader.load(n_gram_size)
+        model = NGramLanguageModelReader("./assets/en_own.json", "_").load(n_gram_size)
         if model is not None:
             models.append(model)
 
