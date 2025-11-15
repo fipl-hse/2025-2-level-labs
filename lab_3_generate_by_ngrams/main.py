@@ -327,8 +327,8 @@ class NGramLanguageModel:
         counter_of_context = {}
 
         for n_gram in n_grams:
-            if not isinstance(n_gram, tuple):
-                return 1
+            if len(n_gram) != self._n_gram_size:
+                continue
 
             counter_of_n_gram[n_gram] = counter_of_n_gram.get(n_gram, 0) + 1
 
@@ -397,7 +397,7 @@ class NGramLanguageModel:
         n_size = self._n_gram_size
 
         if len(encoded_corpus) < n_size:
-            return None
+            return tuple()
 
         n_grams = []
         for i in range(len(encoded_corpus) - n_size + 1):
@@ -524,16 +524,12 @@ class BeamSearcher:
         if not next_tokens:
             return []
 
-        letters_candidates = []
-        for candidate, frequency in next_tokens.items():
-            letters_candidates.append((candidate, frequency))
+        valid_tokens = []
+        for token, probability in next_tokens.items():
+            valid_tokens.append((token, probability))
 
-        letters_candidates.sort(key = lambda x: (-x[1], x[0]))
-
-        beam_width = self._beam_width
-        result = letters_candidates[:beam_width]
-
-        return result
+        valid_tokens.sort(key = lambda item: (-item[1], item[0]))
+        return valid_tokens[:self._beam_width]
 
     def continue_sequence(
         self,
@@ -573,17 +569,16 @@ class BeamSearcher:
 
         current_probability = sequence_candidates[sequence]
 
+        new_candidates = sequence_candidates.copy()
+
         for token, frequency in next_tokens:
-            sequence_list = list(sequence)
-            sequence_list.append(token)
-            new_sequence = tuple(sequence_list)
+            new_sequence = sequence + (token,)
             probability = current_probability - log(frequency)
+            new_candidates[new_sequence] = probability
 
-            sequence_candidates[new_sequence] = probability
+        del new_candidates[sequence]
 
-        del sequence_candidates[sequence]
-
-        return sequence_candidates
+        return new_candidates
 
 
     def prune_sequence_candidates(
@@ -600,15 +595,17 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
-        if not check_dict(
-            sequence_candidates, tuple, float, False
-            ) or not sequence_candidates:
+        if not check_dict(sequence_candidates, tuple, float, True):
             return None
 
-        n_sequences = self._beam_width
+        if not sequence_candidates:
+            return {}
+
+        n_sequences = min(self._beam_width, len(sequence_candidates))
         sorted_sequences = sorted(
             sequence_candidates.items(),
             key = lambda x: x[1],
+            reverse = False
             )
 
         top_n_sequences = sorted_sequences[:n_sequences]
@@ -670,32 +667,34 @@ class BeamSearchTextGenerator:
         candidates_of_sequence = {encoded_sequence: 0.0}
 
         for _ in range(seq_len):
+            new_candidates = {}
+
             for sequence in list(candidates_of_sequence.keys()):
                 next_token_list = self._get_next_token(sequence)
                 if next_token_list is None:
                     return None
 
                 updated_candidates = self.beam_searcher.continue_sequence(
-                    sequence, next_token_list, candidates_of_sequence
+                sequence, next_token_list, candidates_of_sequence
                 )
-                if updated_candidates is None:
-                    continue
+                if updated_candidates is not None:
+                    new_candidates.update(updated_candidates)
 
-                prune_candidates = self.beam_searcher.prune_sequence_candidates(updated_candidates)
-                if prune_candidates is None:
-                    return None
+            if not new_candidates:
+                break
 
-                candidates_of_sequence = prune_candidates
-
-            if not candidates_of_sequence:
+            prune_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+            if prune_candidates is None:
                 return None
 
-        best_sequence = min(candidates_of_sequence.items(), key = lambda x: x[1])[0]
-        decoded_text = self._text_processor.decode(best_sequence)
+            candidates_of_sequence = prune_candidates
 
-        return decoded_text
+        if not candidates_of_sequence:
+                return None
 
-
+        best_sequence = min(candidates_of_sequence.items(), key=lambda x: x[1])[0]
+        return self._text_processor.decode(best_sequence)
+    
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
     ) -> list[tuple[int, float]] | None:
