@@ -4,31 +4,22 @@ Generation by NGrams starter
 
 # pylint:disable=unused-import, unused-variable
 from lab_3_generate_by_ngrams.main import (
+    BackOffGenerator,
     BeamSearcher,
     BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
     NGramLanguageModelReader,
-    BackOffGenerator,
     TextProcessor,
 )
 
-
-def main() -> None:
-    """
-    Launches an implementation.
-
-    In any case returns, None is returned
-    """
-    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
-        text = text_file.read()
+def demonstrate_basic_generation(text: str) -> tuple:
     processor = TextProcessor(end_of_word_token='_')
     encoded_content = processor.encode(text)
     model = NGramLanguageModel(encoded_content, 7)
     build_result = model.build()
     print(f"\nBuilt model: {build_result}")
-    n_gram_size = model.get_n_gram_size()
-    print(f"\nN-gram size: {n_gram_size}")
+    print(f"\nN-gram size: {model.get_n_gram_size()}")
     test_sequence = (7, 5, 6, 6)
     next_token = model.generate_next_token(test_sequence)
     print(f"\nNext token for {test_sequence}: {next_token}")
@@ -39,12 +30,20 @@ def main() -> None:
     beamsearch = BeamSearchTextGenerator(model, processor, 3)
     beamsearch_result = beamsearch.run('Vernon', 56)
     print("\nBeam Search result:", beamsearch_result)
+    return model, processor, beam_searcher
+
+
+def demonstrate_model_operations(model: NGramLanguageModel) -> None:
     test_frequencies = {
         (1, 2, 3): 1.0,
         (2, 3, 4): 0.8,
         (3, 4, 5): 0.6
         }
     model.set_n_grams(test_frequencies)
+    print(f"\nN-gram frequencies set")
+
+
+def demonstrate_backoff_generation() -> None:
     try:
         reader = NGramLanguageModelReader("./assets/en_own.json", "_")
         models_dict = {}
@@ -62,8 +61,11 @@ def main() -> None:
             print("\nNo models loaded for BackOff generation")
     except FileNotFoundError:
         print("\nFile en_own.json not found, skipping BackOff generation")
-    except Exception as e:
+    except (ValueError, TypeError, KeyError) as e:
         print(f"\nError in BackOff generation: {e}")
+
+
+def demonstrate_beam_searcher(beam_searcher: BeamSearcher) -> None:
     test_seq = (1, 2, 3, 0, 4, 1)
     next_tokens = beam_searcher.get_next_token(test_seq)
     print(f"\nBeamSearcher next tokens for {test_seq}: {next_tokens}")
@@ -83,6 +85,20 @@ def main() -> None:
         }
     pruned = beam_searcher.prune_sequence_candidates(test_candidates)
     print(f"\nPruned candidates: {pruned}")
+
+
+def main() -> None:
+    """
+    Launches an implementation.
+
+    In any case returns, None is returned
+    """
+    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
+        text = text_file.read()
+    model, processor, beam_searcher = demonstrate_basic_generation(text)
+    demonstrate_model_operations(model)
+    demonstrate_backoff_generation()
+    demonstrate_beam_searcher(beam_searcher)
 
 
 if __name__ == "__main__":
