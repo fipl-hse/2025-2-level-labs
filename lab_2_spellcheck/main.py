@@ -121,7 +121,6 @@ def calculate_distance(
         distance[token] = distance_value
     return distance
 
-
 def find_correct_word(
     wrong_word: str,
     vocabulary: dict[str, float],
