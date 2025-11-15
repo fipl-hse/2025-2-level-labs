@@ -185,6 +185,17 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
+        if not isinstance(content, dict) or not content:
+            return None
+        for el in content:
+            n_grams = content[el]
+            for n_gram in n_grams:
+                if not isinstance(n_gram, str):
+                    continue
+                for letter in n_gram:
+                    if letter.isalpha():
+                        self._put(letter)
+        return None
 
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
@@ -271,6 +282,9 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
+        if not isinstance(frequencies, dict) or not frequencies:
+            return None
+        self._n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
         """
@@ -310,7 +324,7 @@ class NGramLanguageModel:
         if not isinstance(sequence, tuple) or not sequence:
             return None
         probabilities={}
-        if len(sequence)-(self._n_gram_size-1) < 0:
+        if len(sequence) < self._n_gram_size-1:
             return None
         for n_gram in self._n_gram_frequencies:
             if sequence[-(self._n_gram_size-1):] == n_gram[:self._n_gram_size-1]:
@@ -473,13 +487,14 @@ class BeamSearcher:
             return None
         if len(next_tokens)>self._beam_width or sequence not in sequence_candidates:
             return None
-        start_probability = sequence_candidates[sequence]
-        del sequence_candidates [sequence]
+        copy_sequence_candidates = sequence_candidates.copy()
+        start_probability = copy_sequence_candidates[sequence]
+        del copy_sequence_candidates [sequence]
         for token in next_tokens:
             candidate_sequence = sequence + (token[0],)
             candidate_probability = start_probability - math.log(token[1])
-            sequence_candidates[candidate_sequence] = candidate_probability
-        return sequence_candidates
+            copy_sequence_candidates[candidate_sequence] = candidate_probability
+        return copy_sequence_candidates
         
 
     def prune_sequence_candidates(
@@ -556,17 +571,18 @@ class BeamSearchTextGenerator:
             return None
         candidates = {sequence: 0.0}
         for _ in range(seq_len):
-            tokens = self._get_next_token(sequence)
-            if not tokens:
-                return None
-            sequence_candidates = self.beam_searcher.continue_sequence(sequence, tokens, candidates)
-            if not sequence_candidates:
-                break
-            candidates = self.beam_searcher.prune_sequence_candidates(sequence_candidates)
-            if not candidates:
-                return None
-        best_sequence = list(candidates)[-1]
-        return self._text_processor.decode(best_sequence)
+            for candidate in candidates:
+                tokens = self._get_next_token(candidate)
+                if not tokens:
+                    return None
+                sequence_candidates = self.beam_searcher.continue_sequence(candidate, tokens, candidates)
+                if not sequence_candidates:
+                    break
+                candidates = self.beam_searcher.prune_sequence_candidates(sequence_candidates)
+                if not candidates:
+                    return None
+        sequence = list(candidates)[-1]
+        return self._text_processor.decode(sequence)
 
 
     def _get_next_token(
@@ -607,6 +623,8 @@ class NGramLanguageModelReader:
             json_path (str): Local path to assets file
             eow_token (str): Special token for text processor
         """
+        self._json_path = json_path
+        self._eow_token = eow_token
 
     def load(self, n_gram_size: int) -> NGramLanguageModel | None:
         """
