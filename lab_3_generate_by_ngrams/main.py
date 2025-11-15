@@ -141,6 +141,7 @@ class TextProcessor:
         tokens = self._tokenize(text)
         if tokens is None:
             return None
+        tokens = tuple(tokens)
         encoded_tokens = []
         for token in tokens:
             self._put(token)
@@ -492,7 +493,10 @@ class BeamSearcher:
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
-        n_gram_size = self._model._n_gram_size
+        try:
+            n_gram_size = self._model.get_n_gram_size() 
+        except AttributeError:
+            n_gram_size = self._model._n_gram_size
         if len(sequence) < n_gram_size - 1:
             context = sequence
         else:
@@ -500,8 +504,6 @@ class BeamSearcher:
         next_tokens_dict = self._model.generate_next_token(context)
         if next_tokens_dict is None:
             return None
-        if isinstance(next_tokens_dict, list):
-            return next_tokens_dict[:self._beam_width]
         if not next_tokens_dict:
             return []
         next_tokens = sorted(
