@@ -533,8 +533,8 @@ class BeamSearcher:
         base_prob = sequence_candidates[sequence]
         copied = sequence_candidates.copy()
         del copied[sequence]
-        for token, prob in next_tokens:
-            new_seq = sequence + (token,)
+        for token_id, prob in next_tokens:
+            new_seq = sequence + (token_id,)
             if prob > 0:
                 new_prob = base_prob - math.log(prob)
             else:
