@@ -52,11 +52,11 @@ class TextProcessor:
         for token in text.lower():
             if token.isalpha():
                 tokens.append(token)
-            elif token.isspace() or token in special_symbols:
-                if tokens[-1] != "_":
-                    tokens.append("_")
-                else:
-                    continue
+            elif (token.isspace() or token in special_symbols) and tokens[-1] != "_":
+                tokens.append("_")
+            #elif token.isspace() or token in special_symbols:
+                #if tokens[-1] != "_":
+                    #tokens.append("_")
             elif token.isdigit():
                 continue
         return tuple(tokens) if tokens else None
@@ -166,13 +166,12 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(encoded_corpus, tuple) or len(encoded_corpus) == 0:
+        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
-        decoded_text = self._decode(encoded_corpus)
-        if decoded_text is None:
+        if self._decode(encoded_corpus) is None:
             return None
-        postprocess_decoded_text = self._postprocess_decoded_text(decoded_text)
-        return postprocess_decoded_text
+        postprocessed_text = self._postprocess_decoded_text(self._decode(encoded_corpus))
+        return postprocessed_text
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
@@ -181,15 +180,6 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
-        if not isinstance(content, tuple) or len(content) == 0:
-            return None
-        result = ""
-        for element in content:
-            symbol = self.get_token(element)
-            if symbol is None:
-                return None
-            result += symbol
-        return tuple(result)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
@@ -204,7 +194,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(corpus, tuple):
+        if not isinstance(corpus, tuple) or not corpus:
             return None
         decoded_tokens = []
         for element_id in corpus:
@@ -233,14 +223,15 @@ class TextProcessor:
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
-        result = ""
-        for element in decoded_corpus:
-            if element == "_":
-                result += " "
-            else:
-                result += element
-        result = result.strip()
-        return result.capitalize() + "."
+        processed_parts = (" " if token == "_" else token for token in decoded_corpus)
+        intermediate_text = "".join(processed_parts)
+        cleaned_text = " ".join(intermediate_text.split()).strip()
+        if not cleaned_text:
+           return None
+        final_text = cleaned_text.capitalize()
+        if not final_text.endswith('.'):
+           final_text += '.'
+        return final_text
 
 class NGramLanguageModel:
     """
@@ -333,7 +324,7 @@ class NGramLanguageModel:
         In case of corrupt input arguments, None is returned
         """
         if (not isinstance(sequence, tuple)
-            or not sequence): 
+            or not sequence):
             return None
         result = {}
         context = sequence[-(self._n_gram_size - 1):]
