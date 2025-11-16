@@ -330,12 +330,14 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
-        if (isinstance(sequence, tuple) is False) or (sequence == ()):
+        if (
+            isinstance(sequence, tuple) is False
+            or sequence == ()
+            or len(sequence) < self._n_gram_size - 1
+        ):
             return None
         next_tokens = {}
-        context = sequence[len(sequence) - self._n_gram_size + 1:]
-        if len(sequence) < len(context):
-            return None
+        context = sequence[-self._n_gram_size + 1:]
         frequencies = self._n_gram_frequencies
         for n_gram, frequency in frequencies.items():
             if n_gram[:-1] == context:
