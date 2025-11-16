@@ -158,11 +158,10 @@ class TextProcessor:
         an element is not added to storage
         """
         if not isinstance(element, str) or len(element) != 1:
-            return None
+            return
 
         if element not in self._storage:
             self._storage[element] = len(self._storage)
-        return None
 
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
@@ -327,11 +326,7 @@ class NGramLanguageModel:
         counter_of_context = {}
 
         for n_gram in n_grams:
-            if len(n_gram) != self._n_gram_size:
-                continue
-
             counter_of_n_gram[n_gram] = counter_of_n_gram.get(n_gram, 0) + 1
-
             context = n_gram[:-1]
             counter_of_context[context] = counter_of_context.get(context, 0) + 1
 
@@ -362,21 +357,28 @@ class NGramLanguageModel:
             return None
 
         n_gram_size = self.get_n_gram_size()
+        context_length = n_gram_size - 1
 
         if len(sequence) < n_gram_size - 1:
             return None
 
         context = tuple(sequence[-(n_gram_size - 1):])
-
         vocabulary_of_next_token = {}
 
         for n_gram, frequency in self._n_gram_frequencies.items():
-            if n_gram[:n_gram_size - 1] == context:
+            if n_gram[:context_length] == context:
                 next_element = n_gram[-1]
-                if next_element not in vocabulary_of_next_token or frequency > vocabulary_of_next_token[next_element]:
-                    vocabulary_of_next_token[next_element] = frequency
+                vocabulary_of_next_token[next_element] = vocabulary_of_next_token.get(next_element, 0) + frequency
 
-        return vocabulary_of_next_token if vocabulary_of_next_token else None
+        if vocabulary_of_next_token:
+            sorted_tokens = dict(sorted(
+                vocabulary_of_next_token.items(),
+                key=lambda item: (item[1], item[0]),
+                reverse=True
+            ))
+            return sorted_tokens
+
+        return None
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -521,11 +523,6 @@ class BeamSearcher:
         if not isinstance(sequence, tuple) or not sequence:
             return None
 
-        n_gram_size = self._model.get_n_gram_size()
-
-        if len(sequence) < n_gram_size - 1:
-            return None
-
         next_tokens = self._model.generate_next_token(sequence)
         if next_tokens is None:
             return None
@@ -537,7 +534,7 @@ class BeamSearcher:
         for token, probability in next_tokens.items():
             valid_tokens.append((token, probability))
 
-        valid_tokens.sort(key = lambda item: (-item[1], item[0]))
+        valid_tokens.sort(key = lambda x: x[1], reverse = True)
         return valid_tokens[:self._beam_width]
 
     def continue_sequence(
@@ -572,17 +569,16 @@ class BeamSearcher:
             return None
 
         current_probability = sequence_candidates[sequence]
-        new_candidates = sequence_candidates.copy()
+        del sequence_candidates[sequence]
 
-        for token in next_tokens:
-            if token[1] <= 0:
+        for token, prob in next_tokens:
+            if prob <= 0:
                 continue
-            new_sequence = sequence + (token[0],)
-            frequency = current_probability - math.log(token[1])
-            new_candidates[new_sequence] = frequency
+            new_sequence = sequence + (token,)
+            frequency = current_probability - math.log(prob)
+            sequence_candidates[new_sequence] = frequency
 
-        del new_candidates[sequence]
-        return new_candidates
+        return sequence_candidates
 
     def prune_sequence_candidates(
         self, sequence_candidates: dict[tuple[int, ...], float]
@@ -674,7 +670,7 @@ class BeamSearchTextGenerator:
                 next_token_list = self._get_next_token(sequence)
                 if next_token_list is None:
                     return None
-                
+
                 if not next_token_list:
                     new_candidates[sequence] = score
                     continue
