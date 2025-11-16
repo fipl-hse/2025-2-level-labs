@@ -49,15 +49,10 @@ def main() -> None:
     results = []
     for sentence in sentences:
         sentence_tokens = clean_and_tokenize(sentence)
-        if not sentence_tokens:
-            continue
-
-        sentence_filtered = remove_stop_words(sentence_tokens, stop_words)
-        if not sentence_filtered:
-            continue
-
-        out_of_vocab_words = find_out_of_vocab_words(sentence_filtered, built_voc)
-        if not out_of_vocab_words:
+        sentence_filtered = remove_stop_words(sentence_tokens, stop_words) if sentence_tokens else None
+        out_of_vocab_words = find_out_of_vocab_words(sentence_filtered, built_voc) if sentence_filtered else None
+    
+        if not all([sentence_tokens, sentence_filtered, out_of_vocab_words]):
             continue
 
         corrections = []

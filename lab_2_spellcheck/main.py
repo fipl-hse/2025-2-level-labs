@@ -46,17 +46,10 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, False):
-        return None
-    if not check_dict(vocabulary, str, float, False):
+    if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
         return None
 
-    incor_words = []
-    for token in tokens:
-        if not token in vocabulary:
-            incor_words.append(token)
-
-    return incor_words
+    return [token for token in tokens if token not in vocabulary]
 
 
 def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
@@ -114,13 +107,13 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
         """
+    if alphabet is not None and not check_list(alphabet, str, False):
+        return None
     if not isinstance(first_token, str):
         return None
     if not check_dict(vocabulary, str, float, False):
         return None
     if not isinstance(method, str) or method not in ["jaccard", "frequency-based", "levenshtein"]:
-        return None
-    if alphabet is not None and not check_list(alphabet, str, False):
         return None
 
     if method == "frequency-based":
@@ -420,9 +413,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(word, str):
-        return None
-    if not check_list(alphabet, str, True):
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
 
     if word == "":
@@ -430,21 +421,16 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
 
     generated_candidates = []
 
-    delete_candidates = delete_letter(word)
-    if delete_candidates is not None:
-        generated_candidates.extend(delete_candidates)
+    candidate_lists = [
+        delete_letter(word),
+        swap_adjacent(word),
+        add_letter(word, alphabet),
+        replace_letter(word, alphabet)
+    ]
 
-    swap_candidates = swap_adjacent(word)
-    if swap_candidates is not None:
-        generated_candidates.extend(swap_candidates)
-
-    add_candidates = add_letter(word, alphabet)
-    if add_candidates is not None:
-        generated_candidates.extend(add_candidates)
-
-    replace_candidates = replace_letter(word, alphabet)
-    if replace_candidates is not None:
-        generated_candidates.extend(replace_candidates)
+    for candidate_list in candidate_lists:
+        if candidate_list is not None:
+            generated_candidates.extend(candidate_list)
 
     return sorted(generated_candidates)
 

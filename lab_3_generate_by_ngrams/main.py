@@ -58,20 +58,15 @@ class TextProcessor:
 
         words = cleaned_t.split()
 
-        # if not words:
-        #     return None ??
-
         tokens = []
         for i, word in enumerate(words):
-            for letter in word:
-                tokens.append(letter)
+            tokens.extend(list(word))
 
             if i < len(words) - 1:
                 tokens.append(self._end_of_word_token)
-            else:
-                last_letter = text[-1]
-                if last_letter.isspace() or not last_letter.isalnum():
-                    tokens.append(self._end_of_word_token)
+        last_letter = text[-1]
+        if last_letter.isspace() or not last_letter.isalnum():
+            tokens.append(self._end_of_word_token)
         return tuple(tokens)
 
 
@@ -89,10 +84,7 @@ class TextProcessor:
         In case of corrupt input arguments or arguments not included in storage,
         None is returned
         """
-        if not isinstance(element, str):
-            return None
-
-        if element not in self._storage:
+        if not isinstance(element, str) or element not in self._storage:
             return None
 
         return self._storage[element]
@@ -143,6 +135,8 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(text, str) or not text:
+            return None
         tokens = self._tokenize(text)
         if tokens is None:
             return None
@@ -172,10 +166,8 @@ class TextProcessor:
         if not isinstance(element, str) or len(element) != 1:
             return
 
-        if element in self._storage:
-            return
-
-        self._storage[element] = len(self._storage)
+        if element not in self._storage:
+            self._storage[element] = len(self._storage)
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
@@ -277,18 +269,8 @@ class TextProcessor:
 
         result_text = " ".join(words)
 
-        first_letter_index = -1
-        for i, char in enumerate(result_text):
-            if char.isalpha():
-                first_letter_index = i
-                break
-
-        if first_letter_index != -1:
-            before_letter = result_text[:first_letter_index]
-            first_letter = result_text[first_letter_index]
-            after_letter = result_text[first_letter_index + 1:]
-
-            result_text = before_letter + first_letter.upper() + after_letter
+        if result_text:
+            result_text = result_text[0].upper() + result_text[1:]
 
         if not result_text.endswith('.'):
             result_text += '.'
@@ -379,10 +361,7 @@ class NGramLanguageModel:
         if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
 
-        if self.n_gram_size < 2 or self.n_gram_size > 5:
-            return None
-
-        if len(encoded_corpus) < self.n_gram_size:
+        if self.n_gram_size < 1 or len(encoded_corpus) < self.n_gram_size:
             return None
 
         n_grams = []
