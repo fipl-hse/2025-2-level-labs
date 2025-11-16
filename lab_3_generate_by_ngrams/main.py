@@ -475,10 +475,15 @@ class BeamSearcher:
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
         if (
-            not isinstance (sequence,tuple)
-            or not isinstance (next_tokens, list)
-            or len(next_tokens) > self._beam_width
-            or not isinstance (sequence_candidates, dict)
+            not isinstance(sequence, tuple)
+            or not isinstance(next_tokens, list)
+            or not sequence
+            or not next_tokens
+            or not len(next_tokens) <= self._beam_width
+            ):
+            return None
+        if (
+            not isinstance(sequence_candidates, dict)
             or sequence not in sequence_candidates
         ):
             return None
