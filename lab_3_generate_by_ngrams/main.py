@@ -126,11 +126,11 @@ class TextProcessor:
         """
         if not isinstance(text, str) or not text:
             return None
-        text=self._tokenize(text)
-        if not text:
+        tokenized_text=self._tokenize(text)
+        if not tokenized_text:
             return None
         encoded_text=[]
-        for el in text:
+        for el in tokenized_text:
             self._put(el)
             code=self.get_id(el)
             if code is None:
@@ -282,9 +282,6 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
-        if not isinstance(frequencies, dict) or not frequencies:
-            return None
-        self._n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
         """
@@ -504,7 +501,7 @@ class BeamSearcher:
             candidate_probability = start_probability - math.log(token[1])
             copy_sequence_candidates[candidate_sequence] = candidate_probability
         return copy_sequence_candidates
-        
+
 
     def prune_sequence_candidates(
         self, sequence_candidates: dict[tuple[int, ...], float]
@@ -525,7 +522,7 @@ class BeamSearcher:
         if len(sequence_candidates)>self._beam_width:
             sorted_values=sorted(sequence_candidates.values(), reverse=True)
             sequence_candidates={
-                k: v for v in sorted_values for k in sequence_candidates 
+                k: v for v in sorted_values for k in sequence_candidates
                 if v==sequence_candidates[k]
                 }
             return dict(list(sequence_candidates.items())[-self._beam_width:])
@@ -580,6 +577,8 @@ class BeamSearchTextGenerator:
         if not sequence:
             return None
         candidates = {sequence: 0.0}
+        if not candidates:
+            return None
         for _ in range(seq_len):
             for candidate in candidates:
                 tokens = self._get_next_token(candidate)
@@ -615,6 +614,8 @@ class BeamSearchTextGenerator:
         if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
             return None
         tokens = self.beam_searcher.get_next_token(sequence_to_continue)
+        if not tokens:
+            return None
         return tokens[:self._beam_width]
 
 class NGramLanguageModelReader:
