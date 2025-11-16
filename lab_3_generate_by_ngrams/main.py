@@ -695,4 +695,3 @@ class BackOffGenerator:
             if candidates is not None and candidates:
                 return candidates
         return None
-
