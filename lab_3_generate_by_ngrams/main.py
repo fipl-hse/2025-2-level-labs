@@ -59,10 +59,10 @@ class TextProcessor:
             processed_text[len(processed_text) - 1] = self._end_of_word_token
 
         tokens_list = []
-        for index, element in enumerate(processed_text):
+        for element in processed_text:
             if (element.isalpha() or
                 (element == self._end_of_word_token and
-                tokens_list[len(tokens_list) - 1] != self._end_of_word_token)
+                tokens_list[-1] != self._end_of_word_token)
             ):
                 tokens_list.append(element)
 
@@ -113,6 +113,7 @@ class TextProcessor:
         for key, value in self._storage.items():
             if value == element_id:
                 return key
+        return None
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -494,12 +495,15 @@ class BeamSearcher:
             not isinstance(sequence, tuple)
             or not isinstance(next_tokens, list)
             or not isinstance(sequence_candidates, dict)
-            or not sequence
+        ):
+            return None
+        if (
+            not sequence
             or not next_tokens
             or not sequence_candidates
             or sequence not in sequence_candidates
             or len(next_tokens) > self._beam_width
-        ):
+            ):
             return None
         new_sequence_candidates = {}
         for key, value in sequence_candidates.items():
