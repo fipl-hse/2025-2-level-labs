@@ -235,9 +235,10 @@ class TextProcessor:
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
         decoded_text = ''.join(decoded_corpus).replace(self._end_of_word_token, ' ').capitalize()
-        if decoded_text[-1] == ' ':
-            return decoded_text[:-1] + '.'
-        return decoded_text + '.'
+        decoded_text = decoded_text.rstrip()
+        if not decoded_text.endswith('.'):
+           decoded_text += '.'
+        return decoded_text
 
 
 class NGramLanguageModel:
@@ -328,7 +329,7 @@ class NGramLanguageModel:
             not isinstance(sequence, tuple)
             or not sequence
             or len(sequence) < self._n_gram_size - 1
-            ):
+        ):
             return None
         context = sequence[-(self._n_gram_size - 1):]
         result = {}
@@ -402,7 +403,7 @@ class GreedyTextGenerator:
             not isinstance(seq_len, int)
             or not isinstance(prompt, str)
             or not prompt.strip()
-            ):
+        ):
             return None
         seq = self._text_processor.encode(prompt)
         n_gram_size = self._model.get_n_gram_size()
@@ -495,13 +496,7 @@ class BeamSearcher:
             or not check_dict(sequence_candidates, tuple, float, True)
             or not len(next_tokens) <= self._beam_width
             or not sequence in sequence_candidates
-            ):
-            return None
-        if (
-            not sequence
-            or not next_tokens
-            or not sequence_candidates
-            ):
+        ):
             return None
         copy_seq_candidates = sequence_candidates.copy()
         for token in next_tokens:
@@ -576,7 +571,7 @@ class BeamSearchTextGenerator:
             not isinstance(prompt, str)
             or not prompt.strip()
             or not check_positive_int(seq_len)
-            ):
+        ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if not encoded_prompt:
@@ -664,30 +659,30 @@ class NGramLanguageModelReader:
         if (not isinstance(n_gram_size, int) or n_gram_size < 2):
             return None
         n_grams = {}
+        context_frequencies = {}
         for ngram in self._content['freq']:
             processed_chars = []
             for char in ngram:
                 if char.isspace():
-                    processed_chars.append(0)
+                    eow_id = self._text_processor.get_id(self._eow_token)
+                    if eow_id is not None:
+                        processed_chars.append(eow_id)
                 elif char.isalpha():
                     char_id = self._text_processor.get_id(char.lower())
                     if char_id is not None:
                         processed_chars.append(char_id)
-            if processed_chars:
-                n_grams[tuple(processed_chars)] = (n_grams.get(tuple(processed_chars), 0.0) +
-                                                   self._content['freq'][ngram])
-        context_frequencies = {}
-        for ngram, freq in n_grams.items():
-            if len(ngram) == n_gram_size:
-                context = ngram[:-1]
-                context_frequencies[context] = context_frequencies.get(context, 0) + freq
+            if len(processed_chars) == n_gram_size:
+                ngram_tuple = tuple(processed_chars)
+                current_freq = n_grams.get(ngram_tuple, 0.0)
+                n_grams[ngram_tuple] = current_freq + self._content['freq'][ngram]
+                prefix = ngram_tuple[:-1]
+                context_frequencies[prefix] = context_frequencies.get(prefix, 0.0) + self._content['freq'][ngram]
         conditional_probabilities = {}
         for ngram, freq in n_grams.items():
-            if len(ngram) == n_gram_size:
-                context = ngram[:-1]
-                context_freq = context_frequencies.get(context, 0)
-                if context_freq > 0:
-                    conditional_probabilities[ngram] = freq / context_freq
+            context = ngram[:-1]
+            context_freq = context_frequencies.get(context, 0.0)
+            if context_freq > 0:
+                conditional_probabilities[ngram] = freq / context_freq
         model = NGramLanguageModel(None, n_gram_size)
         model.set_n_grams(conditional_probabilities)
         return model
@@ -743,7 +738,7 @@ class BackOffGenerator:
             or not isinstance(prompt, str)
             or not prompt.strip()
             or seq_len < 0
-            ):
+        ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if not encoded_prompt:
@@ -754,10 +749,10 @@ class BackOffGenerator:
             next_token_candidates = self._get_next_token(tuple(current_sequence))
             if next_token_candidates is None or not next_token_candidates:
                 break
-            max_prob = max(next_token_candidates.values())
-            max_token = [token for token, prob in next_token_candidates.items()
-                                                        if prob == max_prob][0]
-            current_sequence.append(max_token)
+            sorted_candidates = sorted(next_token_candidates.items(), 
+                                 key=lambda x: (-x[1], -x[0]))
+            next_token = sorted_candidates[0][0]
+            current_sequence.append(next_token)
             iteration += 1
         return self._text_processor.decode(tuple(current_sequence))
 
@@ -777,12 +772,13 @@ class BackOffGenerator:
             not isinstance(sequence_to_continue, tuple)
             or not sequence_to_continue
             or not self._language_models
-            ):
+        ):
             return None
         n_gram_sizes = sorted(self._language_models.keys(), reverse=True)
         for n_gram_size in n_gram_sizes:
-            n_gram_model = self._language_models[n_gram_size]
-            token_candidates = n_gram_model.generate_next_token(sequence_to_continue)
-            if token_candidates is not None and token_candidates:
-                return token_candidates
+            if len(sequence_to_continue) >= n_gram_size - 1:
+                n_gram_model = self._language_models[n_gram_size]
+                token_candidates = n_gram_model.generate_next_token(sequence_to_continue)
+                if token_candidates is not None and token_candidates:
+                    return token_candidates
         return None
