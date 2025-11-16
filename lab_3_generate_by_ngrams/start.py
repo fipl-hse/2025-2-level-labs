@@ -21,22 +21,22 @@ def main() -> None:
         text = text_file.read()
     processor = TextProcessor('_')
     encoded_text = processor.encode(text) or ()
-    
+
     decoded_text = processor.decode(encoded_text) or ()
     print(decoded_text)
-    
+
     model = NGramLanguageModel(encoded_text, 7)
     frequency = model.build()
     print(frequency)
-    
+
     greedy_generator = GreedyTextGenerator(model, processor)
     result_greedy_generator = greedy_generator.run(51, "Vernon")
     print(result_greedy_generator)
-    
+
     beam_search_generator = BeamSearchTextGenerator(model, processor, 3)
     result_beam_search = beam_search_generator.run('Vernon', 56)
     print(result_beam_search)
-    
+
     result = result_beam_search
     assert result
 
