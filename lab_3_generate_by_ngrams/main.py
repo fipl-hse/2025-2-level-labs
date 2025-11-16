@@ -290,7 +290,10 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
-        if check_dict(frequencies, tuple, (int, float), True):
+        if (
+            check_dict(frequencies, tuple, int, True)
+            or check_dict(frequencies, tuple, float, True)
+        ):
             self._n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
@@ -553,7 +556,7 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
-        if not check_dict(sequence_candidates, tuple, (int | float), False):
+        if not check_dict(sequence_candidates, tuple, float, False):
             return None
         if not sequence_candidates:
             return {}
