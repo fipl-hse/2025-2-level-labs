@@ -6,8 +6,9 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
+from math import log
 
-from lab_1_keywords_tfidf.main import check_positive_int
+from lab_1_keywords_tfidf.main import check_positive_int, check_dict, check_list
 
 
 class TextProcessor:
@@ -419,6 +420,9 @@ class BeamSearcher:
             beam_width (int): Number of candidates to consider at each step
             language_model (NGramLanguageModel): A language model to use for next token prediction
         """
+        self._beam_width = beam_width
+        self._model = language_model
+
 
     def get_next_token(self, sequence: tuple[int, ...]) -> list[tuple[int, float]] | None:
         """
@@ -438,6 +442,15 @@ class BeamSearcher:
 
         In case of corrupt input arguments or methods used return None.
         """
+        if not isinstance(sequence, tuple) or not sequence:
+            return None
+        candidates = self._model.generate_next_token(sequence)
+        if candidates is None:
+            return None
+        if not candidates:
+            return []
+        candidates = sorted(candidates.items(), key=lambda item: item[1], reverse=True)
+        return candidates[:self._beam_width]
 
     def continue_sequence(
         self,
@@ -461,6 +474,21 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
+        if (
+            not isinstance(sequence, tuple)
+            or not check_list(next_tokens, tuple, False)
+            or not check_dict(sequence_candidates, tuple, float, False)
+            or sequence not in sequence_candidates
+            or len(next_tokens) > self._beam_width
+        ):
+            return None
+        new_sequence_candidates = sequence_candidates.copy()
+        for token, freq in next_tokens:
+            if freq != 0:
+                new_sequence = sequence + (token,)
+                new_sequence_candidates[new_sequence] = sequence_candidates[sequence] - log(freq)
+        del new_sequence_candidates[sequence]
+        return new_sequence_candidates
 
     def prune_sequence_candidates(
         self, sequence_candidates: dict[tuple[int, ...], float]
@@ -476,6 +504,10 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
+        if not isinstance(sequence_candidates, dict) or not sequence_candidates:
+            return None
+        sorted_candidates = sorted(sequence_candidates.items(), key=lambda item: item[1])
+        return dict(sorted_candidates[:self._beam_width])
 
 
 class BeamSearchTextGenerator:
