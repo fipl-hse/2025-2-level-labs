@@ -28,9 +28,8 @@ def main() -> None:
     print("1.2. Encoding text")
     encoded_result = processor.encode(sample_text)
     print(f"Encoded result (first 30 tokens): {encoded_result[:30] if encoded_result else 'None'}")
-    decoded_result = processor.decode(encoded_result) if encoded_result else None
-    print("1.3.  Decoded text:")
-    print(decoded_result if decoded_result else "Decoding error")
+    print("1.3. Decoded text:")
+    print(processor.decode(encoded_result) if encoded_result else "Decoding error")
     full_encoded_corpus = processor.encode(text)
     if full_encoded_corpus:
         language_model = NGramLanguageModel(full_encoded_corpus, 7)
@@ -38,11 +37,9 @@ def main() -> None:
             generated_text = GreedyTextGenerator(language_model, processor).run(51, "Vernon")
             print("3.3. Greedy algorithm generation result:")
             print(generated_text if generated_text else "Text generation error")
-            beam_generated_text = BeamSearchTextGenerator(language_model,
-                                                          processor, 3).run("Vernon", 56)
             print("5.4. Beam Search generation result:")
-            print(beam_generated_text if beam_generated_text else
-                                                            "Beam Search generation error")
+            print(BeamSearchTextGenerator(language_model, processor, 3).run("Vernon", 56) or
+                  "Beam Search generation error")
         print("6-8. BackOff Generator demonstration:")
         models = [model for n_size in [2, 3, 4, 5]
                  if (model := NGramLanguageModel(full_encoded_corpus, n_size)).build() == 0]
