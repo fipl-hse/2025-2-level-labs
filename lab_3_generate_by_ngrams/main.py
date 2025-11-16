@@ -503,27 +503,27 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
-        if not isinstance(sequence, tuple) or not sequence:
+        if (
+            not isinstance(sequence, tuple)
+            or not sequence
+            or not check_list(next_tokens, tuple, False)
+            or len(next_tokens) > self._beam_width
+            or not check_dict(sequence_candidates, tuple, float, True)
+            or sequence not in sequence_candidates
+        ):
             return None
-        if not check_list(next_tokens, tuple, False):
-            return None
-        if len(next_tokens) > self._beam_width:
-            return None
+
         for token in next_tokens:
             if not isinstance(token, tuple) or len(token) != 2:
                 return None
             if not isinstance(token[0], int) or not isinstance(token[1], float):
                 return None
-        if not check_dict(sequence_candidates, tuple, float, True):
-            return None
-        if sequence not in sequence_candidates:
-            return None
+
         base_prob = sequence_candidates[sequence]
         copied = sequence_candidates.copy()
         del copied[sequence]
         for token, prob in next_tokens:
             new_seq = sequence + (token,)
-            import math
             if prob > 0:
                 new_prob = base_prob - math.log(prob)
             else:
