@@ -342,9 +342,9 @@ class NGramLanguageModel:
         for n_gram, frequency in frequencies.items():
             if n_gram[:-1] == context:
                 next_tokens[n_gram[-1]] = frequency
-        next_tokens = sorted(next_tokens.items(), key=lambda item: (item[1], item[0]), reverse=True)
-        next_tokens = dict(next_tokens)
-        return next_tokens
+        next_tokens_sorted_list = sorted(list(next_tokens.items()), key=lambda item: (item[1], item[0]), reverse=True)
+        next_tokens_sorted_dict = dict(next_tokens_sorted_list)
+        return next_tokens_sorted_dict
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -459,8 +459,8 @@ class BeamSearcher:
         if isinstance(sequence, tuple) is False or sequence == ():
             return None
         candidates = self._model.generate_next_token(sequence)
-        if candidates == {}:
-            return {}
+        if candidates == []:
+            return []
         if candidates is None:
             return None
         next_tokens = list(candidates.items())[:self._beam_width]
