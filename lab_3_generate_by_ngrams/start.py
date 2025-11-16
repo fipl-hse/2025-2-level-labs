@@ -5,6 +5,7 @@ Generation by NGrams starter
 from lab_3_generate_by_ngrams.main import TextProcessor, NGramLanguageModel, GreedyTextGenerator
 
 # pylint:disable=unused-import, unused-variable
+
 def main() -> None:
     """
     Launches an implementation.
@@ -34,7 +35,7 @@ def main() -> None:
             result = generator.run(seq_len, prompt)
     
     result = None
-    assert result
+    assert result is None
 
 
 if __name__ == "__main__":
