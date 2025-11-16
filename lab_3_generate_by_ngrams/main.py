@@ -190,14 +190,12 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
-        if not isinstance(content, dict):
+        if not isinstance(content, dict) or not content:
             return
-        self._storage = {self._end_of_word_token: 0}
-        for ngram in content:
-            if isinstance(ngram, str):
-                for char in ngram:
-                    if char.isalpha():
-                        self._put(char.lower())
+        for n_gram in content['freq']:
+            for char in n_gram.lower():
+                if char.isalpha():
+                    self._put(char)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
@@ -547,7 +545,7 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
-        if not isinstance(sequence_candidates, dict):
+        if not check_dict(sequence_candidates, tuple, (int | float), False):
             return None
         if not sequence_candidates:
             return {}
