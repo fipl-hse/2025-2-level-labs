@@ -530,6 +530,14 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
+        if not isinstance(sequence_candidates, dict) or sequence_candidates == {}:
+            return None
+        pruned_sequence = sorted(
+                list(sequence_candidates.items()),
+                key=lambda item: (item[1], item[0][::-1])
+                ) #key это кортеж состоящий из вероятности посл-ти и самой посл-ти. все элементы list(sequence_candidates.items()) заменяются на key
+        pruned_sequence = pruned_sequence[:self._beam_width]
+        return dict(pruned_sequence)
 
 
 class BeamSearchTextGenerator:
