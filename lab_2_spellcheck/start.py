@@ -10,31 +10,36 @@ from lab_2_spellcheck.main import (
     find_out_of_vocab_words,
 )
 
-
-def _process_text(text, stop_words):
+def _process_text_pipeline(text: str, stop_words: list[str]) -> dict[str, float] | None:
     cleaned_tokens = clean_and_tokenize(text)
     removed_words = remove_stop_words(cleaned_tokens, stop_words) if cleaned_tokens else None
     built_voc = build_vocabulary(removed_words) if removed_words else None
     return built_voc if all([cleaned_tokens, removed_words, built_voc]) else None
 
-def _process_sentence(sentence, stop_words, built_voc, alphabet):
+def _process_sentence(
+    sentence: str, 
+    stop_words: list[str], 
+    built_voc: dict[str, float], 
+    alphabet: list[str]
+) -> list[tuple[str, str]] | None:
     sentence_tokens = clean_and_tokenize(sentence)
     sentence_filtered = remove_stop_words(sentence_tokens, stop_words) if sentence_tokens else None
     out_of_vocab_words = find_out_of_vocab_words(sentence_filtered, built_voc) if sentence_filtered else None
-
+    
     if not all([sentence_tokens, sentence_filtered, out_of_vocab_words]):
         return None
-
+        
     corrections = []
-    for wrong_word in out_of_vocab_words:
-        correct_word = (
-            find_correct_word(wrong_word, built_voc, "frequency-based", alphabet) or
-            find_correct_word(wrong_word, built_voc, "levenshtein", None) or
-            find_correct_word(wrong_word, built_voc, "jaccard", None)
-        )
-        if correct_word:
-            corrections.append((wrong_word, correct_word))
-
+    if out_of_vocab_words:
+        for wrong_word in out_of_vocab_words:
+            correct_word = (
+                find_correct_word(wrong_word, built_voc, "frequency-based", alphabet) or
+                find_correct_word(wrong_word, built_voc, "levenshtein", None) or
+                find_correct_word(wrong_word, built_voc, "jaccard", None)
+            )
+            if correct_word:
+                corrections.append((wrong_word, correct_word))
+    
     return corrections if corrections else None
 
 def main() -> None:
@@ -60,7 +65,7 @@ def main() -> None:
         'э', 'ю', 'я'
     ]
 
-    built_voc = _process_text(text, stop_words)
+    built_voc = _process_text_pipeline(text, stop_words)
     if not built_voc:
         return
 
@@ -83,7 +88,6 @@ def main() -> None:
         print("Ошибки не найдены.")
 
     assert results is not None
-    # return final_result
 
 
 if __name__ == "__main__":
