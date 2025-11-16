@@ -47,23 +47,24 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(text, str):
+        if not isinstance(text, str) or not text:
             return None
 
-        punctuation = '1234567890!@#$%^&*()_+"№;:?{|-}[§]},.>—<~`\'„“«»‚‘'
-        clean_text = ''.join(el for el in text.lower() if el not in punctuation)
-        words = clean_text.split()
+        words = text.lower()
+        words = words.split()
+        tokens = []
 
-        if not words:
-            return None
-
-        text_without_punctuation = []
         for word in words:
-            text_without_punctuation.extend(word)
-            text_without_punctuation.append(self._end_of_word_token)
-
-        return tuple(text_without_punctuation)
-
+            text_without_punctuation = []
+            for element in word:
+                if element.isalpha():
+                    text_without_punctuation.append(element)
+            if text_without_punctuation:
+                tokens.extend(text_without_punctuation)
+                tokens.append(self._end_of_word_token)
+        if tokens and text[-1].isalnum():
+            tokens.pop()
+        return tuple(tokens) if tokens else None
 
     def get_id(self, element: str) -> int | None:
         """
