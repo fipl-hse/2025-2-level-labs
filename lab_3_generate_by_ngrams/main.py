@@ -56,8 +56,8 @@ class TextProcessor:
             if cleaned_chars:
                 found_letters = True
                 tokens.extend(cleaned_chars)
-                is_last_word = (i == len(words) - 1)
-                text_ends_with_space_punct = (text_lower[-1].isspace() or 
+                is_last_word = i == (len(words) - 1)
+                text_ends_with_space_punct = (text_lower[-1].isspace() or
                                             not text_lower[-1].isalnum())
                 if not is_last_word or (is_last_word and text_ends_with_space_punct):
                     tokens.append(self._end_of_word_token)
@@ -820,7 +820,7 @@ class BackOffGenerator:
             next_token_candidates = self._get_next_token(tuple(current_sequence))
             if not next_token_candidates:
                 break
-            next_token = max(next_token_candidates.items(), key=lambda x: (-x[1], x[0]))
+            next_token = max(next_token_candidates.items(), key=lambda x: (-x[1], x[0]))[0]
             current_sequence.append(next_token)
         return self._text_processor.decode(tuple(current_sequence))
 
