@@ -674,7 +674,8 @@ class NGramLanguageModelReader:
             if len(processed_chars) == n_gram_size:
                 ngram_tuple = tuple(processed_chars)
                 n_grams[ngram_tuple] = n_grams.get(ngram_tuple, 0.0) + frequency
-                context_frequencies[ngram_tuple[:-1]] = context_frequencies.get(ngram_tuple[:-1], 0.0) + frequency
+                context_frequencies[ngram_tuple[:-1]] = (context_frequencies.get(ngram_tuple[:-1],
+                                                                                 0.0) + frequency)
         conditional_probabilities = {}
         for ngram, freq in n_grams.items():
             context_freq = context_frequencies.get(ngram[:-1], 0.0)
