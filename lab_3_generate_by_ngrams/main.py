@@ -51,15 +51,15 @@ class TextProcessor:
             return None
 
         processed_text = text.lower() or ""
-        processed_text = processed_text.split() or []
-        processed_text = self._end_of_word_token.join(processed_text) or ''
-        processed_text = list(processed_text)
+        processed_text_modified = processed_text.split() or []
+        processed_text_modified = self._end_of_word_token.join(processed_text_modified) or ""
+        processed_text_modified = list(processed_text_modified)
 
-        if processed_text[len(processed_text) - 1] in string.punctuation:
-            processed_text[len(processed_text) - 1] = self._end_of_word_token
+        if processed_text_modified[len(processed_text_modified) - 1] in string.punctuation:
+            processed_text_modified[len(processed_text_modified) - 1] = self._end_of_word_token
 
         tokens_list = []
-        for element in processed_text:
+        for element in processed_text_modified:
             if (element.isalpha() or
                 (element == self._end_of_word_token and
                 tokens_list[-1] != self._end_of_word_token)
@@ -299,12 +299,13 @@ class NGramLanguageModel:
         In case of corrupt input arguments or methods used return None,
         1 is returned
         """
+        encoded_corpus = self._encoded_corpus or ()
         if (
-            isinstance(self._encoded_corpus, tuple) is False
-            or self._encoded_corpus == ()
+            isinstance(encoded_corpus, tuple) is False
+            or encoded_corpus == ()
         ):
             return 1
-        extracted_n_grams = self._extract_n_grams(self._encoded_corpus)
+        extracted_n_grams = self._extract_n_grams(encoded_corpus)
         if extracted_n_grams is None:
             return 1
         n_gram_count = {}
@@ -341,9 +342,8 @@ class NGramLanguageModel:
         for n_gram, frequency in frequencies.items():
             if n_gram[:-1] == context:
                 next_tokens[n_gram[-1]] = frequency
-        next_tokens = dict(
-            sorted(next_tokens.items(), key=lambda item: (item[1], item[0]), reverse=True)
-            )
+        next_tokens = sorted(next_tokens.items(), key=lambda item: (item[1], item[0]), reverse=True)
+        next_tokens = dict(next_tokens)
         return next_tokens
 
     def _extract_n_grams(
@@ -363,7 +363,6 @@ class NGramLanguageModel:
         if isinstance(encoded_corpus,tuple) is False or encoded_corpus == ():
             return None
         extracted_n_grams = []
-        encoded_corpus = list(encoded_corpus)
         for index in range(len(encoded_corpus) - 1):
             next_n_gram = encoded_corpus[index:index+self._n_gram_size]
             extracted_n_grams.append(tuple(next_n_gram))
@@ -414,10 +413,6 @@ class GreedyTextGenerator:
             if candidate_tokens == {} or candidate_tokens is None:
                 break
             next_token = list(candidate_tokens.keys())[0]
-            # for key, value in candidate_tokens.items():
-            #     if value == max(candidate_tokens.values()):
-            #         next_token = key
-            #         break
             context.append(next_token)
         generated_text = self._text_processor.decode(tuple(context))
         return generated_text
@@ -464,8 +459,10 @@ class BeamSearcher:
         if isinstance(sequence, tuple) is False or sequence == ():
             return None
         candidates = self._model.generate_next_token(sequence)
-        if candidates is None or candidates == []:
-            return candidates
+        if candidates == {}:
+            return {}
+        if candidates is None:
+            return None
         next_tokens = list(candidates.items())[:self._beam_width]
         return next_tokens
 
