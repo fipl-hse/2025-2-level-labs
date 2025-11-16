@@ -364,7 +364,10 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
-        if not isinstance(encoded_corpus, tuple) or not all(isinstance(x, int) for x in encoded_corpus):
+        if (
+            not isinstance(encoded_corpus, tuple)
+            or not all(isinstance(x, int) for x in encoded_corpus)
+        ):
             return None
 
         if len(encoded_corpus) < self._n_gram_size:
@@ -467,7 +470,11 @@ class BeamSearcher:
 
         In case of corrupt input arguments or methods used return None.
         """
-        if not isinstance(sequence, tuple) or not sequence or not all(isinstance(x, int) for x in sequence):
+        if (
+            not isinstance(sequence, tuple)
+            or not sequence
+            or not all(isinstance(x, int) for x in sequence)
+        ):
             return None
         next_tokens = self._model.generate_next_token(sequence)
         if next_tokens is None:
@@ -508,11 +515,12 @@ class BeamSearcher:
             or not sequence
             or not check_list(next_tokens, tuple, False)
             or len(next_tokens) > self._beam_width
-            or not check_dict(sequence_candidates, tuple, float, True)
-            or sequence not in sequence_candidates
         ):
             return None
-
+        if not check_dict(sequence_candidates, tuple, float, True):
+            return None
+        if sequence not in sequence_candidates:
+            return None
         for token in next_tokens:
             if not isinstance(token, tuple) or len(token) != 2:
                 return None
