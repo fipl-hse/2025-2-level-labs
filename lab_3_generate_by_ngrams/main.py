@@ -51,9 +51,7 @@ class TextProcessor:
             return None
 
         processed_text = text.lower() or ""
-        processed_text_modified = processed_text.split() or []
-        processed_text_modified = self._end_of_word_token.join(processed_text_modified) or ""
-        processed_text_modified = list(processed_text_modified)
+        processed_text_modified = list(self._end_of_word_token.join(processed_text.split()))
 
         if processed_text_modified[len(processed_text_modified) - 1] in string.punctuation:
             processed_text_modified[len(processed_text_modified) - 1] = self._end_of_word_token
@@ -342,9 +340,10 @@ class NGramLanguageModel:
         for n_gram, frequency in frequencies.items():
             if n_gram[:-1] == context:
                 next_tokens[n_gram[-1]] = frequency
-        next_tokens_sorted_list = sorted(list(next_tokens.items()), key=lambda item: (item[1], item[0]), reverse=True)
-        next_tokens_sorted_dict = dict(next_tokens_sorted_list)
-        return next_tokens_sorted_dict
+        next_tokens = dict(
+            sorted(list(next_tokens.items()), key=lambda item: (item[1], item[0]), reverse=True)
+            )
+        return next_tokens
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -459,7 +458,7 @@ class BeamSearcher:
         if isinstance(sequence, tuple) is False or sequence == ():
             return None
         candidates = self._model.generate_next_token(sequence)
-        if candidates == []:
+        if candidates == {}:
             return []
         if candidates is None:
             return None
