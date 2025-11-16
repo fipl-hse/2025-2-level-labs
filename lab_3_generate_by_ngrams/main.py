@@ -821,7 +821,7 @@ class BackOffGenerator:
             if not next_token_candidates:
                 break
             sorted_candidates = sorted(
-                next_token_candidates.items(), 
+                next_token_candidates.items(),
                 key=lambda x: (-x[1], -x[0])
             )
             next_token = sorted_candidates[0][0]
