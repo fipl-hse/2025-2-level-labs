@@ -314,8 +314,6 @@ class NGramLanguageModel:
 
         for n_gram in extracted_n_grams:
             self._n_gram_frequencies[n_gram] = n_gram_count[n_gram] / context_count[n_gram[:-1]]
-#because the amount of contexts could change
-#since we updated self._n_gram_frequencies[n_gram] for the last time!
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
@@ -505,7 +503,7 @@ class BeamSearcher:
             return None
         new_sequence_candidates = {}
         for key, value in sequence_candidates.items():
-            new_sequence_candidates[key] = value #tried not to affect sequence_candidates value
+            new_sequence_candidates[key] = value
         next_tokens_dict = dict(next_tokens)
         for token in next_tokens_dict:
             sequence_list = list(sequence)
@@ -535,7 +533,7 @@ class BeamSearcher:
         pruned_sequence = sorted(
                 list(sequence_candidates.items()),
                 key=lambda item: (item[1], item[0][::-1])
-                ) #key это кортеж состоящий из вероятности посл-ти и самой посл-ти. все элементы list(sequence_candidates.items()) заменяются на key
+                )
         pruned_sequence = pruned_sequence[:self._beam_width]
         return dict(pruned_sequence)
 
