@@ -10,6 +10,8 @@ from math import log
 
 from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 
+
+
 class TextProcessor:
     """
     Handle text tokenization, encoding and decoding.
