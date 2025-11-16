@@ -28,7 +28,7 @@ def main() -> None:
 
     model = NGramLanguageModel(encoded, 7)
     model.build()
-    
+
     print(f'Greedy: {GreedyTextGenerator(model, processor).run(51, "Vernon")}')
     print(f'Beam Search: {BeamSearchTextGenerator(model, processor, 3).run("Vernon", 56)}')
 
@@ -47,12 +47,11 @@ def main() -> None:
         if not current:
             continue
         word_list = current.split()
-        word_count = len(word_list)
-        if word_count > 5 and len(set(word_list)) / word_count > 0.5:
+        if len(word_list) > 5 and len(set(word_list)) / len(word_list) > 0.5:
             result = current
             print(f'Back Off ({prompt}): {result}')
             break
-        elif word_count <= 5:
+        if len(word_list) <= 5:
             result = current
             print(f'Back Off ({prompt}): {result}')
             break
@@ -62,7 +61,7 @@ def main() -> None:
         current = generator.run(10, prompts[0])
         if current:
             word_list = current.split()
-            result = ' '.join(word_list[:len(word_list)//2]) + '.' if len(word_list) > 8 else current
+            result = ' '.join(word_list[:len(word_list)//2]) + '.' if len(word_list)>8 else current
             print(f'Back Off (cropped): {result}')
     assert result
     print(f'Final Back Off: {result}')
