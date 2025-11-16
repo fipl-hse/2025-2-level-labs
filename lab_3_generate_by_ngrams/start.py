@@ -4,9 +4,11 @@ Generation by NGrams starter
 
 # pylint:disable=unused-import, unused-variable
 from lab_3_generate_by_ngrams.main import (
+    BackOffGenerator,
     BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
+    NGramLanguageModelReader,
     TextProcessor,
 )
 
@@ -40,6 +42,15 @@ def main() -> None:
     beam_output = beam_gen.run('Vernon', 56)
     print(f"Beam search generation result: {beam_output}")
 
+    models = []
+    for ngram_size in (4, 5, 6):
+        model = NGramLanguageModel(encoded_content, ngram_size)
+        model.build()
+        models.append(model)
+    back_off_generator = BackOffGenerator(tuple(models), text_processor).run(55, 'Vernon')
+    print(f"BackOff Algorithm: {back_off_generator}")
+
+    result = back_off_generator
     result = beam_output
     assert result
 
