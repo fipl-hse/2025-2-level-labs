@@ -8,6 +8,7 @@ Beam-search and natural language generation evaluation
 import json
 import string
 
+
 class TextProcessor:
     """
     Handle text tokenization, encoding and decoding.
@@ -227,10 +228,10 @@ class TextProcessor:
         intermediate_text = "".join(processed_parts)
         cleaned_text = " ".join(intermediate_text.split()).strip()
         if not cleaned_text:
-           return None
+            return None
         final_text = cleaned_text.capitalize()
         if not final_text.endswith('.'):
-           final_text += '.'
+            final_text += '.'
         return final_text
 
 class NGramLanguageModel:

@@ -19,16 +19,16 @@ def main() -> None:
     """
     Launches an implementation.
     """
-    with open("lab_2_spellcheck/assets/Master_and_Margarita_chapter1.txt", "r", encoding="utf-8") as file:
+    with open("assets/Master_and_Margarita_chapter1.txt", "r", encoding="utf-8") as file:
         text = file.read()
-    with open("lab_2_spellcheck/assets/stop_words.txt", "r", encoding="utf-8") as file:
+    with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
     with (
-        open("lab_2_spellcheck/assets/incorrect_sentence_1.txt", "r", encoding="utf-8") as f1,
-        open("lab_2_spellcheck/assets/incorrect_sentence_2.txt", "r", encoding="utf-8") as f2,
-        open("lab_2_spellcheck/assets/incorrect_sentence_3.txt", "r", encoding="utf-8") as f3,
-        open("lab_2_spellcheck/assets/incorrect_sentence_4.txt", "r", encoding="utf-8") as f4,
-        open("lab_2_spellcheck/assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
+        open("assets/incorrect_sentence_1.txt", "r", encoding="utf-8") as f1,
+        open("assets/incorrect_sentence_2.txt", "r", encoding="utf-8") as f2,
+        open("assets/incorrect_sentence_3.txt", "r", encoding="utf-8") as f3,
+        open("assets/incorrect_sentence_4.txt", "r", encoding="utf-8") as f4,
+        open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
     tokens = clean_and_tokenize(text) or []
