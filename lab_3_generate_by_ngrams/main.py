@@ -102,8 +102,10 @@ class TextProcessor:
         """
         if not isinstance(element_id, int):
             return None
-        result = next((key for key, value in self._storage.items() if value == element_id), None)
-        return result
+        for key, value in self._storage.items():
+            if value == element_id:
+                return key
+        return None
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -199,8 +201,6 @@ class TextProcessor:
             return None
         decoded_tokens = []
         for element_id in corpus:
-            if not isinstance(element_id, int):
-                return None
             token = self.get_token(element_id)
             if token is None:
                 return None
