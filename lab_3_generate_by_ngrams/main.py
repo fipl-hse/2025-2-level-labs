@@ -237,7 +237,7 @@ class TextProcessor:
         decoded_text = ''.join(decoded_corpus).replace(self._end_of_word_token, ' ').capitalize()
         decoded_text = decoded_text.rstrip()
         if not decoded_text.endswith('.'):
-           decoded_text += '.'
+            decoded_text += '.'
         return decoded_text
 
 
@@ -656,31 +656,29 @@ class NGramLanguageModelReader:
 
         In case of corrupt input arguments or unexpected behaviour of methods used, return 1.
         """
-        if (not isinstance(n_gram_size, int) or n_gram_size < 2):
+        if not isinstance(n_gram_size, int) or n_gram_size < 2:
             return None
         n_grams = {}
         context_frequencies = {}
-        for ngram in self._content['freq']:
+        for ngram_str, frequency in self._content['freq'].items():
             processed_chars = []
-            for char in ngram:
+            for char in ngram_str:
                 if char.isspace():
-                    eow_id = self._text_processor.get_id(self._eow_token)
-                    if eow_id is not None:
-                        processed_chars.append(eow_id)
+                    token_id = self._text_processor.get_id(self._eow_token)
                 elif char.isalpha():
-                    char_id = self._text_processor.get_id(char.lower())
-                    if char_id is not None:
-                        processed_chars.append(char_id)
+                    token_id = self._text_processor.get_id(char.lower())
+                else:
+                    continue
+                if token_id is not None:
+                    processed_chars.append(token_id)
             if len(processed_chars) == n_gram_size:
                 ngram_tuple = tuple(processed_chars)
-                current_freq = n_grams.get(ngram_tuple, 0.0)
-                n_grams[ngram_tuple] = current_freq + self._content['freq'][ngram]
+                n_grams[ngram_tuple] = n_grams.get(ngram_tuple, 0.0) + frequency
                 prefix = ngram_tuple[:-1]
-                context_frequencies[prefix] = context_frequencies.get(prefix, 0.0) + self._content['freq'][ngram]
+                context_frequencies[prefix] = context_frequencies.get(prefix, 0.0) + frequency
         conditional_probabilities = {}
         for ngram, freq in n_grams.items():
-            context = ngram[:-1]
-            context_freq = context_frequencies.get(context, 0.0)
+            context_freq = context_frequencies.get(ngram[:-1], 0.0)
             if context_freq > 0:
                 conditional_probabilities[ngram] = freq / context_freq
         model = NGramLanguageModel(None, n_gram_size)
@@ -749,7 +747,7 @@ class BackOffGenerator:
             next_token_candidates = self._get_next_token(tuple(current_sequence))
             if next_token_candidates is None or not next_token_candidates:
                 break
-            sorted_candidates = sorted(next_token_candidates.items(), 
+            sorted_candidates = sorted(next_token_candidates.items(),
                                  key=lambda x: (-x[1], -x[0]))
             next_token = sorted_candidates[0][0]
             current_sequence.append(next_token)
