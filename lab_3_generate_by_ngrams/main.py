@@ -126,7 +126,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(text, str) or text is None:
+        if not isinstance(text, str) or not text:
             return None
         tokens = self._tokenize(text)
         if not tokens:
@@ -153,7 +153,7 @@ class TextProcessor:
         """
         if not isinstance(element, str) or len(element) != 1:
             return None
-        if element not in self._storage and element != self._end_of_word_token:
+        if element not in self._storage:
             self._storage[element] = len(self._storage)
         return None
 
@@ -203,7 +203,6 @@ class TextProcessor:
         In case any of methods used return None, None is returned.
         """
         if (not isinstance(corpus, tuple) or
-            not all(isinstance(i, int) for i in corpus) or
             not corpus):
             return None
         decoded_corpus = []
@@ -212,8 +211,6 @@ class TextProcessor:
             if not token:
                 return None
             decoded_corpus.append(token)
-        if not decoded_corpus:
-            return None
         return tuple(decoded_corpus)
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
@@ -232,7 +229,6 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned
         """
         if (not isinstance(decoded_corpus, tuple) or
-            not all(isinstance(i, str) for i in decoded_corpus) or
             not decoded_corpus):
             return None
         decoded_text = ''.join(decoded_corpus).replace('_', ' ').capitalize()
@@ -407,7 +403,9 @@ class GreedyTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if not isinstance(seq_len, int) or not isinstance(prompt, str):
+        if (not isinstance(seq_len, int) or
+            not isinstance(prompt, str) or
+            not seq_len or not prompt):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if not encoded_prompt:
