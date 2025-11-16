@@ -6,6 +6,7 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
+import math
 import string
 
 
@@ -498,11 +499,24 @@ class BeamSearcher:
             or sequence == ()
             or next_tokens == []
             or sequence_candidates == {}
+            or sequence not in sequence_candidates
+            or len(next_tokens) > self._beam_width
         ):
             return None
+        
         new_sequence_candidates = {}
         for key, value in sequence_candidates.items():
-            new_sequence_candidates[key] = value #tried not to affect sequence_candidates
+            new_sequence_candidates[key] = value #tried not to affect sequence_candidates value
+        
+        next_tokens_dict = dict(next_tokens)
+        for token in next_tokens_dict:
+            sequence_list = list(sequence)
+            sequence_list.append(token)
+            new_sequence_candidates[tuple(sequence_list)] = (
+                new_sequence_candidates[sequence] - math.log(next_tokens_dict[token])
+                )
+            
+        new_sequence_candidates.pop(sequence)
         
         return new_sequence_candidates
 
