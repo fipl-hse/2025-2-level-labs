@@ -28,28 +28,30 @@ def main() -> None:
     if encoded:
         custom_model = NGramLanguageModel(encoded, 4)
         custom_model.build()
-        custom_greedy = GreedyTextGenerator(custom_model, processor)
+        custom_greedy = GreedyTextGenerator(
+            custom_model,
+            processor
+        )
         custom_result = custom_greedy.run(15, 'Harry')
         print(f"\nCustom model from Harry Potter: {custom_result}")
-    for n_size in (2, 3, 4, 5):
+    for n_size in (2, 3, 4, 5, 6):
         loaded_model = reader.load(n_size)
         if loaded_model is not None:
-            greedy_loaded = GreedyTextGenerator(
-                loaded_model,
-                loaded_processor
-            )
-            result = greedy_loaded.run(20, 'Harry')
-            print(f"\nGreedy with loaded {n_size}-gram: {result}")
-    for n_size in (4, 5, 6):
-        loaded_model = reader.load(n_size)
-        if loaded_model is not None:
-            beam_loaded = BeamSearchTextGenerator(
-                loaded_model,
-                loaded_processor,
-                2
-            )
-            result = beam_loaded.run('Hermione', 25)
-            print(f"\nBeam Search with loaded {n_size}-gram: {result}")
+            if n_size <= 5:
+                greedy_loaded = GreedyTextGenerator(
+                    loaded_model,
+                    loaded_processor
+                )
+                result = greedy_loaded.run(20, 'Harry')
+                print(f"\nGreedy with loaded {n_size}-gram: {result}")
+            if n_size >= 4:
+                beam_loaded = BeamSearchTextGenerator(
+                    loaded_model,
+                    loaded_processor,
+                    2
+                )
+                result = beam_loaded.run('Hermione', 25)
+                print(f"\nBeam Search with loaded {n_size}-gram: {result}")
     loaded_model_list = []
     for n_size in (3, 4, 5, 6):
         loaded_model = reader.load(n_size)
