@@ -216,14 +216,6 @@ def find_first_vowel(input_string: str) -> int:
         int: index of the first vowel in the string
     """
     # student implementation goes here
-    vowels = ["a", "e", "u", "i", "o", "y"]
-    for i in input_string:
-        if i in vowels:
-            ind = vowels.index(i)
-            break
-    print(ind)
-    return ind
-find_first_vowel("hgllo")
 
 # Function calls with expected result:
 # find_first_vowel("rhythm") → -1
@@ -246,22 +238,6 @@ def sum_until_zero(numbers: list) -> int:
     Returns:
         int: sum of positive numbers in the list
     """
-    all_sum = 0
-    is_any_zero = False
-    for i in numbers:
-        if i < 0:
-            continue
-        if i == 0:
-            is_any_zero = True
-            break
-        all_sum += i
-    if is_any_zero:
-        print(all_sum)
-    else:
-        all_sum += 10
-        print(all_sum)
-    return all_sum
-sum_until_zero([1, 2, -3, 4, 0, 5])
     # student implementation goes here
 
 
@@ -284,12 +260,6 @@ def count_evens(numbers: list) -> int:
         int: the number of even ints
     """
     # student implementation goes here
-    even_count = 0
-    for i in numbers:
-        if i%2 == 0:
-            even_count += 1
-    return even_count
-print(count_evens([2, 1, 2, 3, 4]))
 
 # Function calls with expected result:
 # count_evens([2, 1, 2, 3, 4]) → 3
@@ -314,11 +284,6 @@ def sum_numbers(numbers: list) -> int:
         int: sum of the numbers in the list
     """
     # student implementation goes here
-    all_sum = 0
-    for i in numbers:
-        all_sum += i
-    return all_sum
-print(sum_numbers([1, 2, 2]))
 
 # Function calls with expected result:
 # sum_numbers([1, 2, 2]) → 5
