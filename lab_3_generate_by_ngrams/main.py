@@ -169,7 +169,7 @@ class TextProcessor:
         if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
         decoded_corpus = self._decode(encoded_corpus)
-        decoded_str = self._postprocess_decoded_text(decoded_corpus)
+        decoded_str = self._postprocess_decoded_text(decoded_corpus or ())
         return decoded_str
 
     def fill_from_ngrams(self, content: dict) -> None:
