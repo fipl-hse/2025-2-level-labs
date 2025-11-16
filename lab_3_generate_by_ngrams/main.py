@@ -6,7 +6,6 @@ Beam-search and natural language generation evaluation
 
 import json
 import math
-import string
 
 # pylint:disable=too-few-public-methods, unused-import
 from copy import deepcopy
@@ -154,6 +153,7 @@ class TextProcessor:
             return None
         if element not in self._storage:
             self._storage[element] = len(self._storage)
+            return None
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
@@ -514,7 +514,7 @@ class BeamSearcher:
             not isinstance(sequence_candidates, dict)
         ):
             return None
-        if (            
+        if (
             len(next_tokens) > self._beam_width or
             sequence not in sequence_candidates or
             len(next_tokens) == 0
@@ -617,7 +617,7 @@ class BeamSearchTextGenerator:
                 if next_tokens is None:
                     return None
 
-                continued = self.beam_searcher.continue_sequence(sequence,next_tokens, sequence_candidates)
+                continued = (self.beam_searcher.continue_sequence(sequence,next_tokens, sequence_candidates))
                 if continued is None:
                     continue
 
