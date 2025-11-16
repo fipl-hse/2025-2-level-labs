@@ -55,8 +55,7 @@ def main() -> None:
             result = current
             print(f'Back Off ({prompt}): {result}')
             break
-        else:
-            print(f'Back Off ({prompt}): {current} [looping]')
+        print(f'Back Off ({prompt}): {current} [looping]')
     if result is None and prompts:
         current = generator.run(10, prompts[0])
         if current:
