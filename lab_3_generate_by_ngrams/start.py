@@ -7,6 +7,9 @@ from lab_3_generate_by_ngrams.main import (
     GreedyTextGenerator,
     NGramLanguageModel,
     TextProcessor,
+    BeamSearchTextGenerator,
+    NGramLanguageModelReader,
+    BackOffGenerator
 )
 
 
@@ -42,7 +45,34 @@ def main() -> None:
         print(generated_text)
     else:
         print("Text generation error")
-    result = generated_text
+    beam_width = 3
+    beam_search_generator = BeamSearchTextGenerator(language_model, processor, beam_width)
+    beam_generated_text = beam_search_generator.run("Vernon", 56)
+    print(f"5.4. Beam Search generation result (beam_width={beam_width}):")
+    if beam_generated_text:
+        print(beam_generated_text)
+    else:
+        print("Beam Search generation error")
+    print("6-8. BackOff Generator demonstration:")
+    models = []
+    for n_size in [2, 3, 4, 5]:
+        model = NGramLanguageModel(full_encoded_corpus, n_size)
+        if model.build() == 0:
+            models.append(model)
+    if models:
+        backoff_generator = BackOffGenerator(tuple(models), processor)
+        backoff_text = backoff_generator.run(50, "The")
+        print("BackOff Generator result:")
+        print(backoff_text if backoff_text else "BackOff generation error")
+    reader = NGramLanguageModelReader("./assets/en_own.json", "_")
+    external_model = reader.load(3)
+    external_processor = reader.get_text_processor()
+    if external_model and external_processor:
+        external_greedy = GreedyTextGenerator(external_model, external_processor)
+        external_text = external_greedy.run(30, "Harry")
+        print("External model generation:")
+        print(external_text if external_text else "External model generation error")    
+    result = external_text
     assert result
 
 
