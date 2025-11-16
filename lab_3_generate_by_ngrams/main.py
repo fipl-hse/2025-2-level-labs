@@ -744,7 +744,7 @@ class NGramLanguageModelReader:
                 encoded_chars.append(char_id)
             else:
                 encoded_ngram = tuple(encoded_chars)
-                ngram_frequencies[encoded_ngram] = count
+                ngram_frequencies[encoded_ngram] = ngram_frequencies.get(encoded_ngram, 0) + count
                 context_key = encoded_ngram[:-1]
                 context_counts[context_key] = context_counts.get(context_key, 0) + count
                 continue
@@ -820,7 +820,11 @@ class BackOffGenerator:
             next_token_candidates = self._get_next_token(tuple(current_sequence))
             if not next_token_candidates:
                 break
-            next_token = max(next_token_candidates.items(), key=lambda x: (-x[1], x[0]))[0]
+            sorted_candidates = sorted(
+                next_token_candidates.items(), 
+                key=lambda x: (-x[1], -x[0])
+            )
+            next_token = sorted_candidates[0][0]
             current_sequence.append(next_token)
         return self._text_processor.decode(tuple(current_sequence))
 
