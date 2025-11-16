@@ -33,7 +33,7 @@ def main() -> None:
     greedy_generator = GreedyTextGenerator(model, processor)
     greedy_generator_text = greedy_generator.run(51, 'Vernon')
     print(f"Результат работы жадного генератора: {greedy_generator_text}")
-    
+
     beam_search_generator = BeamSearchTextGenerator(model, processor, 3)
     beam_search_text = beam_search_generator.run('Vernon', 56)
     print(f"Результат работы алгоритма лучевого поиска: {beam_search_text}")
