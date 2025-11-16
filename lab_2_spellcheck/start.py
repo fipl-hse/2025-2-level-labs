@@ -1,5 +1,5 @@
 """
-Frequency-driven keyword extraction starter
+Spellcheck starter
 """
 
 # pylint:disable=unused-variable, duplicate-code, too-many-locals

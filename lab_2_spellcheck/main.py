@@ -28,42 +28,26 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     vocabulary = {}
 
     for token in tokens:
-        vocabulary[token] = vocabulary.get(token, 0) + 1 / total_tokens
+        vocabulary[token] = vocabulary.get(token, 0) + 1
 
-    return vocabulary
+    return {token: count / total_tokens for token, count in vocabulary.items()}
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
     """
-    Find tokens that are not present in the vocabulary.
+    Found words out of vocabulary.
 
     Args:
-        tokens (list[str]): List of tokens to check.
-        vocabulary (dict[str, float]): Vocabulary dictionary.
+        tokens (list[str]): List of tokens.
+        vocabulary (dict[str, float]): Dictionary with unique words and their relative frequencies.
 
     Returns:
-        list[str] | None: List of tokens not found in vocabulary.
+        list[str] | None: List of incorrect words.
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(tokens, list):
+    if not check_list(tokens, str, can_be_empty=False) or not check_dict(vocabulary, str, float, can_be_empty=False):
         return None
-
-    if not tokens:
-        return None
-
-    if not all(isinstance(token, str) for token in tokens):
-        return None
-
-    if not isinstance(vocabulary, dict):
-        return None
-
-    if not vocabulary:
-        return None
-
-    for key, value in vocabulary.items():
-        if not isinstance(key, str) or not isinstance(value, (int, float)):
-            return None
 
     return [token for token in tokens if token not in vocabulary]
 
@@ -172,22 +156,15 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if alphabet is not None:
-        if not check_list(alphabet, str, can_be_empty=True):
-            return None  # ← ИЗМЕНИТЬ С False НА None
-
-    if not isinstance(wrong_word, str) or not check_dict(
-        vocabulary, str, float, can_be_empty=False
-    ):
-        return None
-    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
+    if (not isinstance(wrong_word, str) 
+        or not check_dict(vocabulary, str, float, can_be_empty=False)
+        or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
+        or (alphabet is not None and not check_list(alphabet, str, can_be_empty=True))):
         return None
 
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
-    if distances is None:
-        return None
-
-    if not distances:
+    
+    if distances is None or not distances:
         return None
 
     min_distance = min(distances.values())
@@ -291,7 +268,7 @@ def delete_letter(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not isinstance(word, str) or word == "":
+    if not isinstance(word, str) or not word:
         return []
     return sorted([word[:i] + word[i + 1 :] for i in range(len(word))])
 
@@ -334,7 +311,7 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if (
         not isinstance(word, str)
         or not check_list(alphabet, str, True)
-        or word == ""
+        or not word
         or not alphabet
     ):
         return []
@@ -409,7 +386,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
     """
     if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
-    if word == "" and not alphabet:
+    if not word and not alphabet:
         return ()
     all_candidates = set()
     all_candidates.add(word)
