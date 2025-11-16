@@ -667,15 +667,11 @@ class NGramLanguageModelReader:
         self._json_path = json_path
         self._eow_token = eow_token
         self._text_processor = TextProcessor(self._eow_token)
-        
-        # Load JSON content
         try:
             with open(json_path, 'r', encoding='utf-8') as file:
                 self._content = json.load(file)
         except (FileNotFoundError, json.JSONDecodeError):
             self._content = {}
-        
-        # Fill storage from ngrams - важно: сначала добавляем EoW token, потом символы в алфавитном порядке
         self._text_processor.fill_from_ngrams(self._content)
 
     def load(self, n_gram_size: int) -> NGramLanguageModel | None:
@@ -780,37 +776,23 @@ class BackOffGenerator:
         """
         if not isinstance(seq_len, int) or seq_len <= 0:
             return None
-        
         if not isinstance(prompt, str) or not prompt:
             return None
-        
-        # Encode prompt
         encoded_sequence = self._text_processor.encode(prompt)
         if encoded_sequence is None:
             return None
-        
-        # Generate sequence
         for i in range(seq_len):
-            # Get next token candidates
             candidates = self._get_next_token(encoded_sequence)
-            
-            # Если кандидатов нет, прекращаем генерацию
             if candidates is None:
-                # В тестовой среде это может быть ожидаемым поведением
                 break
             if not candidates:
                 break
-            
-            # Select the most probable token
-            # Сортируем по вероятности (убывание) и затем по токену (возрастание)
             try:
                 sorted_candidates = sorted(candidates.items(), key=lambda x: (-x[1], x[0]))
                 next_token = sorted_candidates[0][0]
                 encoded_sequence = encoded_sequence + (next_token,)
             except (IndexError, TypeError):
                 break
-        
-        # Decode and return - важно: всегда возвращаем строку, даже если не сгенерировали полную последовательность
         result = self._text_processor.decode(encoded_sequence)
         return result
 
@@ -828,21 +810,13 @@ class BackOffGenerator:
         """
         if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
             return None
-        
-        # Try models from largest to smallest n-gram size
         ngram_sizes = sorted(self._language_models.keys(), reverse=True)
-        
         for ngram_size in ngram_sizes:
             model = self._language_models[ngram_size]
-            
-            # Check if sequence is long enough for this ngram size
             context_length = ngram_size - 1
             if len(sequence_to_continue) >= context_length:
-                # Use only the context of appropriate length
                 context = sequence_to_continue[-context_length:] if context_length > 0 else tuple()
                 candidates = model.generate_next_token(context)
-                
-                if candidates is not None and candidates:  # Check for None and empty dict
+                if candidates is not None and candidates:
                     return candidates
-        
         return None
