@@ -185,13 +185,6 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
-        if not isinstance(content, dict):
-            return
-        ngrams_freq = content.get('freq', {})
-        for ngram in ngrams_freq.keys():
-            for char in ngram:
-                if char.isalpha() or char == self._end_of_word_token:
-                    self._put(char)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
