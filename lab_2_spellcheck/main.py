@@ -424,9 +424,7 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     """
     if not isinstance(word, str):
         return None
-    if not isinstance(alphabet, list):
-        return None
-    if not all(isinstance(syb, str) for syb in alphabet):
+    if not check_list(alphabet, str, True):
         return None
     
     if word == "":
@@ -468,9 +466,7 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
 
     In case of corrupt input arguments, None is returned.
     """
-    if not isinstance(word, str) or not isinstance(alphabet, list):
-        return None
-    if not all(isinstance(symbol, str) for symbol in alphabet):
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
         return None
     
     if word == "" and len(alphabet) == 0:
