@@ -498,7 +498,7 @@ class BeamSearcher:
         sequence_probability = sequence_candidates[sequence]
         new_sequences = {}
         for token, token_probability in next_tokens:
-            new_sequence = sequence + (token)
+            new_sequence = sequence + (token,)
             new_probability = sequence_probability - math.log(token_probability)
             new_sequences[new_sequence] = new_probability
         del sequence_candidates[sequence]
