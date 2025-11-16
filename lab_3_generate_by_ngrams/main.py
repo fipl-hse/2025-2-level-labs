@@ -45,20 +45,23 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(text, str) or not text:
+        if not isinstance(text, str):
             return None
         words = text.lower().split()
-        ready_text = []
+        tokens = []
+        current_word = []
         for word in words:
-            letters = [let for let in word if let.isalpha()]
-            ready_text.extend(letters)
-            if letters:
-                ready_text.append(self._end_of_word_token)
-        if not ready_text or ready_text == self._end_of_word_token:
+            current_word = [char for char in word if char.isalpha()]
+            if current_word:
+                tokens.extend(current_word)
+                tokens.append(self._end_of_word_token)
+        if not tokens:
             return None
-        if ready_text[-1].isalnum():
-            ready_text.pop()
-        return tuple(ready_text)
+        if (tokens and
+            tokens[-1] == self._end_of_word_token and
+            (text[-1].isdigit() or text[-1].isalpha())):
+            tokens = tokens[:-1]
+        return tuple(tokens)
 
     def get_id(self, element: str) -> int | None:
         """
@@ -528,9 +531,10 @@ class BeamSearchTextGenerator:
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
             beam_width (int): Beam width parameter for generation
         """
+        self._language_model = language_model
         self._text_processor = text_processor
         self._beam_width = beam_width
-        self.beam_searchers = BeamSearcher(self._beam_width, language_model)
+        self.beam_searcher = BeamSearcher(beam_width, language_model)
 
     def run(self, prompt: str, seq_len: int) -> str | None:
         """
@@ -550,7 +554,6 @@ class BeamSearchTextGenerator:
             not isinstance(prompt, str)
             or not isinstance(seq_len, int)
             or not prompt
-            or not seq_len
             or seq_len <= 0
             ):
             return None
@@ -564,13 +567,12 @@ class BeamSearchTextGenerator:
                 next_tokens = self._get_next_token(seq)
                 if not next_tokens:
                     return None
-                updated_beam = self.beam_searchers.continue_sequence(seq, next_tokens, {seq: freq})
-                if not updated_beam:
-                    return None
-                new_beam.update(updated_beam)
+                updated_beam = self.beam_searcher.continue_sequence(seq, next_tokens, {seq: freq})
+                if updated_beam:
+                    new_beam.update(updated_beam)
             if not new_beam:
                 break
-            pruned_beam = self.beam_searchers.prune_sequence_candidates(new_beam)
+            pruned_beam = self.beam_searcher.prune_sequence_candidates(new_beam)
             if not pruned_beam:
                 return None
             beam = pruned_beam
@@ -578,7 +580,6 @@ class BeamSearchTextGenerator:
             return None
         result = min(beam.items(), key=lambda item: item[1])[0]
         return self._text_processor.decode(result)
-
 
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
@@ -597,8 +598,7 @@ class BeamSearchTextGenerator:
         """
         if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
             return None
-        next_tokens = self.beam_searchers.get_next_token(sequence_to_continue)
-        return next_tokens
+        return self.beam_searcher.get_next_token(sequence_to_continue)
 
 
 class NGramLanguageModelReader:
