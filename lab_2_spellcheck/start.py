@@ -36,9 +36,12 @@ def main() -> None:
 
     cleaned_tokens = clean_and_tokenize(text)
     removed_words = remove_stop_words(cleaned_tokens, stop_words) if cleaned_tokens else None
-    built_voc = build_vocabulary(removed_words) if removed_words else None
 
-    if not all([cleaned_tokens, removed_words, built_voc]):
+    if not (cleaned_tokens and removed_words):
+        return
+
+    built_voc = build_vocabulary(removed_words)
+    if not built_voc:
         return
 
     results = []
