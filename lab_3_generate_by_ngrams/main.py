@@ -366,16 +366,17 @@ class NGramLanguageModel:
         if len(sequence) < n_gram_size - 1:
             return None
 
-        context = sequence[-(n_gram_size - 1):]
+        context = tuple(sequence[-(n_gram_size - 1):])
 
         vocabulary_of_next_token = {}
 
         for n_gram, frequency in self._n_gram_frequencies.items():
             if n_gram[:n_gram_size - 1] == context:
                 next_element = n_gram[-1]
-                vocabulary_of_next_token[next_element] = frequency
+                if next_element not in vocabulary_of_next_token or frequency > vocabulary_of_next_token[next_element]:
+                    vocabulary_of_next_token[next_element] = frequency
 
-        return vocabulary_of_next_token
+        return vocabulary_of_next_token if vocabulary_of_next_token else None
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -442,6 +443,9 @@ class GreedyTextGenerator:
         None is returned
         """
         if not isinstance(seq_len, int) or not isinstance(prompt, str):
+            return None
+
+        if not prompt.strip():
             return None
 
         encoded_prompt = self._text_processor.encode(prompt)
@@ -517,6 +521,11 @@ class BeamSearcher:
         if not isinstance(sequence, tuple) or not sequence:
             return None
 
+        n_gram_size = self._model.get_n_gram_size()
+
+        if len(sequence) < n_gram_size - 1:
+            return None
+
         next_tokens = self._model.generate_next_token(sequence)
         if next_tokens is None:
             return None
@@ -562,11 +571,14 @@ class BeamSearcher:
         ):
             return None
 
+        current_probability = sequence_candidates[sequence]
         new_candidates = sequence_candidates.copy()
 
         for token in next_tokens:
+            if token[1] <= 0:
+                continue
             new_sequence = sequence + (token[0],)
-            frequency = new_candidates[sequence] - math.log(token[1])
+            frequency = current_probability - math.log(token[1])
             new_candidates[new_sequence] = frequency
 
         del new_candidates[sequence]
@@ -655,25 +667,37 @@ class BeamSearchTextGenerator:
         candidates_of_sequence = {encoded_sequence: 0.0}
 
         for _ in range(seq_len):
-            for sequence in list(candidates_of_sequence.keys()):
+            new_candidates = {}
+            continuation_found = False
+
+            for sequence, score in candidates_of_sequence.items():
                 next_token_list = self._get_next_token(sequence)
                 if next_token_list is None:
                     return None
-
-                updated_candidates = self.beam_searcher.continue_sequence(
-                    sequence, next_token_list, candidates_of_sequence
-                )
-                if updated_candidates is None:
+                
+                if not next_token_list:
+                    new_candidates[sequence] = score
                     continue
 
-                prune_candidates = self.beam_searcher.prune_sequence_candidates(updated_candidates)
-                if prune_candidates is None:
-                    return None
+                updated_candidates = self.beam_searcher.continue_sequence(
+                    sequence, next_token_list, {sequence: score}
+                )
 
-                candidates_of_sequence = prune_candidates
+                if updated_candidates:
+                    new_candidates.update(updated_candidates)
+                    continuation_found = True
 
-            if not candidates_of_sequence:
+            if not continuation_found:
+                break
+
+            prune_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+            if prune_candidates is None:
                 return None
+
+            candidates_of_sequence = prune_candidates
+
+        if not candidates_of_sequence:
+            return None
 
         best_sequence = min(candidates_of_sequence.items(), key=lambda x: x[1])[0]
         return self._text_processor.decode(best_sequence)
