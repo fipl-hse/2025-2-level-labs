@@ -36,15 +36,15 @@ def main() -> None:
 
     cleaned_tokens = clean_and_tokenize(text)
     if not cleaned_tokens:
-        return None
+        return
 
     removed_words = remove_stop_words(cleaned_tokens, stop_words)
     if not removed_words:
-        return None
+        return
 
     built_voc = build_vocabulary(removed_words)
     if not built_voc:
-        return None
+        return
 
     results = []
     for sentence in sentences:
@@ -63,7 +63,9 @@ def main() -> None:
         corrections = []
         for wrong_word in out_of_vocab_words:
             correct_jaccard = find_correct_word(wrong_word, built_voc, "jaccard", None)
-            correct_frequency = find_correct_word(wrong_word, built_voc, "frequency-based", alphabet)
+            correct_frequency = find_correct_word(
+                wrong_word, built_voc, "frequency-based", alphabet
+            )
             correct_levenshtein = find_correct_word(wrong_word, built_voc, "levenshtein", None)
             correct_word = correct_frequency or correct_levenshtein or correct_jaccard
 

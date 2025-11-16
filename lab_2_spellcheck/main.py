@@ -196,7 +196,7 @@ def find_correct_word(
 
 
     return sorted(length_candidates)[0]
-    
+
 
 
 
