@@ -469,9 +469,9 @@ class BeamSearcher:
             return None
         if not candidates:
             return []
-        token_prob_list = [(token, prob) for token, prob in candidates.items()]
-        token_prob_list.sort(key=lambda x: (-x[1], -x[0]))
-        return token_prob_list[:self._beam_width]
+        next_tokens = list(candidates.items())
+        next_tokens.sort(key=lambda x: (-x[1], -x[0]))
+        return next_tokens[:self._beam_width]
 
     def continue_sequence(
         self,
@@ -495,10 +495,13 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
-        if (not isinstance(sequence, tuple) or not sequence or
-            not isinstance(next_tokens, list) or not next_tokens or
-            not isinstance(sequence_candidates, dict) or
-            sequence not in sequence_candidates):
+        if not isinstance(sequence, tuple) or not sequence:
+            return None
+        if not isinstance(next_tokens, list) or not next_tokens:
+            return None
+        if not isinstance(sequence_candidates, dict):
+            return None
+        if sequence not in sequence_candidates:
             return None
         if len(next_tokens) > self._beam_width:
             return None
@@ -587,7 +590,11 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if not isinstance(prompt, str) or not prompt or not isinstance(seq_len, int) or seq_len <= 0:
+        if (not isinstance(prompt, str) 
+            or not prompt  
+            or not isinstance(seq_len, int) 
+            or seq_len <= 0
+        ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if encoded_prompt is None:
@@ -596,7 +603,7 @@ class BeamSearchTextGenerator:
         for _ in range(seq_len):
             new_candidates = {}
             has_valid_candidates = False
-            for sequence, current_prob in sequence_candidates.items():
+            for sequence, current_prob in list(sequence_candidates.items()):
                 next_tokens = self._get_next_token(sequence)
                 if next_tokens is None:
                     return None
@@ -605,14 +612,16 @@ class BeamSearchTextGenerator:
                     has_valid_candidates = True
                     continue
                 temp_candidates = {sequence: current_prob}
-                result = self.beam_searcher.continue_sequence(sequence, next_tokens, temp_candidates)
+                result = self.beam_searcher.continue_sequence(
+                    sequence, next_tokens, temp_candidates
+                )
                 if result is None:
                     new_candidates[sequence] = current_prob
                     has_valid_candidates = True
                 else:
                     for seq, prob in result.items():
                         new_candidates[seq] = prob
-                        has_valid_candidates = True
+                    has_valid_candidates = True
             if not has_valid_candidates:
                 break
             if new_candidates:
@@ -781,7 +790,7 @@ class BackOffGenerator:
         encoded_sequence = self._text_processor.encode(prompt)
         if encoded_sequence is None:
             return None
-        for i in range(seq_len):
+        for _ in range(seq_len):
             candidates = self._get_next_token(encoded_sequence)
             if candidates is None:
                 break
