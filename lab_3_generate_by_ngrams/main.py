@@ -50,8 +50,7 @@ class TextProcessor:
         if not isinstance(text, str) or not text:
             return None
 
-        words = text.lower()
-        words = words.split()
+        words = text.lower().split()
         tokens = []
 
         for word in words:
