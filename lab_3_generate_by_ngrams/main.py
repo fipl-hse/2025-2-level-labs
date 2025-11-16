@@ -150,10 +150,10 @@ class TextProcessor:
         an element is not added to storage
         """
         if not isinstance(element, str) or len(element) != 1:
-            return None
+            return
         if element not in self._storage:
             self._storage[element] = len(self._storage)
-            return None
+
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
@@ -617,7 +617,8 @@ class BeamSearchTextGenerator:
                 if next_tokens is None:
                     return None
 
-                continued = (self.beam_searcher.continue_sequence(sequence,next_tokens, sequence_candidates))
+                continued = (self.beam_searcher.continue_sequence(sequence, 
+                        next_tokens, sequence_candidates))
                 if continued is None:
                     continue
 
@@ -702,20 +703,15 @@ class NGramLanguageModelReader:
         if not self._content or "freq" not in self._content:
             return None
 
-        freq_dict = self._content["freq"]
-        eow = self._eow_token
-        tp = self._text_processor
 
         ngram_counts = {}
         prefix_counts = {}
 
-        for raw_ngram, count in freq_dict.items():
-            cleaned = raw_ngram.replace(" ", eow)
-
+        for raw_ngram, count in (self._content["freq"]).items():
             filtered = "".join(
                 ch.lower()
-                for ch in cleaned
-                if ch.isalpha() or ch == eow
+                for ch in raw_ngram.replace(" ", self._eow_token)
+                if ch.isalpha() or ch == self._eow_token
             )
 
             if len(filtered) != n_gram_size:
@@ -723,7 +719,7 @@ class NGramLanguageModelReader:
 
             ngram_ids = []
             for ch in filtered:
-                ch_id = tp.get_id(ch)
+                ch_id = (self._text_processor).get_id(ch)
                 if ch_id is None:
                     break
                 ngram_ids.append(ch_id)
@@ -736,11 +732,9 @@ class NGramLanguageModelReader:
 
         ngram_freqs = {}
         for ngram_tuple, ngram_count in ngram_counts.items():
-            prefix_tuple = ngram_tuple[:-1]
-            prefix_count = prefix_counts.get(prefix_tuple, 0)
+            prefix_count = prefix_counts.get(ngram_tuple[:-1], 0)
             if prefix_count > 0:
-                prob = ngram_count / prefix_count
-                ngram_freqs[ngram_tuple] = prob
+                ngram_freqs[ngram_tuple] = ngram_count / prefix_count
 
         model = NGramLanguageModel(encoded_corpus=None, n_gram_size=n_gram_size)
         model.set_n_grams(ngram_freqs)
