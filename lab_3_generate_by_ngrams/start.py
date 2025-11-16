@@ -22,21 +22,21 @@ def main() -> None:
     result = None
     processor = TextProcessor('_')
     encoded_text = processor.encode(text) or ()
-    print(f"Зашифрованный текст: {encoded_text}")
+    print(f"Encoded text: {encoded_text}")
     decoded_text = processor.decode(encoded_text) or ()
-    print(f"Расшифрованный текст: {decoded_text}")
+    print(f"Decoded text: {decoded_text}")
 
     model = NGramLanguageModel(encoded_text, 7)
     frequency = model.build()
-    print(f"Частотный словарь n-грамм: {frequency}")
+    print(f"N-gram frequency dictionary: {frequency}")
 
     greedy_generator = GreedyTextGenerator(model, processor)
     greedy_generator_text = greedy_generator.run(51, 'Vernon')
-    print(f"Результат работы жадного генератора: {greedy_generator_text}")
+    print(f"Greedy text generator results: {greedy_generator_text}")
 
     beam_search_generator = BeamSearchTextGenerator(model, processor, 3)
     beam_search_text = beam_search_generator.run('Vernon', 56)
-    print(f"Результат работы алгоритма лучевого поиска: {beam_search_text}")
+    print(f"Beam search text generator results: {beam_search_text}")
     result = beam_search_text
     assert result
 

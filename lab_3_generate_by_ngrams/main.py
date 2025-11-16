@@ -227,7 +227,7 @@ class TextProcessor:
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
         decoded_text = ''.join(decoded_corpus).replace('_', ' ').capitalize()
-        if decoded_text[-1] == ' ':
+        if decoded_text[-1].isspace():
             return decoded_text[:-1] + '.'
         return decoded_text + '.'
 
@@ -318,7 +318,7 @@ class NGramLanguageModel:
             not isinstance(sequence, tuple)
             or not sequence
             or len(sequence) < self._n_gram_size - 1
-            ):
+        ):
             return None
         context = sequence[-self._n_gram_size + 1:]
         result = {}
@@ -389,7 +389,7 @@ class GreedyTextGenerator:
             not isinstance(seq_len, int)
             or not isinstance(prompt, str)
             or not prompt
-            ):
+        ):
             return None
         sequence = self._text_processor.encode(prompt)
         n_gram_size = self._model.get_n_gram_size()
@@ -484,16 +484,18 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
-        if (not isinstance(sequence, tuple) or
-            not isinstance(next_tokens, list) or
-            not isinstance(sequence_candidates, dict)
-            ):
+        if (
+            not isinstance(sequence, tuple)
+            or not isinstance(next_tokens, list)
+            or not isinstance(sequence_candidates, dict)
+        ):
             return None
-        if (not sequence or
-            sequence not in sequence_candidates or
-            not next_tokens or
-            not len(next_tokens) <= self._beam_width
-            ):
+        if (
+            not sequence
+            or sequence not in sequence_candidates
+            or not next_tokens
+            or not len(next_tokens) <= self._beam_width
+        ):
             return None
         sequence_probability = sequence_candidates[sequence]
         new_sequences = {}
@@ -520,9 +522,10 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
-        if (not isinstance (sequence_candidates, dict) or
-            not sequence_candidates
-            ):
+        if (
+            not isinstance (sequence_candidates, dict)
+            or not sequence_candidates
+        ):
             return None
         sequences = sequence_candidates.items()
         sorted_sequences = sorted(
@@ -574,10 +577,11 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if (not isinstance(seq_len, int) or
-            not isinstance(prompt, str) or
-            not prompt or seq_len <= 0
-            ):
+        if (
+            not isinstance(seq_len, int)
+            or not isinstance(prompt, str)
+            or not prompt or seq_len <= 0
+        ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if encoded_prompt is None:
@@ -593,8 +597,9 @@ class BeamSearchTextGenerator:
                     sequence, next_tokens, {sequence: probability})
                 if updated_candidates is not None:
                     for _sequence_, _probability_ in updated_candidates.items():
-                        if (_sequence_ not in new_candidates
-                        or _probability_ < new_candidates[_sequence_]
+                        if (
+                            _sequence_ not in new_candidates
+                            or _probability_ < new_candidates[_sequence_]
                         ):
                             new_candidates[_sequence_] = _probability_
             if not new_candidates:
