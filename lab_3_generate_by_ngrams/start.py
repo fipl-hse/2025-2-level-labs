@@ -34,10 +34,15 @@ def main() -> None:
         return None
     greedy_generator = GreedyTextGenerator(language_model, text_processor)
     greedy_text = greedy_generator.run(51, "Vernon")
+    if not greedy_text:
+        return None
     print(f"\nGreedy text: {greedy_text}")
     beam_generator = BeamSearchTextGenerator(language_model, text_processor, beam_width=3)
     beam_text = beam_generator.run("Vernon", 56)
+    if not beam_text:
+        return None
     print(f"\nBeam Search Generator: {beam_text}")
+
     result = beam_text
     assert result
 
