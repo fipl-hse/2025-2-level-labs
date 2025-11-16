@@ -456,8 +456,8 @@ class BeamSearcher:
             return []
         sorted_tokens = list(next_token.items())
         sorted_tokens = sorted(
-        next_token.items(), 
-        key=lambda x: x[1], 
+        next_token.items(),
+        key=lambda x: x[1],
         reverse=True
         )
         return sorted_tokens[:self._beam_width]
@@ -485,9 +485,11 @@ class BeamSearcher:
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
         if (not isinstance(sequence, tuple) or
-            not isinstance(next_tokens, list) or 
-            not isinstance(sequence_candidates, dict) or
-            not sequence or
+            not isinstance(next_tokens, list) or
+            not isinstance(sequence_candidates, dict)
+            ):
+            return None
+        if (not sequence or
             sequence not in sequence_candidates or
             not next_tokens or
             not len(next_tokens) <= self._beam_width
@@ -573,7 +575,7 @@ class BeamSearchTextGenerator:
         None is returned
         """
         if (not isinstance(seq_len, int) or
-            not isinstance(prompt, str) or 
+            not isinstance(prompt, str) or
             not prompt or seq_len <= 0
             ):
             return None
@@ -591,7 +593,9 @@ class BeamSearchTextGenerator:
                     sequence, next_tokens, {sequence: probability})
                 if updated_candidates is not None:
                     for _sequence_, _probability_ in updated_candidates.items():
-                        if _sequence_ not in new_candidates or _probability_ < new_candidates[_sequence_]:
+                        if (_sequence_ not in new_candidates
+                        or _probability_ < new_candidates[_sequence_]
+                        ):
                             new_candidates[_sequence_] = _probability_
             if not new_candidates:
                 break
