@@ -17,29 +17,31 @@ def _process_text_pipeline(text: str, stop_words: list[str]) -> dict[str, float]
     return built_voc if all([cleaned_tokens, removed_words, built_voc]) else None
 
 def _process_sentence(
-    sentence: str, 
-    stop_words: list[str], 
-    built_voc: dict[str, float], 
+    sentence: str,
+    stop_words: list[str],
+    built_voc: dict[str, float],
     alphabet: list[str]
 ) -> list[tuple[str, str]] | None:
     sentence_tokens = clean_and_tokenize(sentence)
     sentence_filtered = remove_stop_words(sentence_tokens, stop_words) if sentence_tokens else None
-    out_of_vocab_words = find_out_of_vocab_words(sentence_filtered, built_voc) if sentence_filtered else None
-    
+    out_of_vocab_words = (
+        find_out_of_vocab_words(sentence_filtered, built_voc) 
+        if sentence_filtered else None
+    )
+
     if not all([sentence_tokens, sentence_filtered, out_of_vocab_words]):
         return None
-        
+
     corrections = []
-    if out_of_vocab_words:
-        for wrong_word in out_of_vocab_words:
-            correct_word = (
-                find_correct_word(wrong_word, built_voc, "frequency-based", alphabet) or
-                find_correct_word(wrong_word, built_voc, "levenshtein", None) or
-                find_correct_word(wrong_word, built_voc, "jaccard", None)
-            )
-            if correct_word:
-                corrections.append((wrong_word, correct_word))
-    
+    for wrong_word in out_of_vocab_words:
+        correct_word = (
+            find_correct_word(wrong_word, built_voc, "frequency-based", alphabet) or
+            find_correct_word(wrong_word, built_voc, "levenshtein", None) or
+            find_correct_word(wrong_word, built_voc, "jaccard", None)
+        )
+        if correct_word:
+            corrections.append((wrong_word, correct_word))
+
     return corrections if corrections else None
 
 def main() -> None:
