@@ -8,7 +8,11 @@ Beam-search and natural language generation evaluation
 import json
 import math
 
-from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
+from lab_1_keywords_tfidf.main import (
+    check_dict,
+    check_list,
+    check_positive_int
+)
 
 
 class TextProcessor:
@@ -756,54 +760,42 @@ class NGramLanguageModelReader:
         In case of corrupt input arguments or unexpected behaviour
         of methods used, return 1.
         """
-        if not isinstance(n_gram_size, int):
+        if (
+            not isinstance(n_gram_size, int)
+            or not n_gram_size
+            or n_gram_size < 2
+        ):
             return None
-        if n_gram_size < 2:
-            return None
-
-        ngrams_data = self._content.get('freq', {})
-        absolute_frequencies = {}
-        prefix_frequencies = {}
-
-        for ngram_text, freq_value in ngrams_data.items():
+        ngrams = self._content.get('freq', {})
+        ngram_abs_freqs = {}
+        ngram_prefix_counts = {}
+        for ngram, frequency in ngrams.items():
             encoded_ngram = []
-
-            for char in ngram_text:
-                if char.isalpha():
-                    char_id = self._text_processor.get_id(char.lower())
-                elif char.isspace():
-                    char_id = self._text_processor.get_id(self._eow_token)
+            for symbol in ngram:
+                if symbol.isalpha():
+                    sym_id = self._text_processor.get_id(symbol.lower())
+                elif symbol.isspace():
+                    sym_id = self._text_processor.get_id(self._eow_token)
                 else:
                     continue
-
-                if char_id is None:
+                if sym_id is None:
                     break
-                encoded_ngram.append(char_id)
-
+                encoded_ngram.append(sym_id)
             if len(encoded_ngram) == n_gram_size:
-                ngram_tuple = tuple(encoded_ngram)
-
-                current_freq = absolute_frequencies.get(ngram_tuple, 0)
-                absolute_frequencies[ngram_tuple] = current_freq + freq_value
-
-                prefix_tuple = ngram_tuple[:-1]
-                current_prefix_freq = prefix_frequencies.get(prefix_tuple, 0)
-                prefix_frequencies[prefix_tuple] = (
-                    current_prefix_freq + freq_value
-                )
-
-        final_frequencies = {}
-        for ngram_tuple, abs_freq in absolute_frequencies.items():
-            prefix_key = ngram_tuple[:-1]
-            prefix_freq = prefix_frequencies.get(prefix_key, 0)
-
-            if prefix_freq > 0:
-                probability = abs_freq / prefix_freq
-                final_frequencies[ngram_tuple] = probability
-
-        model_instance = NGramLanguageModel(None, n_gram_size)
-        model_instance.set_n_grams(final_frequencies)
-        return model_instance
+                ngram_abs_freqs[tuple(encoded_ngram)] = ngram_abs_freqs.get(
+                    tuple(encoded_ngram), 0) + frequency
+                prefix = tuple(encoded_ngram)[:-1]
+                ngram_prefix_counts[prefix] = (
+                    ngram_prefix_counts.get(prefix, 0) + frequency
+                    )
+        n_gram_frequencies = {}
+        for ngram, abs_freq in ngram_abs_freqs.items():
+            prefix_count = ngram_prefix_counts.get(ngram[:-1], 0)
+            if prefix_count > 0:
+                n_gram_frequencies[ngram] = abs_freq / prefix_count
+        language_model = NGramLanguageModel(None, n_gram_size)
+        language_model.set_n_grams(n_gram_frequencies)
+        return language_model
 
     def get_text_processor(self) -> TextProcessor:
         """

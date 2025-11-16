@@ -48,6 +48,9 @@ def main() -> None:
         processor
     ).run(51, "Vernon")
 
+    result = backoff_output
+    assert result
+
     print(f"Greedy: {greedy_output}")
     print(f"Beam: {beam_output}")
     print(f"BackOff: {backoff_output}")
