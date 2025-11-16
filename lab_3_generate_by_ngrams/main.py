@@ -494,38 +494,46 @@ class GreedyTextGenerator:
         self._model = language_model
         self._text_processor = text_processor
 
-    def run(self, seq_len: int, prompt: str) -> str | None:
-        """
-        Generate sequence based on NGram language model and prompt provided.
+        def run(self, seq_len: int, prompt: str) -> str | None:
+            """
+            Generate sequence based on NGram language model and prompt provided.
 
-        Args:
+            Args:
             seq_len (int): Number of tokens to generate
             prompt (str): Beginning of sequence
 
-        Returns:
+            Returns:
             str | None: Generated sequence
 
-        In case of corrupt input arguments or methods used return None,
-        None is returned
-        """
-        if not isinstance(seq_len, int) or not isinstance(prompt, str) or not prompt:
-            return None
+            In case of corrupt input arguments or methods used return None,
+            None is returned
+            """
+            if not isinstance(seq_len, int) or not isinstance(prompt, str) or not prompt:
+                return None
 
-        encoded_prompt = self._text_processor.encode(prompt)
-        if encoded_prompt is None:
-            return None
+            encoded_prompt = self._text_processor.encode(prompt)
+            if encoded_prompt is None:
+                return None
 
-        current_sequence = encoded_prompt
+            current_sequence = encoded_prompt
         
-        for _ in range(seq_len):
-            next_token_candidates = self._model.generate_next_token(current_sequence)
-            if not next_token_candidates:
-                break
+            for _ in range(seq_len):
+                n_gram_size = self._model.get_n_gram_size()
+                if len(current_sequence) < n_gram_size - 1:
+                    context = current_sequence
+                else:
+                    context = current_sequence[-(n_gram_size - 1):]
             
-            next_token = max(next_token_candidates.items(), key=lambda x: (x[1], -x[0]))[0]
-            current_sequence = current_sequence + (next_token,)
+                next_token_candidates = self._model.generate_next_token(context)
+                if not next_token_candidates:
+                    break
+            
+                sorted_candidates = sorted(next_token_candidates.items(), 
+                                     key=lambda x: (-x[1], x[0]))
+                next_token = sorted_candidates[0][0]
+                current_sequence = current_sequence + (next_token,)
 
-        return self._text_processor.decode(current_sequence)
+            return self._text_processor.decode(current_sequence)
 
 
 class BeamSearcher:
