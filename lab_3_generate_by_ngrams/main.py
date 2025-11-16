@@ -10,7 +10,6 @@ from math import log
 
 from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 
-
 class TextProcessor:
     """
     Handle text tokenization, encoding and decoding.
@@ -156,6 +155,7 @@ class TextProcessor:
             return None
         if element not in self._storage:
             self._storage[element] = len(self._storage)
+        return None
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
@@ -193,6 +193,7 @@ class TextProcessor:
             for symbol in n_gram:
                 if symbol.isalpha():
                     self._put(symbol.lower())
+        return None
 
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
