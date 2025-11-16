@@ -532,6 +532,10 @@ class BeamSearchTextGenerator:
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
             beam_width (int): Beam width parameter for generation
         """
+        self._language_model = language_model
+        self._text_processor = text_processor
+        self._beam_width = beam_width
+        self.beam_searcher = BeamSearcher(beam_width, language_model)
 
     def run(self, prompt: str, seq_len: int) -> str | None:
         """
@@ -547,6 +551,32 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
+        if (not isinstance(prompt, str) 
+            or not isinstance(seq_len, int) 
+            or not prompt 
+            or seq_len <= 0):
+            return None
+        encoded = self._text_processor.encode(prompt)
+        if not encoded:
+            return None
+        candidates = {encoded: 0.0}
+        for i in range(seq_len):
+            for sequence in candidates:
+                next_tokens = self._get_next_token(sequence)
+                if next_tokens is None:
+                    return None
+                new_candidates = self.beam_searcher.continue_sequence(
+                    sequence, next_tokens, candidates
+                )
+                if new_candidates is None:
+                    continue
+                pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+                if pruned_candidates is None:
+                    return None
+                candidates = pruned_candidates
+        if not candidates:
+            return None
+        return self._text_processor.decode(min(candidates.items(), key=lambda item: item[1])[0])
 
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
