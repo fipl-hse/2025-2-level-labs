@@ -308,8 +308,8 @@ def delete_letter(word: str) -> list[str]:
 
     result = []
     for i in range(len(word)):
-        possible_word = word[:i] + word[i+1:]
-        result.append(possible_word)
+        candidate = word[:i] + word[i+1:]
+        result.append(candidate)
 
     return sorted(result)
 
@@ -369,8 +369,8 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     for i, current_letter in enumerate(word):
         for letter in alphabet:
             if letter != current_letter:
-                possible_word = word[:i] + letter + word[i+1:]
-                result.append(possible_word)
+                candidate = word[:i] + letter + word[i+1:]
+                result.append(candidate)
     return sorted(result)
 
 
@@ -393,8 +393,8 @@ def swap_adjacent(word: str) -> list[str]:
     result = []
 
     for i in range(len(word) -1):
-        possible_word = word[:i] + word[i+1] + word[i] + word[i+2:]
-        result.append(possible_word)
+        candidate = word[:i] + word[i+1] + word[i] + word[i+2:]
+        result.append(candidate)
 
     return sorted(result)
 
