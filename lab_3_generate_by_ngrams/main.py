@@ -362,14 +362,18 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        self._encoded_corpus = encoded_corpus
+        self._n_gram_size = n_gram_size
+        self._n_gram_frequencies = {}
 
-    def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
+    def get_n_gram_size(self) -> int:
         """
         Retrieve value stored in self._n_gram_size attribute.
 
         Returns:
             int: Size of stored n_grams
         """
+        return self._n_gram_size
 
     def set_n_grams(self, frequencies: dict) -> None:
         """
@@ -378,32 +382,8 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
-
-    def build(self) -> int:  # type: ignore[empty-body]
-        """
-        Fill attribute `_n_gram_frequencies` from encoded corpus.
-
-        Encoded corpus is stored in the attribute `_encoded_corpus`
-
-        Returns:
-            int: 0 if attribute is filled successfully, otherwise 1
-
-        In case of corrupt input arguments or methods used return None,
-        1 is returned
-        """
-
-    def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
-        """
-        Retrieve tokens that can continue the given sequence along with their probabilities.
-
-        Args:
-            sequence (tuple[int, ...]): A sequence to match beginning of NGrams for continuation
-
-        Returns:
-            dict | None: Possible next tokens with their probabilities
-
-        In case of corrupt input arguments, None is returned
-        """
+        if isinstance(frequencies, dict):
+            self._n_gram_frequencies = frequencies
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -419,6 +399,79 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
+            return None
+
+        n_grams = []
+        for i in range(len(encoded_corpus) - self._n_gram_size + 1):
+            n_gram = encoded_corpus[i:i + self._n_gram_size]
+            n_grams.append(n_gram)
+
+        return tuple(n_grams) if n_grams else None
+
+    def build(self) -> int:
+        """
+        Fill attribute `_n_gram_frequencies` from encoded corpus.
+
+        Encoded corpus is stored in the attribute `_encoded_corpus`
+
+        Returns:
+            int: 0 if attribute is filled successfully, otherwise 1
+
+        In case of corrupt input arguments or methods used return None,
+        1 is returned
+        """
+        if not isinstance(self._encoded_corpus, tuple) or not self._encoded_corpus:
+            return 1
+
+        n_grams = self._extract_n_grams(self._encoded_corpus)
+        if n_grams is None:
+            return 1
+
+        n_gram_counts = {}
+        context_counts = {}
+
+        for n_gram in n_grams:
+            n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
+            context = n_gram[:-1]
+            context_counts[context] = context_counts.get(context, 0) + 1
+
+        for n_gram, count in n_gram_counts.items():
+            context = n_gram[:-1]
+            if context in context_counts:
+                self._n_gram_frequencies[n_gram] = count / context_counts[context]
+
+        return 0
+
+    def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
+        """
+        Retrieve tokens that can continue the given sequence along with their probabilities.
+
+        Args:
+            sequence (tuple[int, ...]): A sequence to match beginning of NGrams for continuation
+
+        Returns:
+            dict | None: Possible next tokens with their probabilities
+
+        In case of corrupt input arguments, None is returned
+        """
+        if not isinstance(sequence, tuple) or not sequence:
+            return None
+
+        if len(sequence) < self._n_gram_size - 1:
+            return None
+
+        context = sequence[-(self._n_gram_size - 1):]
+        candidates = {}
+
+        for n_gram, probability in self._n_gram_frequencies.items():
+            if n_gram[:-1] == context:
+                candidates[n_gram[-1]] = probability
+
+        if not candidates:
+            return None
+
+        return dict(sorted(candidates.items(), key=lambda x: (-x[1], x[0])))
 
 
 class GreedyTextGenerator:
