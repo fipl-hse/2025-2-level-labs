@@ -59,7 +59,7 @@ class TextProcessor:
         if ready_text[-1].isalnum():
             ready_text.pop()
         return tuple(ready_text)
-    
+
     def get_id(self, element: str) -> int | None:
         """
         Retrieve a unique identifier of an element.
@@ -134,7 +134,7 @@ class TextProcessor:
                 return None
             encoded_corpus.append(token_id)
         return tuple(encoded_corpus)
-    
+
     def _put(self, element: str) -> None:
         """
         Put an element into the storage, assign a unique id to it.
@@ -149,6 +149,7 @@ class TextProcessor:
             return None
         if element not in self._storage:
             self._storage[element] = len(self._storage)
+        return None
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
@@ -311,7 +312,7 @@ class NGramLanguageModel:
         In case of corrupt input arguments, None is returned
         """
         if (
-            not isinstance(sequence, tuple) 
+            not isinstance(sequence, tuple)
             or not sequence
             or len(sequence) < self._n_gram_size - 1
             ):
@@ -398,7 +399,7 @@ class GreedyTextGenerator:
                                 reverse=True)[0][0]
             seq += (next_token,)
         return self._text_processor.decode(seq)
-    
+
 
 class BeamSearcher:
     """
@@ -471,17 +472,17 @@ class BeamSearcher:
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
         if (
-            not isinstance (sequence,tuple) 
-            or not isinstance (next_tokens, list) 
+            not isinstance (sequence,tuple)
+            or not isinstance (next_tokens, list)
             or len(next_tokens) > self._beam_width
-            or not isinstance (sequence_candidates, dict) 
+            or not isinstance (sequence_candidates, dict)
             or sequence not in sequence_candidates
         ):
             return None
         if not (sequence or next_tokens or sequence_candidates):
             return None
         for token, freq in next_tokens:
-            sequence_candidates[sequence + (token,)] = sequence_candidates[sequence] - math.log(freq)
+            sequence_candidates[sequence+(token,)] = sequence_candidates[sequence] - math.log(freq)
         del sequence_candidates[sequence]
         return sequence_candidates
 
