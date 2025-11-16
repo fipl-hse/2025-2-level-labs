@@ -17,7 +17,7 @@ def main() -> None:
     text_processor = TextProcessor("_")
     encoded = text_processor.encode(text)
     decoded = text_processor.decode(encoded)
-    
+
     print("Кодирование и декодирование завершены успешно!")
     print(f"Исходный текст: {len(text)} символов")
     print(f"Закодированный текст: {len(encoded) if encoded else 0} токенов")
