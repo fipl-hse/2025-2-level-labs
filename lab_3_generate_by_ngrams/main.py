@@ -8,7 +8,7 @@ Beam-search and natural language generation evaluation
 import json
 import math
 
-from lab_1_keywords_tfidf.main import check_dict
+from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 
 
 class TextProcessor:
@@ -400,8 +400,7 @@ class GreedyTextGenerator:
         if (
             not isinstance(prompt, str)
             or not prompt
-            or not isinstance(seq_len, int)
-            or seq_len <= 0
+            or not check_positive_int(seq_len)
         ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
@@ -495,7 +494,7 @@ class BeamSearcher:
         if (
             not isinstance(sequence, tuple)
             or not sequence
-            or not isinstance(next_tokens, list)
+            or not check_list(next_tokens, tuple, False)
             or not next_tokens
         ):
             return None
