@@ -104,8 +104,8 @@ class TextProcessor:
             or isinstance(element_id, bool)
             or element_id not in self._storage.values()):
             return None
-        for token, id in self._storage.items():
-            if id == element_id:
+        for token, token_id in self._storage.items():
+            if token_id == element_id:
                 return token
         return None
 
@@ -135,10 +135,10 @@ class TextProcessor:
         for token in tokens:
             if token not in self._storage:
                 self._put(token)
-            id = self.get_id(token)
-            if id is None:
+            token_id = self.get_id(token)
+            if token_id is None:
                 return None
-            encoded.append(id)
+            encoded.append(token_id)
         return tuple(encoded)
 
 
@@ -211,8 +211,8 @@ class TextProcessor:
         if not isinstance(corpus, tuple) or not corpus:
             return None
         decoded = []
-        for id in corpus:
-            token = self.get_token(id)
+        for token_id in corpus:
+            token = self.get_token(token_id)
             if token is None:
                 return None
             decoded.append(token)
@@ -235,7 +235,8 @@ class TextProcessor:
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
-        decoded_string = "".join(decoded_corpus).replace(self._end_of_word_token, " ").strip().capitalize()
+        decoded_string = "".join(decoded_corpus).replace(self._end_of_word_token, " ")
+        decoded_string = decoded_string.strip().capitalize()
         return f"{decoded_string}."
 
 
@@ -360,7 +361,7 @@ class NGramLanguageModel:
             return None
         n_grams = [encoded_corpus[index:index + self._n_gram_size] for index in range(limit)]
         return tuple(n_grams)
-    
+
 class GreedyTextGenerator:
     """
     Greedy text generation by N-grams.
@@ -401,12 +402,12 @@ class GreedyTextGenerator:
         if encoded is None:
             return None
         generated_sequence = list(encoded)
-        for i in range(seq_len):
+        for _ in range(seq_len):
             context = tuple(generated_sequence[-(self._model.get_n_gram_size() - 1) :])
             candidates = self._model.generate_next_token(context)
             if not candidates:
                 break
-            token, i = max(candidates.items(), key=lambda item: (item[1], item[0]))
+            token, _ = max(candidates.items(), key=lambda item: (item[1], item[0]))
             generated_sequence.append(token)
         return self._text_processor.decode(tuple(generated_sequence))
 
@@ -568,7 +569,7 @@ class BeamSearchTextGenerator:
         if not encoded:
             return None
         candidates = {encoded: 0.0}
-        for i in range(seq_len):
+        for _ in range(seq_len):
             for sequence in candidates:
                 next_tokens = self._get_next_token(sequence)
                 if next_tokens is None:
@@ -735,11 +736,11 @@ class BackOffGenerator:
         if encoded is None:
             return None
         generated_sequence = list(encoded)
-        for i in range(seq_len):
+        for _ in range(seq_len):
             candidates = self._get_next_token(tuple(generated_sequence))
             if not candidates:
                 break
-            token, i = max(candidates.items(), key=lambda item: (item[1], item[0]))
+            token, _ = max(candidates.items(), key=lambda item: (item[1], item[0]))
             generated_sequence.append(token)
         return self._text_processor.decode(tuple(generated_sequence))
 
