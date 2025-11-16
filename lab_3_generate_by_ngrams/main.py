@@ -27,7 +27,6 @@ class TextProcessor:
         """
         self._end_of_word_token = end_of_word_token
         self._storage = {end_of_word_token: 0}
-        
 
     def _tokenize(self, text: str) -> tuple[str, ...] | None:
         """
@@ -103,6 +102,7 @@ class TextProcessor:
         for key, value in self._storage.items():
             if value == element_id:
                 return key
+        return None
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -148,6 +148,7 @@ class TextProcessor:
             return None
         if element not in self._storage:
             self._storage[element] = len(self._storage)
+        return None
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
@@ -287,7 +288,8 @@ class NGramLanguageModel:
         for n_gram in n_grams:
             counts[n_gram] += 1
             counts[n_gram[:-1]] += 1
-        self._n_gram_frequencies = {n_gram: counts[n_gram] / counts[n_gram[:-1]] for n_gram in n_grams}
+        self._n_gram_frequencies = {n_gram: counts[n_gram] / counts[n_gram[:-1]]
+                                for n_gram in n_grams}
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
@@ -382,7 +384,7 @@ class GreedyTextGenerator:
             return None
         context = encoded_seq[-self._model.get_n_gram_size() + 1:]
         generated_seq = list(encoded_seq)
-        for element in range(seq_len):
+        for _ in range(seq_len):
             next_element = self._model.generate_next_token(context)
             if not next_element:
                 break
@@ -506,7 +508,7 @@ class BeamSearcher:
         """
         if not isinstance(sequence_candidates, dict) or not sequence_candidates:
             return None
-        return dict(sorted(sequence_candidates.items(), 
+        return dict(sorted(sequence_candidates.items(),
                             key=lambda item: item[1])[:self._beam_width])
 
 
@@ -558,7 +560,7 @@ class BeamSearchTextGenerator:
             return None
         encoded = tuple(list(encoded)[:-1])
         candidates = {encoded: 0.0}
-        for i in range(seq_len):
+        for _ in range(seq_len):
             for sequence in candidates:
                 next_tokens = self._get_next_token(sequence)
                 if next_tokens is None:
