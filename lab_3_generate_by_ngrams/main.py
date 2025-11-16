@@ -280,6 +280,25 @@ class NGramLanguageModel:
         In case of corrupt input arguments or methods used return None,
         1 is returned
         """
+        if not isinstance(self._encoded_corpus, tuple) or not self._encoded_corpus:
+            return 1
+        n_grams = self._extract_n_grams(self._encoded_corpus)
+        if n_grams is None:
+            return 1
+        n_gram_counts = {}
+        context_counts = {}
+        for n_gram in n_grams:
+            context = n_gram[:len(n_gram) - 1]
+            n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
+            context_counts[context] = context_counts.get(context, 0) + 1
+        self._n_gram_frequencies = {
+            n_gram: count / context_counts[n_gram[:len(n_gram) - 1]]
+            for n_gram, count in n_gram_counts.items()
+            if context_counts.get(n_gram[:len(n_gram) - 1])
+        }
+        if not self._n_gram_frequencies:
+            return 1
+        return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
@@ -313,8 +332,8 @@ class NGramLanguageModel:
         limit = len(encoded_corpus) - self._n_gram_size + 1
         if limit <= 0:
             return None
-        extracted_n_grams = [encoded_corpus[index:index + self._n_gram_size] for index in range(limit)]
-        return tuple(extracted_n_grams)
+        n_grams = [encoded_corpus[index:index + self._n_gram_size] for index in range(limit)]
+        return tuple(n_grams)
 
         
 class GreedyTextGenerator:
