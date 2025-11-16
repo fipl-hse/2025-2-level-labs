@@ -776,7 +776,7 @@ class BackOffGenerator:
             candidates = self._get_next_token(tuple(generated_seq))
             if candidates is None or not candidates:
                 break
-            sorted_candidates = sorted(candidates.items(), key=lambda x: (-x[1], x[0]))
+            sorted_candidates = sorted(candidates.items(), key=lambda x: (-x[1], -x[0]))
             best_candidate = sorted_candidates[0][0]
             generated_seq.append(best_candidate)
         return self._text_processor.decode(tuple(generated_seq))
