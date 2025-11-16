@@ -8,7 +8,7 @@ Beam-search and natural language generation evaluation
 import json
 from math import log
 
-from lab_1_keywords_tfidf.main import check_positive_int, check_dict, check_list
+from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 
 
 class TextProcessor:
@@ -75,7 +75,7 @@ class TextProcessor:
         In case of corrupt input arguments or arguments not included in storage,
         None is returned
         """
-        if not isinstance(element, str):
+        if not isinstance(element, str) or element not in self._storage:
             return None
         return self._storage.get(element)
 
@@ -100,7 +100,9 @@ class TextProcessor:
 
         In case of corrupt input arguments or arguments not included in storage, None is returned
         """
-        if not isinstance(element_id, int):
+        if (not isinstance(element_id, int)
+            or isinstance(element_id, bool)
+            or element_id not in self._storage.values()):
             return None
         for token, id in self._storage.items():
             if id == element_id:
@@ -124,7 +126,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(text, str):
+        if not isinstance(text, str) or not text:
             return None
         tokens = self._tokenize(text)
         if tokens is None:
@@ -192,7 +194,6 @@ class TextProcessor:
             for symbol in n_gram:
                 if symbol.isalpha():
                     self._put(symbol.lower())
-        self._storage = dict(sorted(self._storage.items(), key=lambda item: item[1]))
 
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
@@ -458,8 +459,8 @@ class BeamSearcher:
             return None
         if not candidates:
             return []
-        candidates = sorted(candidates.items(), key=lambda item: item[1], reverse=True)
-        return candidates[:self._beam_width]
+        best_candidates = sorted(candidates.items(), key=lambda item: item[1], reverse=True)
+        return best_candidates[:self._beam_width]
 
     def continue_sequence(
         self,
@@ -602,6 +603,9 @@ class BeamSearchTextGenerator:
 
         In case of corrupt input arguments return None.
         """
+        if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
+            return None
+        return self.beam_searcher.get_next_token(sequence_to_continue)
 
 
 class NGramLanguageModelReader:
