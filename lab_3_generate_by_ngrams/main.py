@@ -605,15 +605,17 @@ class BeamSearchTextGenerator:
                     )
                 if new_sequence_candidates is None:
                     continue
-                new_sequence_candidates = self.beam_searcher.prune_sequence_candidates(new_sequence_candidates)
+                new_sequence_candidates = self.beam_searcher.prune_sequence_candidates(
+                    new_sequence_candidates
+                    )
                 if new_sequence_candidates is None:
                     return None
                 sequence_candidates = new_sequence_candidates
         best_frequency = min(sequence_candidates.values())
         for key, value in sequence_candidates.items():
             if value == best_frequency:
-                best_sequence = key
-        return self._text_processor.decode(best_sequence)
+                return self._text_processor.decode(key)
+        return None
 
 
     def _get_next_token(
