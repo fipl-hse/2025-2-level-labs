@@ -4,7 +4,12 @@ Generation by NGrams starter
 
 # pylint:disable=unused-import, unused-variable
 
-from lab_3_generate_by_ngrams.main import GreedyTextGenerator, NGramLanguageModel, TextProcessor
+from lab_3_generate_by_ngrams.main import (
+    BeamSearchTextGenerator,
+    GreedyTextGenerator,
+    NGramLanguageModel,
+    TextProcessor,
+)
 
 
 def main() -> None:
@@ -21,7 +26,8 @@ def main() -> None:
     language_model = NGramLanguageModel(encoded_text, 7)
     language_model.build()
     greedy_generator = GreedyTextGenerator(language_model, processor)
-    result = greedy_generator.run(51, "Vernon")
+    beam_generator = BeamSearchTextGenerator(language_model, processor, 7)
+    result = beam_generator.run("Vernon", 56)
     print(result)
     assert result
 
