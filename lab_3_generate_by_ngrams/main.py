@@ -152,10 +152,7 @@ class TextProcessor:
         """
         if not isinstance(element, str) or len(element) != 1:
             return None
-        if (element == self._end_of_word_token
-            and self._end_of_word_token not in self._storage):
-                self._storage[self._end_of_word_token] = 0
-        else:
+        if element not in self._storage:
             self._storage[element] = len(self._storage)
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
@@ -188,6 +185,12 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
+        if not isinstance(content, dict) or not content:
+            return None
+        for n_gram in content["freq"]:
+            for symbol in n_gram:
+                if symbol.isalpha():
+                    self._put(symbol)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
@@ -322,7 +325,7 @@ class NGramLanguageModel:
             return None
         context = sequence[-(self._n_gram_size - 1):]
         next_token = {
-            n_gram[-1]: frequency
+            n_gram[-1]:frequency
             for n_gram, frequency in self._n_gram_frequencies.items()
             if n_gram[:-1] == context
         }
