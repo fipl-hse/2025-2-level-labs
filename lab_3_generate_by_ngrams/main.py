@@ -4,12 +4,15 @@ Lab 3.
 Beam-search and natural language generation evaluation
 """
 
-# pylint:disable=too-few-public-methods, unused-import
 import json
-import string
 import math
+import string
+
+# pylint:disable=too-few-public-methods, unused-import
 from copy import deepcopy
+
 from lab_1_keywords_tfidf.main import check_positive_int
+
 
 class TextProcessor:
     """
@@ -151,7 +154,6 @@ class TextProcessor:
             return None
         if element not in self._storage:
             self._storage[element] = len(self._storage)
-        return self._storage[element]
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
@@ -187,7 +189,7 @@ class TextProcessor:
             content (dict): ngrams from external JSON
         """
         if not isinstance(content, dict) or not content:
-            return None
+            return
 
         freq = content.get("freq")
 
@@ -283,7 +285,7 @@ class NGramLanguageModel:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
         if not isinstance(frequencies, dict) or not frequencies:
-            return None
+            return
         self._n_gram_frequencies = frequencies
 
     def build(self) -> int:  # type: ignore[empty-body]
@@ -305,7 +307,7 @@ class NGramLanguageModel:
             return 1
         n_gram_counts = {}
         prefix_counts = {}
-        n = self._n_gram_size
+        n_gram = self._n_gram_size
         for n_gram in n_grams:
             n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
             prefix = n_gram[:-1]
@@ -509,7 +511,10 @@ class BeamSearcher:
         if (
             not isinstance(sequence, tuple) or
             not isinstance(next_tokens, list) or
-            not isinstance(sequence_candidates, dict) or
+            not isinstance(sequence_candidates, dict)
+        ):
+            return None
+        if (            
             len(next_tokens) > self._beam_width or
             sequence not in sequence_candidates or
             len(next_tokens) == 0
@@ -598,7 +603,7 @@ class BeamSearchTextGenerator:
                 or not prompt.strip()
                 or not check_positive_int(seq_len)
             ):
-                return None
+            return None
 
         encoded_prompt = self._text_processor.encode(prompt)
         if not encoded_prompt:
@@ -612,10 +617,10 @@ class BeamSearchTextGenerator:
                 if next_tokens is None:
                     return None
 
-                continued = self.beam_searcher.continue_sequence(sequence, next_tokens, sequence_candidates)
+                continued = self.beam_searcher.continue_sequence(sequence,next_tokens, sequence_candidates)
                 if continued is None:
                     continue
-                
+
                 pruned_candidates = self.beam_searcher.prune_sequence_candidates(continued)
                 if pruned_candidates is None:
                     return None
@@ -708,8 +713,8 @@ class NGramLanguageModelReader:
             cleaned = raw_ngram.replace(" ", eow)
 
             filtered = "".join(
-                ch.lower() 
-                for ch in cleaned 
+                ch.lower()
+                for ch in cleaned
                 if ch.isalpha() or ch == eow
             )
 
@@ -773,7 +778,7 @@ class BackOffGenerator:
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
         """
         self._language_models = {model.get_n_gram_size(): model for model in language_models}
-        self._text_processor = text_processor 
+        self._text_processor = text_processor
 
     def run(self, seq_len: int, prompt: str) -> str | None:
         """
@@ -806,7 +811,7 @@ class BackOffGenerator:
             if not candidates:
                 break
 
-            next_token_id = max(candidates, key=candidates.get)
+            next_token_id = max(candidates, key=lambda k: candidates[k])
             encoded_sequence_list.append(next_token_id)
             counter += 1
 
@@ -825,7 +830,8 @@ class BackOffGenerator:
 
         In case of corrupt input arguments return None.
         """
-        if (not isinstance(sequence_to_continue, tuple) or not sequence_to_continue or not self._language_models):
+        if (not isinstance(sequence_to_continue, tuple) or not
+        sequence_to_continue or not self._language_models):
             return None
 
         ngram_sizes = sorted(self._language_models.keys(), reverse=True)
