@@ -31,7 +31,7 @@ def main() -> None:
                 model_n,
                 reader.get_text_processor()
                 ).run(10, 'Vernon')
-            print(f"Loaded model {n_size}-gram: {greedy_result}")
+            print(f"\nLoaded model {n_size}-gram: {greedy_result}")
     model = NGramLanguageModel(encoded, 7)
     model.build()
     print(f'\nGreedy: {GreedyTextGenerator(model, processor).run(51, "Vernon")}')
@@ -44,6 +44,25 @@ def main() -> None:
         models.append(current_model)
     backoff_result = BackOffGenerator(tuple(models), processor).run(55, 'Vernon')
     print(f'\nBackOff: {backoff_result}')
+    print("\nEXAMPLES WITH LOADED MODELS:")
+    reader = NGramLanguageModelReader('./assets/en_own.json', '_')
+    loaded_processor = reader.get_text_processor()
+    loaded_model_5 = reader.load(5)
+    if loaded_model_5:
+        greedy_loaded = GreedyTextGenerator(loaded_model_5, loaded_processor).run(20, 'Harry')
+        print(f"\nGreedy with loaded 5-gram: {greedy_loaded}")
+    loaded_model_6 = reader.load(6)
+    if loaded_model_6:
+        beam_loaded = BeamSearchTextGenerator(loaded_model_6, loaded_processor, 2).run('Hermione', 25)
+        print(f"\nBeam Search with loaded 6-gram: {beam_loaded}")
+    loaded_models = []
+    for n_size in (3, 4, 5):
+        model = reader.load(n_size)
+        if model:
+            loaded_models.append(model)
+    if loaded_models:
+        backoff_loaded = BackOffGenerator(tuple(loaded_models), loaded_processor).run(30, 'Dumbledore')
+        print(f"\nBackOff with loaded models: {backoff_loaded}")
     result = backoff_result
     assert result
 

@@ -151,7 +151,7 @@ class TextProcessor:
             not isinstance(element, str)
             or not element
             or len(element) != 1
-            ):
+        ):
             return
         if element not in self._storage:
             self._storage[element] = len(self._storage)
@@ -335,7 +335,7 @@ class NGramLanguageModel:
             not isinstance(sequence, tuple)
             or not sequence
             or len(sequence) < self._n_gram_size - 1
-            ):
+        ):
             return None
         context = sequence[-(self._n_gram_size - 1):]
         next_tokens = {}
@@ -410,7 +410,7 @@ class GreedyTextGenerator:
             not isinstance(seq_len, int)
             or not isinstance(prompt, str)
             or not prompt
-            ):
+        ):
             return None
         encoded = self._text_processor.encode(prompt)
         ngram_size = self._model.get_n_gram_size()
@@ -473,7 +473,7 @@ class BeamSearcher:
         return sorted(
             list(probs.items()),
             key=lambda item: item[1], reverse=True
-            )[:self._beam_width]
+        )[:self._beam_width]
 
     def continue_sequence(
         self,
@@ -503,12 +503,12 @@ class BeamSearcher:
             or not isinstance(sequence_candidates, dict)
             or not len(next_tokens) <= self._beam_width
             or sequence not in sequence_candidates
-            ):
+        ):
             return None
         if (
             not sequence
             or not sequence_candidates
-            ):
+        ):
             return None
         new_candidates = sequence_candidates.copy()
         for token in next_tokens:
@@ -537,7 +537,7 @@ class BeamSearcher:
         return dict(
             sorted(sequence_candidates.items(),
             key=lambda item: item[1], reverse=False)[:self._beam_width]
-            )
+        )
 
 
 class BeamSearchTextGenerator:
@@ -586,7 +586,7 @@ class BeamSearchTextGenerator:
             or not prompt
             or not check_positive_int(seq_len)
             or not seq_len
-            ):
+        ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if not encoded_prompt:
@@ -601,7 +601,7 @@ class BeamSearchTextGenerator:
                     sequence,
                     next_tokens,
                     sequence_candidates
-                    )
+                )
                 if continued is None:
                     continue
                 pruned_candidates = self.beam_searcher.prune_sequence_candidates(continued)
@@ -613,7 +613,7 @@ class BeamSearchTextGenerator:
         decoded = self._text_processor.decode(
             min(sequence_candidates.items(),
                 key=lambda x: x[1])[0]
-                )
+            )
         return decoded
 
     def _get_next_token(
@@ -680,7 +680,7 @@ class NGramLanguageModelReader:
             not isinstance(n_gram_size, int)
             or not n_gram_size
             or n_gram_size < 2
-            ):
+        ):
             return None
         cleaned = {}
         for ngram, freq in self._content['freq'].items():
@@ -696,7 +696,7 @@ class NGramLanguageModelReader:
                 cleaned[tuple(processed_chars)] = (
                     cleaned.get(tuple(processed_chars), 0.0) +
                     freq
-                    )
+                )
         context_frequencies = {}
         for ngram, freq in cleaned.items():
             if len(ngram) == n_gram_size:
@@ -766,7 +766,7 @@ class BackOffGenerator:
             or not isinstance(prompt, str)
             or not prompt
             or not seq_len
-            ):
+        ):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
         if not encoded_prompt:
@@ -799,7 +799,7 @@ class BackOffGenerator:
             not isinstance(sequence_to_continue, tuple)
             or not sequence_to_continue
             or not self._language_models
-            ):
+        ):
             return None
         for n_gram_size in self._n_gram_sizes:
             n_gram_model = self._language_models[n_gram_size]
