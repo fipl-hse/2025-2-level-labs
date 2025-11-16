@@ -506,11 +506,7 @@ class BeamSearcher:
         if len(next_tokens) > self._beam_width:
             return None
         for token_prob in next_tokens:
-            if (not isinstance(token_prob, tuple) or
-                len(token_prob) != 2 or
-                not isinstance(token_prob[0], int) or
-                not isinstance(token_prob[1], (int, float)) or
-                token_prob[1] <= 0):
+            if token_prob[1] <= 0:
                 return None
         current_prob = sequence_candidates[sequence]
         del sequence_candidates[sequence]
@@ -609,15 +605,14 @@ class BeamSearchTextGenerator:
                     has_valid_candidates = True
                     continue
                 temp_candidates = {sequence: current_prob}
-                result = self.beam_searcher.continue_sequence(
-                    sequence, next_tokens, temp_candidates
+                continued = self.beam_searcher.continue_sequence(
+                    sequence, next_tokens, temp_candidates.copy()
                 )
-                if result is None:
+                if continued is None:
                     new_candidates[sequence] = current_prob
-                    has_valid_candidates = True
                 else:
-                    new_candidates.update(result)
-                    has_valid_candidates = True
+                    new_candidates.update(continued)
+                has_valid_candidates = True
             if not has_valid_candidates:
                 break
             if not new_candidates:
