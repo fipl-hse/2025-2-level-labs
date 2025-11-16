@@ -413,10 +413,11 @@ class GreedyTextGenerator:
             candidate_tokens = self._model.generate_next_token(tuple(context))
             if candidate_tokens == {} or candidate_tokens is None:
                 break
-            for key, value in candidate_tokens.items():
-                if value == max(candidate_tokens.values()):
-                    next_token = key
-                    break
+            next_token = list(candidate_tokens.keys())[0]
+            # for key, value in candidate_tokens.items():
+            #     if value == max(candidate_tokens.values()):
+            #         next_token = key
+            #         break
             context.append(next_token)
         generated_text = self._text_processor.decode(tuple(context))
         return generated_text
@@ -439,6 +440,8 @@ class BeamSearcher:
             beam_width (int): Number of candidates to consider at each step
             language_model (NGramLanguageModel): A language model to use for next token prediction
         """
+        self._beam_width = beam_width
+        self._model = language_model
 
     def get_next_token(self, sequence: tuple[int, ...]) -> list[tuple[int, float]] | None:
         """
@@ -458,6 +461,13 @@ class BeamSearcher:
 
         In case of corrupt input arguments or methods used return None.
         """
+        if isinstance(sequence, tuple) is False or sequence == ():
+            return None
+        candidates = self._model.generate_next_token(sequence)
+        if candidates is None or candidates == []:
+            return candidates
+        next_tokens = list(candidates.items())[:self._beam_width]
+        return next_tokens
 
     def continue_sequence(
         self,
@@ -481,6 +491,20 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
+        if (
+            isinstance(sequence, tuple) is False
+            or isinstance(next_tokens, list) is False
+            or isinstance(sequence_candidates, dict) is False
+            or sequence == ()
+            or next_tokens == []
+            or sequence_candidates == {}
+        ):
+            return None
+        new_sequence_candidates = {}
+        for key, value in sequence_candidates.items():
+            new_sequence_candidates[key] = value #tried not to affect sequence_candidates
+        
+        return new_sequence_candidates
 
     def prune_sequence_candidates(
         self, sequence_candidates: dict[tuple[int, ...], float]
