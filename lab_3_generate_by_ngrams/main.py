@@ -7,6 +7,7 @@ Beam-search and natural language generation evaluation
 # pylint:disable=too-few-public-methods, unused-import
 import json
 from math import log
+
 from lab_1_keywords_tfidf.main import check_dict, check_list, check_positive_int
 
 
@@ -185,11 +186,9 @@ class TextProcessor:
         for i in corpus:
             if i is None:
                 return None
-            if not self.get_token(i):
+            if self.get_token(i) is None:
                 return None
             decoded_tokens_letters.append(self.get_token(i))
-        if decoded_tokens_letters == []:
-            return None
         decoded_tokens = tuple(decoded_tokens_letters)
         return decoded_tokens
 
