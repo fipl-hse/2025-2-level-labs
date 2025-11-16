@@ -20,15 +20,19 @@ def main() -> None:
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
     result = None
-    processor = TextProcessor(end_of_word_token='_')
-    encoded_content = processor.encode(text)
-    model = NGramLanguageModel(encoded_content, 7)
-    model.build()
-    greedy = GreedyTextGenerator(model, processor)
-    greedy_result = greedy.run(51, 'Vernon')
-    print("Greedy:", greedy_result)
+    processor = TextProcessor('_')
+    encoded_text = processor.encode(text) or ()
+    print(encoded_text)
+    decoded_text = processor.decode(encoded_text) or ()
+    print(decoded_text)
+    model = NGramLanguageModel(encoded_text, 7)
+    frequency = model.build()
+    print(frequency)
+    greedy_generator = GreedyTextGenerator(model, processor)
+    greedy_generator_result = greedy_generator.run(51, 'Vernon')
+    print(greedy_generator_result)
+    result = greedy_generator_result
     assert result
-
 
 if __name__ == "__main__":
     main()
