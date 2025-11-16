@@ -77,7 +77,7 @@ class TextProcessor:
         """
         if not isinstance(element, str) or element not in self._storage:
             return None
-        return self._storage.get(element)
+        return self._storage[element]
 
     def get_end_of_word_token(self) -> str:  # type: ignore[empty-body]
         """
@@ -123,14 +123,14 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(text, str) or text == "":
+        if not text or not isinstance(text, str):
             return None
-        text=self._tokenize(text)
-        if not text:
+        tokens=self._tokenize(text)
+        if not tokens:
             return None
         encoded_text=[]
         for el in text:
-            self._storage=self._put(el)
+            self._put(el)
             code=self.get_id(el)
             if code is None:
                 return None
