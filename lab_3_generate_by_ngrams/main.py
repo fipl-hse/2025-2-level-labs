@@ -416,7 +416,7 @@ class GreedyTextGenerator:
         for _ in range(seq_len):
             context = tuple(sequence[-(n_gram_size - 1):])
             next_token_candidates = self._model.generate_next_token(context)
-            if next_token_candidates is None or not next_token_candidates:
+            if not next_token_candidates:
                 break
             next_token = max(next_token_candidates.items(), key=lambda x: x[1])[0]
             sequence.append(next_token)
@@ -498,9 +498,10 @@ class BeamSearcher:
             or not isinstance(next_tokens, list)
             or not isinstance(sequence_candidates, dict)):
             return None
-        if not next_tokens or not sequence_candidates or not sequence:
-            return None
-        if sequence not in sequence_candidates:
+        if (not next_tokens
+            or not sequence_candidates
+            or not sequence
+            or sequence not in sequence_candidates):
             return None
         if len(next_tokens) > self._beam_width:
             return None
@@ -696,9 +697,11 @@ class NGramLanguageModelReader:
         if not n_grams_frequencies:
             return None
         conditional_probabilities = {
-        n_gram: n_gram_frequency / context_frequencies.get(n_gram[:-1], 0)
-        for n_gram, n_gram_frequency in n_grams_frequencies.items()
-        if context_frequencies.get(n_gram[:-1], 0) > 0}
+            n_gram: n_gram_frequency / context_frequency
+            for n_gram, n_gram_frequency in n_grams_frequencies.items()
+            for context_frequency in [context_frequencies.get(n_gram[:-1], 0)]
+            if context_frequency > 0
+        }
         language_model = NGramLanguageModel(None, n_gram_size)
         language_model.set_n_grams(conditional_probabilities)
         return language_model
