@@ -460,10 +460,10 @@ class BeamSearcher:
         if isinstance(sequence, tuple) is False or sequence == ():
             return None
         candidates = self._model.generate_next_token(sequence)
-        if candidates == {}:
-            return []
         if candidates is None:
             return None
+        if not candidates:
+            return []
         next_tokens = list(candidates.items())[:self._beam_width]
         return next_tokens
 
