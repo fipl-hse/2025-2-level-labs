@@ -418,7 +418,7 @@ class GreedyTextGenerator:
             next_token_candidates = self._model.generate_next_token(context)
             if next_token_candidates is None or not next_token_candidates:
                 break
-            next_token = list(next_token_candidates.keys())[0]
+            next_token = max(next_token_candidates.items(), key=lambda x: x[1])[0]
             sequence.append(next_token)
         decoded_text = self._text_processor.decode(tuple(sequence))
         return decoded_text
