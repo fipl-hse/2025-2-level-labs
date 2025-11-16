@@ -58,18 +58,17 @@ def main() -> None:
             if sentence_filtered else None
         )
 
-        if not all([sentence_tokens, sentence_filtered, out_of_vocab_words]):
+        if not (sentence_tokens, sentence_filtered, out_of_vocab_words):
             continue
 
     if out_of_vocab_words:
         corrections = []
         for wrong_word in out_of_vocab_words:
-            correct_jaccard = find_correct_word(wrong_word, built_voc, "jaccard", None)
-            correct_frequency = find_correct_word(
-                wrong_word, built_voc, "frequency-based", alphabet
+            correct_word = (
+                find_correct_word(wrong_word, built_voc, "frequency-based", alphabet) or
+                find_correct_word(wrong_word, built_voc, "levenshtein", None) or
+                find_correct_word(wrong_word, built_voc, "jaccard", None)
             )
-            correct_levenshtein = find_correct_word(wrong_word, built_voc, "levenshtein", None)
-            correct_word = correct_frequency or correct_levenshtein or correct_jaccard
 
             if correct_word:
                 corrections.append((wrong_word, correct_word))
