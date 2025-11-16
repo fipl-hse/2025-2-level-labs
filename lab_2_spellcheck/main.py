@@ -46,7 +46,9 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, can_be_empty=False) or not check_dict(vocabulary, str, float, can_be_empty=False):
+    if not check_list(tokens, str, can_be_empty=False) or not check_dict(
+        vocabulary, str, float, can_be_empty=False
+    ):
         return None
 
     return [token for token in tokens if token not in vocabulary]
@@ -156,14 +158,16 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if (not isinstance(wrong_word, str) 
+    if (
+        not isinstance(wrong_word, str)
         or not check_dict(vocabulary, str, float, can_be_empty=False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-        or (alphabet is not None and not check_list(alphabet, str, can_be_empty=True))):
+        or (alphabet is not None and not check_list(alphabet, str, can_be_empty=True))
+    ):
         return None
 
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
-    
+
     if distances is None or not distances:
         return None
 
@@ -308,12 +312,7 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if (
-        not isinstance(word, str)
-        or not check_list(alphabet, str, True)
-        or not word
-        or not alphabet
-    ):
+    if not isinstance(word, str) or not check_list(alphabet, str, True) or not word or not alphabet:
         return []
     return sorted(
         [
