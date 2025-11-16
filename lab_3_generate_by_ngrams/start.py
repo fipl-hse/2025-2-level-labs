@@ -22,7 +22,7 @@ def main() -> None:
     result = None
     text_processor = TextProcessor(end_of_word_token = '_')
     encoded_text = text_processor.encode(text)
-    if not isinstance(encoded_text, tuple) and not encoded_text:
+    if encoded_text is None:
         return
 
     decoded_text = text_processor.decode(encoded_text) or tuple()

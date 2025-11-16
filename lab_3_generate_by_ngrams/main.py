@@ -368,7 +368,9 @@ class NGramLanguageModel:
         for n_gram, frequency in self._n_gram_frequencies.items():
             if n_gram[:context_length] == context:
                 next_element = n_gram[-1]
-                vocabulary_of_next_token[next_element] = vocabulary_of_next_token.get(next_element, 0) + frequency
+                vocabulary_of_next_token[next_element] = (
+                    vocabulary_of_next_token.get(next_element, 0) + frequency
+                )
 
         if vocabulary_of_next_token:
             sorted_tokens = dict(sorted(
@@ -534,7 +536,7 @@ class BeamSearcher:
         for token, probability in next_tokens.items():
             valid_tokens.append((token, probability))
 
-        valid_tokens.sort(key = lambda x: x[1], reverse = True)
+        valid_tokens.sort(key = lambda x: (-x[1], x[0]))
         return valid_tokens[:self._beam_width]
 
     def continue_sequence(
