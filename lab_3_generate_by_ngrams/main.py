@@ -140,7 +140,6 @@ class TextProcessor:
                 return None
             encoded.append(id)
         return tuple(encoded)
-        
 
 
     def _put(self, element: str) -> None:
@@ -361,8 +360,7 @@ class NGramLanguageModel:
             return None
         n_grams = [encoded_corpus[index:index + self._n_gram_size] for index in range(limit)]
         return tuple(n_grams)
-
-        
+    
 class GreedyTextGenerator:
     """
     Greedy text generation by N-grams.
@@ -561,9 +559,9 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if (not isinstance(prompt, str) 
-            or not isinstance(seq_len, int) 
-            or not prompt 
+        if (not isinstance(prompt, str)
+            or not isinstance(seq_len, int)
+            or not prompt
             or seq_len <= 0):
             return None
         encoded = self._text_processor.encode(prompt)
@@ -729,8 +727,8 @@ class BackOffGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if (not check_positive_int(seq_len) 
-            or not isinstance(prompt, str) 
+        if (not check_positive_int(seq_len)
+            or not isinstance(prompt, str)
             or not prompt):
             return None
         encoded = self._text_processor.encode(prompt)

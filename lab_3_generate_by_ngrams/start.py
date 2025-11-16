@@ -36,10 +36,10 @@ def main() -> None:
         model = NGramLanguageModel(encoded, ngram_size)
         model.build()
         models.append(model)
-    BackOff_generator = BackOffGenerator(tuple(models), text_processor)
-    result_BackOff = BackOff_generator.run(55, 'Vernon')
-    print(result_BackOff)
-    result = result_BackOff
+    backoff_generator = BackOffGenerator(tuple(models), text_processor)
+    result_backoff = backoff_generator.run(55, 'Vernon')
+    print(result_backoff)
+    result = result_backoff
     assert result
 
 
