@@ -35,11 +35,11 @@ def main() -> None:
     print(f"Model build status: {build_status}")
 
     greedy_gen = GreedyTextGenerator(language_model, text_processor)
-    greedy_output = greedy_gen.run(51, 'Vernon')
-    print(f"Greedy generation result: {greedy_output}")
+    print(f"Greedy generation result: {greedy_gen.run(51, 'Vernon')}")
 
     beam_gen = BeamSearchTextGenerator(language_model, text_processor, 3)
-    print(f"Beam search generation result: {beam_gen.run('Vernon', 56)}")
+    beam_output = beam_gen.run('Vernon', 56)
+    print(f"Beam search generation result: {beam_output}")
 
     models = []
     for ngram_size in (4, 5, 6):
