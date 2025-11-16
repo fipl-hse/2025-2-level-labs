@@ -229,7 +229,7 @@ class TextProcessor:
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
         decoded_text = "".join(decoded_corpus).replace("_", " ").capitalize()
-        if decoded_text[-1] == " ":
+        if decoded_text.endswith(" "):
             return decoded_text[:-1] + "."
         return decoded_text + "."
 
@@ -449,7 +449,7 @@ class BeamSearcher:
             return []
         result = []
         for token, freq in next_tokens.items():
-            result.append((token, float(freq)))
+            result.append((token, freq))
         return sorted(result, key=lambda item: item[1], reverse=True)[:self._beam_width]
 
     def continue_sequence(
