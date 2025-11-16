@@ -9,6 +9,7 @@ import json
 import string
 import math
 from copy import deepcopy
+from lab_1_keywords_tfidf.main import check_positive_int
 
 class TextProcessor:
     """
@@ -583,8 +584,7 @@ class BeamSearchTextGenerator:
         if (
                 not isinstance(prompt, str)
                 or not prompt.strip()
-                or not isinstance(seq_len, int)
-                or seq_len <= 0
+                or not check_positive_int(seq_len)
             ):
                 return None
 
@@ -595,10 +595,7 @@ class BeamSearchTextGenerator:
         sequence_candidates = {encoded_prompt: 0.0}
 
         for _ in range(seq_len):
-            current_sequences = list(sequence_candidates.keys())
-            new_candidates = {}
-
-            for sequence in current_sequences:
+            for sequence in sequence_candidates:
                 next_tokens = self._get_next_token(sequence)
                 if next_tokens is None:
                     return None
@@ -606,14 +603,13 @@ class BeamSearchTextGenerator:
                 continued = self.beam_searcher.continue_sequence(sequence, next_tokens, sequence_candidates)
                 if continued is None:
                     continue
+                
+                pruned_candidates = self.beam_searcher.prune_sequence_candidates(continued)
+                if pruned_candidates is None:
+                    return None
+                sequence_candidates = pruned_candidates
 
-                new_candidates.update(continued)
-
-            if not new_candidates:
-                return None
-
-            sequence_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
-            if sequence_candidates is None:
+            if not sequence_candidates:
                 return None
 
         best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
