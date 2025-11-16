@@ -59,14 +59,14 @@ class TextProcessor:
             processed_text[len(processed_text) - 1] = self._end_of_word_token
 
         tokens_list = []
-        for index in range(len(processed_text)):
-            if (processed_text[index].isalpha() or
-                (processed_text[index] == self._end_of_word_token and
+        for index, element in enumerate(processed_text):
+            if (element.isalpha() or
+                (element == self._end_of_word_token and
                 tokens_list[len(tokens_list) - 1] != self._end_of_word_token)
             ):
-                tokens_list.append(processed_text[index])
+                tokens_list.append(element)
 
-        if tokens_list == []:
+        if not tokens_list:
             return None
         return tuple(tokens_list)
 
@@ -140,7 +140,7 @@ class TextProcessor:
             if element_id is None:
                 return None
             encoded_text.append(element_id)
-        if encoded_text == []:
+        if not encoded_text:
             return None
         return tuple(encoded_text)
 
@@ -306,10 +306,8 @@ class NGramLanguageModel:
         extracted_n_grams = self._extract_n_grams(self._encoded_corpus)
         if extracted_n_grams is None:
             return 1
-        
         n_gram_count = {}
         context_count = {}
-
         for n_gram in extracted_n_grams:
             n_gram_count[n_gram] = n_gram_count.get(n_gram, 0) + 1
             context_count[n_gram[:-1]] = context_count.get(n_gram[:-1], 0) + 1
@@ -339,9 +337,9 @@ class NGramLanguageModel:
         if len(sequence) < len(context):
             return None
         frequencies = self._n_gram_frequencies
-        for n_gram in frequencies:
+        for n_gram, frequency in frequencies.items():
             if n_gram[:-1] == context:
-                next_tokens[n_gram[-1]] = frequencies[n_gram]
+                next_tokens[n_gram[-1]] = frequency
         next_tokens = dict(
             sorted(next_tokens.items(), key=lambda item: (item[1], item[0]), reverse=True)
             )
@@ -493,21 +491,19 @@ class BeamSearcher:
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
         if (
-            isinstance(sequence, tuple) is False
-            or isinstance(next_tokens, list) is False
-            or isinstance(sequence_candidates, dict) is False
-            or sequence == ()
-            or next_tokens == []
-            or sequence_candidates == {}
+            not isinstance(sequence, tuple)
+            or not isinstance(next_tokens, list)
+            or not isinstance(sequence_candidates, dict)
+            or not sequence
+            or not next_tokens
+            or not sequence_candidates
             or sequence not in sequence_candidates
             or len(next_tokens) > self._beam_width
         ):
             return None
-        
         new_sequence_candidates = {}
         for key, value in sequence_candidates.items():
             new_sequence_candidates[key] = value #tried not to affect sequence_candidates value
-        
         next_tokens_dict = dict(next_tokens)
         for token in next_tokens_dict:
             sequence_list = list(sequence)
@@ -515,9 +511,7 @@ class BeamSearcher:
             new_sequence_candidates[tuple(sequence_list)] = (
                 new_sequence_candidates[sequence] - math.log(next_tokens_dict[token])
                 )
-            
         new_sequence_candidates.pop(sequence)
-        
         return new_sequence_candidates
 
     def prune_sequence_candidates(
