@@ -137,6 +137,7 @@ class TextProcessor:
             return None
 
         encoded_corpus = []
+        tokenized_text = tuple(tokenized_text)
 
         for token in tokenized_text:
             self._put(token)
