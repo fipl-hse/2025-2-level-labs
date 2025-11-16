@@ -786,6 +786,7 @@ class NGramLanguageModelReader:
 
             if len(encoded_ngram) == n_gram_size:
                 ngram_tuple = tuple(encoded_ngram)
+
                 current_freq = absolute_frequencies.get(ngram_tuple, 0)
                 absolute_frequencies[ngram_tuple] = current_freq + freq_value
 
