@@ -307,7 +307,6 @@ class NGramLanguageModel:
             return 1
         n_gram_counts = {}
         prefix_counts = {}
-        n_gram = self._n_gram_size
         for n_gram in n_grams:
             n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
             prefix = n_gram[:-1]
@@ -617,7 +616,7 @@ class BeamSearchTextGenerator:
                 if next_tokens is None:
                     return None
 
-                continued = (self.beam_searcher.continue_sequence(sequence, 
+                continued = (self.beam_searcher.continue_sequence(sequence,
                         next_tokens, sequence_candidates))
                 if continued is None:
                     continue
@@ -727,8 +726,7 @@ class NGramLanguageModelReader:
                 ngram_tuple = tuple(ngram_ids)
                 ngram_counts[ngram_tuple] = ngram_counts.get(ngram_tuple, 0) + count
 
-                prefix_tuple = ngram_tuple[:-1]
-                prefix_counts[prefix_tuple] = prefix_counts.get(prefix_tuple, 0) + count
+                prefix_counts[ngram_tuple[:-1]] = prefix_counts.get(ngram_tuple[:-1], 0) + count
 
         ngram_freqs = {}
         for ngram_tuple, ngram_count in ngram_counts.items():

@@ -39,8 +39,7 @@ def main() -> None:
     print(f"Greedy generation result: {greedy_output}")
 
     beam_gen = BeamSearchTextGenerator(language_model, text_processor, 3)
-    beam_output = beam_gen.run('Vernon', 56)
-    print(f"Beam search generation result: {beam_output}")
+    print(f"Beam search generation result: {beam_gen.run('Vernon', 56)}")
 
     models = []
     for ngram_size in (4, 5, 6):
