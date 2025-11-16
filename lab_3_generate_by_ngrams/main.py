@@ -597,7 +597,7 @@ class BeamSearchTextGenerator:
                     return None
                 next_token_candidates = sorted(
                     next_token_candidates, key=lambda item: item[1], reverse=True
-                    )[:self._beam_width]пше 
+                    )[:self._beam_width]
                 new_sequence_candidates = self.beam_searcher.continue_sequence(
                     sequence,
                     next_token_candidates,
