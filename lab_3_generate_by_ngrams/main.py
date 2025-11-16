@@ -590,7 +590,7 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if (not isinstance(prompt, str) or not prompt or 
+        if (not isinstance(prompt, str) or not prompt or
             not isinstance(seq_len, int) or seq_len <= 0):
             return None
         encoded_prompt = self._text_processor.encode(prompt)
