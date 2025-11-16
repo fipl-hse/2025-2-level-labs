@@ -22,25 +22,25 @@ def main() -> None:
     text_processor = TextProcessor("_")
     encoded_text = text_processor.encode(text)
     if not encoded_text:
-        return None
+        return
     print(f"\nEncoded Text: {encoded_text}")
     decoded_text = text_processor.decode(encoded_text)
     if not decoded_text:
-        return None
+        return
     print(f"\nDecoded Text: {decoded_text}")
     language_model=NGramLanguageModel(encoded_text, n_gram_size = 7)
     build = language_model.build()
     if build == 1:
-        return None
+        return
     greedy_generator = GreedyTextGenerator(language_model, text_processor)
     greedy_text = greedy_generator.run(51, "Vernon")
     if not greedy_text:
-        return None
+        return
     print(f"\nGreedy text: {greedy_text}")
     beam_generator = BeamSearchTextGenerator(language_model, text_processor, beam_width=3)
     beam_text = beam_generator.run("Vernon", 56)
     if not beam_text:
-        return None
+        return
     print(f"\nBeam Search Generator: {beam_text}")
 
     result = beam_text

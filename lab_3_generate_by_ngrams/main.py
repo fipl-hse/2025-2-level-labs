@@ -393,7 +393,7 @@ class GreedyTextGenerator:
         None is returned
         """
         if not isinstance(seq_len, int) or not seq_len:
-            return
+            return None
         if not isinstance(prompt, str) or not prompt:
             return None
         encoded_prompt = self._text_processor.encode(prompt)
@@ -404,7 +404,7 @@ class GreedyTextGenerator:
             seq = tuple(all_tokens[-(self._model.get_n_gram_size() - 1):])
             candidates = self._model.generate_next_token(seq)
             if not candidates:
-                break
+                continue
             candidates=dict(sorted(candidates.items(), reverse=True))
             next_token = (
                 [key for key, value in candidates.items() if value==max(candidates.values())][0]
@@ -577,8 +577,6 @@ class BeamSearchTextGenerator:
         if not sequence:
             return None
         candidates = {sequence: 0.0}
-        if not candidates:
-            return None
         for _ in range(seq_len):
             for candidate in candidates:
                 tokens = self._get_next_token(candidate)
@@ -589,9 +587,10 @@ class BeamSearchTextGenerator:
                     )
                 if not sequence_candidates:
                     break
-                candidates = self.beam_searcher.prune_sequence_candidates(sequence_candidates)
-                if not candidates:
+                candidates_top = self.beam_searcher.prune_sequence_candidates(sequence_candidates)
+                if not candidates_top:
                     return None
+                candidates = candidates_top
         sequence = list(candidates)[-1]
         return self._text_processor.decode(sequence)
 
