@@ -243,7 +243,7 @@ class TextProcessor:
             return None
         postprocessed_text = ''.join(decoded_corpus)
         postprocessed_text = postprocessed_text.replace('_', ' ')
-        postprocessed_text = postprocessed_text[0].upper() + postprocessed_text[1:-1] + '.'
+        postprocessed_text = postprocessed_text[:-1].capitalize() + '.'
         return postprocessed_text
 
 
