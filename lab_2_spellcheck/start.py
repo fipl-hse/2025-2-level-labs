@@ -60,8 +60,7 @@ def main() -> None:
 
         if not (sentence_tokens, sentence_filtered, out_of_vocab_words):
             continue
-
-    if out_of_vocab_words:
+        
         corrections = []
         for wrong_word in out_of_vocab_words:
             correct_word = (
