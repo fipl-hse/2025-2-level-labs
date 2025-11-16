@@ -505,8 +505,8 @@ class BeamSearcher:
             return None
         if len(next_tokens) > self._beam_width:
             return None
-        for token_prob in next_tokens:
-            if token_prob[1] <= 0:
+        for token, prob in next_tokens:
+            if prob <= 0:
                 return None
         current_prob = sequence_candidates[sequence]
         del sequence_candidates[sequence]
@@ -617,9 +617,10 @@ class BeamSearchTextGenerator:
                 break
             if not new_candidates:
                 break
-            sequence_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
-            if not sequence_candidates:
-                break
+            pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+            if pruned_candidates is None:
+                return None
+            sequence_candidates = pruned_candidates
         if not sequence_candidates:
             return None
         best_sequence = min(sequence_candidates.items(), key=lambda x: (x[1], x[0]))[0]
