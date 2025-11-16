@@ -161,13 +161,12 @@ class TextProcessor:
         """
         if not isinstance(content, dict) or not content:
             return
-        for key, ngrams in content.items():
-            if key == 'freq':
-                for ngram in ngrams:
-                    if isinstance(ngram, str):
-                        ngram = ngram.lower()
-                        for token in ngram and token.isalpha():
-                                self._put(token)
+        for ngram in content['freq']:
+            if isinstance(ngram, str):
+                ngram = ngram.lower()
+                for token in ngram:
+                    if token.isalpha():
+                        self._put(token)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
