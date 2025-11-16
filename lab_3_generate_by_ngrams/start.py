@@ -28,16 +28,16 @@ def main() -> None:
     decoded_content = text_processor.decode(encoded_content) or ""
     print("Decoded text sample:", decoded_content[:200])
 
-    language_model = NGramLanguageModel(encoded_content, 6)
+    language_model = NGramLanguageModel(encoded_content, 7)
     build_status = language_model.build()
     print(f"Model build status: {build_status}")
 
     greedy_gen = GreedyTextGenerator(language_model, text_processor)
-    greedy_output = greedy_gen.run(31, 'Harry')
+    greedy_output = greedy_gen.run(56, 'Vernon')
     print(f"Greedy generation result: {greedy_output}")
 
     beam_gen = BeamSearchTextGenerator(language_model, text_processor, 3)
-    beam_output = beam_gen.run('Harry', 31)
+    beam_output = beam_gen.run('Vernon', 56)
     print(f"Beam search generation result: {beam_output}")
 
     result = beam_output
