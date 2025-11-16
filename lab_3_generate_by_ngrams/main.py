@@ -176,7 +176,7 @@ class TextProcessor:
         if not decoded_corpus:
             return None
         return self._postprocess_decoded_text(decoded_corpus)
-    
+
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
@@ -303,10 +303,17 @@ class NGramLanguageModel:
         n_grams=self._extract_n_grams(self._encoded_corpus)
         if not n_grams:
             return 1
-        n_grams_minus_1 = [el[:self._n_gram_size-1] for el in n_grams]
+        n_grams_count = {}
+        prefixes_counts = {}
         for el in n_grams:
-            probability = n_grams.count(el) / n_grams_minus_1.count(el[:self._n_gram_size-1])
-            self._n_gram_frequencies[el]=probability
+            prefix_ngram = el[:self._n_gram_size-1]
+            n_grams_count[el] = n_grams_count.get(el, 0) + 1
+            prefixes_counts[prefix_ngram] = prefixes_counts.get(prefix_ngram, 0) + 1
+        for n_gram, count in n_grams_count.items():
+            prefix = n_gram[:self._n_gram_size-1]
+            prefix_count = prefixes_counts.get(prefix)
+            probability = count / prefix_count
+            self._n_gram_frequencies[n_gram] = probability
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
@@ -402,7 +409,9 @@ class GreedyTextGenerator:
             if not candidates:
                 break
             candidates=dict(sorted(candidates.items(), reverse=True))
-            next_token = [key for key, value in candidates.items() if value==max(candidates.values())][0]
+            next_token = (
+                [key for key, value in candidates.items() if value==max(candidates.values())][0]
+                 )
             all_tokens.append(next_token)
         return self._text_processor.decode(tuple(all_tokens))
 
@@ -454,7 +463,7 @@ class BeamSearcher:
             return []
         sorted_values=sorted(probabilities.values(), reverse=True)
         probabilities={k: v for v in sorted_values for k in probabilities if v==probabilities[k]}
-        return list(probabilities.items())
+        return list(probabilities.items())[:self._beam_width]
 
 
     def continue_sequence(
@@ -516,7 +525,8 @@ class BeamSearcher:
         if len(sequence_candidates)>self._beam_width:
             sorted_values=sorted(sequence_candidates.values(), reverse=True)
             sequence_candidates={
-                k: v for v in sorted_values for k in sequence_candidates if v==sequence_candidates[k]
+                k: v for v in sorted_values for k in sequence_candidates 
+                if v==sequence_candidates[k]
                 }
             return dict(list(sequence_candidates.items())[-self._beam_width:])
         return sequence_candidates
@@ -575,7 +585,9 @@ class BeamSearchTextGenerator:
                 tokens = self._get_next_token(candidate)
                 if not tokens:
                     return None
-                sequence_candidates = self.beam_searcher.continue_sequence(candidate, tokens, candidates)
+                sequence_candidates = (
+                    self.beam_searcher.continue_sequence(candidate, tokens, candidates)
+                    )
                 if not sequence_candidates:
                     break
                 candidates = self.beam_searcher.prune_sequence_candidates(sequence_candidates)
