@@ -125,17 +125,17 @@ class TextProcessor:
         """
         if not text or not isinstance(text, str):
             return None
-        tokens=self._tokenize(text)
-        if not tokens:
+        tokenized_text = self._tokenize(text)
+        if tokenized_text is None:
             return None
-        encoded_text=[]
-        for el in text:
-            self._put(el)
-            code=self.get_id(el)
-            if code is None:
+        encoded_corpus = []
+        for token in tokenized_text:
+            self._put(token)
+            token_id = self.get_id(token)
+            if token_id is None:
                 return None
-            encoded_text.append(code)
-        return tuple(encoded_text)
+            encoded_corpus.append(token_id)
+        return tuple(encoded_corpus)
 
     def _put(self, element: str) -> None:
         """
@@ -197,17 +197,15 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(corpus, tuple) or not corpus:
+        if not corpus or not isinstance(corpus, tuple):
             return None
-        decoded_tokens=[]
-        for el in corpus:
-            character = self.get_token(el)
-            if not character:
+        decoded_corpus = []
+        for code in corpus:
+            decoded_token = self.get_token(code)
+            if decoded_token is None:
                 return None
-            decoded_tokens.append(character)
-        if not decoded_tokens:
-            return None
-        return tuple(decoded_tokens)
+            decoded_corpus.append(decoded_token)
+        return tuple(decoded_corpus)
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
         """
@@ -224,13 +222,12 @@ class TextProcessor:
 
         In case of corrupt input arguments, None is returned
         """
-        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
+        if not decoded_corpus or not isinstance(decoded_corpus, tuple):
             return None
-        decoded_text=''.join(decoded_corpus).replace(self._end_of_word_token, " ").capitalize()
-        if not decoded_text:
-            return None
-        clean_decoded_text = decoded_text.strip() + "."
-        return clean_decoded_text
+        postprocessed_text = ''.join(decoded_corpus)
+        postprocessed_text = postprocessed_text.replace('_', ' ')
+        postprocessed_text = postprocessed_text[:-1].capitalize() + '.'
+        return postprocessed_text
 
 
 class NGramLanguageModel:
