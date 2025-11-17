@@ -205,9 +205,9 @@ class TextProcessor:
         for ngram in freq_dict.keys():
             for char in ngram:
                 if char == self._end_of_word_token or char.isalpha():
-                    c = char.lower()
-                    if c not in unique_chars:
-                        unique_chars.append(c)
+                    char_lower = char.lower()
+                    if char_lower not in unique_chars:
+                        unique_chars.append(char_lower)
         for char in unique_chars:
             self._put(char)
 
@@ -251,19 +251,12 @@ class TextProcessor:
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
-        result_chars = []
-        prev_was_space = False
-        for token in decoded_corpus:
-            if token == self._end_of_word_token:
-                if not prev_was_space and result_chars:
-                    result_chars.append(' ')
-                    prev_was_space = True
-                continue
-            result_chars.append(token)
-            prev_was_space = False
-        result_str = ''.join(result_chars).strip()
-        if not result_str:
+        temp_text = ''.join(' ' if token == self._end_of_word_token else token
+                        for token in decoded_corpus)
+        words = temp_text.split()
+        if not words:
             return None
+        result_str = ' '.join(words)
         result_str = result_str[0].upper() + result_str[1:]
         if not result_str.endswith('.'):
             result_str += '.'
@@ -642,9 +635,7 @@ class BeamSearchTextGenerator:
                 else:
                     new_candidates[sequence] = current_prob
                     continue
-            if not found_any_candidates:
-                break
-            if not new_candidates:
+            if not found_any_candidates or not new_candidates:
                 break
             pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
             if pruned_candidates is None:
