@@ -32,7 +32,7 @@
 
    1. Дедлайн: **17 ноября**
 
-4. `Лабораторная работа №3. Автодополнение с помощью N-грамм и префиксного дерева <https://github.com/fipl-hse/2025-2-level-labs/tree/main/lab_3_generate_by_ngrams>`__
+4. `Лабораторная работа №4. Автодополнение с помощью N-грамм и префиксного дерева <https://github.com/fipl-hse/2025-2-level-labs/tree/main/lab_3_generate_by_ngrams>`__
 
    1. Дедлайн: **8 декабря**
 
