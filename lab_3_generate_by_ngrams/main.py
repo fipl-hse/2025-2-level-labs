@@ -313,11 +313,11 @@ class NGramLanguageModel:
         prefix_counts = {}
         for n_gram in current_encoded_corpus:
             n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
-            prefix = n_gram[:-1]
-            prefix_counts[prefix] = prefix_counts.get(prefix, 0) + 1
+            context = n_gram[:-1]
+            prefix_counts[context] = prefix_counts.get(context, 0) + 1
         for n_gram, count in n_gram_counts.items():
-            prefix = n_gram[:-1]
-            self._n_gram_frequencies[n_gram] = count / prefix_counts[prefix]
+            context = n_gram[:-1]
+            self._n_gram_frequencies[n_gram] = count / prefix_counts[context]
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
