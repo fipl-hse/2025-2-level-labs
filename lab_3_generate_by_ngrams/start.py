@@ -12,6 +12,7 @@ from lab_3_generate_by_ngrams.main import (
     TextProcessor,
 )
 
+
 def main() -> None:
     """
     Launches an implementation.
