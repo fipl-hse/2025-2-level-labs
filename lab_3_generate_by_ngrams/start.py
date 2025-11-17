@@ -25,19 +25,6 @@ def main() -> None:
     encoded = text_processor.encode(text)
     if encoded is None:
         return
-    model = NGramLanguageModel(encoded, 7)
-    model.build()
-    models = []
-    for ngram_size in range(7):
-        ngram_model = NGramLanguageModel(encoded, ngram_size)
-        ngram_model.build()
-        models.append(ngram_model)
-    greedy_generator = GreedyTextGenerator(model, text_processor)
-    beam_generator = BeamSearchTextGenerator(model, text_processor, 5)
-    back_off_generator = BackOffGenerator(tuple(models), text_processor)
-    print(greedy_generator.run(51, "Vernon"))
-    print(beam_generator.run("Vernon", 56))
-    print(back_off_generator.run(51, "Vernon"))
     reader = NGramLanguageModelReader('./assets/en_own.json', '_')
     load_models = []
     for size in range(7):
@@ -64,7 +51,7 @@ def main() -> None:
             reader.get_text_processor()
         ).run(30, 'Vernom')
         print(load_reader)
-    result = back_off
+    result = load_reader
     assert result
 
 
