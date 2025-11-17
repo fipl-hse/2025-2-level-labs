@@ -317,10 +317,7 @@ class NGramLanguageModel:
             prefix_counts[prefix] = prefix_counts.get(prefix, 0) + 1
         for n_gram, count in n_gram_counts.items():
             prefix = n_gram[:-1]
-            if prefix in prefix_counts and prefix_counts[prefix] > 0:
-                self._n_gram_frequencies[n_gram] = count / prefix_counts[prefix]
-            else:
-                return 1
+            self._n_gram_frequencies[n_gram] = count / prefix_counts[prefix]
         return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
