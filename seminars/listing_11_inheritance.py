@@ -21,7 +21,12 @@ class Vehicle:
         move() -> None:
             Simulates vehicle movement.
     """
-
+    def __init__(self, max_speed: int, colour: str):
+        self.max_speed = max_speed
+        self.colour = colour
+        
+    def move(self):
+        print(f"The {self.colour} car moves with speed of {self.max_speed} miles per hour")
 
 class Car:
     """
@@ -38,6 +43,13 @@ class Car:
         stay() -> None:
             Simulates stopping the car.
     """
+    def __init__(self, max_speed: int, colour: str, fuel: str):
+        super().__init__(max_speed, colour)
+        self.fuel = fuel
+    def move(self):
+        print(f"The {self.colour} car moves with speed of {self.max_speed} miles per hour")
+    def stay(self):
+        print(f"The {self.colour} car is not moving")
 
 
 class Bicycle:
@@ -55,6 +67,13 @@ class Bicycle:
         freestyle() -> None:
             Simulates performing a freestyle trick.
     """
+    def __init__(self, number_of_wheels: int, colour: str, max_speed: str):
+        super().__init__(max_speed, colour)
+        self.number_of_wheels = number_of_wheels
+    def move(self):
+        print(f"The {self.colour} Vehicle has {self.number_of_wheels} wheels andmoves with speed of {self.max_speed} miles per hour")
+    def stay(self):
+        print(f"Vehicle with {self.number_of_wheels} is not moving")
 
 
 class Aircraft:
@@ -76,6 +95,9 @@ def main() -> None:
     """
     Launch listing.
     """
+    toyota = Car(90, "Blue", "Gas")
+    toyota.move()
+    toyota.stay()
     print("Created inheritance hierarchy: Vehicle -> Car, Bicycle, Aircraft")
 
 
