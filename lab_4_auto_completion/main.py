@@ -3,8 +3,6 @@ Lab 4
 """
 
 # pylint: disable=unused-argument, super-init-not-called, unused-private-member, duplicate-code
-from typing import Self
-
 from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, TextProcessor
 
 NGramType = tuple[int, ...]
@@ -81,7 +79,7 @@ class TrieNode:
     #: Saved item in current TrieNode
     __data: int | None
     #: Children nodes
-    _children: list[Self]
+    _children: list["TrieNode"]
 
     def __init__(self, data: int | None = None) -> None:
         """
@@ -115,7 +113,7 @@ class TrieNode:
             item (int): Data value for the new child node.
         """
 
-    def get_children(self, item: int | None = None) -> tuple[Self, ...]:
+    def get_children(self, item: int | None = None) -> tuple["TrieNode", ...]:
         """
         Get the tuple of child nodes or one child.
 
@@ -123,7 +121,7 @@ class TrieNode:
             item (int | None, optional): Special data to find special child
 
         Returns:
-            tuple[Self, ...]: Tuple of child nodes.
+            tuple["TrieNode", ...]: Tuple of child nodes.
         """
 
     def get_data(self) -> int | None:
