@@ -9,6 +9,8 @@ import json
 import math
 import string
 
+from lab_1_keywords_tfidf.main import check_dict, check_list
+
 
 class TextProcessor:
     """
@@ -236,13 +238,15 @@ class TextProcessor:
         """
         if isinstance(decoded_corpus, tuple) is False or decoded_corpus == ():
             return None
-        list_decoded = list(decoded_corpus)
-        list_decoded[0] = list_decoded[0].upper()
-        if list_decoded[len(list_decoded) - 1] == self._end_of_word_token:
-            list_decoded[len(list_decoded) - 1] = "."
+        string_decoded = (
+            "".join(decoded_corpus).replace(self._end_of_word_token, " ").strip().capitalize()
+            )
+        list_decoded = list(string_decoded)
+        if list_decoded[-1] == self._end_of_word_token:
+            list_decoded[-1] = "."
         else:
             list_decoded.append(".")
-        return "".join(list_decoded).replace(self._end_of_word_token, " ")
+        return "".join(list_decoded)
 
 
 class NGramLanguageModel:
@@ -489,14 +493,8 @@ class BeamSearcher:
         """
         if (
             not isinstance(sequence, tuple)
-            or not isinstance(next_tokens, list)
-            or not isinstance(sequence_candidates, dict)
-        ):
-            return None
-        if (
-            not sequence
-            or not next_tokens
-            or not sequence_candidates
+            or not check_list(next_tokens, tuple, False)
+            or not check_dict(sequence_candidates, tuple, float, False)
             or sequence not in sequence_candidates
             or len(next_tokens) > self._beam_width
             ):
