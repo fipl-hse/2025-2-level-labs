@@ -11,6 +11,10 @@
         {
             "name": "lab_3_generate_by_ngrams",
             "coverage": 99
+        },
+        {
+            "name": "lab_4_auto_completion",
+            "coverage": 67
         }
     ],
     "addons": [
