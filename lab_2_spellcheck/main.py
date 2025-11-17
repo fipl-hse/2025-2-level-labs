@@ -28,9 +28,9 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     vocabulary = {}
 
     for token in tokens:
-        vocabulary[token] = vocabulary.get(token, 0) + 1
+        vocabulary[token] = vocabulary.get(token, 0) + 1 / total_tokens
 
-    return {token: count / total_tokens for token, count in vocabulary.items()}
+    return vocabulary
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
@@ -158,12 +158,10 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if (
-        not isinstance(wrong_word, str)
+    if (not isinstance(wrong_word, str)
         or not check_dict(vocabulary, str, float, can_be_empty=False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-        or (alphabet is not None and not check_list(alphabet, str, can_be_empty=True))
-    ):
+        or (alphabet is not None and not check_list(alphabet, str, can_be_empty=True))):
         return None
 
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
@@ -291,7 +289,7 @@ def add_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not isinstance(word, str) or not check_list(alphabet, str, True) or not alphabet:
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
         return []
     return sorted(
         [word[:i] + letter + word[i:] for i in range(len(word) + 1) for letter in alphabet]
@@ -312,7 +310,7 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not isinstance(word, str) or not check_list(alphabet, str, True) or not word or not alphabet:
+    if not isinstance(word, str) or not check_list(alphabet, str, True):
         return []
     return sorted(
         [
