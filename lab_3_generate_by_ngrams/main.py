@@ -26,7 +26,7 @@ class TextProcessor:
             end_of_word_token (str): A token denoting word boundary
         """
         self._end_of_word_token = end_of_word_token
-        self._storage = {self._end_of_word_token: 0}
+        self._storage = {end_of_word_token: 0}
 
     def _tokenize(self, text: str) -> tuple[str, ...] | None:
         """
@@ -236,19 +236,16 @@ class TextProcessor:
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
-        text = ""
-        for token in decoded_corpus:
-            if token == self._end_of_word_token:
-                if not text.endswith(" "):
-                    text += " "
-            else:
-                text += token
-        text = text.strip()
+        processed_tokens = (' ' if token == self._end_of_word_token else token 
+                        for token in decoded_corpus)
+        text = ''.join(processed_tokens)
+        text = ' '.join(text.split())
         if not text:
             return None
-        text = text[0].upper() + text[1:]
-        if not text.endswith("."):
-            text += "."
+        if text and not text[0].isupper():
+            text = text[0].upper() + text[1:]
+        if text and not text.endswith('.'):
+            text = text.rstrip() + '.'
         return text
 
 
@@ -342,8 +339,9 @@ class NGramLanguageModel:
         generated_tokens = {}
         for n_gram, probability in self._n_gram_frequencies.items():
             if n_gram[:len(context)] == context:
-                if n_gram[-1] not in generated_tokens:
-                    generated_tokens[n_gram[-1]] = probability
+                next_token = n_gram[-1]
+                if next_token not in generated_tokens or probability > generated_tokens[next_token]:
+                    generated_tokens[next_token] = probability
         if generated_tokens:
             sorted_tokens = dict(sorted(
                 generated_tokens.items(),
@@ -505,9 +503,6 @@ class BeamSearcher:
             return None
         if len(next_tokens) > self._beam_width:
             return None
-        for token, prob in next_tokens:
-            if prob <= 0:
-                return None
         current_prob = sequence_candidates[sequence]
         del sequence_candidates[sequence]
         for token, token_prob in next_tokens:
@@ -534,9 +529,6 @@ class BeamSearcher:
             return None
         if not sequence_candidates:
             return None
-        for seq, prob in sequence_candidates.items():
-            if not isinstance(seq, tuple) or not isinstance(prob, (int, float)):
-                return None
         sorted_candidates = sorted(
             sequence_candidates.items(),
             key=lambda x: (x[1], x[0])
@@ -601,18 +593,14 @@ class BeamSearchTextGenerator:
                 if next_tokens is None:
                     return None
                 if not next_tokens:
-                    new_candidates[sequence] = current_prob
-                    has_valid_candidates = True
                     continue
                 temp_candidates = {sequence: current_prob}
                 continued = self.beam_searcher.continue_sequence(
                     sequence, next_tokens, temp_candidates.copy()
                 )
-                if continued is None:
-                    new_candidates[sequence] = current_prob
-                else:
+                if continued is not None:
                     new_candidates.update(continued)
-                has_valid_candidates = True
+                    has_valid_candidates = True
             if not has_valid_candidates:
                 break
             if not new_candidates:
@@ -670,8 +658,8 @@ class NGramLanguageModelReader:
         try:
             with open(json_path, 'r', encoding='utf-8') as file:
                 self._content = json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            self._content = {}
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            raise ValueError(f"Failed to load JSON from {json_path}: {e}") from e
         self._text_processor.fill_from_ngrams(self._content)
 
     def load(self, n_gram_size: int) -> NGramLanguageModel | None:
@@ -708,7 +696,7 @@ class NGramLanguageModelReader:
                 else:
                     continue
                 if sym_id is None:
-                    break
+                    continue
                 encoded_ngram.append(sym_id)
             if len(encoded_ngram) == n_gram_size:
                 ngram_abs_freqs[tuple(encoded_ngram)] = ngram_abs_freqs.get(
@@ -787,12 +775,9 @@ class BackOffGenerator:
                 break
             if not candidates:
                 break
-            try:
-                sorted_candidates = sorted(candidates.items(), key=lambda x: (-x[1], x[0]))
-                next_token = sorted_candidates[0][0]
-                encoded_sequence = encoded_sequence + (next_token,)
-            except (IndexError, TypeError):
-                break
+            sorted_candidates = sorted(candidates.items(), key=lambda x: (-x[1], x[0]))
+            next_token = sorted_candidates[0][0]
+            encoded_sequence = encoded_sequence + (next_token,)
         result = self._text_processor.decode(encoded_sequence)
         return result
 
