@@ -12,54 +12,6 @@ from lab_3_generate_by_ngrams.main import (
     TextProcessor,
 )
 
-class WordTextProcessor(TextProcessor):
- 
-        def _tokenize(self, text: str) -> tuple[str, ...] | None:
-            if not isinstance(text, str) or not text:
-                return None 
-            text_lower = text.lower()
-            tokens = []
-            current_word = []
-            for char in text_lower:
-                if char.isalpha() or char == "'":
-                    current_word.append(char)
-                else:
-                    if current_word:
-                        word = ''.join(current_word)
-                        tokens.append(word)
-                        current_word = []
-                    if char in '.!?':
-                        tokens.append(self._end_of_word_token)
-            if current_word:
-                word = ''.join(current_word)
-                tokens.append(word)
-            if text_lower[-1] in '.!?':
-                tokens.append(self._end_of_word_token)
-            return tuple(tokens) if tokens else None
-        
-        def _put(self, element: str) -> None:
-            if not isinstance(element, str) or not element:
-                return
-            if element not in self._storage:
-                self._storage[element] = len(self._storage)
-
-        def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
-            if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
-                return None
-            result_parts = []
-            for token in decoded_corpus:
-                if token == self._end_of_word_token:
-                    break
-                else:
-                    result_parts.append(token)
-            if not result_parts:
-                return None
-            result_str = ' '.join(result_parts)
-            result_str = result_str[0].upper() + result_str[1:]
-            if not result_str.endswith('.'):
-                result_str += '.'
-            return result_str   
-
 def main() -> None:
     """
     Launches an implementation.
@@ -103,38 +55,7 @@ def main() -> None:
             external_model, reader.get_text_processor()).run(30, "Harry")
         print("External model generation Greedy:")
         print(external_text if external_text else "External model generation error")
-    print()    
-    print('TASK (DEFENSE)')
-    sample_text = "I love programming. I enjoy learning. You should try coding. It is fun."
-    processor = WordTextProcessor(end_of_word_token='</s>')
-    print("Original text")
-    print(sample_text)
-    encoded_result = processor.encode(sample_text)
-    print(f"Encoded result: {encoded_result}")
-    print("Decoded text:")
-    decoded = processor.decode(encoded_result) if encoded_result else "Decoding error"
-    print(decoded)
-    full_encoded_corpus = processor.encode(sample_text)
-    if not full_encoded_corpus:
-        print("Failed to encode full corpus")
-        return
-    print("\nBuilding word-level language model")
-    language_model = NGramLanguageModel(full_encoded_corpus, 2)
-    if language_model.build() == 0:
-        print("N-grams sample:", dict(list(language_model._n_gram_frequencies.items())[:5]))
-        print("\nGreedy")
-        greedy_generator = GreedyTextGenerator(language_model, processor)
-        generated_text = greedy_generator.run(2, "i love")
-        print(f"Input: 'i love'")
-        print(f"Generated: {generated_text if generated_text else 'Generation error'}")
-        print("\nBeam Search")
-        beam_generator = BeamSearchTextGenerator(language_model, processor, 2)
-        beam_text = beam_generator.run("i enjoy", 3)
-        print(f"Input: 'i enjoy'")
-        print(f"Generated: {beam_text if beam_text else 'Beam search error'}")
-    else:
-        print("Failed to build language model")
-    result = beam_text
+    result = external_model
     assert result
 
 
