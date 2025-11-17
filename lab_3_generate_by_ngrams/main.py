@@ -226,6 +226,10 @@ class TextProcessor:
 
         In case of corrupt input arguments, None is returned
         """
+        if (not isinstance(decoded_corpus, tuple) or
+            not decoded_corpus or
+            not all(isinstance(i, str) for i in decoded_corpus)):
+            return None
         decoded_text = ''.join(decoded_corpus).replace('_', ' ').capitalize()
         if decoded_text[-1] == " ":
             decoded_text = decoded_text[:-1]
