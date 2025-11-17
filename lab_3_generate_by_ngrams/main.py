@@ -236,7 +236,7 @@ class TextProcessor:
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
-        processed_tokens = (' ' if token == self._end_of_word_token else token 
+        processed_tokens = (' ' if token == self._end_of_word_token else token
                         for token in decoded_corpus)
         text = ''.join(processed_tokens)
         text = ' '.join(text.split())
