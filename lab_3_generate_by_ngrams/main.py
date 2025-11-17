@@ -425,11 +425,11 @@ class GreedyTextGenerator:
             if not next_token_freq:
                 break
 
-            next_tok = max(
+            next_token = max(
                 next_token_freq.items(),
                 key=lambda item: (item[1], item[0])
                 )[0]
-            sequence.append(next_tok)
+            sequence.append(next_token)
         return self._text_processor.decode(tuple(sequence))
 
 
@@ -603,26 +603,22 @@ class BeamSearchTextGenerator:
             return None
         candidates = {encoded_prompt: 0.0}
         for _ in range(seq_len):
-            new_candidates = {}
-            for sequence, cost in candidates.items():
+            for sequence in candidates:
                 next_tokens = self._get_next_token(sequence)
                 if next_tokens is None:
-                    continue
-                updated = self.beam_searcher.continue_sequence(
-                    sequence, next_tokens, {sequence: cost}
+                    return None
+                new_candidates = self.beam_searcher.continue_sequence(
+                    sequence, next_tokens, candidates
                 )
-                if updated:
-                    new_candidates.update(updated)
-            if not new_candidates:
-                break
-            pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
-            if pruned_candidates is None:
-                break
-            candidates = pruned_candidates
+                if new_candidates is None:
+                    continue
+                pruned_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
+                if pruned_candidates is None:
+                    return None
+                candidates = pruned_candidates
         if not candidates:
             return None
-        best_sequence = min(candidates.items(), key=lambda item: item[1])[0]
-        return self._text_processor.decode(best_sequence)
+        return self._text_processor.decode(min(candidates.items(), key=lambda item: item[1])[0])
 
     def _get_next_token(
         self, sequence_to_continue: tuple[int, ...]
