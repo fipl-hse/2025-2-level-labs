@@ -185,18 +185,6 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
-        if not isinstance(content, dict) or not content:
-            return None
-        for el in content:
-            n_grams = content[el]
-            for n_gram in n_grams:
-                if not isinstance(n_gram, str):
-                    continue
-                for letter in n_gram:
-                    if letter.isalpha():
-                        self._put(letter)
-        return None
-
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
