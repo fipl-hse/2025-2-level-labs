@@ -187,6 +187,17 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
+        if not isinstance(content, dict):
+            return
+        all_tokens = set()
+        for n_gram in content.keys():
+            if isinstance(n_gram, tuple):
+                for token in n_gram:
+                    all_tokens.add(token)
+        for token in all_tokens:
+            token_str = self.get_token(token)
+            if token_str:
+                self._put(token_str)
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
@@ -226,6 +237,10 @@ class TextProcessor:
 
         In case of corrupt input arguments, None is returned
         """
+        if (not isinstance(decoded_corpus, tuple) or
+            not all(isinstance(i, str) for i in decoded_corpus) or
+            not decoded_corpus):
+            return None
         decoded_text = ''.join(decoded_corpus).replace('_', ' ').capitalize()
         if decoded_text[-1] == " ":
             decoded_text = decoded_text[:-1]
@@ -251,6 +266,8 @@ class NGramLanguageModel:
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        if not isinstance(encoded_corpus, tuple) or not  encoded_corpus:
+            encoded_corpus = None
         self._encoded_corpus = encoded_corpus
         self._n_gram_size = n_gram_size
         self._n_gram_frequencies = {}
