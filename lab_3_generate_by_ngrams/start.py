@@ -37,17 +37,17 @@ def main() -> None:
     back_off_generator = BackOffGenerator(tuple(models), text_processor)
 
     print("greedy", greedy_generator.run(51, "Vernon"))
-    print("beam", beam_generator.run("Vernon", 56))
-    print("back off", back_off_generator.run(51, "Vernon"))
+    print("beam", beam = beam_generator.run("Vernon", 56))
+    print("back off", back_off = back_off_generator.run(51, "Vernon"))
     reader = NGramLanguageModelReader('./assets/en_own.json', '_')
     models = []
     for size in range(7):
-        model = reader.load(size)
-        if model is not None:
-            models.append(model)
+        load_model = reader.load(size)
+        if load_model is not None:
+            models.append(load_model)
     if models:
-        reader = BackOffGenerator(tuple(models), reader.get_text_processor())
-        load_reader = reader.run(44, 'Vernon')
+        load_reader = BackOffGenerator(tuple(models),
+        reader.get_text_processor()).run(44, 'Vernon')
         print("load", load_reader)
     result = load_reader
     assert result
