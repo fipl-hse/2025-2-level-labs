@@ -363,25 +363,17 @@ class NGramLanguageModel:
         if len(sequence) < n_gram_size - 1:
             return None
 
-        context = tuple(sequence[-(n_gram_size - 1):])
+        context = tuple(sequence[-context_length:])
         vocabulary_of_next_token = {}
 
         for n_gram, frequency in self._n_gram_frequencies.items():
-            if n_gram[:context_length] == context:
+            if context == n_gram[:context_length]:
                 next_element = n_gram[-1]
                 vocabulary_of_next_token[next_element] = (
                     vocabulary_of_next_token.get(next_element, 0) + frequency
                 )
 
-        if vocabulary_of_next_token:
-            sorted_tokens = dict(sorted(
-                vocabulary_of_next_token.items(),
-                key=lambda item: (item[1], item[0]),
-                reverse=True
-            ))
-            return sorted_tokens
-
-        return None
+        return vocabulary_of_next_token
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
@@ -470,10 +462,7 @@ class GreedyTextGenerator:
                 context = tuple(sequence[start_index:])
 
             next_token = self._model.generate_next_token(context)
-            if next_token is None:
-                break
-
-            if not next_token:
+            if next_token is None or not next_token:
                 break
 
             greedy_generator = max(next_token.items(), key = lambda x: (x[1], x[0]))[0]
@@ -686,7 +675,7 @@ class BeamSearchTextGenerator:
                     new_candidates.update(updated_candidates)
                     continuation_found = True
 
-            if not continuation_found:
+            if not continuation_found or not new_candidates:
                 break
 
             prune_candidates = self.beam_searcher.prune_sequence_candidates(new_candidates)
