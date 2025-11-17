@@ -35,21 +35,36 @@ def main() -> None:
     greedy_generator = GreedyTextGenerator(model, text_processor)
     beam_generator = BeamSearchTextGenerator(model, text_processor, 5)
     back_off_generator = BackOffGenerator(tuple(models), text_processor)
-
-    print("greedy", greedy_generator.run(51, "Vernon"))
-    print("beam", beam = beam_generator.run("Vernon", 56))
-    print("back off", back_off = back_off_generator.run(51, "Vernon"))
+    print(greedy_generator.run(51, "Vernon"))
+    print(beam_generator.run("Vernon", 56))
+    print(back_off_generator.run(51, "Vernon"))
     reader = NGramLanguageModelReader('./assets/en_own.json', '_')
-    models = []
+    load_models = []
     for size in range(7):
         load_model = reader.load(size)
         if load_model is not None:
-            models.append(load_model)
-    if models:
-        load_reader = BackOffGenerator(tuple(models),
-        reader.get_text_processor()).run(44, 'Vernon')
-        print("load", load_reader)
-    result = load_reader
+            if size <= 5:
+                load_greedy = GreedyTextGenerator(
+                    load_model,
+                    reader.get_text_processor()
+                ).run(20, 'Vermon')
+                print(load_greedy)
+            if size >= 4:
+                load_beam = BeamSearchTextGenerator(
+                    load_model,
+                    reader.get_text_processor(),
+                    2
+                ).run('Vermon', 25)
+                print(load_beam)
+            if size >= 3:
+                load_models.append(load_model)
+    if load_models:
+        load_reader = BackOffGenerator(
+            tuple(load_models),
+            reader.get_text_processor()
+        ).run(30, 'Vernom')
+        print(load_reader)
+    result = back_off
     assert result
 
 
