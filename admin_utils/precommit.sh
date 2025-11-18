@@ -8,6 +8,7 @@ if [[ "$1" == "smoke" ]]; then
     "lab_1_keywords_tfidf"
     "lab_2_spellcheck"
     "lab_3_generate_by_ngrams"
+    "lab_4_auto_completion"
   )
 else
   DIRS_TO_CHECK=(
@@ -16,6 +17,7 @@ else
     "lab_1_keywords_tfidf"
     "lab_2_spellcheck"
     "lab_3_generate_by_ngrams"
+    "lab_4_auto_completion"
   )
 fi
 
@@ -38,6 +40,7 @@ pydoctest --config pydoctest.json
 if [[ "$1" != "smoke" ]]; then
   python config/static_checks/check_doc8.py
 
+  rm -rf dist
   sphinx-build -b html -W --keep-going -n . dist -c admin_utils
 
   python -m pytest -m "mark10 and lab_2_spellcheck"
