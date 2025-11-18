@@ -30,7 +30,7 @@ class TrieNodeTest(unittest.TestCase):
         """
         Ideal TrieNode initialization scenario.
         """
-        self.assertEqual(self.node.get_data(), 5)
+        self.assertEqual(self.node.get_name(), 5)
         self.assertEqual(len(self.node._children), 0)
 
     @pytest.mark.lab_4_auto_completion
@@ -103,6 +103,6 @@ class TrieNodeTest(unittest.TestCase):
         """
         Ideal get_data method scenario.
         """
-        self.assertEqual(self.node.get_data(), 5)
+        self.assertEqual(self.node.get_name(), 5)
         root_node = TrieNode()
-        self.assertIsNone(root_node.get_data())
+        self.assertIsNone(root_node.get_name())

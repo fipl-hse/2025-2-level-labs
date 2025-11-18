@@ -34,6 +34,7 @@ nitpick_ignore = [
     ("py:class", "Methods"),  # lab 2
     ("py:class", "NGramType"),  # lab 4
     ("py:class", "optional"),  # lab 2, 4
+    ("py:class", '"TrieNode"'),  # lab 2, 4
 ]
 
 exclude_patterns = ["venv/*", "docs/private/*"]

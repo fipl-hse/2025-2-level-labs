@@ -8,7 +8,7 @@ import unittest
 
 import pytest
 
-from lab_4_auto_completion.main import NGramTrieNode
+from lab_4_auto_completion.main import TrieNode
 
 
 class NGramTrieNodeTest(unittest.TestCase):
@@ -20,8 +20,8 @@ class NGramTrieNodeTest(unittest.TestCase):
         """
         Setup for NGramTrieNodeTest.
         """
-        self.node = NGramTrieNode(data=5, frequency=0.5)
-        self.empty_node = NGramTrieNode()
+        self.node = TrieNode(name=5, value=0.5)
+        self.empty_node = TrieNode()
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark8
@@ -30,11 +30,11 @@ class NGramTrieNodeTest(unittest.TestCase):
         """
         Ideal initialization scenario.
         """
-        self.assertEqual(self.node.get_data(), 5)
-        self.assertEqual(self.node.get_frequency(), 0.5)
+        self.assertEqual(self.node.get_name(), 5)
+        self.assertEqual(self.node.get_value(), 0.5)
 
-        self.assertEqual(self.empty_node.get_data(), None)
-        self.assertEqual(self.empty_node.get_frequency(), 0.0)
+        self.assertEqual(self.empty_node.get_name(), None)
+        self.assertEqual(self.empty_node.get_value(), 0.0)
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.skip(reason="rework")
@@ -64,23 +64,23 @@ class NGramTrieNodeTest(unittest.TestCase):
 
         children = self.empty_node.get_children()
         self.assertEqual(len(children), 1)
-        self.assertIsInstance(children[0], NGramTrieNode)
-        self.assertEqual(children[0].get_data(), 10)
+        self.assertIsInstance(children[0], TrieNode)
+        self.assertEqual(children[0].get_name(), 10)
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_get_set_frequency_ideal(self) -> None:
+    def test_get_set_value_ideal(self) -> None:
         """
         Checks NGramTrieNode frequency getter and setter.
         """
-        self.assertEqual(self.node.get_frequency(), 0.5)
+        self.assertEqual(self.node.get_value(), 0.5)
 
-        self.node.set_frequency(0.88)
-        self.assertEqual(self.node.get_frequency(), 0.88)
+        self.node.set_value(0.88)
+        self.assertEqual(self.node.get_value(), 0.88)
 
-        self.empty_node.set_frequency(0.31)
-        self.assertEqual(self.empty_node.get_frequency(), 0.31)
+        self.empty_node.set_value(0.31)
+        self.assertEqual(self.empty_node.get_value(), 0.31)
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark8

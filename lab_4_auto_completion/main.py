@@ -2,7 +2,9 @@
 Lab 4
 """
 
-# pylint: disable=unused-argument, super-init-not-called, unused-private-member, duplicate-code
+# pylint: disable=unused-argument, super-init-not-called, unused-private-member, duplicate-code, unused-import
+import json
+
 from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, TextProcessor
 
 NGramType = tuple[int, ...]
@@ -77,16 +79,19 @@ class TrieNode:
     """
 
     #: Saved item in current TrieNode
-    __data: int | None
+    __name: int | None
+    #: Additional payload to store in TrieNode
+    _value: float
     #: Children nodes
     _children: list["TrieNode"]
 
-    def __init__(self, data: int | None = None) -> None:
+    def __init__(self, name: int | None = None, value: float = 0.0) -> None:
         """
         Initialize a Trie node.
 
         Args:
-            data (int | None, optional): The data stored in the node.
+            name (int | None, optional): The name of the node.
+            value (float, optional): The value stored in the node.
         """
 
     def __bool__(self) -> bool:
@@ -99,10 +104,10 @@ class TrieNode:
 
     def __str__(self) -> str:
         """
-        Return a string representation of the node.
+        Return a string representation of the N-gram node.
 
         Returns:
-            str: String representation showing node data.
+            str: String representation showing node data and frequency.
         """
 
     def add_child(self, item: int) -> None:
@@ -124,12 +129,28 @@ class TrieNode:
             tuple["TrieNode", ...]: Tuple of child nodes.
         """
 
-    def get_data(self) -> int | None:
+    def get_name(self) -> int | None:
         """
         Get the data stored in the node.
 
         Returns:
             int | None: TrieNode data.
+        """
+
+    def get_value(self) -> float:
+        """
+        Get the value of the node.
+
+        Returns:
+            float: Frequency value.
+        """
+
+    def set_value(self, new_value: float) -> None:
+        """
+        Set the value of the node
+
+        Args:
+            new_value (float): New value to store.
         """
 
     def has_children(self) -> bool:
@@ -152,14 +173,6 @@ class PrefixTrie:
     def __init__(self) -> None:
         """
         Initialize an empty PrefixTrie.
-        """
-
-    def __str__(self) -> str:
-        """
-        Return a string representation of the PrefixTrie.
-
-        Returns:
-            str: String representation showing the number of leaf nodes.
         """
 
     def clean(self) -> None:
@@ -204,58 +217,6 @@ class PrefixTrie:
 
         Args:
             sequence (NGramType): Tokens to insert.
-        """
-
-
-class NGramTrieNode(TrieNode):
-    """
-    Node type for NGramTrieLanguageModel, storing frequency in addition to data.
-    """
-
-    #: Frequency of the n-gram occurrence
-    _frequency: float
-
-    def __init__(self, data: int | None = None, frequency: float = 0.0) -> None:
-        """
-        Initialize an N-gram node.
-
-        Args:
-            data (int | None, optional): The data stored in the node.
-            frequency (float, optional): Frequency of the node. Defaults to 0.0.
-        """
-
-    def __str__(self) -> str:
-        """
-        Return a string representation of the N-gram node.
-
-        Returns:
-            str: String representation showing node data and frequency.
-        """
-
-    def add_child(self, item: int) -> None:
-        """
-        Add a new child node with the given item.
-
-        Overrides parent to create NGramTrieNode instead of TrieNode.
-
-        Args:
-            item (int): Data value for the new child node.
-        """
-
-    def get_frequency(self) -> float:
-        """
-        Get the frequency of the node.
-
-        Returns:
-            float: Frequency value.
-        """
-
-    def set_frequency(self, new_frequency: float) -> None:
-        """
-        Set the frequency of the node
-
-        Args:
-            new_frequency (float): New frequency to store.
         """
 
 
@@ -388,7 +349,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
     """
 
     #: Initial state of the tree
-    _root: NGramTrieNode
+    _root: TrieNode
     #: Current size of ngrams
     _current_n_gram_size: int
     #: Maximum ngram size
@@ -424,7 +385,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         """
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict[int, float] | None:
-        """ "
+        """
         Retrieve tokens that can continue the given sequence along with their probabilities.
 
         Args:
@@ -434,29 +395,17 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             dict[int, float] | None: Possible next tokens with their probabilities.
         """
 
-    def _assign_child(
-        self, parent: TrieNode, node: int | None, freq: float | None = None
-    ) -> TrieNode:
+    def _assign_child(self, parent: TrieNode, node_name: int, freq: float = 0.0) -> TrieNode:
         """
-        Find an existing child node with the given value or create it if absent.
-        Optionally update its frequency.
+        Return an existing child with name of node or create a new one.
 
         Args:
-            parent (TrieNode): The parent node whose children are searched or updated.
-            node (int | None): The value stored in the child node to find or create.
-            freq (float | None, optional): Frequency value to assign to the child.
+            parent (TrieNode): A sequence to match beginning of N-grams for continuation.
+            node_name (int): Name of TrieNode to find a child.
+            freq (float, optional): Frequency of child TrieNode.
 
         Returns:
-            TrieNode: The child node corresponding to the specified value.
-        """
-
-    def _copy_tree(self, from_root: TrieNode, to_root: TrieNode) -> None:
-        """
-        Copy the entire structure of the source trie into the destination trie.
-
-        Args:
-            from_root (TrieNode): Root node of the source subtree to copy from.
-            to_root (TrieNode): Root node of the destination subtree to copy into.
+            TrieNode: Existing or new TrieNode.
         """
 
     def _merge(self) -> None:
@@ -464,13 +413,12 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Merge all built N-gram trie models into a single unified trie.
         """
 
-    def _merge_tree_level(self, from_root: TrieNode, to_root: TrieNode) -> None:
+    def _insert_trie(self, source_root: TrieNode) -> None:
         """
-        Merge a subtree rooted at `from_root` into the subtree rooted at `to_root`.
+        Insert all nodes of source root trie into our main root.
 
         Args:
-            from_root (TrieNode): Root node of the source subtree to be merged.
-            to_root (TrieNode): Root node of the destination subtree to merge into.
+            source_root (TrieNode): Source root to insert tree
         """
 
 
@@ -513,3 +461,25 @@ class DynamicBackOffGenerator(BackOffGenerator):
         Returns:
             str | None: Generated sequence
         """
+
+
+def save(trie: DynamicNgramLMTrie, path: str) -> None:
+    """
+    Save DynamicNgramLMTrie.
+
+    Args:
+        trie (DynamicNgramLMTrie): Trie for saving
+        path (str): Path for saving
+    """
+
+
+def load(path: str) -> DynamicNgramLMTrie:
+    """
+    Load DynamicNgramLMTrie from file.
+
+    Args:
+        path (str): Trie path
+
+    Returns:
+        DynamicNgramLMTrie: Trie from file.
+    """
