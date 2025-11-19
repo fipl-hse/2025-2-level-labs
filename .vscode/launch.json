@@ -38,6 +38,17 @@
             }
         },
         {
+            "name": "[LAB 4] Start",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "start.py",
+            "cwd": "${workspaceFolder}/lab_4_auto_completion",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
             "name": "[SEMINAR 1] Learn debug",
             "type": "debugpy",
             "request": "launch",
@@ -132,6 +143,16 @@
             "type": "debugpy",
             "request": "launch",
             "program": "seminars/listing_10_encapsulate.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 11] Learn inheritance",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_11_inheritance.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
