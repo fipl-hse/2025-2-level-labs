@@ -12,12 +12,6 @@ from lab_3_generate_by_ngrams.main import (
     TextProcessor,
 )
 
-from lab_3_generate_by_ngrams.main import (
-    GreedyTextGenerator,
-    NGramLanguageModel,
-    TextProcessor,
-)
-
 
 def main() -> None:
     """
@@ -52,6 +46,7 @@ def main() -> None:
     result = back_off
     print(result)
     assert result
+
 
 if __name__ == "__main__":
     main()
