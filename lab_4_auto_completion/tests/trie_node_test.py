@@ -21,6 +21,7 @@ class TrieNodeTest(unittest.TestCase):
         Setup for TrieNodeTest
         """
         self.node = TrieNode(5)
+        self.empty_node = TrieNode()
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark6
@@ -31,7 +32,10 @@ class TrieNodeTest(unittest.TestCase):
         Ideal TrieNode initialization scenario.
         """
         self.assertEqual(self.node.get_name(), 5)
+        self.assertEqual(self.node.get_value(), 0.0)
         self.assertEqual(len(self.node._children), 0)
+
+        self.assertEqual(self.empty_node.get_name(), None)
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark6
@@ -41,9 +45,11 @@ class TrieNodeTest(unittest.TestCase):
         """
         Ideal TrieNode __str__ scenario.
         """
+        expected = "TrieNode(name=5, value=0.0)"
         str_repr = str(self.node)
         self.assertIn("TrieNode", str_repr)
         self.assertIn("5", str_repr)
+        self.assertEqual(expected, str_repr)
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark6
@@ -67,7 +73,10 @@ class TrieNodeTest(unittest.TestCase):
         """
         initial_children_count = len(self.node.get_children())
         self.node.add_child(10)
-        self.assertEqual(len(self.node.get_children()), initial_children_count + 1)
+        children = self.node.get_children()
+        self.assertEqual(len(children), initial_children_count + 1)
+        self.assertIsInstance(children[0], TrieNode)
+        self.assertEqual(children[0].get_name(), 10)
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark6
@@ -106,3 +115,19 @@ class TrieNodeTest(unittest.TestCase):
         self.assertEqual(self.node.get_name(), 5)
         root_node = TrieNode()
         self.assertIsNone(root_node.get_name())
+
+    @pytest.mark.lab_4_auto_completion
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
+    def test_get_set_value_ideal(self) -> None:
+        """
+        Checks NGramTrieNode frequency getter and setter.
+        """
+        self.assertEqual(self.node.get_value(), 0.0)
+
+        self.node.set_value(0.88)
+        self.assertEqual(self.node.get_value(), 0.88)
+
+        self.empty_node.set_value(0.31)
+        self.assertEqual(self.empty_node.get_value(), 0.31)

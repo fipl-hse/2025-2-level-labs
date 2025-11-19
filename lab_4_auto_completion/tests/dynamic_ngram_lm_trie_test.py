@@ -5,6 +5,7 @@ Checks Dynamic Trie Language Model Class.
 # pylint: disable=protected-access, duplicate-code
 
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -12,6 +13,7 @@ from lab_4_auto_completion.main import (
     DynamicNgramLMTrie,
     IncorrectCorpusError,
     IncorrectNgramError,
+    MergeTreesError,
     NGramTrieLanguageModel,
     TrieNode,
 )
@@ -39,7 +41,7 @@ class DynamicNgramLMTrieTest(unittest.TestCase):
 
         self.big_trie = TrieNode(0)
         self.big_trie.add_child(1)
-        self.big_trie.add_child(13)
+        self.big_trie.add_child(12)
         self.big_trie._children[-1].add_child(42)
 
         self.small_trie = TrieNode(7)
@@ -168,10 +170,10 @@ class DynamicNgramLMTrieTest(unittest.TestCase):
         DynamicNgramLMTrie _assign_child ideal scenario.
         """
         assigned_found_child = self.model._assign_child(
-            parent=self.big_trie, node_name=13, freq=0.0911
+            parent=self.big_trie, node_name=12, freq=0.0911
         )
 
-        self.assertEqual(assigned_found_child.get_name(), 13)
+        self.assertEqual(assigned_found_child.get_name(), 12)
         self.assertEqual(assigned_found_child.get_value(), 0.0911)
         self.assertEqual(assigned_found_child.get_children()[0].get_name(), 42)
 
@@ -197,6 +199,111 @@ class DynamicNgramLMTrieTest(unittest.TestCase):
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark10
+    def test_insert_trie_ideal(self) -> None:
+        """
+        DynamicNgramLMTrie _insert_trie ideal scenario.
+        """
+        self.model._root = TrieNode()
+        self.model._insert_trie(self.small_trie)
+
+        self.assertEqual(self.model._root.get_name(), None)
+        self.assertTrue(self.model._root.has_children())
+        children = self.model._root.get_children()
+        self.assertEqual(len(children), 1)
+        self.assertEqual(children[0].get_name(), 2)
+
+    @pytest.mark.lab_4_auto_completion
+    @pytest.mark.mark10
+    def test_insert_trie_complex_trie(self) -> None:
+        """
+        DynamicNgramLMTrie _insert_trie scenario for _root being
+        partially filled.
+        """
+        self.model._root = self.huge_trie
+
+        new_trie = TrieNode(111)
+        new_trie.add_child(89)
+        child_89 = new_trie.get_children()[0]
+        child_89.add_child(5)
+        child_5 = child_89.get_children()[0]
+        child_5.add_child(1)
+        child_5.add_child(15)
+        child_1 = child_5.get_children()[0]
+        child_15 = child_5.get_children()[1]
+        child_1.add_child(5)
+        child_15.add_child(0)
+
+        self.model._insert_trie(new_trie)
+
+        self.assertEqual(self.model._root.get_name(), 0)
+        self.assertTrue(self.model._root.has_children())
+
+        root_children = self.model._root.get_children()
+        self.assertEqual(len(root_children), 2)
+        self.assertEqual(root_children[0].get_name(), 89)
+        self.assertEqual(root_children[1].get_name(), 7)
+        child_89 = root_children[0].get_children()[0]
+        child_7 = root_children[1].get_children()[0]
+        self.assertEqual(child_7.get_name(), 4)
+        self.assertEqual(child_89.get_name(), 5)
+        child_5 = child_89.get_children()
+        self.assertEqual(len(child_5), 2)
+        self.assertEqual(child_5[0].get_name(), 15)
+        self.assertEqual(child_5[1].get_name(), 1)
+        self.assertEqual(child_5[0].get_children()[0].get_name(), 0)
+        self.assertEqual(child_5[1].get_children()[0].get_name(), 5)
+
+    @pytest.mark.lab_4_auto_completion
+    @pytest.mark.mark10
+    def test_insert_trie_no_child_match(self) -> None:
+        """
+        DynamicNgramLMTrie _insert_trie scenario for _root children
+        not having a match for insert.
+        """
+        self.model._root = self.big_trie
+
+        new_trie = TrieNode()
+        new_trie.add_child(42)
+        new_trie.get_children()[0].add_child(2)
+
+        self.model._insert_trie(new_trie)
+
+        self.assertEqual(self.model._root.get_name(), 0)
+        self.assertTrue(self.model._root.has_children())
+
+        children = self.model._root.get_children()
+        self.assertEqual(len(children), 3)
+        self.assertEqual(children[0].get_name(), 1)
+        self.assertEqual(children[1].get_name(), 12)
+        self.assertEqual(children[2].get_name(), 42)
+
+        children_12 = children[1].get_children()
+        self.assertEqual(len(children_12), 1)
+        self.assertEqual(children_12[0].get_name(), 42)
+
+        children_42 = children[2].get_children()
+        self.assertEqual(len(children_42), 1)
+        self.assertEqual(children_42[0].get_name(), 2)
+
+    @pytest.mark.lab_4_auto_completion
+    @pytest.mark.mark10
+    def test_insert_trie_none_name(self) -> None:
+        """
+        DynamicNgramLMTrie _insert_trie scenario for source child
+        node not having a name.
+        """
+        self.model._root = TrieNode()
+        with mock.patch.object(self.small_trie, "get_name", return_value=None):
+            self.model._insert_trie(self.small_trie)
+
+        self.assertEqual(self.model._root.get_name(), None)
+        self.assertTrue(self.model._root.has_children())
+        children = self.model._root.get_children()
+        self.assertEqual(len(children), 1)
+        self.assertEqual(children[0].get_name(), 2)
+
+    @pytest.mark.lab_4_auto_completion
+    @pytest.mark.mark10
     def test_merge_ideal(self) -> None:
         """
         DynamicNgramLMTrie _merge ideal scenario.
@@ -212,11 +319,19 @@ class DynamicNgramLMTrieTest(unittest.TestCase):
 
         self.assertEqual(self.model._root.get_name(), None)
         for child in self.model._root.get_children():
-            self.assertIn(child.get_name(), (1, 13, 89, 7, 2))
-            if child.get_name() == 13:
+            self.assertIn(child.get_name(), (1, 12, 89, 7, 2))
+            if child.get_name() == 12:
                 self.assertEqual(child._children[0].get_name(), 42)
             if child.get_name() == 7:
                 self.assertEqual(child.get_children()[0].get_name(), 4)
             if child.get_name() == 89:
                 self.assertEqual(child._children[0].get_name(), 5)
                 self.assertEqual(child._children[0]._children[0].get_name(), 15)
+
+    @pytest.mark.lab_4_auto_completion
+    @pytest.mark.mark10
+    def test_merge_invalid_input(self) -> None:
+        """
+        DynamicNgramLMTrie _merge invalid_input scenario.
+        """
+        self.assertRaises(MergeTreesError, self.model._merge)

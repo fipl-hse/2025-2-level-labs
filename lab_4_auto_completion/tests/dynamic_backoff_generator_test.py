@@ -3,6 +3,7 @@
 Checks the DynamicBackOffGenerator class
 """
 import unittest
+from unittest import mock
 
 import pytest
 
@@ -86,11 +87,15 @@ class DynamicBackOffGeneratorTest(unittest.TestCase):
         Checks DynamicBackOffGenerator get_next_token method with incorrect
         generate_next_token return value
         """
-        self.generator._dynamic_trie.generate_next_token = lambda sequence: None
-        self.assertIsNone(self.generator.get_next_token((1, 2)))
+        with mock.patch.object(
+            self.generator._dynamic_trie, "generate_next_token", return_value=None
+        ):
+            self.assertIsNone(self.generator.get_next_token((1, 2)))
 
-        self.generator._dynamic_trie.generate_next_token = lambda sequence: {}
-        self.assertIsNone(self.generator.get_next_token((1, 2)))
+        with mock.patch.object(
+            self.generator._dynamic_trie, "generate_next_token", return_value={}
+        ):
+            self.assertIsNone(self.generator.get_next_token((1, 2)))
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark10
@@ -144,8 +149,8 @@ class DynamicBackOffGeneratorTest(unittest.TestCase):
         """
         Checks DynamicBackOffGenerator run method with None encode return value
         """
-        self.generator._text_processor.encode = lambda sequence: None
-        self.assertIsNone(self.generator.run(1, "Hello"))
+        with mock.patch.object(self.generator._text_processor, "encode", return_value=None):
+            self.assertIsNone(self.generator.run(1, "Hello"))
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark10
@@ -154,5 +159,5 @@ class DynamicBackOffGeneratorTest(unittest.TestCase):
         Checks DynamicBackOffGenerator run method with None
         get_next_token return value
         """
-        self.generator.get_next_token = lambda sequence: None
-        self.assertEqual("Hello.", self.generator.run(1, "Hello"))
+        with mock.patch.object(self.generator, "get_next_token", return_value=None):
+            self.assertEqual("Hello.", self.generator.run(1, "Hello"))
