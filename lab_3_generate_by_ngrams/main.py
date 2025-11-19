@@ -9,8 +9,6 @@ import json
 import math
 import string
 
-from lab_1_keywords_tfidf.main import check_positive_int
-
 
 class TextProcessor:
     """
@@ -65,18 +63,6 @@ class TextProcessor:
                 continue
         return tuple(tokens) if tokens else None
 
-
-        if (not isinstance(text, str) or text.isdigit()):
-            return None
-
-        tokens = []
-        for word in text.lower().split():
-            cleaned = [char for char in word if char.isalpha()]
-            if cleaned:
-                tokens.extend(cleaned)
-                tokens.append(self._end_of_word_token)
-
-        return tuple(tokens)
 
     def get_id(self, element: str) -> int | None:
         """
@@ -380,10 +366,6 @@ class NGramLanguageModel:
             result.append(tuple(n_gram))
         return tuple(result)
 
-        n_grams = []
-        for index in range(len(encoded_corpus) - (self._n_gram_size - 1)):
-            n_grams.append(encoded_corpus[index:index + self._n_gram_size])
-        return tuple(n_grams)
 
 class GreedyTextGenerator:
     """
