@@ -37,6 +37,7 @@ dynamicngramlmtrie
 entrypoint
 enum
 env
+eos
 eow
 exe
 freqs
@@ -104,6 +105,7 @@ redhat
 remotebranches
 repo
 rst
+sentencestorage
 standardprefixtrie
 stderr
 stdout
