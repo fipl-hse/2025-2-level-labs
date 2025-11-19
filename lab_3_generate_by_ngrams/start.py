@@ -21,43 +21,31 @@ def main() -> None:
     """
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
-    processor = TextProcessor(end_of_word_token='_')
-    encoded = processor.encode(text) or tuple()
-    reader = NGramLanguageModelReader('./assets/en_own.json', '_')
-    if encoded:
-        custom_model = NGramLanguageModel(encoded, 4)
-        custom_model.build()
-        custom_result = GreedyTextGenerator(
-            custom_model,
-            processor
-        ).run(15, 'Harry')
-        print(f"\nCustom model from Harry Potter: {custom_result}")
-    loaded_model_list = []
-    for n_size in (2, 3, 4, 5, 6):
-        loaded_model = reader.load(n_size)
+    processor = TextProcessor(".")
+    encoded_text = processor.encode(text)
+    if encoded_text is None:
+        return
+    model = NGramLanguageModel(encoded_text, 7)
+    model.build()
+    generator = GreedyTextGenerator(model, processor)
+    result_generator = generator.run(51, "Vernon")
+    print(result_generator)
+
+    beam_search = BeamSearchTextGenerator(model, processor, 3)
+    beam_search_ = beam_search.run("Vernon", 56)
+    result_beam = beam_search_
+    print(result_beam)
+
+    language_models = []
+    for n_gram_size in [1, 2, 3]:
+        loaded_model = NGramLanguageModelReader("./assets/en_own.json", "_").load(n_gram_size)
         if loaded_model is not None:
-            if n_size <= 5:
-                result = GreedyTextGenerator(
-                    loaded_model,
-                    reader.get_text_processor()
-                ).run(20, 'Harry')
-                print(f"\nGreedy with loaded {n_size}-gram: {result}")
-            if n_size >= 4:
-                result = BeamSearchTextGenerator(
-                    loaded_model,
-                    reader.get_text_processor(),
-                    2
-                ).run('Hermione', 25)
-                print(f"\nBeam Search with loaded {n_size}-gram: {result}")
-            if n_size >= 3:
-                loaded_model_list.append(loaded_model)
-    if loaded_model_list:
-        result = BackOffGenerator(
-            tuple(loaded_model_list),
-            reader.get_text_processor()
-        ).run(30, 'Dumbledore')
-        print(f"\nBackOff with loaded models: {result}")
-        assert result
+            language_models.append(model)
+
+    back_off = BackOffGenerator(tuple(language_models), processor).run(60, 'Vernon')
+    result = back_off
+    print(result)
+    assert result
 
 
 if __name__ == "__main__":
