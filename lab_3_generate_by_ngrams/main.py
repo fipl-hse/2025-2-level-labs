@@ -628,8 +628,6 @@ class BeamSearchTextGenerator:
             return None
         return next_token
 
-        next_token = self.beam_searcher.get_next_token(sequence_to_continue)
-        return next_token
 
 class NGramLanguageModelReader:
     """
