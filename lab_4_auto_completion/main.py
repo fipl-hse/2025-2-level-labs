@@ -69,6 +69,7 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
+        super().__init__(end_of_sentence_token)
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -140,7 +141,7 @@ class WordProcessor(TextProcessor):
             str: Resulting text
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
-            raise DecodingError
+            raise DecodingError("Invalid input: decoded_corpus must be a non-empty tuple")
 
         text = []
         sentence_buffer = []
@@ -179,7 +180,7 @@ class WordProcessor(TextProcessor):
             tuple[str, ...]: Tokenized text as words
         """
         if not isinstance(text, str) or not text:
-            raise EncodingError
+            raise EncodingError("Invalid input: text must be a non-empty string")
 
         sentences = []
         sentence_buffer = []
@@ -215,7 +216,7 @@ class WordProcessor(TextProcessor):
                 tokens.append(self._end_of_word_token)
 
         if not tokens:
-            raise EncodingError
+            raise EncodingError("Tokenization resulted in empty output")
 
         return tuple(tokens)
 
