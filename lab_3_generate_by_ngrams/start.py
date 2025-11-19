@@ -12,16 +12,6 @@ from lab_3_generate_by_ngrams.main import (
     TextProcessor,
 )
 
-import os
-
-from lab_3_generate_by_ngrams.main import (
-    BackOffGenerator,
-    BeamSearchTextGenerator,
-    GreedyTextGenerator,
-    NGramLanguageModel,
-    TextProcessor,
-)
-
 
 def main() -> None:
     """
@@ -29,10 +19,7 @@ def main() -> None:
 
     In any case returns, None is returned
     """
-    base_path = os.path.dirname(__file__)
-    file_path = os.path.join(base_path, "assets", "Harry_Potter.txt")
-
-    with open(file_path, "r", encoding="utf-8") as text_file:
+    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
     processor = TextProcessor(".")
     encoded_text = processor.encode(text)
@@ -59,10 +46,6 @@ def main() -> None:
     result = back_off
     print(result)
     assert result
-
-    print(f"Greedy: {greedy_output}")
-    print(f"Beam: {beam_output}")
-    print(f"BackOff: {backoff_output}")
 
 
 if __name__ == "__main__":
