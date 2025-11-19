@@ -47,48 +47,6 @@ def main() -> None:
     print(result)
     assert result
 
-    processor = TextProcessor(end_of_word_token="_")
-    encoded = processor.encode(text) or tuple()
-    print(processor.decode(encoded))
-
-    model = NGramLanguageModel(encoded, 7)
-    model.build()
-
-    print(f'Greedy: {GreedyTextGenerator(model, processor).run(51, "Vernon")}')
-    print(f'Beam Search: {BeamSearchTextGenerator(model, processor, 3).run("Vernon", 56)}')
-
-    reader = NGramLanguageModelReader("./assets/en_own.json", "_")
-    models = []
-    for n_size in (2, 3, 4):
-        loaded = reader.load(n_size)
-        if loaded is not None:
-            models.append(loaded)
-
-    generator = BackOffGenerator(tuple(models), reader.get_text_processor())
-    prompts = ['Vernon said', 'The man', 'Harry', 'It is']
-    result = None
-    for prompt in prompts:
-        current = generator.run(15, prompt)
-        if not current:
-            continue
-        word_list = current.split()
-        if len(word_list) > 5 and len(set(word_list)) / len(word_list) > 0.5:
-            result = current
-            print(f'Back Off ({prompt}): {result}')
-            break
-        if len(word_list) <= 5:
-            result = current
-            print(f'Back Off ({prompt}): {result}')
-            break
-        print(f'Back Off ({prompt}): {current} [looping]')
-    if result is None and prompts:
-        current = generator.run(10, prompts[0])
-        if current:
-            word_list = current.split()
-            result = ' '.join(word_list[:len(word_list)//2]) + '.' if len(word_list)>8 else current
-            print(f'Back Off (cropped): {result}')
-    assert result
-    print(f'Final Back Off: {result}')
 
 if __name__ == "__main__":
     main()
