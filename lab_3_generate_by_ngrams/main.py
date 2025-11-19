@@ -163,7 +163,7 @@ class TextProcessor:
         The first letter is capitalized, resulting sequence must end with a full stop.
 
         Args:
-         encoded_corpus (tuple[int, ...]): A tuple of encoded tokens
+            encoded_corpus (tuple[int, ...]): A tuple of encoded tokens
 
         Returns:
             str | None: Resulting text
