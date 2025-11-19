@@ -21,35 +21,30 @@ def main() -> None:
     """
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
-    processor = TextProcessor("_")
+    processor = TextProcessor(".")
     encoded_text = processor.encode(text)
     if encoded_text is None:
         return
-    processed_text = processor.decode(encoded_text)
-    print(processed_text)
+    model = NGramLanguageModel(encoded_text, 7)
+    model.build()
+    generator = GreedyTextGenerator(model, processor)
+    result_generator = generator.run(51, "Vernon")
+    print(result_generator)
 
-    n_gram_model = NGramLanguageModel(encoded_text, 3)
-    build_result = n_gram_model.build()
-    print(build_result)
+    beam_search = BeamSearchTextGenerator(model, processor, 3)
+    beam_search_ = beam_search.run("Vernon", 56)
+    result_beam = beam_search_
+    print(result_beam)
 
-    generator_model = NGramLanguageModel(encoded_text, 7)
-    generator_model.build()
-    greedy_algorithm = GreedyTextGenerator(generator_model, processor).run(51, 'Vernon')
-    print(greedy_algorithm)
+    language_models = []
+    for n_gram_size in [1, 2, 3]:
+        loaded_model = NGramLanguageModelReader("./assets/en_own.json", "_").load(n_gram_size)
+        if loaded_model is not None:
+            language_models.append(model)
 
-    beam_search_algorithm = BeamSearchTextGenerator(generator_model, processor, 3).run('Vernon', 56)
-    print(beam_search_algorithm)
-
-    models = []
-    for n_gram_size in [2, 3, 4]:
-        model = NGramLanguageModelReader("./assets/en_own.json", "_").load(n_gram_size)
-        if model is not None:
-            models.append(model)
-
-    back_off_algorithm = BackOffGenerator(tuple(models), processor).run(60, 'Vernon')
-    print(back_off_algorithm)
-
-    result = back_off_algorithm
+    back_off = BackOffGenerator(tuple(language_models), processor).run(60, 'Vernon')
+    result = back_off
+    print(result)
     assert result
 
 
