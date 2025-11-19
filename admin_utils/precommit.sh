@@ -3,6 +3,7 @@ set -ex
 echo $1
 if [[ "$1" == "smoke" ]]; then
   DIRS_TO_CHECK=(
+    "admin_utils"
     "config"
     "seminars"
     "lab_1_keywords_tfidf"
@@ -12,6 +13,7 @@ if [[ "$1" == "smoke" ]]; then
   )
 else
   DIRS_TO_CHECK=(
+    "admin_utils"
     "config"
     "seminars"
     "lab_1_keywords_tfidf"
@@ -43,5 +45,5 @@ if [[ "$1" != "smoke" ]]; then
   rm -rf dist
   sphinx-build -b html -W --keep-going -n . dist -c admin_utils
 
-  python -m pytest -m "mark10 and lab_2_spellcheck"
+  python -m pytest -m "mark10 and lab_4_auto_completion"
 fi

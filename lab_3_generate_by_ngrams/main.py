@@ -86,6 +86,7 @@ class TextProcessor:
 
         return self._storage[element]
 
+
     def get_end_of_word_token(self) -> str:  # type: ignore[empty-body]
         """
         Retrieve value stored in self._end_of_word_token attribute.
@@ -107,6 +108,7 @@ class TextProcessor:
 
         In case of corrupt input arguments or arguments not included in storage, None is returned
         """
+
         if not (
             isinstance(element_id, int)
             and not isinstance(element_id, bool)
@@ -119,6 +121,7 @@ class TextProcessor:
                 return item
 
         return None
+
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -136,6 +139,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+
         if not isinstance(text, str) or not text:
             return None
 
@@ -155,6 +159,7 @@ class TextProcessor:
 
         return tuple(encoded_text)
 
+
     def _put(self, element: str) -> None:
         """
         Put an element into the storage, assign a unique id to it.
@@ -166,6 +171,7 @@ class TextProcessor:
         an element is not added to storage
         """
         if not isinstance(element, str) or len(element) != 1:
+
             return
 
         if element not in self._storage:
@@ -187,6 +193,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+
         if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
 
@@ -196,6 +203,7 @@ class TextProcessor:
 
         return self._postprocess_decoded_text(decoded_text)
 
+
     def fill_from_ngrams(self, content: dict) -> None:
         """
         Fill internal storage with letters from external JSON.
@@ -203,6 +211,7 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
+
         if not isinstance(content, dict) or not content:
             return
 
@@ -210,6 +219,7 @@ class TextProcessor:
             for symbol in n_gram.lower():
                 if symbol.isalpha():
                     self._put(symbol)
+
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
         """
@@ -224,6 +234,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+
         if not isinstance(corpus, tuple) or not corpus:
             return None
 
@@ -235,6 +246,7 @@ class TextProcessor:
             decoded_text.append(decoded_element)
 
         return tuple(decoded_text)
+
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
         """
@@ -253,6 +265,7 @@ class TextProcessor:
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
+
 
         decoded_string = "".join(decoded_corpus).replace(self._end_of_word_token, " ")
 
@@ -297,6 +310,7 @@ class NGramLanguageModel:
         """
         return self._n_gram_size
 
+
     def set_n_grams(self, frequencies: dict) -> None:
         """
         Setter method for n-gram frequencies.
@@ -304,10 +318,12 @@ class NGramLanguageModel:
         Args:
             frequencies (dict): Computed in advance frequencies for n-grams
         """
+
         if not isinstance(frequencies, dict) or not frequencies:
             return
 
         self._n_gram_frequencies = frequencies
+
 
     def build(self) -> int:  # type: ignore[empty-body]
         """
@@ -323,6 +339,7 @@ class NGramLanguageModel:
         """
         if not isinstance(self._encoded_corpus, tuple) or not self._encoded_corpus:
             return 1
+
 
         extracted_n_grams = self._extract_n_grams(self._encoded_corpus)
         if extracted_n_grams is None:
@@ -344,7 +361,6 @@ class NGramLanguageModel:
         if not self._n_gram_frequencies:
             return 1
 
-        return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
