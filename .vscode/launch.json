@@ -38,6 +38,17 @@
             }
         },
         {
+            "name": "[LAB 4] Start",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "start.py",
+            "cwd": "${workspaceFolder}/lab_4_auto_completion",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
             "name": "[SEMINAR 1] Learn debug",
             "type": "debugpy",
             "request": "launch",
