@@ -32,7 +32,7 @@ class DynamicBackOffGeneratorTest(unittest.TestCase):
         self.model = DynamicNgramLMTrie(self.encoded_corpus, self.max_ngram)
         self.model.build()
 
-        self.processor = WordProcessor(end_of_word_token="_")
+        self.processor = WordProcessor(end_of_sentence_token="_")
         self.processor._storage = {
             "_": 0,
             "hello": 1,

@@ -28,7 +28,7 @@ class PrefixTrieTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_prefix_trie_initialization(self) -> None:
+    def test_initialization(self) -> None:
         """
         PrefixTrie initialization scenario.
         """
@@ -39,7 +39,7 @@ class PrefixTrieTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_prefix_trie_str_representation_ideal(self) -> None:
+    def test_str_representation_ideal(self) -> None:
         """
         Ideal PrefixTrie __str__ scenario.
         """
@@ -50,7 +50,7 @@ class PrefixTrieTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_prefix_trie_fill_ideal(self) -> None:
+    def test_fill_ideal(self) -> None:
         """
         Ideal fill scenario.
         """
@@ -61,7 +61,7 @@ class PrefixTrieTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_prefix_trie_clean_ideal(self) -> None:
+    def test_clean_ideal(self) -> None:
         """
         Ideal clean scenario.
         """
@@ -73,7 +73,7 @@ class PrefixTrieTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_prefix_trie_get_prefix_ideal(self) -> None:
+    def test_get_prefix_ideal(self) -> None:
         """
         Ideal get_prefix scenario.
         """
@@ -81,12 +81,13 @@ class PrefixTrieTest(unittest.TestCase):
         prefix_node = self.trie.get_prefix((1, 2))
         self.assertIsNotNone(prefix_node)
         self.assertTrue(prefix_node.has_children())
+        self.assertEqual(prefix_node.get_name(), 2)
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_prefix_trie_get_prefix_not_found(self) -> None:
+    def test_get_prefix_not_found(self) -> None:
         """
         get_prefix with non-existent prefix scenario.
         """
@@ -98,7 +99,7 @@ class PrefixTrieTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
-    def test_prefix_trie_suggest_ideal(self) -> None:
+    def test_suggest_ideal(self) -> None:
         """
         Ideal suggest scenario.
         """

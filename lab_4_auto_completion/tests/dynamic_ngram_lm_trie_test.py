@@ -11,7 +11,6 @@ import pytest
 
 from lab_4_auto_completion.main import (
     DynamicNgramLMTrie,
-    IncorrectCorpusError,
     IncorrectNgramError,
     MergeTreesError,
     NGramTrieLanguageModel,
@@ -92,7 +91,7 @@ class DynamicNgramLMTrieTest(unittest.TestCase):
 
         for bad_corpus in bad_corpora:
             model = DynamicNgramLMTrie(bad_corpus)
-            self.assertRaises(IncorrectCorpusError, model.build)
+            self.assertEqual(model.build(), 1)
 
         bad_ngram_sizes = [1, 0, -42, 3.14, [], {}, (), "string"]
 

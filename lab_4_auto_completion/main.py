@@ -18,13 +18,24 @@ class WordProcessor(TextProcessor):
     Inherits from TextProcessor but reworks logic to work with words instead of letters.
     """
 
+    #: Special token to separate sentences
+    _end_of_sentence_token: str
+
+    def __init__(self, end_of_sentence_token: str) -> None:
+        """
+        Initialize an instance of SentenceStorage.
+
+        Args:
+            end_of_sentence_token (str): A token denoting sentence boundary
+        """
+
     def encode_sentences(self, text: str) -> tuple:
         """
         Encode text and split into sentences.
 
         Encodes text and returns a tuple of sentence sequences, where each sentence
         is represented as a tuple of word IDs. Sentences are separated by the
-        end_of_word_token in the encoded text.
+        end_of_sentence_token in the encoded text.
 
         Args:
             text (str): Original text to encode
@@ -48,7 +59,7 @@ class WordProcessor(TextProcessor):
         """
         Convert decoded sentence into the string sequence.
 
-        Special symbols (end_of_word_token) separate sentences.
+        Special symbols (end_of_sentence_token) separate sentences.
         The first letter is capitalized, resulting sequence must end with a full stop.
 
         Args:
@@ -63,7 +74,7 @@ class WordProcessor(TextProcessor):
         Tokenize text into words, separating sentences with special token.
 
         Punctuation and digits are removed from words.
-        Sentences are separated by the end_of_word_token.
+        Sentences are separated by the end_of_sentence_token.
 
         Args:
             text (str): Original text
