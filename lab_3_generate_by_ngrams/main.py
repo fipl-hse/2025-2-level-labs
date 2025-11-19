@@ -19,7 +19,6 @@ class TextProcessor:
         _storage (dict): Dictionary in the form of <token: identifier>
     """
 
-
     def __init__(self, end_of_word_token: str) -> None:
         """
         Initialize an instance of LetterStorage.
