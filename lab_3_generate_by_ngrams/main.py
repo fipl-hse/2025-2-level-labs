@@ -361,6 +361,7 @@ class NGramLanguageModel:
         if not self._n_gram_frequencies:
             return 1
 
+        return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
