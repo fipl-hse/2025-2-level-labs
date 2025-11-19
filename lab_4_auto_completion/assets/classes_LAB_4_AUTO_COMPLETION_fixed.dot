@@ -1,0 +1,24 @@
+digraph "classes_LAB_4_AUTO_COMPLETION" {
+rankdir=BT
+charset="utf-8"
+"lab_4_auto_completion.main.GreedyTextGenerator" [color="black", fontcolor="black", label=<{GreedyTextGenerator|<br ALIGN="LEFT"/>|run(seq_len: int, prompt: str): str \| None<br ALIGN="LEFT"/>}>, shape="record", style="solid"];
+"lab_4_auto_completion.main_stub.GreedyTextGenerator" [color="black", fontcolor="black", label=<{GreedyTextGenerator|<br ALIGN="LEFT"/>|<I>run</I>(seq_len: int, prompt: str): str \| None<br ALIGN="LEFT"/>}>, shape="record", style="solid"];
+"lab_4_auto_completion.main.NGramTrie" [color="black", fontcolor="black", label=<{NGramTrie|n_gram_size : int<br ALIGN="LEFT"/>root<br ALIGN="LEFT"/>|build(corpus: list[tuple[int, ...]]): None<br ALIGN="LEFT"/>get_n_gram_size(): int<br ALIGN="LEFT"/>get_next_tokens(start_sequence: tuple[int, ...]): dict[int, float] \| None<br ALIGN="LEFT"/>}>, shape="record", style="solid"];
+"lab_4_auto_completion.main_stub.NGramTrie" [color="black", fontcolor="black", label=<{NGramTrie|n_gram_size : int<br ALIGN="LEFT"/>root<br ALIGN="LEFT"/>|<I>build</I>(corpus: list[tuple[int, ...]]): None<br ALIGN="LEFT"/><I>get_n_gram_size</I>(): int<br ALIGN="LEFT"/><I>get_next_tokens</I>(start_sequence: tuple[int, ...]): dict[int, float] \| None<br ALIGN="LEFT"/>}>, shape="record", style="solid"];
+"lab_4_auto_completion.main.NodeLike" [color="black", fontcolor="black", label=<{NodeLike|<br ALIGN="LEFT"/>|}>, shape="record", style="solid"];
+"lab_4_auto_completion.main_stub.NodeLike" [color="black", fontcolor="black", label=<{NodeLike|<br ALIGN="LEFT"/>|}>, shape="record", style="solid"];
+"lab_4_auto_completion.main.PrefixTrie" [color="black", fontcolor="black", label=<{PrefixTrie|<br ALIGN="LEFT"/>|build(corpus: list[tuple[int, ...]]): None<br ALIGN="LEFT"/>get_node_by_prefix(prefix: tuple[int, ...]): NodeLike \| None<br ALIGN="LEFT"/>}>, shape="record", style="solid"];
+"lab_4_auto_completion.main_stub.PrefixTrie" [color="black", fontcolor="black", label=<{PrefixTrie|<br ALIGN="LEFT"/>|<I>build</I>(corpus: list[tuple[int, ...]]): None<br ALIGN="LEFT"/><I>get_node_by_prefix</I>(prefix: tuple[int, ...]): NodeLike \| None<br ALIGN="LEFT"/>}>, shape="record", style="solid"];
+"lab_4_auto_completion.main.TrieNode" [color="black", fontcolor="black", label=<{TrieNode|children : list[NodeLike]<br ALIGN="LEFT"/>frequency : float<br ALIGN="LEFT"/>unit : int \| None<br ALIGN="LEFT"/>|is_last(): bool<br ALIGN="LEFT"/>}>, shape="record", style="solid"];
+"lab_4_auto_completion.main_stub.TrieNode" [color="black", fontcolor="black", label=<{TrieNode|children : list[NodeLike]<br ALIGN="LEFT"/>frequency : float<br ALIGN="LEFT"/>unit : int \| None<br ALIGN="LEFT"/>|<I>is_last</I>(): bool<br ALIGN="LEFT"/>}>, shape="record", style="solid"];
+"lab_4_auto_completion.main.NGramTrie" -> "lab_4_auto_completion.main.PrefixTrie" [arrowhead="empty", arrowtail="none"];
+"lab_4_auto_completion.main.TrieNode" -> "lab_4_auto_completion.main.NodeLike" [arrowhead="empty", arrowtail="none"];
+"lab_4_auto_completion.main_stub.NGramTrie" -> "lab_4_auto_completion.main_stub.PrefixTrie" [arrowhead="empty", arrowtail="none"];
+"lab_4_auto_completion.main_stub.TrieNode" -> "lab_4_auto_completion.main_stub.NodeLike" [arrowhead="empty", arrowtail="none"];
+"lab_4_auto_completion.main.NGramTrie" -> "lab_4_auto_completion.main.GreedyTextGenerator" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_trie", style="solid"];
+"lab_4_auto_completion.main.TrieNode" -> "lab_4_auto_completion.main.NGramTrie" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="root", style="solid"];
+"lab_4_auto_completion.main.TrieNode" -> "lab_4_auto_completion.main.PrefixTrie" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_root", style="solid"];
+"lab_4_auto_completion.main_stub.NGramTrie" -> "lab_4_auto_completion.main_stub.GreedyTextGenerator" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_trie", style="solid"];
+"lab_4_auto_completion.main_stub.NodeLike" -> "lab_4_auto_completion.main_stub.PrefixTrie" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="_root", style="solid"];
+"lab_4_auto_completion.main_stub.TrieNode" -> "lab_4_auto_completion.main_stub.NGramTrie" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="root", style="solid"];
+}
