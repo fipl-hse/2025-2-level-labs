@@ -8,6 +8,7 @@ from lab_3_generate_by_ngrams.main import (
     BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
+    NGramLanguageModelReader,
     TextProcessor,
 )
 
@@ -20,27 +21,30 @@ def main() -> None:
     """
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
-    result = None
-    text_processor = TextProcessor('_')
-    encoded = text_processor.encode(text) or ()
-    decoded = text_processor.decode(encoded) or ()
-    model = NGramLanguageModel(encoded, 7)
+    processor = TextProcessor(".")
+    encoded_text = processor.encode(text)
+    if encoded_text is None:
+        return
+    model = NGramLanguageModel(encoded_text, 7)
     model.build()
-    greedy_text_generator = GreedyTextGenerator(model, text_processor)
-    greedy_text = greedy_text_generator.run(51, 'Vernon')
-    print(greedy_text)
-    beam_search_generator = BeamSearchTextGenerator(model, text_processor, 3)
-    beam_search_text = beam_search_generator.run('Vernon', 56)
-    print(beam_search_text)
-    models = []
-    for ngram_size in (4, 5, 6):
-        model = NGramLanguageModel(encoded, ngram_size)
-        model.build()
-        models.append(model)
-    backoff_generator = BackOffGenerator(tuple(models), text_processor)
-    result_backoff = backoff_generator.run(55, 'Vernon')
-    print(result_backoff)
-    result = result_backoff
+    generator = GreedyTextGenerator(model, processor)
+    result_generator = generator.run(51, "Vernon")
+    print(result_generator)
+
+    beam_search = BeamSearchTextGenerator(model, processor, 3)
+    beam_search_ = beam_search.run("Vernon", 56)
+    result_beam = beam_search_
+    print(result_beam)
+
+    language_models = []
+    for n_gram_size in [1, 2, 3]:
+        loaded_model = NGramLanguageModelReader("./assets/en_own.json", "_").load(n_gram_size)
+        if loaded_model is not None:
+            language_models.append(model)
+
+    back_off = BackOffGenerator(tuple(language_models), processor).run(60, 'Vernon')
+    result = back_off
+    print(result)
     assert result
 
 
