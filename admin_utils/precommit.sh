@@ -3,19 +3,23 @@ set -ex
 echo $1
 if [[ "$1" == "smoke" ]]; then
   DIRS_TO_CHECK=(
+    "admin_utils"
     "config"
     "seminars"
     "lab_1_keywords_tfidf"
     "lab_2_spellcheck"
     "lab_3_generate_by_ngrams"
+    "lab_4_auto_completion"
   )
 else
   DIRS_TO_CHECK=(
+    "admin_utils"
     "config"
     "seminars"
     "lab_1_keywords_tfidf"
     "lab_2_spellcheck"
     "lab_3_generate_by_ngrams"
+    "lab_4_auto_completion"
   )
 fi
 
@@ -38,7 +42,8 @@ pydoctest --config pydoctest.json
 if [[ "$1" != "smoke" ]]; then
   python config/static_checks/check_doc8.py
 
+  rm -rf dist
   sphinx-build -b html -W --keep-going -n . dist -c admin_utils
 
-  python -m pytest -m "mark10 and lab_2_spellcheck"
+  python -m pytest -m "mark10 and lab_4_auto_completion"
 fi
