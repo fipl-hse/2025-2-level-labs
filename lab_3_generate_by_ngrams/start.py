@@ -1,12 +1,6 @@
 """
 Generation by NGrams starter
 """
-from lab_3_generate_by_ngrams.main import (
-    BeamSearchTextGenerator,
-    GreedyTextGenerator,
-    NGramLanguageModel,
-    TextProcessor,
-)
 
 # pylint:disable=unused-import, unused-variable
 from lab_3_generate_by_ngrams.main import (
