@@ -220,6 +220,11 @@ class TrieNode:
         Args:
             data (int | None, optional): The data stored in the node.
         """
+        self.__name = data
+        self._value = 0.0
+        self._children = []
+
+        self.__data = data
 
     def __bool__(self) -> bool:
         """
@@ -228,6 +233,7 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
+        return bool(self._children)
 
     def __str__(self) -> str:
         """
@@ -236,6 +242,7 @@ class TrieNode:
         Returns:
             str: String representation showing node data.
         """
+        return f"TrieNode(name={self.get_name()}, value={self.get_value()})"
 
     def add_child(self, item: int) -> None:
         """
@@ -244,6 +251,10 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
+        if not isinstance(item, int):
+            raise ValueError
+
+        self._children.append(TrieNode(item))
 
     def get_children(self, item: int | None = None) -> tuple["TrieNode", ...]:
         """
@@ -255,6 +266,14 @@ class TrieNode:
         Returns:
             tuple["TrieNode", ...]: Tuple of child nodes.
         """
+        if item is None:
+            return tuple(self._children)
+
+        filtered_children = tuple(
+            child for child in self._children if child.get_name() == item
+        )
+
+        return filtered_children
 
     def get_data(self) -> int | None:
         """
@@ -263,6 +282,7 @@ class TrieNode:
         Returns:
             int | None: TrieNode data.
         """
+        return self.__data
 
     def has_children(self) -> bool:
         """
@@ -271,6 +291,16 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
+        return bool(self)
+
+    def get_name(self) -> str:
+        return self.__name
+
+    def get_value(self) -> float:
+        return self._value
+
+    def set_value(self, value) -> None:
+        self._value = value
 
 
 class PrefixTrie:
