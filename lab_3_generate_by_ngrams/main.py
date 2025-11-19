@@ -703,7 +703,7 @@ class NGramLanguageModelReader:
         language_model.set_n_grams(conditional_probabilities)
         return language_model
 
-    def get_text_processor(self) -> TextProcessor:
+    def get_text_processor(self) -> TextProcessor:  # type: ignore[empty-body]
         """
         Get method for the processor created for the current JSON file.
 
