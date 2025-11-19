@@ -21,37 +21,30 @@ def main() -> None:
     """
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
-    text_processor = TextProcessor(end_of_word_token="_")
-    encoded = text_processor.encode(text)
-    if encoded is None:
+    processor = TextProcessor(".")
+    encoded_text = processor.encode(text)
+    if encoded_text is None:
         return
-    reader = NGramLanguageModelReader('./assets/en_own.json', '_')
-    load_models = []
-    for size in range(7):
-        load_model = reader.load(size)
-        if load_model is not None:
-            if size <= 5:
-                load_greedy = GreedyTextGenerator(
-                    load_model,
-                    reader.get_text_processor()
-                ).run(20, 'Vermon')
-                print(load_greedy)
-            if size >= 4:
-                load_beam = BeamSearchTextGenerator(
-                    load_model,
-                    reader.get_text_processor(),
-                    2
-                ).run('Vermon', 25)
-                print(load_beam)
-            if size >= 3:
-                load_models.append(load_model)
-    if load_models:
-        load_reader = BackOffGenerator(
-            tuple(load_models),
-            reader.get_text_processor()
-        ).run(30, 'Vernom')
-        print(load_reader)
-    result = load_reader
+    model = NGramLanguageModel(encoded_text, 7)
+    model.build()
+    generator = GreedyTextGenerator(model, processor)
+    result_generator = generator.run(51, "Vernon")
+    print(result_generator)
+
+    beam_search = BeamSearchTextGenerator(model, processor, 3)
+    beam_search_ = beam_search.run("Vernon", 56)
+    result_beam = beam_search_
+    print(result_beam)
+
+    language_models = []
+    for n_gram_size in [1, 2, 3]:
+        loaded_model = NGramLanguageModelReader("./assets/en_own.json", "_").load(n_gram_size)
+        if loaded_model is not None:
+            language_models.append(model)
+
+    back_off = BackOffGenerator(tuple(language_models), processor).run(60, 'Vernon')
+    result = back_off
+    print(result)
     assert result
 
 
