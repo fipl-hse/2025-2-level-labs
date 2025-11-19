@@ -3,6 +3,14 @@ Generation by NGrams starter
 """
 
 # pylint:disable=unused-import, unused-variable
+from lab_3_generate_by_ngrams.main import (
+    BackOffGenerator,
+    BeamSearchTextGenerator,
+    GreedyTextGenerator,
+    NGramLanguageModel,
+    NGramLanguageModelReader,
+    TextProcessor,
+)
 
 import os
 
@@ -26,29 +34,30 @@ def main() -> None:
 
     with open(file_path, "r", encoding="utf-8") as text_file:
         text = text_file.read()
-
-    processor = TextProcessor('_')
+    processor = TextProcessor(".")
     encoded_text = processor.encode(text)
-    if not encoded_text:
+    if encoded_text is None:
         return
+    model = NGramLanguageModel(encoded_text, 7)
+    model.build()
+    generator = GreedyTextGenerator(model, processor)
+    result_generator = generator.run(51, "Vernon")
+    print(result_generator)
 
-    n_gram_models = {}
-    for n in range(14):
-        model = NGramLanguageModel(encoded_text, n)
-        model.build()
-        n_gram_models[n] = model
+    beam_search = BeamSearchTextGenerator(model, processor, 3)
+    beam_search_ = beam_search.run("Vernon", 56)
+    result_beam = beam_search_
+    print(result_beam)
 
-    greedy_output = GreedyTextGenerator(
-        n_gram_models[7], processor).run(51, "Vernon")
-    beam_output = BeamSearchTextGenerator(
-        n_gram_models[7], processor, beam_width=5
-    ).run("Vernon", 51)
-    backoff_output = BackOffGenerator(
-        tuple(n_gram_models.values()),
-        processor
-    ).run(51, "Vernon")
+    language_models = []
+    for n_gram_size in [1, 2, 3]:
+        loaded_model = NGramLanguageModelReader("./assets/en_own.json", "_").load(n_gram_size)
+        if loaded_model is not None:
+            language_models.append(model)
 
-    result = backoff_output
+    back_off = BackOffGenerator(tuple(language_models), processor).run(60, 'Vernon')
+    result = back_off
+    print(result)
     assert result
 
     print(f"Greedy: {greedy_output}")
