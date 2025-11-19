@@ -1,0 +1,258 @@
+{
+    "root": {
+        "unit": null,
+        "frequency": 0.0,
+        "children": {
+            "I": {
+                "unit": "I",
+                "frequency": 0.0,
+                "children": {
+                    "love": {
+                        "unit": "love",
+                        "frequency": 0.0,
+                        "children": {
+                            "you": {
+                                "unit": "you",
+                                "frequency": 0.0,
+                                "children": {
+                                    "my": {
+                                        "unit": "my",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    },
+                                    "for": {
+                                        "unit": "for",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            },
+                            "Python": {
+                                "unit": "Python",
+                                "frequency": 0.0,
+                                "children": {
+                                    "language": {
+                                        "unit": "language",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "hate": {
+                        "unit": "hate",
+                        "frequency": 0.0,
+                        "children": {
+                            "you": {
+                                "unit": "you",
+                                "frequency": 0.0,
+                                "children": {
+                                    "for": {
+                                        "unit": "for",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "love": {
+                "unit": "love",
+                "frequency": 0.0,
+                "children": {
+                    "you": {
+                        "unit": "you",
+                        "frequency": 0.0,
+                        "children": {
+                            "my": {
+                                "unit": "my",
+                                "frequency": 0.0,
+                                "children": {
+                                    "friend": {
+                                        "unit": "friend",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            },
+                            "for": {
+                                "unit": "for",
+                                "frequency": 0.0,
+                                "children": {
+                                    "everytime": {
+                                        "unit": "everytime",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "me": {
+                        "unit": "me",
+                        "frequency": 0.0,
+                        "children": {
+                            "my": {
+                                "unit": "my",
+                                "frequency": 0.0,
+                                "children": {
+                                    "dog": {
+                                        "unit": "dog",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "hate": {
+                "unit": "hate",
+                "frequency": 0.0,
+                "children": {
+                    "you": {
+                        "unit": "you",
+                        "frequency": 0.0,
+                        "children": {
+                            "for": {
+                                "unit": "for",
+                                "frequency": 0.0,
+                                "children": {
+                                    "everytime": {
+                                        "unit": "everytime",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Hate": {
+                "unit": "Hate",
+                "frequency": 0.0,
+                "children": {
+                    "is": {
+                        "unit": "is",
+                        "frequency": 0.0,
+                        "children": {
+                            "nothing": {
+                                "unit": "nothing",
+                                "frequency": 0.0,
+                                "children": {
+                                    "for": {
+                                        "unit": "for",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "is": {
+                "unit": "is",
+                "frequency": 0.0,
+                "children": {
+                    "nothing": {
+                        "unit": "nothing",
+                        "frequency": 0.0,
+                        "children": {
+                            "for": {
+                                "unit": "for",
+                                "frequency": 0.0,
+                                "children": {
+                                    "me": {
+                                        "unit": "me",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Do": {
+                "unit": "Do",
+                "frequency": 0.0,
+                "children": {
+                    "you": {
+                        "unit": "you",
+                        "frequency": 0.0,
+                        "children": {
+                            "love": {
+                                "unit": "love",
+                                "frequency": 0.0,
+                                "children": {
+                                    "me": {
+                                        "unit": "me",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "you": {
+                "unit": "you",
+                "frequency": 0.0,
+                "children": {
+                    "love": {
+                        "unit": "love",
+                        "frequency": 0.0,
+                        "children": {
+                            "me": {
+                                "unit": "me",
+                                "frequency": 0.0,
+                                "children": {
+                                    "my": {
+                                        "unit": "my",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "You": {
+                "unit": "You",
+                "frequency": 0.0,
+                "children": {
+                    "are": {
+                        "unit": "are",
+                        "frequency": 0.0,
+                        "children": {
+                            "my": {
+                                "unit": "my",
+                                "frequency": 0.0,
+                                "children": {
+                                    "friend": {
+                                        "unit": "friend",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    },
+                                    "bro": {
+                                        "unit": "bro",
+                                        "frequency": 0.017857142857142856,
+                                        "children": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
