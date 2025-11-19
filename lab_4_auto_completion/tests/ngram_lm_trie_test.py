@@ -2,7 +2,7 @@
 Checks NGram Trie Language Model Class.
 """
 
-# pylint: disable=protected-access
+# pylint: disable=protected-access,too-many-public-methods
 
 import unittest
 from unittest import mock
@@ -185,7 +185,7 @@ class NGramLMTrieTest(unittest.TestCase):
         self.model._fill_frequencies(all_ngrams)
 
         node = self.model.get_node_by_prefix((1, 2, 3))
-        self.assertIsNotNone(node.get_frequency())
+        self.assertIsNotNone(node.get_value())
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark8
@@ -228,11 +228,11 @@ class NGramLMTrieTest(unittest.TestCase):
 
         with mock.patch.object(model._root, "get_children") as mock_get_children:
             child_data = mock.MagicMock()
-            child_data.get_data.return_value = 1
+            child_data.get_name.return_value = 1
             child_data.get_children.return_value = []
 
             child_none = mock.MagicMock()
-            child_none.get_data.return_value = None
+            child_none.get_name.return_value = None
             child_none.get_children.return_value = []
 
             mock_get_children.return_value = [child_data, child_none]
@@ -253,11 +253,11 @@ class NGramLMTrieTest(unittest.TestCase):
         mock_node = mock.MagicMock()
 
         child_data = mock.MagicMock()
-        child_data.get_data.return_value = 1
-        child_data.get_frequency.return_value = 0.5
+        child_data.get_name.return_value = 1
+        child_data.get_value.return_value = 0.5
 
         child_none = mock.MagicMock()
-        child_none.get_data.return_value = None
+        child_none.get_name.return_value = None
 
         mock_node.get_children.return_value = [child_data, child_none]
 
@@ -278,3 +278,15 @@ class NGramLMTrieTest(unittest.TestCase):
 
         next_tokens = model.get_next_tokens((1, 2, 3))
         self.assertEqual(next_tokens, {})
+
+    @pytest.mark.lab_4_auto_completion
+    @pytest.mark.mark10
+    def test_get_root_ideal(self) -> None:
+        """
+        Ideal scenario for root getter.
+        """
+        encoded_corpus = ((1, 2, 3),)
+        model = NGramTrieLanguageModel(encoded_corpus, 3)
+        model.build()
+
+        self.assertEqual(model.get_root(), model._root)

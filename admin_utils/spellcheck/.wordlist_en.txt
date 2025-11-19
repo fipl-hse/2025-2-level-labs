@@ -136,3 +136,6 @@ wordlist
 wordprefixtrie
 wordprocessor
 wordprocessortest
+dynamicbackoffgenerator
+dynamicbackoffgeneratortest
+dynamicngramlmtrietest
