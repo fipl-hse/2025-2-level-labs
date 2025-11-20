@@ -28,6 +28,7 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
+        self._end_of_sentence_token = end_of_sentence_token
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -82,7 +83,43 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
+        if not isinstance(text, str):
+            raise EncodingError("Text must be a string")
+        
+        if not text.strip():
+            raise EncodingError("Text cannot be empty")
+        
+        tokens = []
 
+        clear_sentences = []
+        current_sentence = ""
+
+        for char in text:
+            current_sentence += char
+            if char in '.!?':
+                clear_sentences.append(current_sentence.strip())
+                current_sentence = ""
+
+        if current_sentence.strip():
+            clear_sentences.append(current_sentence.strip())
+
+        for sentence in clear_sentences:
+            if not sentence:
+                continue
+
+            words = sentence.lower().split()
+
+            for word in words:
+                cleaned_word = ''.join(char for char in word if char.isalpha())
+            if cleaned_word:
+                tokens.append(cleaned_word)
+
+            tokens.append(self._end_of_sentence_token)
+
+        if not tokens:
+            raise EncodingError("No tokens generated")
+
+        return tuple(tokens)
 
 class TrieNode:
     """
