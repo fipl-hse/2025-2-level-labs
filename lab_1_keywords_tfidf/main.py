@@ -22,12 +22,9 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if not user_input and not can_be_empty:
-        return False
-    for individual_item in user_input:
-        if not isinstance(individual_item, elements_type):
-            return False
-    return True
+    if not user_input:
+        return can_be_empty
+    return all(isinstance(element, elements_type) for element in user_input)
     
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -45,12 +42,10 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    if not user_input and not can_be_empty:
-        return False
-    for key, value in user_input.items():
-        if not isinstance(key, key_type) and not isinstance(value, value_type):
-            return False
-    return True
+    if not user_input:
+        return can_be_empty
+    return (all(isinstance(key, key_type) for key in user_input) and
+        all(isinstance(value, value_type) for value in user_input.values()))
 
 def check_positive_int(user_input: Any) -> bool:
     """
@@ -96,20 +91,15 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     """
     if not isinstance(text, str):
         return None
-    punctuation = '!"#$%&\'()*-+,./:;<=>?@[\\]^_`{|}~\n'
-    result = []
-    current_word = '' 
-    for symb in text:
-        symb_lower = symb.lower()
-        if symb in (' ', '\n'):
-            if current_word:
-                result.append(current_word)
-                current_word = ''
-        elif symb_lower not in punctuation:
-            current_word += symb_lower
-    if current_word:
-        result.append(current_word)
-    return result
+    words = text.lower().split()
+    tokens = []
+    for word in words:
+        cleaned_word = ''.join(
+            symbol for symbol in word
+            if symbol.isalnum())
+        if cleaned_word:
+            tokens.append(cleaned_word)
+    return tokens
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
     """

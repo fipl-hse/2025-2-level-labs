@@ -2,19 +2,19 @@
 Lab 2.
 """
 
+import os
+import sys
+
 # pylint:disable=unused-argument
 from typing import Literal
-import sys
-import os
 
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, root_dir)
 from lab_1_keywords_tfidf.main import (
-    check_list,
     check_dict,
-    check_positive_int,
-    check_float,
+    check_list,
 )
+
 
 def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     """
