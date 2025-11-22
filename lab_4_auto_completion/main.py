@@ -5,6 +5,8 @@ Lab 4
 # pylint: disable=unused-argument, super-init-not-called, unused-private-member, duplicate-code, unused-import
 import json
 
+import string
+
 from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, TextProcessor
 
 NGramType = tuple[int, ...]
@@ -28,6 +30,8 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
+        TextProcessor.__init__(self, end_of_sentence_token)
+        self._end_of_sentence_token = end_of_sentence_token #не уверена что то делаю
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -82,6 +86,15 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
+        sentences = []
+        last_sentence_end = 0
+        for index, token in enumerate(text):
+            if token in "!?.":
+                sentences.append(text[last_sentence_end:index+1])
+                last_sentence_end = index + 1
+        for sentence in sentences:
+            super()._tokenize(sentence)
+        #что-то про end-of-sent-token и добавить исключения
 
 
 class TrieNode:
