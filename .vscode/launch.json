@@ -220,6 +220,17 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }
+        },
+        {
+            "name": "[ADMIN] [LAB 4] Helpers",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "helpers.py",
+            "cwd": "${workspaceFolder}/lab_4_auto_completion",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
         }
     ]
 }
