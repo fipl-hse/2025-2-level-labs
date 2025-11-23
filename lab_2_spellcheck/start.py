@@ -12,6 +12,7 @@ from lab_2_spellcheck.main import (
     find_out_of_vocab_words,
 )
 
+
 def main() -> None:
     """
     Launches an implementation.
