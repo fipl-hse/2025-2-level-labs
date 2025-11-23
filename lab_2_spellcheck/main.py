@@ -72,17 +72,6 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
         return None
     if token == '' and candidate == '':
         return 1.0
-    # intersection = set()
-    # for symb in token:
-    #     if symb in candidate:
-    #         intersection.add(symb)
-    # union = set()
-    # for symb in token:
-    #     union.add(symb)
-    # for symb in candidate:
-    #     union.add(symb)
-    # J = 1 - len(intersection)/len(union)
-    # return round(J,4)
     tokens_intersection = len(set(token).intersection(set(candidate)))
     tokens_union = len(set(token).union(set(candidate)))
     return 1-(tokens_intersection/tokens_union)
