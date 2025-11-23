@@ -2,23 +2,17 @@
 Spellcheck starter
 """
 
-import os
-
 # pylint:disable=unused-variable, duplicate-code, too-many-locals
-import sys
 
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, root_dir)
-from lab_1_keywords_tfidf.main import (
-    clean_and_tokenize,
-    remove_stop_words,
-)
-from main import (
+
+from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
+from lab_2_spellcheck.main import (
     build_vocabulary,
+    calculate_distance,
+    calculate_frequency_distance,
     find_correct_word,
     find_out_of_vocab_words,
 )
-
 
 def main() -> None:
     """
