@@ -148,24 +148,6 @@ def find_correct_word(
         return None
     if not check_list(alphabet, str, False) and alphabet != None:
         return None
-    # distance = calculate_distance(wrong_word, vocabulary, method, alphabet)
-    # if distance is None:
-    #     return None
-    # min_distance = 1.0 
-    # for key,value in distance.items():
-    #     min_distance = min(min_distance,value)
-    # candidates = []
-    # for key,value in distance.items():
-    #     if value == min_distance:
-    #         candidates.append(key)
-    # min_diff = 100000
-    # for candidate in candidates:
-    #     min_diff = min(min_diff, abs(len(wrong_word) - len(candidate)))
-    # for candidate in candidates:
-    #     if abs(len(wrong_word) - len(candidate)) != min_diff:
-    #         candidates.remove(candidate)
-    # candidates = sorted(candidates)
-    # return candidates[0]
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
     if not distances:
         return None
