@@ -142,7 +142,7 @@
             "name": "[SEMINAR 10] Learn encapsulation",
             "type": "debugpy",
             "request": "launch",
-            "program": "seminars/listing_10_encapsulate.py",
+            "program": "seminars/listing_10_encapsulation.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
@@ -153,6 +153,26 @@
             "type": "debugpy",
             "request": "launch",
             "program": "seminars/listing_11_inheritance.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 12] Learn polymorphism",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_12_polymorphism.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 13] Learn exceptions",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_13_exceptions.py",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
