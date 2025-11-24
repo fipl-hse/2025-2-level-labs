@@ -82,7 +82,7 @@ class WordProcessor(TextProcessor):
 
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
-        """
+        """я
         encoded_sentences = []
         encoded_buffer = []
 
@@ -417,7 +417,7 @@ class PrefixTrie:
                 else:
                     queue.append((current_prefix, child))
 
-        return tuple(results) #почему дерево требует определенного порядка?
+        return tuple(sorted(results, key=lambda x: x, reverse=True)) #почему дерево требует определенного порядка?
 
 
 
