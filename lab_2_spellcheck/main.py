@@ -70,7 +70,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     """
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
-    if not token and not candidate: #
+    if not token and not candidate:
         return 1.0
     tokens_intersection = len(set(token).intersection(set(candidate)))
     tokens_union = len(set(token).union(set(candidate)))
