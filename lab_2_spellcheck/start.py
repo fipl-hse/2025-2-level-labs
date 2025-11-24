@@ -34,16 +34,16 @@ def main() -> None:
     vocabulary = build_vocabulary(tokens_without_stopwords) or {}
     alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
     for i, sentence in enumerate(sentences, 1):
-        print(f"\n--- Предложение {i}: {sentence.strip()} ---")
+        print(f"\n--- Sentence {i}: {sentence.strip()} ---")
         sentence_tokens = clean_and_tokenize(sentence) or []
         out_of_vocab = find_out_of_vocab_words(sentence_tokens, vocabulary) or []
-        print(f"Слова вне словаря: {out_of_vocab}")
+        print(f"Words outside the dictionary: {out_of_vocab}")
         for token in out_of_vocab:
             correct_word_jaccard = find_correct_word(token, vocabulary, "jaccard") or ""
             correct_word_freq = find_correct_word(token, vocabulary, "frequency-based", alphabet) or ""
-            print(f"  Слово '{token}':")
-            print(f"    Jaccard исправление: {correct_word_jaccard}")
-            print(f"    Frequency-based исправление: {correct_word_freq}")
+            print(f"  Word '{token}':")
+            print(f"    Jaccard fix: {correct_word_jaccard}")
+            print(f"    Frequency-based fix: {correct_word_freq}")
         result = out_of_vocab
         assert result, "Keywords are not extracted"
 
