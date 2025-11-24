@@ -48,9 +48,7 @@ class IncorrectNgramError(Exception):
     """
     pass
 
-class IncorrectCorpusError(Exception):
-    """Raised when an incorrect corpus is used"""
-    pass
+
 
 class WordProcessor(TextProcessor):
     """
@@ -85,10 +83,6 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
-        if not isinstance(text, str) or not text:
-            raise EncodingError
-
-
         encoded_sentences = []
         encoded_buffer = []
 
@@ -423,7 +417,7 @@ class PrefixTrie:
                 else:
                     queue.append((current_prefix, child))
 
-        return tuple(sorted(results, key=lambda x: x, reverse=True)) #почему дерево требует определенного порядка?
+        return tuple(results) #почему дерево требует определенного порядка?
 
 
 
@@ -467,6 +461,8 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        NGramLanguageModel.__init__(self, encoded_corpus, n_gram_size)
+        self._root = TrieNode()
 
     def __str__(self) -> str:
         """
@@ -534,6 +530,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             TrieNode: Found node by prefix.
         """
+        self.get_prefix(prefix)
 
     def update(self, new_corpus: tuple[NGramType]) -> None:
         """

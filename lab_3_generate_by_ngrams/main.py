@@ -217,8 +217,9 @@ class TextProcessor:
 
         for n_gram in content["freq"]:
             for symbol in n_gram.lower():
-                if symbol.isalpha():
-                    self._put(symbol)
+                if not symbol.isalpha():
+                    continue
+                self._put(symbol)
 
 
     def _decode(self, corpus: tuple[int, ...]) -> tuple[str, ...] | None:
