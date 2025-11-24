@@ -82,7 +82,7 @@ class WordProcessor(TextProcessor):
 
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
-        """я
+        """
         encoded_sentences = []
         encoded_buffer = []
 
