@@ -21,15 +21,18 @@ Tools Integration:
 
 import ast
 import json
-import subprocess
 import sys
 from pathlib import Path
 from typing import List
 
-project_root = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(project_root))
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
-PROJECT_CONFIG_PATH = Path(__file__).parent.parent.parent / "project_config.json"
+# pylint: disable=wrong-import-position
+from config.cli_unifier import _run_console_tool, handles_console_error
+from config.constants import PROJECT_CONFIG_PATH
+
+# pylint: enable=wrong-import-position
 
 
 def get_functional_files(lab_folder: Path) -> List[Path]:
@@ -99,6 +102,7 @@ def check_if_has_classes(lab_folder: Path) -> bool:
     return False
 
 
+@handles_console_error()
 def _run_pyreverse(
     project_name: str, output_dir: Path, file_list: list[str], cwd: Path
 ) -> tuple[str, str, int]:
@@ -114,8 +118,6 @@ def _run_pyreverse(
     Returns:
         tuple[str, str, int]: stdout, stderr, and exit code of the pyreverse process.
     """
-    from config.cli_unifier import _run_console_tool  # pylint: disable=import-outside-toplevel
-
     return _run_console_tool(
         "pyreverse",
         ["-o", "dot", "-p", project_name, "-d", str(output_dir), "-A", *file_list],
@@ -123,6 +125,7 @@ def _run_pyreverse(
     )
 
 
+@handles_console_error()
 def _run_dot(input_path: Path, output_path: Path) -> tuple[str, str, int]:
     """
     Render a DOT file to PNG using Graphviz dot command.
@@ -136,8 +139,6 @@ def _run_dot(input_path: Path, output_path: Path) -> tuple[str, str, int]:
     Returns:
         tuple[str, str, int]: stdout, stderr, and exit code of the dot process.
     """
-    from config.cli_unifier import _run_console_tool  # pylint: disable=import-outside-toplevel
-
     return _run_console_tool(
         "dot", ["-Tpng", "-Gid=uml_diagram", str(input_path), "-o", str(output_path)]
     )
@@ -170,16 +171,8 @@ def generate_class_diagram(lab_folder: Path, output_dir: Path) -> bool:
     # Prepare list of files for pyreverse
     file_list = [str(f.relative_to(lab_folder)) for f in functional_files]
     file_list.sort()
-    _, stderr, returncode = _run_pyreverse(project_name, output_dir, file_list, lab_folder)
 
-    if returncode != 0:
-        print(f"  pyreverse failed with return code {returncode}")
-        if stderr:
-            print(f"  Error: {stderr.strip()}")
-        # Clean up any partial output
-        (output_dir / f"classes_{project_name}.dot").unlink(missing_ok=True)
-        (output_dir / f"packages_{project_name}.dot").unlink(missing_ok=True)
-        return False
+    _run_pyreverse(project_name, output_dir, file_list, lab_folder)
 
     original_file = output_dir / f"classes_{project_name}.dot"
     packages_file = output_dir / f"packages_{project_name}.dot"
@@ -192,15 +185,11 @@ def generate_class_diagram(lab_folder: Path, output_dir: Path) -> bool:
     process_and_fix_dot(original_file, fixed_file)
 
     png_path = output_dir / "description.png"
-    _, stderr, returncode = _run_dot(fixed_file, png_path)
+
+    _run_dot(fixed_file, png_path)
 
     original_file.unlink(missing_ok=True)
     packages_file.unlink(missing_ok=True)
-
-    if returncode != 0:
-        stderr_msg = stderr.strip() if stderr else "no stderr"
-        print(f"  dot command failed: {stderr_msg}")
-        return False
 
     return png_path.exists()
 
@@ -308,18 +297,7 @@ def generate_module_diagram(lab_folder: Path, output_dir: Path) -> bool:
         print(f"  Error writing DOT file: {e}")
         return False
 
-    try:
-        result = subprocess.run(
-            ["dot", "-Tpng", str(dot_path), "-o", str(png_path)], capture_output=True, check=False
-        )
-    except subprocess.SubprocessError as e:
-        print(f"  Error running dot command: {e}")
-        return False
-
-    if result.returncode != 0:
-        stderr_msg = result.stderr.strip() if result.stderr else "no stderr"
-        print(f"  dot command failed: {stderr_msg}")
-        return False
+    _run_dot(dot_path, png_path)
 
     return png_path.exists()
 
@@ -405,7 +383,7 @@ def main() -> None:
             print(f"❌ Lab folder not found: {lab_path}")
             continue
 
-        print(f"Processing {lab_name}...")
+        print(f"\nProcessing {lab_name}...")
         if not generate_uml_diagrams(lab_path):
             print(f"Failed to generate diagram for {lab_name}")
 

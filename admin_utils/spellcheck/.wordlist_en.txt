@@ -33,7 +33,10 @@ decodingerror
 docstring
 docstrings
 dto
+dynamicbackoffgenerator
+dynamicbackoffgeneratortest
 dynamicngramlmtrie
+dynamicngramlmtrietest
 entrypoint
 enum
 env
@@ -138,6 +141,3 @@ wordlist
 wordprefixtrie
 wordprocessor
 wordprocessortest
-dynamicbackoffgenerator
-dynamicbackoffgeneratortest
-dynamicngramlmtrietest
