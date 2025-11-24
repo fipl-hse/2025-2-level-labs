@@ -40,7 +40,7 @@ python -m flake8 "${DIRS_TO_CHECK[@]}"
 pydoctest --config pydoctest.json
 
 if [[ "$1" != "smoke" ]]; then
-  python config/static_checks/check_doc8.py
+  fiplconfig.check_doc8
 
   rm -rf dist
   sphinx-build -b html -W --keep-going -n . dist -c admin_utils
