@@ -11,28 +11,27 @@ NGramType = tuple[int, ...]
 "Type alias for NGram."
 
 class CustomException(Exception):
-    """Base custom exception"""
-    pass
+    """Exception raised when something fails due to something"""
+
 
 class TriePrefixNotFoundError(CustomException):
     """Raised when required prefix is not found in the trie"""
-    pass
+
 
 class EncodingError(CustomException):
     """Raised when text encoding fails due to incorrect input or processing error"""
-    pass
+
 
 class DecodingError(CustomException):
     """Raised when text decoding fails due to incorrect input or processing error"""
-    pass
+
 
 class IncorrectNgramError(CustomException):
     """Raised when attempting to use inappropriate n-gram size"""
-    pass
+
 
 class MergeTreesError(CustomException):
     """Raised when tree merging is impossible"""
-    pass
 
 class WordProcessor(TextProcessor):
     """
@@ -244,8 +243,8 @@ class TrieNode:
         """
         if item is None:
             return tuple(self._children)
-        else:
-            return tuple(child for child in self._children if child.get_name() == item)
+        children_with_item = tuple(child for child in self._children if child.get_name() == item)
+        return children_with_item
 
     def get_name(self) -> int | None:
         """
@@ -382,7 +381,7 @@ class PrefixTrie:
             for child in current_node.get_children():
                 if child.get_name() == item:
                     existing_child = child
-                    break    
+                    break
             if existing_child is None:
                 current_node.add_child(item)
                 for child in current_node.get_children():
