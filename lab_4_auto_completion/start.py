@@ -16,31 +16,28 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-    word_processor = WordProcessor(end_of_sentence_token="<EOS>")
-    encoded_sentences = word_processor.encode_sentences(hp_letters)
-    all_words = []
-    for sentence in encoded_sentences:
-        all_words.extend(sentence)
-    n_gram_size = 3
-    trigrams = []
-    for i in range(len(all_words) - n_gram_size + 1):
-        trigram = tuple(all_words[i:i + n_gram_size])
-        trigrams.append(trigram)
-    trie = PrefixTrie()
-    trie.fill(tuple(trigrams))
-    prefix = (2,)
-    suggestions = trie.suggest(prefix)
-    print(f"Found {len(suggestions)} suggestions for prefix {prefix}")
-    if suggestions:
-        first_suggestion = suggestions[0]
-        print(f"First suggestion: {first_suggestion}")
-        decoded_words = []
-        for token in first_suggestion:
-            for word, word_id in word_processor._storage.items():
-                if word_id == token:
-                    decoded_words.append(word)
+    processor = WordProcessor(end_of_sentence_token="<EOS>")
+    encoded_data = processor.encode_sentences(hp_letters)
+    words_combined = []
+    for sent in encoded_data:
+        words_combined.extend(sent)
+    tri_grams = []
+    for idx in range(len(words_combined) - 2):
+        tri_grams.append(tuple(words_combined[idx:idx + 3]))
+    tree = PrefixTrie()
+    tree.fill(tuple(tri_grams))
+    found = tree.suggest((2,))
+    print(f"Found {len(found)} suggestions for prefix (2,)")
+    if found:
+        best = found[0]
+        print(f"First suggestion: {best}")
+        output_words = []
+        for code in best:
+            for text, num in processor._storage.items():
+                if num == code:
+                    output_words.append(text)
                     break
-        decoded_text = word_processor._postprocess_decoded_text(tuple(decoded_words))
+        decoded_text = processor._postprocess_decoded_text(tuple(output_words))
         print(f"Decoded result: {decoded_text}")
     result = decoded_text
     assert result, "Result is None"
