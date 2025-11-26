@@ -232,7 +232,6 @@ class TrieNode:
         """
         return len(self._children) > 0
 
-
     def __str__(self) -> str:
         """
         Return a string representation of the N-gram node.
@@ -240,6 +239,7 @@ class TrieNode:
         Returns:
             str: String representation showing node data and frequency.
         """
+        return "TrieNode(name={}, value={})".format(self.get_name(), self.get_value())
 
     def add_child(self, item: int) -> None:
         """
@@ -248,6 +248,10 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
+        if not isinstance(item, int):
+            raise ValueError('Item must be an integer')
+
+        self._children.append(TrieNode(item))
 
     def get_children(self, item: int | None = None) -> tuple["TrieNode", ...]:
         """
@@ -263,7 +267,6 @@ class TrieNode:
             return tuple(self._children)
         children_item = tuple(x for x in self._children if x.get_name() == item)
         return children_item
-
 
     def get_name(self) -> int | None:
         """
