@@ -21,31 +21,32 @@ def main() -> None:
     """
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
-    processor = TextProcessor(".")
-    encoded_text = processor.encode(text)
-    if encoded_text is None:
-        return
-    model = NGramLanguageModel(encoded_text, 7)
-    model.build()
-    generator = GreedyTextGenerator(model, processor)
-    result_generator = generator.run(51, "Vernon")
-    print(result_generator)
-
-    beam_search = BeamSearchTextGenerator(model, processor, 3)
-    beam_search_ = beam_search.run("Vernon", 56)
-    result_beam = beam_search_
-    print(result_beam)
-
-    language_models = []
-    for n_gram_size in [1, 2, 3]:
-        loaded_model = NGramLanguageModelReader("./assets/en_own.json", "_").load(n_gram_size)
-        if loaded_model is not None:
-            language_models.append(model)
-
-    back_off = BackOffGenerator(tuple(language_models), processor).run(60, 'Vernon')
-    result = back_off
-    print(result)
-    assert result
+    processor = TextProcessor(end_of_word_token='_')
+    encoded = processor.encode(text) or tuple()
+    if encoded:
+        loaded_model_list = []
+        for n_size in range(2, 11):
+            custom_model = NGramLanguageModel(encoded, n_size)
+            custom_model.build()
+            loaded_model_list.append(custom_model)
+            result = GreedyTextGenerator(
+                custom_model,
+                processor
+            ).run(30, 'Harry')
+            print(f"\nGreedy with custom {n_size}-gram: {result}")
+            result = BeamSearchTextGenerator(
+                custom_model,
+                processor,
+                2
+            ).run('Harry', 30)
+            print(f"\nBeam Search with custom {n_size}-gram: {result}")
+        if loaded_model_list:
+            result = BackOffGenerator(
+                tuple(loaded_model_list),
+                processor
+            ).run(35, 'Harry')
+            print(f"\nBackOff with all custom models: {result}")
+            assert result
 
 
 if __name__ == "__main__":
