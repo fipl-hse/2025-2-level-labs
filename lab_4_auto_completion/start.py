@@ -3,7 +3,8 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, NGramLanguageModel, TextProcessor
+from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator
+from lab_4_auto_completion.main import NGramTrieLanguageModel, WordProcessor
 
 
 def main() -> None:
@@ -16,34 +17,36 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-
     with open("./assets/secrets/secret_4.txt", "r", encoding="utf-8") as text_file:
         letter = text_file.read()
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
+    
+    processor = WordProcessor('<EoW>')
+    print("I start")
+    n_gram_size = 2
+    beam_width = 2
+    seq_len = 5
 
-    processor = TextProcessor(end_of_word_token=".")
-    encoded_text = processor.encode(text)
+    parts = letter.split("<BURNED>")
+    part_of_letter = parts[0].strip()
+    after_burned = parts[1]
+    print("I did parts")
 
-    n_gram_size = 18
-    beam_width = 3
-    seq_len = 128
+    words = part_of_letter.split()
 
-    model = NGramLanguageModel(encoded_text, n_gram_size)
-    model.build()
+    context_for_generation = ' '.join(words[-n_gram_size:])
 
-    generator = BeamSearchTextGenerator(model, processor, beam_width)
+    try:
+        print(context_for_generation)
+        encoded_text = processor.encode(text)
+        ngram_model = NGramTrieLanguageModel(tuple(encoded_text), n_gram_size)
+        ngram_model.build()
 
-    context = letter.split("<BURNED>")[0]
-    prompt = context[-n_gram_size:]
-    burned_text = generator.run(prompt, seq_len)
-
-    cleaned_text = burned_text[len(prompt):].strip()
-
-    completed_letter = letter.replace("<BURNED>", cleaned_text)
-    print(f'\n{completed_letter}')
-    result = completed_letter
-    assert result, "Result is None"
+        result = ngram_model
+        assert result, "Result is None"
+    except:
+        print('Failure')
 
 if __name__ == "__main__":
     main()
