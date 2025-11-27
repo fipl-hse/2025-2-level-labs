@@ -3,12 +3,32 @@ Lab 4
 """
 
 # pylint: disable=unused-argument, super-init-not-called, unused-private-member, duplicate-code, unused-import
-import json
+import json, string
 
 from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, TextProcessor
 
 NGramType = tuple[int, ...]
 "Type alias for NGram."
+
+class TriePrefixNotFoundError(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+class EncodingError(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+class DecodingError(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+class IncorrectNgramError(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+class MergeTreesError(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
 
 
 class WordProcessor(TextProcessor):
@@ -28,6 +48,8 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
+        self._end_of_sentence_token = end_of_sentence_token
+        self._storage = {end_of_sentence_token: 0}
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -82,6 +104,44 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
+        if not isinstance(text, str):
+            print("Input is not a string.")
+            raise EncodingError
+            
+        tokens = []
+        punct_symbols = set(string.punctuation)
+        punct_symbols.remove("-")
+        words = text.split(" ")
+        sentences = []
+        new_sentence = []
+        for word in words:
+            new_word = []
+            for symbol in word:
+                if symbol.isalpha:
+                    new_word.append(symbol)
+            new_word = "".join(new_word)
+            new_sentence.append(new_word.lower)
+            new_sentence.append(self._end_of_sentence_token)
+            if word and word.capitalize and word[-1] in punct_symbols:
+                sentences.append(new_sentence)
+                new_sentence = []
+        
+        
+        
+
+        # special_symbols = set(string.punctuation)
+        # special_symbols.remove("-")
+        # for token in text.lower():
+        #     if token.isalpha():
+        #         tokens.append(token)
+        #     elif token.isspace() or token in special_symbols:
+        #         if tokens[-1] != self._end_of_word_token:
+        #             tokens.append(self._end_of_word_token)
+        #         else:
+        #             continue
+        #     elif token.isdigit():
+        #         continue
+        # return tuple(tokens) if tokens else None
 
 
 class TrieNode:
