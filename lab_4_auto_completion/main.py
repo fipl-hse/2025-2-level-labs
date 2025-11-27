@@ -191,6 +191,9 @@ class TrieNode:
             name (int | None, optional): The name of the node.
             value (float, optional): The value stored in the node.
         """
+        self.__name = name
+        self._value = value
+        self._children = []
 
     def __bool__(self) -> bool:
         """
@@ -199,6 +202,9 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
+        if self._children:
+            return True
+        return False
 
     def __str__(self) -> str:
         """
@@ -207,6 +213,7 @@ class TrieNode:
         Returns:
             str: String representation showing node data and frequency.
         """
+        return f'TrieNode(name={self.get_name()}, value={self.get_value()})'
 
     def add_child(self, item: int) -> None:
         """
@@ -215,6 +222,7 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
+        self._children.append(TrieNode(item))
 
     def get_children(self, item: int | None = None) -> tuple["TrieNode", ...]:
         """
@@ -226,6 +234,14 @@ class TrieNode:
         Returns:
             tuple["TrieNode", ...]: Tuple of child nodes.
         """
+        if isinstance(item, int):
+            item_children = []
+            for child in self._children:
+                if child.get_name() == item:
+                    item_children.append(child.get_name())
+            return tuple(item_children)
+        if item is None:
+            return tuple(self._children)
 
     def get_name(self) -> int | None:
         """
@@ -234,6 +250,7 @@ class TrieNode:
         Returns:
             int | None: TrieNode data.
         """
+        return self.__name
 
     def get_value(self) -> float:
         """
@@ -242,6 +259,7 @@ class TrieNode:
         Returns:
             float: Frequency value.
         """
+        return self._value
 
     def set_value(self, new_value: float) -> None:
         """
@@ -250,6 +268,7 @@ class TrieNode:
         Args:
             new_value (float): New value to store.
         """
+        self._value = new_value
 
     def has_children(self) -> bool:
         """
@@ -258,6 +277,7 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
+        return self.__bool__()
 
 
 class PrefixTrie:
@@ -272,11 +292,13 @@ class PrefixTrie:
         """
         Initialize an empty PrefixTrie.
         """
+        self._root = TrieNode()
 
     def clean(self) -> None:
         """
         Clean the whole tree.
         """
+        self._root = TrieNode()
 
     def fill(self, encoded_corpus: tuple[NGramType]) -> None:
         """
@@ -285,6 +307,9 @@ class PrefixTrie:
         Args:
             encoded_corpus (tuple[NGramType]): Tokenized corpus.
         """
+        self.clean()
+        for token in encoded_corpus:
+            self._insert(token)
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
@@ -296,6 +321,17 @@ class PrefixTrie:
         Returns:
             TrieNode: Found TrieNode by prefix
         """
+        current_node = self._root
+        for element in prefix:
+            found_element = None
+            for child in current_node.get_children():
+                if child.get_name() == element:
+                    found_element = child
+                    break
+            if found_element is None:
+                raise TriePrefixNotFoundError('prefix is not in the tree')
+            current_node = found_element
+        return current_node
 
     def suggest(self, prefix: NGramType) -> tuple:
         """
@@ -308,6 +344,23 @@ class PrefixTrie:
             tuple: Tuple of all token sequences that begin with the given prefix.
                                    Empty tuple if prefix not found.
         """
+        try:
+            prefix_node = self.get_prefix(prefix)
+        except TriePrefixNotFoundError:
+            return tuple()
+        sequences = []
+        stack = [(prefix_node, list(prefix))]
+        while stack:
+            current_node, current_sequence = stack.pop()
+            if current_node.has_children():
+                children = list(current_node.get_children())
+                for child in reversed(children):
+                    if child.get_name() is None:
+                        continue
+                    new_sequence = current_sequence + [child.get_name()]
+                    sequences.append(tuple(new_sequence))
+                    stack.append((child, new_sequence))
+        return tuple(sequences)
 
     def _insert(self, sequence: NGramType) -> None:
         """
@@ -316,6 +369,18 @@ class PrefixTrie:
         Args:
             sequence (NGramType): Tokens to insert.
         """
+        current_node = self._root
+        for token in sequence:
+            found_child = False
+            for child in current_node.get_children():
+                if child.get_name() == token:
+                    current_node = child
+                    found_child = True
+                    break
+            if not found_child:
+                new_node = TrieNode(token)
+                current_node._children.append(new_node)
+                current_node = new_node
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
