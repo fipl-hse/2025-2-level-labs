@@ -10,6 +10,36 @@ from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, 
 NGramType = tuple[int, ...]
 "Type alias for NGram."
 
+class TriePrefixNotFoundError(Exception):
+    """
+    Exception is raised when the prefix required for the transition is not present in the tree.
+    """
+    pass
+
+class EncodingError(Exception):
+    """
+    Exception is raised when text encoding fails due to incorrect input or a processing error.
+    """
+    pass
+
+class DecodingError(Exception):
+    """
+    Exception is raised when text decoding fails due to incorrect input or a processing error.
+    """
+    pass
+
+class IncorrectNgramError(Exception):
+    """
+    Exception is raised when an inappropriate n-gram size is attempted.
+    """
+    pass
+
+class MergeTreesError (Exception):
+    """
+    Exception is raised when it is impossible to merge the trees.
+    """
+    pass
+
 
 class WordProcessor(TextProcessor):
     """
@@ -136,7 +166,7 @@ class WordProcessor(TextProcessor):
             result.append(' '.join(current_sentence))
 
         if not result:
-            raise DecodinError('No sentences')
+            raise DecodingError('No sentences')
 
         postprocess_text = []
         for sentence in result:
@@ -317,11 +347,13 @@ class PrefixTrie:
         """
         Initialize an empty PrefixTrie.
         """
+        self._root = TrieNode()
 
     def clean(self) -> None:
         """
         Clean the whole tree.
         """
+        self._root = TrieNode()
 
     def fill(self, encoded_corpus: tuple[NGramType]) -> None:
         """
@@ -330,6 +362,9 @@ class PrefixTrie:
         Args:
             encoded_corpus (tuple[NGramType]): Tokenized corpus.
         """
+        self.clean()
+        for el in encoded_corpus:
+            self._insert(el)
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
@@ -341,6 +376,25 @@ class PrefixTrie:
         Returns:
             TrieNode: Found TrieNode by prefix
         """
+        current_node = self._root
+        for element in prefix:
+            children_node = current_node.get_children()
+
+            found_child = None
+
+            for child in children_node:
+                if child.get_children() == element:
+                    child = found_child
+                    break
+
+            if found_child is None:
+                raise TriePrefixNotFoundError(
+                    f'Prefix {prefix} not found in trie. Failed at token: {element}'
+                    )
+
+            current_node = found_child
+
+        return current_node
 
     def suggest(self, prefix: NGramType) -> tuple:
         """
@@ -353,6 +407,29 @@ class PrefixTrie:
             tuple: Tuple of all token sequences that begin with the given prefix.
                                    Empty tuple if prefix not found.
         """
+        try:
+            prefix_node = self.get_prefix(prefix)
+        except TriePrefixNotFoundError:
+            return tuple()
+        
+        sequences = []
+        lifo = [(prefix_node, [])]
+
+        while lifo:
+            current_node, completion = lifo.pop()
+
+        children_node = current_node.get_children()
+        if not children_node and completion:
+            full_sequence = list(prefix) + completion
+            sequences.append(tuple(full_sequence))
+        
+        for child in children_node:
+            if child.get_name() is not None:
+                new_continuation = completion + [child.get_name()]
+                lifo.append((child, new_continuation))
+
+        return tuple(sequences)
+
 
     def _insert(self, sequence: NGramType) -> None:
         """
@@ -361,6 +438,22 @@ class PrefixTrie:
         Args:
             sequence (NGramType): Tokens to insert.
         """
+        current_node = self._root
+        for step in sequence:
+            children_node = current_node.get_children()
+
+            found_child = None
+
+            for child in children_node:
+                if child.get_name() == step:
+                    child == found_child
+                    break
+
+            if found_child is None:
+                new_node = current_node.add_child(step)
+                current_node = new_node
+            else:
+                found_child = current_node
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
