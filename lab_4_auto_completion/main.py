@@ -11,6 +11,22 @@ NGramType = tuple[int, ...]
 "Type alias for NGram."
 
 
+class TriePrefixNotFoundError(Exception):
+    pass
+
+class EncodingError(Exception):
+    pass
+
+class DecodingError(Exception):
+    pass
+
+class IncorrectNgramError(Exception):
+    pass
+
+class MergeTreesError(Exception):
+    pass
+
+
 class WordProcessor(TextProcessor):
     """
     Handle text tokenization, encoding and decoding at word level.
@@ -28,6 +44,8 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
+        self._end_of_sentence_token = end_of_sentence_token
+        super().__init__(end_of_word_token=end_of_sentence_token)
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -82,6 +100,19 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
+        sentences = text.split(self._end_of_sentence_token)
+        result_list = []
+        for sentence in sentences:
+            lowercase_sentence = sentence.lower()
+            words = lowercase_sentence.split()
+            for word in words:
+                cleaned_word = ''.join(char for char in word if char.isalpha())
+                if cleaned_word:
+                    result_list.append(cleaned_word)
+            result_list.append(self._end_of_sentence_token)
+        if result_list and result_list[-1] == self._end_of_sentence_token:
+            result_list.pop()
+        return tuple(result_list)
 
 
 class TrieNode:
