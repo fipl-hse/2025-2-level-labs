@@ -10,6 +10,35 @@ from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, 
 NGramType = tuple[int, ...]
 "Type alias for NGram."
 
+class TriePrefixNotFoundError(Exception):
+    """
+    Exception raised when something fails due to something
+    """
+    pass
+
+class EncodingError(Exception):
+    """
+    Exception raised when something fails due to something
+    """
+    pass
+
+class DecodingError(Exception):
+    """
+    Exception raised when something fails due to something
+    """
+    pass
+
+class IncorrectNgramError(Exception):
+    """
+    Exception raised when something fails due to something
+    """
+    pass
+
+class MergeTreesError(Exception):
+    """
+    Exception raised when something fails due to something
+    """
+    pass
 
 class WordProcessor(TextProcessor):
     """
@@ -28,6 +57,9 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
+        super().__init__(end_of_word_token=end_of_sentence_token)
+        self._end_of_sentence_token = end_of_sentence_token
+        self._storage = {self._end_of_sentence_token: 0}
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -43,6 +75,24 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
+        if not isinstance(text, str) or not text:
+            raise EncodingError("Invalid input: text must be a non-empty string")
+        encoded_text = []
+        text=text.lower()
+        for punctuation in [".", "!", "?"]:
+            text = text.replace(punctuation, self._end_of_sentence_token)
+        text=text.strip(self._end_of_sentence_token)
+        for sentence in text.split(self._end_of_sentence_token):
+            encoded_sentence = []
+            for token in sentence.split():
+                token = "".join([letter for letter in token if letter.isalpha()])
+                if token:
+                    self._put(token)
+                encoded_sentence.append(self._storage.get(token))
+            encoded_sentence.append(self._storage.get(self._end_of_sentence_token))
+            encoded_text.append(tuple(encoded_sentence))
+        return tuple(encoded_text)
+
 
     def _put(self, element: str) -> None:
         """
@@ -53,7 +103,13 @@ class WordProcessor(TextProcessor):
 
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
-        """
+        """            
+        if (isinstance(element, str) and
+            element and
+            element not in self._storage and
+            element.isalpha()):
+            self._storage[element] = len(self._storage)
+
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
@@ -68,6 +124,16 @@ class WordProcessor(TextProcessor):
         Returns:
             str: Resulting text
         """
+        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
+            raise DecodingError("Invalid input: decoded_corpus must be a non-empty tuple")
+        sentences = " ".join(decoded_corpus).split(".")
+        result_sentences = [sentence.strip().capitalize() for sentence in sentences if sentence]
+        text = ". ".join(result_sentences) + "."
+        if not text:
+            raise EncodingError("Postprocessing resulted in empty output")
+        return text
+
+
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -82,7 +148,24 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
-
+        if not isinstance(text, str) or not text:
+            raise EncodingError("Invalid input: text must be a non-empty string")
+        text=text.lower()
+        for punctuation in [".", "!", "?"]:
+            text = text.replace(punctuation, f" {self._end_of_sentence_token}  ")
+        tokens = []
+        for token in text.split():
+            if token == self._end_of_sentence_token:
+                tokens.append(token)
+            else:
+                token = "".join([letter for letter in token if letter.isalpha()])
+                if token:
+                    tokens.append(token)
+        if not tokens or not [el for el in tokens if el.isalpha()]:
+            raise EncodingError("Tokenization resulted in empty output")
+        if tokens[-1]!=self._end_of_sentence_token:
+            tokens.append(self._end_of_sentence_token)
+        return tuple(tokens)
 
 class TrieNode:
     """
