@@ -13,6 +13,16 @@ NGramType = tuple[int, ...]
 "Type alias for NGram."
 
 
+class EncodingError(Exception):
+    """
+    Exception raised when encoding fails due to incorrect input or processing error
+    """
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
 class WordProcessor(TextProcessor):
     """
     Handle text tokenization, encoding and decoding at word level.
@@ -31,7 +41,7 @@ class WordProcessor(TextProcessor):
             end_of_sentence_token (str): A token denoting sentence boundary
         """
         TextProcessor.__init__(self, end_of_sentence_token)
-        self._end_of_sentence_token = end_of_sentence_token #не уверена что то делаю
+        self._end_of_sentence_token = end_of_sentence_token
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -86,15 +96,27 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
+        if not isinstance(text, str):
+            raise EncodingError
         sentences = []
         last_sentence_end = 0
-        for index, token in enumerate(text):
+        for index, token in enumerate(text): #получили список предложений и конечных токенов
             if token in "!?.":
-                sentences.append(text[last_sentence_end:index+1])
+                sentences += [text[last_sentence_end:index+1], self._end_of_sentence_token]
                 last_sentence_end = index + 1
+        words_raw = []
+        words_clean = []
+        last_word_end = 0
         for sentence in sentences:
-            super()._tokenize(sentence)
-        #что-то про end-of-sent-token и добавить исключения
+            for index, token in sentence.lower():
+                if token.isspace():
+                    words_raw.append(text[last_word_end:index+1])
+                    last_word_end = index + 1
+            for word in words_raw:
+                words_clean.append(''.join(super()._tokenize(word))) #если не работает, то прописать индивидуально, что удаляем
+            words_clean.append(self._end_of_sentence_token)
+        if not words_clean:
+            raise EncodingError
 
 
 class TrieNode:
