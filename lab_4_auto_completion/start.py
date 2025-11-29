@@ -3,7 +3,7 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-
+from lab_4_auto_completion.main import EncodingError, DecodingError, MergeTreesError, IncorrectNgramError, TriePrefixNotFoundError
 
 def main() -> None:
     """
