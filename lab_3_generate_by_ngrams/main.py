@@ -49,22 +49,19 @@ class TextProcessor:
         if not isinstance(text, str):
             return None
         tokens = []
-        in_word = False
-    
-        for char in text.lower():
-            if char.isalpha():
-                tokens.append(char)
-                in_word = True
-            elif char.isspace() or char in './!?:;':
-                if in_word:
+        special_symbols = set(string.punctuation)
+        special_symbols.remove("-")
+        for token in text.lower():
+            if token.isalpha():
+                tokens.append(token)
+            elif token.isspace() or token in special_symbols:
+                if tokens[-1] != self._end_of_word_token:
                     tokens.append(self._end_of_word_token)
-                    in_word = False
-    
-        if in_word:
-            tokens.append(self._end_of_word_token)
-    
+                else:
+                    continue
+            elif token.isdigit():
+                continue
         return tuple(tokens) if tokens else None
-
 
 
     def get_id(self, element: str) -> int | None:
