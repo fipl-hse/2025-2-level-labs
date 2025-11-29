@@ -135,34 +135,36 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
-        if not isinstance(text, str):
-            raise EncodingError
-        sentences = ['']
-        sentences.pop(0)
+        if not isinstance(text, str) or text == "":
+            raise EncodingError("Invalid input: text must be a non-empty string")
+        sentences = []
         last_sentence_end = 0
-        for index, token in enumerate(text): #получили список предложений и конечных токенов
+        for index, token in enumerate(text):
             if token in "!?.":
                 sentences.append(text[last_sentence_end:index+1])
-                #sentences.append(self._end_of_sentence_token)
                 last_sentence_end = index + 1
         words_raw = []
         words_clean = []
-        last_word_end = 0
         for sentence in sentences:
+            last_word_end = 0
             for index, token in enumerate(sentence.strip()):
-                if sentence == self._end_of_sentence_token:
-                    words_raw.append(sentence)
-                    continue
-                if token.isspace() or index == len(sentence) -1:
+                if token.isspace() or index == len(sentence.strip()) -1:
                     words_raw.append(sentence.lower()[last_word_end:index+1])
                     last_word_end = index + 1
+            words_raw.append(self._end_of_sentence_token)
         for word in words_raw:
-            words_clean.append(''.join([token for token in word if token.isalpha()]))
-                #words_clean.append(''.join(super()._tokenize(word))) #если не работает, то прописать индивидуально, что удаляем
-        if not words_clean:
-            raise EncodingError
-        return words_clean
-#messed something up with end of sent token, please fix <3
+            if word != self._end_of_sentence_token:
+                clean_word = ''.join([token for token in word if token.isalpha()])
+                if not clean_word:
+                    raise EncodingError("Tokenization resulted in empty output")
+                else:
+                    words_clean.append(clean_word)
+            else:
+                words_clean.append(self._end_of_sentence_token)
+        result = tuple(words_clean)
+        if not result:
+            raise EncodingError("Tokenization resulted in empty output")
+        return result
 
 
 class TrieNode:
