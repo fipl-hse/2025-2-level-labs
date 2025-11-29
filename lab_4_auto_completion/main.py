@@ -143,6 +143,23 @@ class WordProcessor(TextProcessor):
         Returns:
             str: Resulting text
         """
+        if not isinstance(decoded_corpus, tuple) or decoded_corpus == ():
+            raise DecodingError('Invalid input: decoded_corpus must be a non-empty tuple')
+        current_sentence = []
+        processed_text = []
+        fixed_decoded_corpus = list(decoded_corpus)
+        fixed_decoded_corpus.append(self._end_of_sentence_token)
+        for element in fixed_decoded_corpus:
+            if element != self._end_of_sentence_token:
+                current_sentence.append(element)
+            else:
+                sentence_to_add = " ".join(current_sentence).capitalize()
+                if sentence_to_add == "":
+                    raise DecodingError("Postprocessing resulted in empty output")
+                processed_text.append(" ".join(current_sentence).capitalize())
+                current_sentence = []
+        result = ". ".join(processed_text) + "."
+        return result
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
