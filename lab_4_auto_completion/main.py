@@ -11,24 +11,19 @@ NGramType = tuple[int, ...]
 "Type alias for NGram."
 
 class TriePrefixNotFoundError(Exception):
-    def __init__(self, *args):
-        super().__init__(*args)
+    pass
 
 class EncodingError(Exception):
-    def __init__(self, *args):
-        super().__init__(*args)
+    pass
 
 class DecodingError(Exception):
-    def __init__(self, *args):
-        super().__init__(*args)
+    pass
 
 class IncorrectNgramError(Exception):
-    def __init__(self, *args):
-        super().__init__(*args)
+    pass
 
 class MergeTreesError(Exception):
-    def __init__(self, *args):
-        super().__init__(*args)
+    pass
 
 
 class WordProcessor(TextProcessor):
@@ -65,6 +60,32 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
+        
+        if not isinstance(text, str) or not text:
+            raise EncodingError("Invalid input: text must be a non-empty string")
+
+        tokens = self._tokenize(text)
+        sentences = []
+        encoded_sentences = []
+        new_sentence = []
+
+        for token in tokens:
+            if token == self._end_of_sentence_token:
+                if new_sentence:
+                    new_sentence.append(self._end_of_sentence_token)
+                    sentences.append(new_sentence)
+                    new_sentence = []
+            else:
+                new_sentence.append(token)
+
+        for sentence in sentences:
+            id_sentence = []
+            for word in sentence:
+                self._put(word)
+                id_sentence.append(self._storage[word])
+            encoded_sentences.append(tuple(id_sentence))
+
+        return tuple(encoded_sentences)
 
     def _put(self, element: str) -> None:
         """
@@ -76,6 +97,9 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
+        if isinstance(element, str) and element not in self._storage.keys() and element:
+            self._storage[element] = len(self._storage)
+        return None
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
@@ -90,6 +114,34 @@ class WordProcessor(TextProcessor):
         Returns:
             str: Resulting text
         """
+        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
+            raise DecodingError("Invalid input: decoded_corpus must be a non-empty tuple")
+        check_corpus = False
+        for token in decoded_corpus:
+            if token != self._end_of_sentence_token or token.isalpha():
+                check_corpus = True
+        if not check_corpus:
+            raise DecodingError("Postprocessing resulted in empty output")
+
+        tokens = list(decoded_corpus)
+        processed_tokens = ""
+        prev_token_eos = True
+        for token in tokens:
+            if prev_token_eos:
+                token = token.capitalize()
+                prev_token_eos = False
+            if token == self._end_of_sentence_token:
+                processed_tokens = processed_tokens[:-1]
+                token = "."
+                prev_token_eos = True
+            processed_tokens += f"{token} "
+        
+        processed_tokens = processed_tokens[:-1]
+        processed_tokens += "."
+        if not processed_tokens:
+            raise DecodingError("Postprocessing resulted in empty output")
+        return processed_tokens
+
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -104,44 +156,25 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
-        if not isinstance(text, str):
-            print("Input is not a string.")
-            raise EncodingError
-            
+        if not isinstance(text, str) or not text:
+            raise EncodingError("Invalid input: text must be a non-empty string")
+
+
+        words = text.lower().split(" ")
         tokens = []
-        punct_symbols = set(string.punctuation)
-        punct_symbols.remove("-")
-        words = text.split(" ")
         sentences = []
         new_sentence = []
-        for word in words:
-            new_word = []
-            for symbol in word:
-                if symbol.isalpha:
-                    new_word.append(symbol)
-            new_word = "".join(new_word)
-            new_sentence.append(new_word.lower)
-            new_sentence.append(self._end_of_sentence_token)
-            if word and word.capitalize and word[-1] in punct_symbols:
-                sentences.append(new_sentence)
-                new_sentence = []
-        
-        
-        
 
-        # special_symbols = set(string.punctuation)
-        # special_symbols.remove("-")
-        # for token in text.lower():
-        #     if token.isalpha():
-        #         tokens.append(token)
-        #     elif token.isspace() or token in special_symbols:
-        #         if tokens[-1] != self._end_of_word_token:
-        #             tokens.append(self._end_of_word_token)
-        #         else:
-        #             continue
-        #     elif token.isdigit():
-        #         continue
-        # return tuple(tokens) if tokens else None
+        for word in words:
+            new_word = "".join(symbol for symbol in word if symbol.isalpha() or symbol == "-")
+            if not new_word:
+                raise EncodingError("Tokenization resulted in empty output")
+            tokens.append(new_word)
+            if word and word[-1] in ".!?":
+                tokens.append(self._end_of_sentence_token)
+        if not tokens:
+            raise EncodingError("Tokenization resulted in empty output")
+        return tuple(tokens)
 
 
 class TrieNode:
