@@ -126,14 +126,13 @@ class WordProcessor(TextProcessor):
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             raise DecodingError("Invalid input: decoded_corpus must be a non-empty tuple")
-        sentences = " ".join(decoded_corpus).split(".")
+        sentences = " ".join(decoded_corpus).split(self._end_of_sentence_token)
         result_sentences = [sentence.strip().capitalize() for sentence in sentences if sentence]
-        text = ". ".join(result_sentences) + "."
-        if not text:
-            raise EncodingError("Postprocessing resulted in empty output")
-        return text
-
-
+        text = ". ".join(result_sentences)
+        if not text or not (letter.isalnum() or letter.isspace() for letter in text):
+            raise DecodingError("Postprocessing resulted in empty output")
+        text_with_point = text + "."
+        return text_with_point
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -187,6 +186,9 @@ class TrieNode:
             name (int | None, optional): The name of the node.
             value (float, optional): The value stored in the node.
         """
+        self.__name = name
+        self._value = value
+        self._children = []
 
     def __bool__(self) -> bool:
         """
@@ -195,6 +197,7 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
+        return len(self._children) > 0
 
     def __str__(self) -> str:
         """
@@ -211,6 +214,11 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
+        if not isinstance(item, int):
+            return None
+        node = TrieNode(name = item, value = self._value)
+        self._children().append(node)
+        return None
 
     def get_children(self, item: int | None = None) -> tuple["TrieNode", ...]:
         """
@@ -222,6 +230,10 @@ class TrieNode:
         Returns:
             tuple["TrieNode", ...]: Tuple of child nodes.
         """
+        if item is None:
+            return tuple(self._children)
+        else:
+            return tuple([child for child in self._children if child.get_name() == item])
 
     def get_name(self) -> int | None:
         """
@@ -230,6 +242,7 @@ class TrieNode:
         Returns:
             int | None: TrieNode data.
         """
+        return self.__name
 
     def get_value(self) -> float:
         """
@@ -238,6 +251,7 @@ class TrieNode:
         Returns:
             float: Frequency value.
         """
+        return self._value
 
     def set_value(self, new_value: float) -> None:
         """
@@ -246,6 +260,10 @@ class TrieNode:
         Args:
             new_value (float): New value to store.
         """
+        if not isinstance(new_value, float) or not new_value:
+            return None
+        self._value = new_value
+        return None
 
     def has_children(self) -> bool:
         """
