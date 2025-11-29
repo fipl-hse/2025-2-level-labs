@@ -4,7 +4,6 @@ Lab 4
 
 # pylint: disable=unused-argument, super-init-not-called, unused-private-member, duplicate-code, unused-import
 import json
-
 import string
 
 from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, TextProcessor
@@ -16,6 +15,46 @@ NGramType = tuple[int, ...]
 class EncodingError(Exception):
     """
     Exception raised when encoding fails due to incorrect input or processing error
+    """
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class TriePrefixNotFoundError(Exception):
+    """
+    Exception raised when prefix trie building fails due to absence of the prefix in it
+    """
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class DecodingError(Exception):
+    """
+    Exception raised when decoding fails due to incorrect input or processing error
+    """
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class IncorrectNgramError(Exception):
+    """
+    Exception raised when something fails due to incorrect size of n-gram
+    """
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class MergeTreesError(Exception):
+    """
+    Exception raised when tree-merging fails due to its impossibility
     """
 
     def __init__(self, message):
@@ -98,25 +137,32 @@ class WordProcessor(TextProcessor):
         """
         if not isinstance(text, str):
             raise EncodingError
-        sentences = []
+        sentences = ['']
+        sentences.pop(0)
         last_sentence_end = 0
         for index, token in enumerate(text): #получили список предложений и конечных токенов
             if token in "!?.":
-                sentences += [text[last_sentence_end:index+1], self._end_of_sentence_token]
+                sentences.append(text[last_sentence_end:index+1])
+                #sentences.append(self._end_of_sentence_token)
                 last_sentence_end = index + 1
         words_raw = []
         words_clean = []
         last_word_end = 0
         for sentence in sentences:
-            for index, token in sentence.lower():
-                if token.isspace():
-                    words_raw.append(text[last_word_end:index+1])
+            for index, token in enumerate(sentence.strip()):
+                if sentence == self._end_of_sentence_token:
+                    words_raw.append(sentence)
+                    continue
+                if token.isspace() or index == len(sentence) -1:
+                    words_raw.append(sentence.lower()[last_word_end:index+1])
                     last_word_end = index + 1
-            for word in words_raw:
-                words_clean.append(''.join(super()._tokenize(word))) #если не работает, то прописать индивидуально, что удаляем
-            words_clean.append(self._end_of_sentence_token)
+        for word in words_raw:
+            words_clean.append(''.join([token for token in word if token.isalpha()]))
+                #words_clean.append(''.join(super()._tokenize(word))) #если не работает, то прописать индивидуально, что удаляем
         if not words_clean:
             raise EncodingError
+        return words_clean
+#messed something up with end of sent token, please fix <3
 
 
 class TrieNode:

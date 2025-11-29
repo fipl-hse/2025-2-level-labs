@@ -1,6 +1,6 @@
 {
     "python.testing.pytestArgs": [
-        "."
+        "lab_4_auto_completion"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true
