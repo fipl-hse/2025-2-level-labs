@@ -191,16 +191,19 @@ class WordProcessor(TextProcessor):
                     words_raw.append(sentence.lower()[last_word_end:index+1])
                     last_word_end = index + 1
             words_raw.append(self._end_of_sentence_token)
+        empty_elements_amount = 0
         for word in words_raw:
             if word != self._end_of_sentence_token:
                 clean_word = ''.join([token for token in word if token.isalpha()])
                 if not clean_word:
-                    raise EncodingError("Tokenization resulted in empty output")
+                    empty_elements_amount += 1
                 else:
                     words_clean.append(clean_word)
             else:
                 words_clean.append(self._end_of_sentence_token)
         result = tuple(words_clean)
+        if empty_elements_amount == len(result):
+            raise EncodingError("Tokenization resulted in empty output")
         if not result:
             raise EncodingError("Tokenization resulted in empty output")
         return result
