@@ -96,6 +96,23 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
+        sentences = []
+        last_sentence_end = 0
+        for index, token in enumerate(text):
+            if token in "!?.":
+                sentences.append(text[last_sentence_end:index+1].lower())
+                last_sentence_end = index + 1
+        encoded_text = []
+        for sentence in sentences:
+            current_sentence = []
+            if sentence == "":
+                continue
+            tokenized_sentence = self._tokenize(sentence)
+            for word in tokenized_sentence:
+                self._put(word)
+                current_sentence.append(self._storage[word])
+            encoded_text.append(tuple(current_sentence))
+        return tuple(encoded_text)
 
     def _put(self, element: str) -> None:
         """
@@ -107,6 +124,11 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
+        if not isinstance(element, str) or element == "":
+            return None
+        if element not in self._storage:
+            self._storage[element] = len(self._storage)
+        return None
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
