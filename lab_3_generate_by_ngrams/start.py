@@ -40,7 +40,7 @@ def main() -> None:
 
     models_list = []
     for ngram_size in [3, 4, 5]:
-        model_loader = NGramLanguageModelReader("./assets/contexts.json", "_")
+        model_loader = NGramLanguageModelReader("./assets/en_own.json", "_")
         loaded_model = model_loader.load(ngram_size)
         if loaded_model is not None:
             models_list.append(loaded_model)
