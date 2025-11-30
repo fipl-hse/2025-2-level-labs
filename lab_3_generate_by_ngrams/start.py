@@ -19,24 +19,37 @@ def main() -> None:
 
     In any case returns, None is returned
     """
-    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as file:
-        content = file.read()
+    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
+        text_content = text_file.read()
 
-    text_handler = TextProcessor("_")
-    processed_text = text_handler.encode(content)
-    if processed_text is None:
+    text_processor = TextProcessor("_")
+    encoded_content = text_processor.encode(text_content)
+    if not encoded_content:
         return
 
-    ngram_model = NGramLanguageModel(processed_text, 7)
-    ngram_model.build()
-    
-    greedy_engine = GreedyTextGenerator(ngram_model, text_handler)
-    greedy_text = greedy_engine.run(51, "Vernon")
-    print(greedy_text)
+    language_model = NGramLanguageModel(encoded_content, 7)
+    language_model.build()
 
-    search_engine = BeamSearchTextGenerator(ngram_model, text_handler, 3)
-    beam_text = search_engine.run("Vernon", 56)
-    print(beam_text)
+    greedy_generator = GreedyTextGenerator(language_model, text_processor)
+    greedy_output = greedy_generator.run(51, "Vernon")
+    print(greedy_output)
+
+    beam_generator = BeamSearchTextGenerator(language_model, text_processor, 3)
+    beam_output = beam_generator.run("Vernon", 56)
+    print(beam_output)
+
+    models_list = []
+    for ngram_size in [3, 4, 5]:
+        model_loader = NGramLanguageModelReader("./assets/contexts.json", "_")
+        loaded_model = model_loader.load(ngram_size)
+        if loaded_model is not None:
+            models_list.append(loaded_model)
+
+    if models_list:
+        backoff_generator = BackOffGenerator(tuple(models_list), text_processor)
+        backoff_output = backoff_generator.run(60, 'Vernon')
+        print(backoff_output)
+        assert backoff_output is not None
 
 
 if __name__ == "__main__":
