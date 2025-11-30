@@ -25,7 +25,6 @@ class TextProcessor:
         Args:
             end_of_word_token (str): A token denoting word boundary
         """
-        
         self._end_of_word_token = end_of_word_token
         self._storage = {end_of_word_token: 0}
 
@@ -103,10 +102,9 @@ class TextProcessor:
         """
         if not isinstance(element_id, int):
             return None
-        for key in self._storage:
-            if self._storage[key] == element_id:
+        for key, value in self._storage.items():
+            if value == element_id:
                 return key
-        return None
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -139,7 +137,6 @@ class TextProcessor:
             return None
         return tuple(list_with_id)
 
-
     def _put(self, element: str) -> None:
         """
         Put an element into the storage, assign a unique id to it.
@@ -154,9 +151,8 @@ class TextProcessor:
             return None
         if len(element) != 1:
             return None
-
         if element in self._storage:
-            return  
+            return None
         else:
             new_id = len(self._storage)
             self._storage[element] = new_id
@@ -488,7 +484,7 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
-        if (not isinstance(sequence, tuple) or not isinstance(next_tokens, list) 
+        if (not isinstance(sequence, tuple) or not isinstance(next_tokens, list)
             or not isinstance(sequence_candidates, dict)):
             return None
         if (not next_tokens or not sequence_candidates or not sequence
