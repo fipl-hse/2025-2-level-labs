@@ -146,7 +146,7 @@ def remove_duplicates(data: dict[str, int]) -> dict[str, int]:
     Returns:
         dict[str, int]: Dictionary without duplicates.
     """
-    # student realisation goes he
+    # student realisation goes here
 
 
 # Function calls with expected result
@@ -170,6 +170,7 @@ def count_letters(sequence: str) -> dict[str, int]:
         dict[str, int]: Dictionary with letters as keys and counts as values.
     """
     # student realisation goes here
+<<<<<<< HEAD
     letter_count = {}
 
     for char in sequence:
@@ -182,6 +183,8 @@ def count_letters(sequence: str) -> dict[str, int]:
                 letter_count[lower_char] = 1
 
     return letter_count
+=======
+>>>>>>> 4597e9420844bb3cad134beec41d0b4be031a9c2
 
 
 # Function calls with expected result:

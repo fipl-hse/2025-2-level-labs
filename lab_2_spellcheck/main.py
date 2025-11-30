@@ -21,16 +21,13 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
 
     In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, can_be_empty=False):
+    if not check_list(tokens, str, False):
         return None
-
-    total_tokens = len(tokens)
-    vocabulary = {}
-
+    all_tokens_count = len(tokens)
+    token_counts = {}
     for token in tokens:
-        vocabulary[token] = vocabulary.get(token, 0) + 1 / total_tokens
-
-    return vocabulary
+        token_counts[token] = token_counts.get(token, 0) + 1
+    return {token: token_count/all_tokens_count for token, token_count in token_counts.items()}
 
 
 def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> list[str] | None:
@@ -46,11 +43,8 @@ def find_out_of_vocab_words(tokens: list[str], vocabulary: dict[str, float]) -> 
 
     In case of corrupt input arguments, None is returned.
     """
-    if not check_list(tokens, str, can_be_empty=False) or not check_dict(
-        vocabulary, str, float, can_be_empty=False
-    ):
+    if not check_list(tokens, str, False) or not check_dict(vocabulary, str, float, False):
         return None
-
     return [token for token in tokens if token not in vocabulary]
 
 
@@ -70,20 +64,11 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     """
     if not isinstance(token, str) or not isinstance(candidate, str):
         return None
-
-    if not token and not candidate:
+    if not token or not candidate:
         return 1.0
-
-    set1 = set(token)
-    set2 = set(candidate)
-
-    intersection = set1.intersection(set2)
-    union = set1.union(set2)
-
-    if not union:
-        return 1.0
-
-    return 1.0 - len(intersection) / len(union)
+    tokens_intersection = len(set(token).intersection(set(candidate)))
+    tokens_union = len(set(token).union(set(candidate)))
+    return 1-(tokens_intersection/tokens_union)
 
 
 def calculate_distance(
@@ -111,7 +96,7 @@ def calculate_distance(
         or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
         or (alphabet is not None and not check_list(alphabet, str, False))
-    ):
+        ):
         return None
     if method == "frequency-based":
         if alphabet is None:
@@ -158,30 +143,28 @@ def find_correct_word(
 
     In case of empty vocabulary, None is returned.
     """
-    if (not isinstance(wrong_word, str)
-        or not check_dict(vocabulary, str, float, can_be_empty=False)
+    if alphabet is not None and not check_list(alphabet, str, False):
+        return None
+    if (
+        not isinstance(wrong_word, str)
+        or not check_dict(vocabulary, str, float, False)
         or method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]
-        or (alphabet is not None and not check_list(alphabet, str, can_be_empty=True))):
+        ):
         return None
-
     distances = calculate_distance(wrong_word, vocabulary, method, alphabet)
-
-    if distances is None or not distances:
+    if not distances:
         return None
-
     min_distance = min(distances.values())
-    best_candidates = [
-        candidate for candidate, distance in distances.items() if distance == min_distance
-    ]
-
-    if not best_candidates:
+    candidates = [token for token, token_distance in distances.items()
+                  if token_distance == min_distance]
+    if not candidates:
         return None
-
-    if len(best_candidates) == 1:
-        return best_candidates[0]
-
-    best_candidates.sort(key=lambda word: (abs(len(word) - len(wrong_word)), word))
-    return best_candidates[0]
+    if len(candidates) == 1:
+        return candidates[0]
+    min_length_differences = min(len(candidate) - len(wrong_word) for candidate in candidates)
+    min_length_candidates = [candidate for candidate in candidates
+                                if len(candidate) - len(wrong_word) == min_length_differences]
+    return sorted(min_length_candidates)[0]
 
 
 def initialize_levenshtein_matrix(

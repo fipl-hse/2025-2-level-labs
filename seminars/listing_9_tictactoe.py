@@ -66,6 +66,7 @@ class Board:
         get_size(self) -> int: Get size of board
         get_moves_left(self) -> int: Get number of moves left
     """
+<<<<<<< HEAD
 
     def __init__(self, size: int = 3) -> None:
         self._size = size
@@ -228,6 +229,8 @@ class Game:
 
         self._next_player()
         return True
+=======
+>>>>>>> 4597e9420844bb3cad134beec41d0b4be031a9c2
 
 
 def main() -> None:

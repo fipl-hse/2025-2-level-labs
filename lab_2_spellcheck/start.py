@@ -16,10 +16,11 @@ from lab_2_spellcheck.main import (
 
 
 def main() -> None:
-    """Spell checking application entry point."""
+    """
+    Launches an implementation.
+    """
     with open("assets/Master_and_Margarita_chapter1.txt", "r", encoding="utf-8") as file:
         text = file.read()
-
     with open("assets/stop_words.txt", "r", encoding="utf-8") as file:
         stop_words = file.read().split("\n")
     with (
