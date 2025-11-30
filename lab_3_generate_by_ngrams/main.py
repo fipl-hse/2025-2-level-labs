@@ -153,9 +153,8 @@ class TextProcessor:
             return None
         if element in self._storage:
             return None
-        else:
-            new_id = len(self._storage)
-            self._storage[element] = new_id
+        new_id = len(self._storage)
+        self._storage[element] = new_id
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
         """
