@@ -5,6 +5,7 @@ Beam-search and natural language generation evaluation
 """
 
 # pylint:disable=too-few-public-methods, unused-import
+
 import json
 import math
 import string
@@ -105,6 +106,7 @@ class TextProcessor:
         for key, value in self._storage.items():
             if value == element_id:
                 return key
+        return None
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
