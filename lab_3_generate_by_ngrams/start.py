@@ -38,17 +38,6 @@ def main() -> None:
     beam_text = search_engine.run("Vernon", 56)
     print(beam_text)
 
-    models_collection = []
-    for gram_size in [4, 5, 6]:
-        loaded_gram_model = NGramLanguageModelReader("./assets/contexts.json", "_").load(gram_size)
-        if loaded_gram_model is not None:
-            models_collection.append(loaded_gram_model)
-
-    backoff_engine = BackOffGenerator(tuple(models_collection), text_handler)
-    backoff_text = backoff_engine.run(60, 'Vernon')
-    print(backoff_text)
-    assert backoff_text is not None
-
 
 if __name__ == "__main__":
     main()
