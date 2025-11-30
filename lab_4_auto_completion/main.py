@@ -11,6 +11,9 @@ NGramType = tuple[int, ...]
 "Type alias for NGram."
 
 class CustomException(Exception):
+    """
+    Base class for custom exceptions in auto-completion.
+    """
     pass
 
 
@@ -18,35 +21,30 @@ class TriePrefixNotFoundError(CustomException):
     """
     The prefix required for the transition is missing from the tree.
     """
-    pass
 
 
 class EncodingError(CustomException):
     """
     Text encoding failure due to incorrect input or processing error
     """
-    pass
 
 
 class DecodingError(CustomException):
     """
     Text decoding failure due to incorrect input or processing error
     """
-    pass
 
 
 class IncorrectNgramError(CustomException):
     """
     An attempt to use an unsuitable n-gram size
     """
-    pass
 
 
 class MergeTreesError(CustomException):
     """
     It is impossible to merge trees
     """
-    pass
 
 
 class WordProcessor(TextProcessor):
@@ -266,11 +264,10 @@ class TrieNode:
         """
         if item is None:
             return tuple(self._children)
-        else:
-            for child in self._children:
-                if child.get_name() == item:
-                    return (child,)
-            return tuple()
+        for child in self._children:
+            if child.get_name() == item:
+                return (child,)
+        return tuple()
 
     def get_name(self) -> int | None:
         """
@@ -379,10 +376,12 @@ class PrefixTrie:
         while processing_queue:
             current_node, current_sequence = processing_queue.pop(0)
             for child in current_node.get_children():
-                new_sequence = current_sequence + [child.get_name()]
-                processing_queue.append((child, new_sequence))
-                if not child.has_children():
-                    sequences.append(tuple(new_sequence))
+                child_name = child.get_name()
+                if child_name is not None:
+                    new_sequence = current_sequence + [child_name]
+                    processing_queue.append((child, new_sequence))
+                    if not child.has_children():
+                        sequences.append(tuple(new_sequence))
         return tuple(sequences)
 
     def _insert(self, sequence: NGramType) -> None:
@@ -451,7 +450,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             all_ngrams = self._collect_all_ngrams()
             self._fill_frequencies(all_ngrams)
             return 0
-        except Exception:
+        except CustomException:
             return 1
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
@@ -470,7 +469,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         if not prefix_node.has_children():
             return {}
         return self._collect_frequencies(prefix_node)
-    
+
     def get_root(self) -> TrieNode:
         """
         Get the root.
@@ -571,9 +570,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         """
         frequencies = {}
         for child in node.get_children():
-            if child.get_name() is not None:
+            child_name = child.get_name()
+            if child_name is not None:
                 freq = child.get_value()
-                frequencies[child.get_name()] = freq
+                frequencies[child_name] = freq
         return frequencies
 
 
@@ -599,7 +599,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
                 last_prefix = self.get_prefix(prefix)
                 children = last_prefix.get_children(last_token)
                 if children:
-                    children[0].set_value(relative_frequency)     
+                    children[0].set_value(relative_frequency)
             except TriePrefixNotFoundError:
                 continue
 
