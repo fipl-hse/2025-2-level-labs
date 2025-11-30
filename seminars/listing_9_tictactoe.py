@@ -74,16 +74,12 @@ def main() -> None:
     """
     print("Created players")
 
-    #game = Game(3)
-    print("Created game")
-
     print("Making moves...")
 
     moves = [(0, 0), (1, 1), (0, 1), (2, 2), (0, 2)]
 
-    for row, col in moves:
-       # if not game.play(row, col):
-            break
+    for move_row, move_col in moves:
+        print(f"Playing at row {move_row}, column {move_col}")
 
     print("Game finished!")
 
