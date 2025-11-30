@@ -80,7 +80,7 @@ class TextProcessor:
             return None
         return self._storage.get(element)
 
-    def get_end_of_word_token(self) -> str:  # type: ignore[empty-body]
+    def get_end_of_word_token(self) -> str:
         """
         Retrieve value stored in self._end_of_word_token attribute.
 
@@ -267,7 +267,7 @@ class NGramLanguageModel:
         self._n_gram_size = n_gram_size
         self._n_gram_frequencies = {}
 
-    def get_n_gram_size(self) -> int:  # type: ignore[empty-body]
+    def get_n_gram_size(self) -> int:
         """
         Retrieve value stored in self._n_gram_size attribute.
 
@@ -290,7 +290,7 @@ class NGramLanguageModel:
         self._n_gram_frequencies = frequencies
         return None
 
-    def build(self) -> int:  # type: ignore[empty-body]
+    def build(self) -> int:
         """
         Fill attribute `_n_gram_frequencies` from encoded corpus.
 
@@ -711,7 +711,7 @@ class NGramLanguageModelReader:
         language_model.set_n_grams(conditional_probabilities)
         return language_model
 
-    def get_text_processor(self) -> TextProcessor:  # type: ignore[empty-body]
+    def get_text_processor(self) -> TextProcessor:
         """
         Get method for the processor created for the current JSON file.
 
