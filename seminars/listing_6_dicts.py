@@ -170,21 +170,6 @@ def count_letters(sequence: str) -> dict[str, int]:
         dict[str, int]: Dictionary with letters as keys and counts as values.
     """
     # student realisation goes here
-<<<<<<< HEAD
-    letter_count = {}
-
-    for char in sequence:
-        lower_char = char.lower()
-
-        if lower_char.isalpha():
-            if lower_char in letter_count:
-                letter_count[lower_char] += 1
-            else:
-                letter_count[lower_char] = 1
-
-    return letter_count
-=======
->>>>>>> 4597e9420844bb3cad134beec41d0b4be031a9c2
 
 
 # Function calls with expected result:
