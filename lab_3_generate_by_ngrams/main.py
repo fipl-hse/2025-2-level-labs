@@ -80,6 +80,7 @@ class TextProcessor:
             return None
         return self._storage.get(element)
 
+
     def get_end_of_word_token(self) -> str:  # type: ignore[empty-body]
         """
         Retrieve value stored in self._end_of_word_token attribute.
