@@ -42,7 +42,7 @@ def main() -> None:
         if loaded_model is not None:
             language_models.append(model)
 
-    back_off = BackOffGenerator(tuple(language_models), processor).run(60, 'Vernon')
+    back_off = BackOffGenerator(tuple(language_models), processor).run(60, "Vernon")
     result = back_off
     print(result)
     assert result
