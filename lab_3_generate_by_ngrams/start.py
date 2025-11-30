@@ -47,7 +47,7 @@ def main() -> None:
 
     if models_list:
         backoff_generator = BackOffGenerator(tuple(models_list), text_processor)
-        backoff_output = backoff_generator.run(60, 'Vernon')
+        backoff_output = backoff_generator.run(60, "Vernon")
         print(backoff_output)
         assert backoff_output is not None
 
