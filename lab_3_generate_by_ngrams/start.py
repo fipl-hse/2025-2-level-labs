@@ -3,12 +3,12 @@ Generation by NGrams starter
 """
 
 from lab_3_generate_by_ngrams.main import (
+    BackOffGenerator,
+    BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
+    NGramLanguageModelReader,
     TextProcessor,
-    BeamSearchTextGenerator,
-    BackOffGenerator,
-    NGramLanguageModelReader
 )
 
 
