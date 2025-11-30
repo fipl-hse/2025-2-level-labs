@@ -20,36 +20,37 @@ def main() -> None:
     In any case returns, None is returned
     """
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
-        text_content = text_file.read()
+        text = text_file.read()
 
-    text_processor = TextProcessor("_")
-    encoded_content = text_processor.encode(text_content)
-    if not encoded_content:
+    processor = TextProcessor("_")
+    encoded_text = processor.encode(text)
+    if encoded_text is None:
         return
 
-    language_model = NGramLanguageModel(encoded_content, 7)
-    language_model.build()
+    model = NGramLanguageModel(encoded_text, 7)
+    model.build()
 
-    greedy_generator = GreedyTextGenerator(language_model, text_processor)
-    greedy_output = greedy_generator.run(51, "Vernon")
-    print(greedy_output)
+    generator = GreedyTextGenerator(model, processor)
+    result_generator = generator.run(51, "Vernon")
+    print(result_generator)
 
-    beam_generator = BeamSearchTextGenerator(language_model, text_processor, 3)
-    beam_output = beam_generator.run("Vernon", 56)
-    print(beam_output)
+    beam_search = BeamSearchTextGenerator(model, processor, 3)
+    beam_search_result = beam_search.run("Vernon", 56)
+    print(beam_search_result)
 
-    models_list = []
-    for ngram_size in [3, 4, 5]:
-        model_loader = NGramLanguageModelReader("./assets/en_own.json", "_")
-        loaded_model = model_loader.load(ngram_size)
+    language_models = []
+    for n_gram_size in [3, 4, 5]:
+        loaded_model = NGramLanguageModelReader("./assets/en_own.json", "_").load(
+            n_gram_size
+        )
         if loaded_model is not None:
-            models_list.append(loaded_model)
+            language_models.append(loaded_model)
 
-    if models_list:
-        backoff_generator = BackOffGenerator(tuple(models_list), text_processor)
-        backoff_output = backoff_generator.run(60, "Vernon")
-        print(backoff_output)
-        assert backoff_output is not None
+    if language_models:
+        back_off = BackOffGenerator(tuple(language_models), processor)
+        back_off_result = back_off.run(60, "Vernon")
+        print(back_off_result)
+        assert back_off_result is not None
 
 
 if __name__ == "__main__":
