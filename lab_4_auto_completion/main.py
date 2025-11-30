@@ -120,6 +120,7 @@ class WordProcessor(TextProcessor):
         for token in decoded_corpus:
             if token != self._end_of_sentence_token or token.isalpha():
                 check_corpus = True
+                break
         if not check_corpus:
             raise DecodingError("Postprocessing resulted in empty output")
 
@@ -142,7 +143,6 @@ class WordProcessor(TextProcessor):
             raise DecodingError("Postprocessing resulted in empty output")
         return processed_tokens
 
-
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
         Tokenize text into words, separating sentences with special token.
@@ -159,16 +159,13 @@ class WordProcessor(TextProcessor):
         if not isinstance(text, str) or not text:
             raise EncodingError("Invalid input: text must be a non-empty string")
 
-
-        words = text.lower().split(" ")
+        words = text.lower().split()
         tokens = []
-        sentences = []
-        new_sentence = []
 
         for word in words:
             new_word = "".join(symbol for symbol in word if symbol.isalpha() or symbol == "-")
             if not new_word:
-                raise EncodingError("Tokenization resulted in empty output")
+                continue
             tokens.append(new_word)
             if word and word[-1] in ".!?":
                 tokens.append(self._end_of_sentence_token)
@@ -294,11 +291,14 @@ class PrefixTrie:
         """
         Initialize an empty PrefixTrie.
         """
+        self._root = TrieNode()
 
     def clean(self) -> None:
         """
         Clean the whole tree.
         """
+        self._root = TrieNode()
+        return None
 
     def fill(self, encoded_corpus: tuple[NGramType]) -> None:
         """
@@ -307,6 +307,10 @@ class PrefixTrie:
         Args:
             encoded_corpus (tuple[NGramType]): Tokenized corpus.
         """
+        self.clean()
+        for ngram in encoded_corpus:
+            self._insert(ngram)
+        return None
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
@@ -318,6 +322,14 @@ class PrefixTrie:
         Returns:
             TrieNode: Found TrieNode by prefix
         """
+        current_node = self._root
+        for el in prefix:
+            children = current_node.get_children(el)
+            if not children:
+                raise TriePrefixNotFoundError("hi")
+            current_node = children[0]
+        return current_node
+            
 
     def suggest(self, prefix: NGramType) -> tuple:
         """
@@ -330,6 +342,27 @@ class PrefixTrie:
             tuple: Tuple of all token sequences that begin with the given prefix.
                                    Empty tuple if prefix not found.
         """
+        try:
+            current_node = self.get_prefix(prefix)
+        except TriePrefixNotFoundError:
+            return tuple()
+        results = []
+
+        queue = [(current_node, prefix)]
+        while queue:
+            current_node, current_sequence = queue.pop()
+            if current_node.has_children():
+                for child in current_node.get_children():
+                    child_name = child.get_name()
+                    if child_name is None:
+                        continue
+                    next_sequence = current_sequence + (child_name,)
+                    queue.append((child, next_sequence))
+            else:
+                if current_sequence != prefix:
+                    results.append(current_sequence)
+        return tuple(results)
+
 
     def _insert(self, sequence: NGramType) -> None:
         """
@@ -338,6 +371,18 @@ class PrefixTrie:
         Args:
             sequence (NGramType): Tokens to insert.
         """
+        if not isinstance(sequence, tuple) or not sequence:
+            raise IncorrectNgramError("hi")
+        
+        current_node = self._root
+        for token in sequence:
+            children = current_node.get_children(token)
+            if not children:
+                current_node.add_child(token)
+                children = current_node.get_children(token)
+            current_node = children[0] 
+        return None
+
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
