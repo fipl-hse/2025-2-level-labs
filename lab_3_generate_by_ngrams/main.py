@@ -186,10 +186,9 @@ class TextProcessor:
         Args:
             content (dict): ngrams from external JSON
         """
-        if not isinstance(content, dict):
+        if not isinstance(content, dict) or not content:
             return None
-        if not content:
-            return None
+    
         for el in content["freq"]:
             for symbol in el.lower():
                 if symbol.isalpha():
