@@ -354,7 +354,8 @@ class PrefixTrie:
         except TriePrefixNotFoundError:
             return tuple()
         sequences = []
-        stack = [(prefix_node, list(prefix))]
+        prefix_list = [item for item in prefix if item is not None]
+        stack = [(prefix_node, prefix_list)]
         while stack:
             current_node, current_sequence = stack.pop()
             children = []
@@ -455,12 +456,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Mapping of token → relative frequency.
         """
-        try:
-            node = self.get_prefix(start_sequence)
-        except TriePrefixNotFoundError:
-            raise
-        if not node.has_children():
-            return {}
+        node = self.get_prefix(start_sequence)
         return self._collect_frequencies(node)
 
     def get_root(self) -> TrieNode:
@@ -660,7 +656,9 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         if current_n_gram_size is None:
             self._current_n_gram_size = self._max_ngram_size
             return
-        if not isinstance(current_n_gram_size, int) or current_n_gram_size < 2 or current_n_gram_size > self._max_ngram_size:
+        if not isinstance(current_n_gram_size, int) or current_n_gram_size < 2:
+            raise IncorrectNgramError(f"N-gram size must be between 2 and {self._max_ngram_size}")
+        if current_n_gram_size > self._max_ngram_size:
             raise IncorrectNgramError(f"N-gram size must be between 2 and {self._max_ngram_size}")
         self._current_n_gram_size = current_n_gram_size
 
@@ -691,7 +689,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                         break
                 if not found:
                     return {}
-            frequencies = {}
+            frequencies = dict[int, float]()
             for child in current_node.get_children():
                 if child.get_name() is not None and child.get_value() > 0:
                     frequencies[child.get_name()] = child.get_value()
@@ -719,7 +717,8 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                     child.set_value(freq)
                 return child
         new_child = TrieNode(node_name, freq)
-        parent._children.append(new_child)
+        if hasattr(parent, '_children'):
+            parent._children.append(new_child)
         return new_child
 
     def _merge(self) -> None:
@@ -747,9 +746,11 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             source_node, target_node = stack.pop()
             for source_child in source_node.get_children():
                 if source_child.get_name() is not None:
+                    source_child_name = source_child.get_name()
+                if source_child_name is not None:
                     target_child = self._assign_child(
                         target_node,
-                        source_child.get_name(),
+                        source_child_name,
                         source_child.get_value()
                     )
                     if source_child.has_children():
@@ -830,10 +831,10 @@ class DynamicBackOffGenerator(BackOffGenerator):
                 if word_id == token_id:
                     decoded_words.append(word)
                     break
-        if hasattr(self._text_processor, '_postprocess_decoded_text'):
-            return self._text_processor._postprocess_decoded_text(tuple(decoded_words))
-        else:
-            return ' '.join(decoded_words)
+        postprocess_method = getattr(self._text_processor, '_postprocess_decoded_text', None)
+        if postprocess_method:
+            return postprocess_method(tuple(decoded_words))
+        return ' '.join(decoded_words)
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
@@ -843,9 +844,9 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
-    stack = [(trie._root, None)]
+    stack = []
+    stack.append((trie._root, None))
     root_dict = None
-    parent_dicts = []
     while stack:
         current_node, parent_dict = stack.pop()
         node_dict = {
@@ -880,7 +881,11 @@ def load(path: str) -> DynamicNgramLMTrie:
     trie = DynamicNgramLMTrie((), 3)
     root_dict = trie_data.get("trie")
     if root_dict:
-        trie._root = TrieNode(root_dict.get("value"), root_dict.get("freq", 0.0))
+        root_value = root_dict.get("value")
+        if root_value is not None:
+            trie._root = TrieNode(root_value, root_dict.get("freq", 0.0))
+        else:
+            trie._root = TrieNode(None, root_dict.get("freq", 0.0))
         stack = [(root_dict, trie._root)]
         while stack:
             current_dict, current_node = stack.pop()
