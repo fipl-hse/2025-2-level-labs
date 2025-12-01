@@ -29,27 +29,7 @@ class BankAccount:
         validate_transaction(amount: float) -> bool:
             Checks if a transaction amount is valid.
     """
-    def __init__(self, owner: str, balance: int = 0):
-        self._owner = owner
-        self._balance = balance
 
-    def deposit(self, amount: float) -> None:
-        self.update_balance(amount)
-    
-    def withdraw(self, amount: float) -> None:
-        if self._validate_transaction(amount):
-            self.update_balance(-amount)
-    
-    def update_balance(self, amount: float) -> None:
-        self._balance += amount
-
-    def _validate_transaction(self, amount: float)  -> bool:
-        if self._balance < amount:
-            return False
-        return True
-    def get_balance(self):
-        return self._balance
-    
 
 class Bank:
     """
@@ -72,30 +52,6 @@ class Bank:
         generate_account_number() -> int:
             Generates a new account number.
     """
-    def __init__(self, name: str, accounts: dict, next_account_number: int):
-        self.__name = name
-        self._accounts = accounts
-        self.__next_account_number = next_account_number
-
-    def create_account(self, owner_name):
-        a = BankAccount(owner_name)
-        self._accounts[self._generate_account_number()] = BankAccount(owner_name)
-        return a
-    def provide_loan(self, account_number: int, amount: float) -> None:
-        self._accounts[account_number].deposit(amount)
-
-        
-    def deposit_to_account(self, account_number: int, amount: float) -> None:
-        self._accounts(account_number)
-
-    def get_account_balance(self, account_number: int) -> float:
-        return self._accounts[account_number].get_balance()
-    
-
-
-    def generate_account_number(self):
-        self.__next_account_number += 1
-        return self.__next_account_number
 
 
 class Person:
@@ -114,19 +70,7 @@ class Person:
         add_funds(amount: float) -> None:
             Adds money to the person's account.
     """
-    def __init__(self, name: str, account):
-        self.__name = name
-        self.__account = account
-    
-    def make_purchase(self, amount: float) -> None:
-        self.__account.withdraw(amount)
 
-    def transfer_money(self, recipient: Person, amount: float) -> None:
-        self.__account.withdraw(amount)
-        recipient.add_fuds(amount)
-        
-    def add_funds(self, amount: float) -> None:
-        self.__account.deposit(amount)
 
 def main() -> None:
     """
@@ -134,18 +78,6 @@ def main() -> None:
     """
     # Work here
     print("Created classes")
-    d = BankAccount("Teimur", 105000)
-    #d.deposit(5000)
-    #d.withdraw(5000)
-    #print(d.get_balance())
-    d.update_balance(1000)
-    print(d.get_balance())
-    print(dir(BankAccount))
-    print(d._BankAccount_validate_transaction(500))
-    print(d._validate_transaction(500))
-    print(d._BankAccount_owner)
-
-    
 
 
 if __name__ == "__main__":
