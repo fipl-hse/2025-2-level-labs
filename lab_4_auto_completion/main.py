@@ -14,7 +14,6 @@ class CustomException(Exception):
     """
     Base class for custom exceptions in auto-completion.
     """
-    pass
 
 
 class TriePrefixNotFoundError(CustomException):
@@ -114,7 +113,7 @@ class WordProcessor(TextProcessor):
         an element is not added to storage
         """
         if not isinstance(element, str) or not element:
-            return None
+            return
         if element not in self._storage:
             self._storage[element] = len(self._storage)
 
@@ -375,7 +374,7 @@ class PrefixTrie:
         processing_queue = [(prefix_node, list(prefix))]
         while processing_queue:
             current_node, current_sequence = processing_queue.pop(0)
-            for child in current_node.get_children():
+            for child in reversed(list(current_node.get_children())):
                 child_name = child.get_name()
                 if child_name is not None:
                     new_sequence = current_sequence + [child_name]
@@ -394,12 +393,10 @@ class PrefixTrie:
         current = self._root
         for token in sequence:
             children = current.get_children(token)
-            if children:
-                current = children[0]
-            else:
-                new_node = TrieNode(name = token)
-                current._children.append(new_node)
-                current = new_node
+            if not children:
+                current.add_child(token)
+                children = current.get_children(token)
+            current = children[0]
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
     """
