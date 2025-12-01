@@ -331,7 +331,6 @@ class PrefixTrie:
             current_node = children[0]
         return current_node
             
-
     def suggest(self, prefix: NGramType) -> tuple:
         """
         Return all sequences in the trie that start with the given prefix.
@@ -364,7 +363,6 @@ class PrefixTrie:
                     results.append(current_sequence)
         return tuple(results)
 
-
     def _insert(self, sequence: NGramType) -> None:
         """
         Inserts a token in PrefixTrie
@@ -385,11 +383,11 @@ class PrefixTrie:
         return None
 
 
-
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
     """
     Trie specialized for storing and updating n-grams with frequency information.
     """
+
 
     #: N-gram window size used for building the trie
     _n_gram_size: int
@@ -402,6 +400,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        NGramLanguageModel.__init__(self, encoded_corpus, n_gram_size)
+        PrefixTrie.__init__(self)
+        self._encoded_corpus = encoded_corpus
+        self._root = TrieNode()
 
     def __str__(self) -> str:
         """
@@ -429,7 +431,13 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Mapping of token → relative frequency.
         """
-
+        sequence = start_sequence[:self._n_gram_size-1]
+        children = self.get_prefix(sequence)
+        if children:
+            return self._collect_frequencies(children)
+        else:
+            return {}
+        
     def get_root(self) -> TrieNode:
         """
         Get the root.
@@ -458,6 +466,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             int: The current n-gram size.
         """
+        return self._n_gram_size
 
     def get_node_by_prefix(self, prefix: NGramType) -> TrieNode:
         """
@@ -469,6 +478,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             TrieNode: Found node by prefix.
         """
+        return self.get_prefix(prefix)
 
     def update(self, new_corpus: tuple[NGramType]) -> None:
         """
@@ -485,6 +495,23 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             tuple[NGramType, ...]: Tuple of all n-grams stored in the trie.
         """
+        proper_children = []
+        queue = [(self._root, ())]
+        
+        while queue:
+            current_node, current_seq = queue.pop(0)
+            if len(current_seq) == self._n_gram_size:
+                proper_children.append(current_seq)
+                continue
+            
+            for child in current_node.get_children():
+                child_name = child.get_name()
+                if child_name is not None:
+                    new_sequence = current_seq + (child_name,)
+                queue.append((child, new_sequence))
+    
+        return tuple(proper_children)
+
 
     def _collect_frequencies(self, node: TrieNode) -> dict[int, float]:
         """
@@ -496,7 +523,12 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Collected frequencies of items.
         """
-
+        frequencies = {}
+        children = node.get_children()
+        for child in children:
+            frequencies[child.get_children()] = child.get_value()
+        return frequencies
+            
     def _fill_frequencies(self, encoded_corpus: tuple[NGramType, ...]) -> None:
         """
         Calculate and assign frequencies for nodes in the trie based on corpus statistics.
