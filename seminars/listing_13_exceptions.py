@@ -3,159 +3,252 @@ Programming 2025.
 
 Seminar 13.
 
-Exceptions.
+Exception Handling: try, except, else, finally, EAFP vs LBYL, custom exceptions.
 """
 
-# pylint: disable=missing-function-docstring,unused-variable,duplicate-except,bare-except
-#                                         BaseException
-#             ^                                       ^                       ^
-#             |                                       |                       |
-#             Exception                       KeyboardInterrupt       SystemExit
-#     ^       ^                   ^
-#     |       |                   |
-# ValueError  ZeroDivisionError CustomError
+# pylint: disable=duplicate-code, unused-argument, invalid-name, broad-exception-caught, consider-using-with
 
-# EAFP - easier to ask for forgiveness than for permission - try/except
-# LBYL - look before you leap - if/else
 
-#                             EAFP              LBYL
+# Common information about exceptions
+#
+# Exceptions are runtime error signals.
+# When something goes wrong, Python "raises" an exception.
+# If the exception is not handled, the program stops.
+#
+# Basic structure:
+#
+# try:
+#     code that may raise an exception
+# except SomeError:
+#     code that handles the exception
+# else:
+#     code executed only if no exception was raised
+# finally:
+#     code executed ALWAYS (cleanup, closing files etc.)
+
+
+from typing import Any
+
+print("=== Basic try/except ===")
+try:
+    number = int("123")
+    print("Converted:", number)
+except ValueError:
+    print("Conversion error occurred!")
+
+
+# Using exception arguments
+print("=== Handling classic exceptions with arguments ===")
+try:
+    result = 10 / 0
+except ZeroDivisionError as error:
+    print("ZeroDivisionError:", error.args)  # tuple of arguments
+
+
+# Multiple except blocks
+print("=== Multiple except blocks ===")
+try:
+    value = int("hello")
+except ValueError:
+    print("Cannot convert string to integer")
+except TypeError:
+    print("Invalid type")
+
+
+# Else block
+print("=== Using else block ===")
+try:
+    x = int("57")
+except ValueError:
+    print("Conversion failed")
+else:
+    print("Else block: successful conversion =", x)
+
+
+# Finally block
+print("=== Using finally block ===")
+try:
+    file = open("example.txt", "w", encoding="utf-8")
+    file.write("Hello!")
+except OSError:
+    print("File operation error")
+finally:
+    print("Finally block: attempting to close file")
+    try:
+        file.close()
+    except Exception:
+        pass
+
+
+# EAFP vs LBYL
+#                             EAFP              LBY
 # performance                  + (-)              +
 # readability                  -                  +
 # race conditions              +                  -
 # number of checks (few/many)  +/-                -/+
 
 
-def compare_lbyl_vs_eafp() -> None:
-    """
-    Comparison function.
-    """
-    # LBYL style
-    dummy_b = []
-    if len(dummy_b) - 1 > 100:
-        print(dummy_b[100])
-    else:
-        print("No")
+print("=== EAFP example ===")
+try:
+    print("Length:", len(10))  # type: ignore[arg-type]
+except TypeError:
+    print("Object has no length (EAFP)")
 
-    # EAFP
+print("=== LBYL example ===")
+obj = 10
+if hasattr(obj, "__len__"):  # check first
+    print("Length:", len(obj))
+else:
+    print("Object has no length (LBYL)")
+
+
+# Custom exceptions
+class StudentDataError(Exception):
+    """
+    Custom exception for incorrect student data.
+    Stores:
+        student_id (int)
+        field (str)
+    """
+
+    def __init__(self, message: str, student_id: int, field: str):
+        super().__init__(message)
+        self.student_id = student_id
+        self.field = field
+
+    def __str__(self) -> str:
+        """
+        String representation of StudentDataError exception
+        """
+        return f"{self.args[0]} " f"(student_id={self.student_id}, field='{self.field}')"
+
+
+def process_student(student: dict) -> None:
+    """
+    Validate student dictionary.
+    Raise StudentDataError if required fields are missing.
+    """
     try:
-        dummy_a = {}
-        dummy_b = []
-        print(dummy_b[12])
-        print(dummy_a["key"])
-    except (KeyError, IndexError) as my_error:
-        print("Error!!")
-    except IndexError:
-        print("IndexError!!")
-    except:  # ~ except BaseException
-        print("General error!!")
-    else:
-        print("iff no exception")
-    finally:
-        print("Always!!")
+        if "id" not in student:
+            raise StudentDataError("Missing ID", student_id=-1, field="id")
+
+        if "name" not in student:
+            raise StudentDataError("Missing name", student_id=student["id"], field="name")
+
+        print(f"Student processed: {student['name']}")
+
+    except StudentDataError as e:
+        print("Student data error occurred!")
+        print("Message:", e.args[0])
+        print("Student ID:", e.student_id)
+        print("Field:", e.field)
+        print("Full text:", e)
 
 
-def check_exception_raise() -> None:
+print("=== Custom exception example ===")
+process_student({"id": 10})
+process_student({"name": "Alice"})
+process_student({"id": 5, "name": "Bob"})
+
+
+# TASKS /////////////////////////////////////////////////////////////
+
+
+# Task 1:
+def safe_divide(a: float, b: float) -> float:
     """
-    Check exception handling.
+    Safely divide a by b.
+
+    Requirements:
+        - Catch ZeroDivisionError.
+        - Return float('inf') if division by zero occurs.
+        - Use else block to return the correct result.
+        - ALWAYS print "Operation finished" using finally.
     """
-    # 0: __main__
-    # 1: main()->__main__
-    # 2: g()->main()->__main__
-    # 2: f()->g()->main()->__main__
-    # 3: g()->main()->__main__
-    # 4: main()->__main__
-    # 5: __main__
-
-    # 0:
-    # __main__
-    #   -> main()
-    #         -> g()
-    #               -> f() -> ZeroDivisionError
-
-    # 1:
-    # __main__
-    #   -> main()
-    #         -> g() -> ZeroDivisionError
-    #               -> f()
-
-    # 2:
-    # __main__
-    #   -> main() -> ZeroDivisionError
-    #         -> g()
-    #               -> f()
-
-    # 3:
-    # __main__ -> ZeroDivisionError
-    #   -> main()
-    #         -> g()
-    #               -> f()
-
-    # 4:
-    # -> ZeroDivisionError -> exit!!!
-    # __main__
-    #   -> main()
-    #         -> g()
-    #               -> f()
-
-    # Nested functions only to separate topics from lecture.
-    # Do not nest functions in your code!
-    def dummy_f(first: int, second: int) -> float | int:
-        return first / second
-
-    def dummy_g(first: int, second: int) -> float | int:
-        res = dummy_f(first, second)
-        print(res)
-        return res
-
-    try:
-        res = dummy_g(1, 0)
-    except ZeroDivisionError:
-        print("Error")
-    else:
-        print(res)
+    # student implementation goes here
 
 
-def propagate_error_without_exceptions() -> None:
+# safe_divide(10, 2) → 5.0
+# safe_divide(5, 0) → inf
+
+
+# Task 2:
+def get_element(lst: list, index: int) -> int:
     """
-    Processing exceptions through call stack.
+    Return the element at the given index.
+
+    Requirements:
+        - Catch IndexError → return None.
+        - Catch TypeError → return None.
+        - Print args of the exception.
+    """
+    # student implementation goes here
+
+
+# get_element([1, 2, 3], 1) → 2
+# get_element([1, 2, 3], 10) → None
+# get_element("hello", 0) → None
+
+
+# Task 3:
+class NegativeNumberError(Exception):
+    """
+    Custom exception raised when a negative number is passed.
+    Must store:
+        value (int)
+        description (str)
     """
 
-    def dummy_f(first: int, second: int) -> float | int:
-        """
-        Some function with some logic.
-        """
-        if second == 0:
-            return -1
-        return first / second
+    # student implementation goes here
 
-    def dummy_g(first: int, second: int) -> float | int | None:
-        """
-        Some function with some logic.
-        """
-        res = dummy_f(first, second)
-        if res == -1:
-            return None
-        print(res)
-        return res
 
-    res = dummy_g(1, 0)
-    if res is not None:
-        print(f"Success: {res}")
+def square_number(n: int) -> int:
+    """
+    Return n squared.
+
+    Raise NegativeNumberError if n < 0.
+    """
+    # student implementation goes here
+
+
+# square_number(5) → 25
+# square_number(-3) → raises NegativeNumberError
+
+
+# Task 4:
+def safe_open_file(filename: str) -> str:
+    """
+    Try to open the file and read its content.
+
+    Requirements:
+        - Handle FileNotFoundError.
+        - Use else to return file content.
+        - ALWAYS close the file in finally.
+    """
+    # student implementation goes here
+
+
+# Task 5:
+def convert_to_int(item: Any) -> int:
+    """
+    Convert the item to int.
+
+    Requirements:
+        - Catch ValueError and TypeError.
+        - Print exception args.
+    """
+    # student implementation goes here
+
+
+# convert_to_int("123") → 123
+# convert_to_int("abc") → None
+# convert_to_int(None) → None
 
 
 def main() -> None:
     """
-    Module entrypoint.
+    Module entrypoint
     """
-    compare_lbyl_vs_eafp()
-    check_exception_raise()
-    propagate_error_without_exceptions()
-
-
-# Railway programming
-# ------- OK scenario (return)
-#   \
-# ------- Error scenario (exceptions)
 
 
 if __name__ == "__main__":
