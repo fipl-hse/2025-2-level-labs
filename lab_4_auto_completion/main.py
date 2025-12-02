@@ -354,21 +354,22 @@ class PrefixTrie:
         except TriePrefixNotFoundError:
             return tuple()
         sequences = []
-        prefix_list = [item for item in prefix if item is not None]
+        prefix_list = list(prefix)
         stack = [(prefix_node, prefix_list)]
         while stack:
-            current_node, current_sequence = stack.pop()
-            children = [
-                child for child in current_node.get_children() 
-                if child.get_name() is not None
-            ]
-            for child in reversed(children): 
+            current_node, current_path = stack.pop()
+            children = list(current_node.get_children())
+            temp_results = []
+            for child in children:
                 child_name = child.get_name()
-                new_sequence = current_sequence + [child_name]
+                if child_name is None:
+                    continue
+                new_path = current_path + [child_name]
                 if not child.has_children():
-                    sequences.append(tuple(new_sequence))
+                    temp_results.append(tuple(new_path))
                 else:
-                    stack.append((child, new_sequence))
+                    stack.append((child, new_path))
+            sequences.extend(sorted(temp_results))
         return tuple(sequences)
 
     def _insert(self, sequence: NGramType) -> None:
