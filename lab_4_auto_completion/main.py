@@ -458,6 +458,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             TrieNode: Found root.
         """
+        return self._root
 
     def generate_next_token(self, sequence: NGramType) -> dict[int, float] | None:
         """
@@ -500,7 +501,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             TrieNode: Found node by prefix.
         """
-        self.get_prefix(prefix)
+        return self.get_prefix(prefix)
 
     def update(self, new_corpus: tuple[NGramType]) -> None:
         """
@@ -535,7 +536,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
 
             for child in current_node.get_children():
                 child_name = child.get_name()
-                if child_name:
+                if child_name is not None:
                     new_sequence = current_seq + (child_name,)
                 queue.append((child, new_sequence))
 
