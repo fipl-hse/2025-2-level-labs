@@ -748,16 +748,17 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         while stack:
             source_node, target_node = stack.pop()
             for source_child in source_node.get_children():
+                source_child_name = source_child.get_name()
                 if source_child.get_name() is not None:
                     source_child_name = source_child.get_name()
-                if source_child_name is not None:
-                    target_child = self._assign_child(
-                        target_node,
-                        source_child_name,
-                        source_child.get_value()
-                    )
-                    if source_child.has_children():
-                        stack.append((source_child, target_child))
+                    if source_child_name is not None:
+                        target_child = self._assign_child(
+                            target_node,
+                            source_child_name,
+                            source_child.get_value()
+                        )
+                        if source_child.has_children():
+                            stack.append((source_child, target_child))
 
 
 class DynamicBackOffGenerator(BackOffGenerator):
@@ -820,13 +821,15 @@ class DynamicBackOffGenerator(BackOffGenerator):
             return None
         encoded_prompt_test = self._text_processor.encode(prompt)
         if encoded_prompt_test is None:
-             return None
+            return None
+        token_tuple = None
         try:
-            tokens = list(self._text_processor._tokenize(prompt))
+            token_tuple = self._text_processor._tokenize(prompt)
         except EncodingError:
             return None
-        if not tokens:
+        if token_tuple is None:
             return None
+        tokens = list(token_tuple)
         eos_token = self._text_processor._end_of_sentence_token
         if tokens and tokens[-1] == eos_token:
             tokens.pop()
