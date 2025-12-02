@@ -12,18 +12,23 @@ NGramType = tuple[int, ...]
 "Type alias for NGram."
 
 class TriePrefixNotFoundError(Exception):
+    """Prefix not found in tree"""
     pass
 
 class EncodingError(Exception):
+    """Encoding not passed correctly"""
     pass
 
 class DecodingError(Exception):
+    """Input not decoded"""
     pass
 
 class IncorrectNgramError(Exception):
+    """Incorrect ngram input"""
     pass
 
 class MergeTreesError(Exception):
+    """Trees not merged"""
     pass
 
 class WordProcessor(TextProcessor):
@@ -95,7 +100,6 @@ class WordProcessor(TextProcessor):
         """
         if isinstance(element, str) and element not in self._storage and element:
             self._storage[element] = len(self._storage)
-        return None
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
@@ -263,7 +267,6 @@ class TrieNode:
             new_value (float): New value to store.
         """
         self._value = new_value
-        return None
 
     def has_children(self) -> bool:
         """
@@ -374,7 +377,6 @@ class PrefixTrie:
                 current_node.add_child(token)
                 children = current_node.get_children(token)
             current_node = children[0]
-        return None
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
@@ -447,8 +449,8 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         try:
             node = self.get_prefix(start_sequence)
             return self._collect_frequencies(node)
-        except TriePrefixNotFoundError:
-            raise
+        except TriePrefixNotFoundError as e:
+            raise TriePrefixNotFoundError from e
 
     def get_root(self) -> TrieNode:
         """
@@ -514,7 +516,6 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             new_corpus = list(new_corpus)
             self._encoded_corpus = tuple(encoded_corpus + new_corpus)
         self.build()
-        return None
 
     def _collect_all_ngrams(self) -> tuple[NGramType, ...]:
         """
@@ -534,7 +535,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
 
             for child in current_node.get_children():
                 child_name = child.get_name()
-                if child_name is not None:
+                if child_name:
                     new_sequence = current_seq + (child_name,)
                 queue.append((child, new_sequence))
 
