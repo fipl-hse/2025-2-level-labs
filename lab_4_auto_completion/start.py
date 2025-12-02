@@ -2,10 +2,10 @@
 Auto-completion start
 """
 
-from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, NGramLanguageModel, TextProcessor
+from lab_3_generate_by_ngrams.main import GreedyTextGenerator, BeamSearchTextGenerator, NGramLanguageModel, TextProcessor
 
 # pylint:disable=unused-variable
-from lab_4_auto_completion.main import PrefixTrie, WordProcessor
+from lab_4_auto_completion.main import PrefixTrie, WordProcessor, NGramTrieLanguageModel
 
 
 def main() -> None:
@@ -24,9 +24,9 @@ def main() -> None:
 
 # processing secret
     # text_processor = TextProcessor("_")
-    # n_gram_size = 2
-    # beam_width = 7
-    # seq_len = 9
+    n_gram_size = 2
+    beam_width = 7
+    seq_len = 9
 
     # with open("./assets/secrets/secret_1.txt", "r", encoding="utf-8") as secret_file:
     #     secret_text = secret_file.read()
@@ -43,7 +43,7 @@ def main() -> None:
     # n_gram_model = NGramLanguageModel(encoded_secret_text, n_gram_size)
     # n_gram_model.build()
 
-    # beamsearcher = BeamSearchTextGenerator(n_gram_model, word_processor, beam_width)
+    
     # burned_text = beamsearcher.run(context, seq_len)
     # print(burned_text)
 
@@ -52,22 +52,50 @@ def main() -> None:
 
 # end processing secret
 
-    hp_encoded_text = word_processor.encode_sentences(hp_letters)
-    prefix_trie_processor.fill(hp_encoded_text)
-    hp_candidates = prefix_trie_processor.suggest((2,))
+    # prefix_trie_processor.fill(hp_encoded_text)
+    # hp_candidates = prefix_trie_processor.suggest((2,))
     
-    reverse_mapping = {v: k for k, v in word_processor._storage.items()}
+    # reverse_mapping = {v: k for k, v in word_processor._storage.items()}
     
-    str_candidates = []
-    for candidate in hp_candidates:
-        for word_id in candidate:
-            if word_id in reverse_mapping:
-                str_candidates.append(reverse_mapping[word_id])
+    # str_candidates = []
+    # for candidate in hp_candidates:
+    #     for word_id in candidate:
+    #         if word_id in reverse_mapping:
+    #             str_candidates.append(reverse_mapping[word_id])
 
-    result = word_processor._postprocess_decoded_text(tuple(str_candidates))
+
+
+    hp_encoded_text = word_processor.encode_sentences(hp_letters)
+    ussr_encoded_text = word_processor.encode_sentences(ussr_letters)
+
+    ngram_trie_lm = NGramTrieLanguageModel(hp_encoded_text, 5)
+    ngram_trie_lm.build()
+
+    greedy_generator = GreedyTextGenerator(ngram_trie_lm, word_processor)
+    ussr_corp_greedy = greedy_generator.run(seq_len, ussr_letters)
+    print("Greedy before update", ussr_corp_greedy)
+    print()
+
+    ngram_trie_lm.update(ussr_encoded_text)
+    ussr_corp_greedy = greedy_generator.run(seq_len, ussr_letters)
+    print("Greedy aftert update", ussr_corp_greedy)
+    print()
+
+    ngram_trie_lm = NGramTrieLanguageModel(hp_encoded_text, 5)
+    ngram_trie_lm.build()
+
+    beamsearcher = BeamSearchTextGenerator(ngram_trie_lm, word_processor, beam_width)
+    ussr_corp_beam = beamsearcher.run(ussr_letters, seq_len)
+    print("Beamsearcher before update", ussr_corp_beam)
+    print()
+
+    ngram_trie_lm.update(ussr_encoded_text)
+    ussr_corp_beam = beamsearcher.run(ussr_letters, seq_len)
+    print("Beamsearcher after update", ussr_corp_beam)
+    print()
+    result = ussr_corp_beam
     print(result)
     assert result, "Result is None"
-
 
 
 if __name__ == "__main__":
