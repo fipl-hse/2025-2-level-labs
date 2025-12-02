@@ -61,10 +61,6 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
-        
-        if not isinstance(text, str) or not text:
-            raise EncodingError("Invalid input: text must be a non-empty string")
-
         tokens = self._tokenize(text)
         sentences = []
         encoded_sentences = []
@@ -327,7 +323,7 @@ class PrefixTrie:
         for el in prefix:
             children = current_node.get_children(el)
             if not children:
-                raise TriePrefixNotFoundError("hi")
+                raise TriePrefixNotFoundError("")
             current_node = children[0]
         return current_node
             
@@ -404,6 +400,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         PrefixTrie.__init__(self)
         self._encoded_corpus = encoded_corpus
         self._root = TrieNode()
+        self._n_gram_size = n_gram_size
 
     def __str__(self) -> str:
         """
@@ -420,6 +417,18 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             int: 0 if attribute is filled successfully, otherwise 1
         """
+        self.clean()
+        ngrams = []
+        for sentence in self._encoded_corpus:
+            for i in range(len(sentence)):
+                sized_ngram = sentence[i:i + self._n_gram_size]
+                ngrams.append(sized_ngram)
+        self.fill(tuple(ngrams))
+        ngrams = self._collect_all_ngrams()
+        self._fill_frequencies(ngrams)
+        if not self._n_gram_frequencies:
+            return 1
+        return 0
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
         """
@@ -432,10 +441,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             dict[int, float]: Mapping of token → relative frequency.
         """
         sequence = start_sequence[:self._n_gram_size-1]
-        children = self.get_prefix(sequence)
-        if children:
+        try:
+            children = self.get_prefix(sequence)
             return self._collect_frequencies(children)
-        else:
+        except TriePrefixNotFoundError:
             return {}
         
     def get_root(self) -> TrieNode:
@@ -458,6 +467,14 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             dict[int, float] | None: Possible next tokens with their probabilities,
                                      or None if input is invalid or context is too short
         """
+        if not sequence or len(sequence) < self._n_gram_size - 1:
+            return None
+        context = sequence[-self._n_gram_size + 1:]
+        try:
+            next_tokens = self.get_next_tokens(context)
+        except TriePrefixNotFoundError:
+            return {}
+        return next_tokens
 
     def get_n_gram_size(self) -> int:
         """
@@ -488,6 +505,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
 
+
     def _collect_all_ngrams(self) -> tuple[NGramType, ...]:
         """
         Collect all n-grams from the trie by traversing all paths of length n_gram_size.
@@ -511,7 +529,6 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
                 queue.append((child, new_sequence))
     
         return tuple(proper_children)
-
 
     def _collect_frequencies(self, node: TrieNode) -> dict[int, float]:
         """
@@ -539,6 +556,16 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Args:
             encoded_corpus (tuple[NGramType, ...]): Tuple of n-grams extracted from the corpus.
         """
+        freqs = {}
+        for ngram in encoded_corpus:
+            freqs[ngram] = freqs.get(ngram, 0) + 1
+        total = len(encoded_corpus) 
+        for ngram, abs_freq in freqs.items():   
+            node = self.get_prefix(ngram)
+            node.set_value(abs_freq/total)
+        return None
+            
+
 
 
 class DynamicNgramLMTrie(NGramTrieLanguageModel):
