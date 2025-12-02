@@ -827,6 +827,8 @@ class DynamicBackOffGenerator(BackOffGenerator):
             tokens = list(self._text_processor._tokenize(prompt))
         except EncodingError:
             return None
+        if not tokens:
+            return None
         eos_token = self._text_processor._end_of_sentence_token
         if tokens and tokens[-1] == eos_token:
             tokens.pop()
@@ -862,7 +864,7 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
-    stack = [(trie.get_root(), {} if False else None)]
+    stack = [(trie.get_root(), None)]
     root_dict = None
     while stack:
         current_node, parent_dict = stack.pop()
