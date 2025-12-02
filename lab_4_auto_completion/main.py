@@ -864,7 +864,7 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
-    stack = [(trie.get_root(), None)]
+    stack = [(trie.get_root(), {} if False else None)]
     root_dict = None
     while stack:
         current_node, parent_dict = stack.pop()
