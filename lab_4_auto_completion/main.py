@@ -13,23 +13,18 @@ NGramType = tuple[int, ...]
 
 class TriePrefixNotFoundError(Exception):
     """Prefix not found in tree"""
-    pass
 
 class EncodingError(Exception):
     """Encoding not passed correctly"""
-    pass
 
 class DecodingError(Exception):
     """Input not decoded"""
-    pass
 
 class IncorrectNgramError(Exception):
     """Incorrect ngram input"""
-    pass
 
 class MergeTreesError(Exception):
     """Trees not merged"""
-    pass
 
 class WordProcessor(TextProcessor):
     """
@@ -136,7 +131,7 @@ class WordProcessor(TextProcessor):
                 token = "."
                 prev_token_eos = True
             processed_tokens += f"{token} "
-        
+
         processed_tokens = processed_tokens[:-1]
         processed_tokens += "."
         if not processed_tokens:
@@ -308,7 +303,7 @@ class PrefixTrie:
         self.clean()
         for ngram in encoded_corpus:
             self._insert(ngram)
-        return None
+        # return None
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
