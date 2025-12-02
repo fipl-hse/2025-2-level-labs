@@ -109,11 +109,9 @@ class WordProcessor(TextProcessor):
         if len(decoded_corpus) == decoded_corpus.count(self._end_of_sentence_token):
             raise DecodingError("Postprocessing resulted in empty output")
         decoded_list = []
-        for element in decoded_corpus:
-            if element == self._end_of_sentence_token:
-                decoded_str = ' '.join(decoded_corpus)
-                decoded_str = decoded_str.replace(f' {self._end_of_sentence_token}', '.')
-                decoded_list.extend(decoded_str.split('.'))
+        decoded_str = ' '.join(decoded_corpus)
+        decoded_str = decoded_str.replace(f' {self._end_of_sentence_token} ', '.')
+        decoded_list.extend(decoded_str.split('.'))
         sentence_index = 0
         if decoded_list[-1] == '':
             decoded_list = decoded_list[:-1]

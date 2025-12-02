@@ -2,9 +2,8 @@
 Auto-completion start
 """
 
-from lab_4_auto_completion.main import (
-    PrefixTrie,
-    WordProcessor)
+from lab_4_auto_completion.main import PrefixTrie, WordProcessor
+
 # pylint:disable=unused-variable
 
 
