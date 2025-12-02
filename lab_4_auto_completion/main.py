@@ -364,7 +364,10 @@ class PrefixTrie:
                     children.append(child)
             for i in range(len(children) - 1, -1, -1):
                 child = children[i]
-                new_sequence = current_sequence + [child.get_name()]
+                child_name = child.get_name()
+                if child_name is None:
+                    continue
+                new_sequence = current_sequence + [child_name]
                 if not child.has_children():
                     sequences.append(tuple(new_sequence))
                 else:
@@ -555,8 +558,9 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         """
         frequencies = {}
         for child in node.get_children():
-            if child.get_name() is not None:
-                frequencies[child.get_name()] = child.get_value()
+            name = child.get_name()
+            if name is not None:
+                frequencies[name] = child.get_value()
         return frequencies
 
     def _fill_frequencies(self, encoded_corpus: tuple[NGramType, ...]) -> None:
@@ -691,8 +695,9 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                     return {}
             frequencies = dict[int, float]()
             for child in current_node.get_children():
-                if child.get_name() is not None and child.get_value() > 0:
-                    frequencies[child.get_name()] = child.get_value()
+                name = child.get_name()
+                if name is not None and child.get_value() > 0:
+                    frequencies[name] = child.get_value()
             return frequencies
         except TriePrefixNotFoundError:
             return {}
@@ -815,7 +820,20 @@ class DynamicBackOffGenerator(BackOffGenerator):
             return None
         if not isinstance(prompt, str) or not prompt.strip():
             return None
-        encoded_prompt = self._text_processor.encode(prompt)
+        encoded_prompt_test = self._text_processor.encode(prompt)
+        if encoded_prompt_test is None:
+             return None
+        try:
+            tokens = list(self._text_processor._tokenize(prompt))
+        except EncodingError:
+            return None
+        eos_token = self._text_processor._end_of_sentence_token
+        if tokens and tokens[-1] == eos_token:
+            tokens.pop()
+        encoded_prompt = []
+        for token in tokens:
+            self._text_processor._put(token)
+            encoded_prompt.append(self._text_processor._storage[token])
         if not encoded_prompt:
             return None
         current_sequence = list(encoded_prompt)
@@ -823,7 +841,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
             next_tokens = self.get_next_token(tuple(current_sequence))
             if not next_tokens:
                 break
-            best_token = sorted(next_tokens.items(), key=lambda x: (-x[1], x[0]))[0][0]
+            best_token = sorted(next_tokens.items(), key=lambda x: (-x[1], -x[0]))[0][0]
             current_sequence.append(best_token)
         decoded_words = []
         for token_id in current_sequence:
@@ -833,7 +851,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
                     break
         postprocess_method = getattr(self._text_processor, '_postprocess_decoded_text', None)
         if postprocess_method:
-            return postprocess_method(tuple(decoded_words))
+            return str(postprocess_method(tuple(decoded_words)))
         return ' '.join(decoded_words)
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
@@ -844,8 +862,7 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
-    stack = []
-    stack.append((trie._root, None))
+    stack = [(trie.get_root(), {} if False else None)]
     root_dict = None
     while stack:
         current_node, parent_dict = stack.pop()
