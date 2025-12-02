@@ -61,18 +61,18 @@ class FindCorrectWordTest(unittest.TestCase):
         bad_methods = ["jacard", None, True, 42, 3.14, (), "", [], {}]
         bad_alphabets = [True, 42, 3.14, (), {}, ""]
 
-        for bad_input in bad_tokens:
-            self.assertIsNone(find_correct_word(bad_input, self.vocabulary, self.methods[0]))
+        for bad_token in bad_tokens:
+            self.assertIsNone(find_correct_word(bad_token, self.vocabulary, self.methods[0]))
 
-        for bad_input in bad_vocabularies:
-            self.assertIsNone(find_correct_word(good_token, bad_input, self.methods[0]))
+        for bad_vocab in bad_vocabularies:
+            self.assertIsNone(find_correct_word(good_token, bad_vocab, self.methods[0]))
 
-        for bad_input in bad_methods:
-            self.assertIsNone(find_correct_word(good_token, self.vocabulary, bad_input))
+        for bad_method in bad_methods:
+            self.assertIsNone(find_correct_word(good_token, self.vocabulary, bad_method))
 
-        for bad_input in bad_alphabets:
+        for bad_alphabet in bad_alphabets:
             self.assertIsNone(
-                find_correct_word(good_token, self.vocabulary, self.methods[2], bad_input)
+                find_correct_word(good_token, self.vocabulary, self.methods[2], bad_alphabet)
             )
 
         self.assertIsNone(

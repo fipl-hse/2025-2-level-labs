@@ -71,14 +71,17 @@ class GetMatchesTest(unittest.TestCase):
         Check returned values
         """
         result = get_matches("word", "word2", 2)
-        self.assertIsInstance(result, tuple)
-        self.assertIsInstance(result[0], int)
+        self.assertIsNotNone(result)
 
-        for token in result[1]:
-            self.assertIsInstance(token, bool)
+        if result:
+            self.assertIsInstance(result, tuple)
+            self.assertIsInstance(result[0], int)
 
-        for token in result[2]:
-            self.assertIsInstance(token, bool)
+            for token in result[1]:
+                self.assertIsInstance(token, bool)
+
+            for token in result[2]:
+                self.assertIsInstance(token, bool)
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
@@ -106,9 +109,11 @@ class GetMatchesTest(unittest.TestCase):
         """
         actual = get_matches("word", "wodr", 0)
         expected = (2, [True, True, False, False], [True, True, False, False])
-        self.assertEqual(expected[0], actual[0])
-        self.assertListEqual(expected[1], actual[1])
-        self.assertListEqual(expected[2], actual[2])
+        self.assertIsNotNone(actual)
+        if actual:
+            self.assertEqual(expected[0], actual[0])
+            self.assertListEqual(expected[1], actual[1])
+            self.assertListEqual(expected[2], actual[2])
 
     @pytest.mark.lab_2_spellcheck
     @pytest.mark.mark10
