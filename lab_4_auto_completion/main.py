@@ -346,7 +346,7 @@ class PrefixTrie:
             
             for children_node in current_node.get_children():
                 all_children_nodes.append([children_node, current_sequence + [children_node.get_name()]])
-        return tuple(sorted(all_sequences, reverse = True))
+        return tuple(all_sequences)
 
 
     def _insert(self, sequence: NGramType) -> None:
