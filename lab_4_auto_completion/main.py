@@ -358,15 +358,12 @@ class PrefixTrie:
         stack = [(prefix_node, prefix_list)]
         while stack:
             current_node, current_sequence = stack.pop()
-            children = []
-            for child in current_node.get_children():
-                if child.get_name() is not None:
-                    children.append(child)
-            for i in range(len(children) - 1, -1, -1):
-                child = children[i]
+            children = [
+                child for child in current_node.get_children() 
+                if child.get_name() is not None
+            ]
+            for child in reversed(children): 
                 child_name = child.get_name()
-                if child_name is None:
-                    continue
                 new_sequence = current_sequence + [child_name]
                 if not child.has_children():
                     sequences.append(tuple(new_sequence))
