@@ -73,8 +73,7 @@ src_paths = [
 [tool.mypy]
 python_version = '3.12'
 exclude = [
-    'venv*',
-    'test.py'
+    'venv*'
 ]
 
 disallow_untyped_defs = true
@@ -134,6 +133,39 @@ disable_error_code = [
     'empty-body',
     'name-defined'
 ]
+
+# Tests errors disabling
+
+[[tool.mypy.overrides]]
+module = [
+    'lab_1_keywords_tfidf.tests.*',
+    'lab_2_spellcheck.tests.*',
+    'lab_3_generate_by_ngrams.tests.beam_search_algorithm_test',
+    'lab_3_generate_by_ngrams.tests.ngram_language_model_reader_test',
+    'lab_3_generate_by_ngrams.tests.ngram_language_model_test',
+    'lab_3_generate_by_ngrams.tests.text_processor_test',
+    'lab_4_auto_completion.tests.dynamic_backoff_generator_test',
+    'lab_4_auto_completion.tests.dynamic_ngram_lm_trie_test',
+    'lab_4_auto_completion.tests.ngram_lm_trie_test',
+    'lab_4_auto_completion.tests.prefix_trie_test',
+    'lab_4_auto_completion.tests.word_processor_test',
+]
+disable_error_code = [
+    'arg-type'
+]
+
+[[tool.mypy.overrides]]
+module = [
+    'lab_3_generate_by_ngrams.tests.backoff_generator_test',  
+    'lab_3_generate_by_ngrams.tests.beam_search_text_generator_test',
+    'lab_3_generate_by_ngrams.tests.beam_searcher_test',
+    'lab_3_generate_by_ngrams.tests.greedy_text_generator_test',
+]
+disable_error_code = [
+    'arg-type',
+    'assignment',
+]
+
 
 [tool.pylint.main]
 # Analyse import fallback blocks. This can be used to support both Python 2 and 3
