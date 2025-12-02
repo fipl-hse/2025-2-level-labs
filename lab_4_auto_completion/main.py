@@ -93,7 +93,7 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
-        if isinstance(element, str) and element not in self._storage.keys() and element:
+        if isinstance(element, str) and element not in self._storage and element:
             self._storage[element] = len(self._storage)
         return None
 
@@ -234,9 +234,8 @@ class TrieNode:
         """
         if item is None:
             return tuple(self._children)
-        else:
-            children = tuple(child for child in self._children if child.get_name() == item)
-            return children
+        children = tuple(child for child in self._children if child.get_name() == item)
+        return children
 
     def get_name(self) -> int | None:
         """
@@ -295,7 +294,6 @@ class PrefixTrie:
         Clean the whole tree.
         """
         self._root = TrieNode()
-        return None
 
     def fill(self, encoded_corpus: tuple[NGramType]) -> None:
         """
@@ -326,7 +324,7 @@ class PrefixTrie:
                 raise TriePrefixNotFoundError("")
             current_node = children[0]
         return current_node
-            
+
     def suggest(self, prefix: NGramType) -> tuple:
         """
         Return all sequences in the trie that start with the given prefix.
@@ -368,14 +366,14 @@ class PrefixTrie:
         """
         if not isinstance(sequence, tuple) or not sequence:
             raise IncorrectNgramError("hi")
-        
+
         current_node = self._root
         for token in sequence:
             children = current_node.get_children(token)
             if not children:
                 current_node.add_child(token)
                 children = current_node.get_children(token)
-            current_node = children[0] 
+            current_node = children[0]
         return None
 
 
@@ -410,6 +408,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             str: String representation showing n-gram size.
         """
+        return f"NGramTrieLanguageModel: n_gram_size={self._n_gram_size}"
 
     def build(self) -> int:
         """
@@ -499,7 +498,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             TrieNode: Found node by prefix.
         """
-        return self.get_prefix(prefix)
+        self.get_prefix(prefix)
 
     def update(self, new_corpus: tuple[NGramType]) -> None:
         """
@@ -526,19 +525,19 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         """
         proper_children = []
         queue = [(self._root, ())]
-        
+
         while queue:
             current_node, current_seq = queue.pop(0)
             if len(current_seq) == self._n_gram_size:
                 proper_children.append(current_seq)
                 continue
-            
+
             for child in current_node.get_children():
                 child_name = child.get_name()
                 if child_name is not None:
                     new_sequence = current_seq + (child_name,)
                 queue.append((child, new_sequence))
-    
+
         return tuple(proper_children)
 
     def _collect_frequencies(self, node: TrieNode) -> dict[int, float]:
@@ -558,7 +557,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             if child_name is not None:
                 frequencies[child_name] = child.get_value()
         return frequencies
-            
+
     def _fill_frequencies(self, encoded_corpus: tuple[NGramType, ...]) -> None:
         """
         Calculate and assign frequencies for nodes in the trie based on corpus statistics.

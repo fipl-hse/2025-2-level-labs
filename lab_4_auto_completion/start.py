@@ -2,10 +2,18 @@
 Auto-completion start
 """
 
-from lab_3_generate_by_ngrams.main import GreedyTextGenerator, BeamSearchTextGenerator, NGramLanguageModel, TextProcessor
+from lab_3_generate_by_ngrams.main import (
+    BeamSearchTextGenerator,
+    GreedyTextGenerator,
+    # NGramLanguageModel,
+    # TextProcessor
+    )
 
 # pylint:disable=unused-variable
-from lab_4_auto_completion.main import PrefixTrie, WordProcessor, NGramTrieLanguageModel
+from lab_4_auto_completion.main import (
+    NGramTrieLanguageModel,
+    # PrefixTrie,
+    WordProcessor)
 
 
 def main() -> None:
@@ -20,11 +28,11 @@ def main() -> None:
         ussr_letters = text_file.read()
 
     word_processor = WordProcessor("_")
-    prefix_trie_processor = PrefixTrie()
+    # prefix_trie_processor = PrefixTrie()
 
 # processing secret
     # text_processor = TextProcessor("_")
-    n_gram_size = 2
+    # n_gram_size = 2
     beam_width = 7
     seq_len = 9
 
@@ -43,7 +51,7 @@ def main() -> None:
     # n_gram_model = NGramLanguageModel(encoded_secret_text, n_gram_size)
     # n_gram_model.build()
 
-    
+
     # burned_text = beamsearcher.run(context, seq_len)
     # print(burned_text)
 
@@ -54,9 +62,9 @@ def main() -> None:
 
     # prefix_trie_processor.fill(hp_encoded_text)
     # hp_candidates = prefix_trie_processor.suggest((2,))
-    
+
     # reverse_mapping = {v: k for k, v in word_processor._storage.items()}
-    
+
     # str_candidates = []
     # for candidate in hp_candidates:
     #     for word_id in candidate:
@@ -100,6 +108,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-# 
