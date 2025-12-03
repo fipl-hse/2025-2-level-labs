@@ -3,9 +3,8 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearcher, BeamSearchTextGenerator, GreedyTextGenerator, NGramLanguageModel
+from lab_3_generate_by_ngrams.main import BeamSearcher, NGramLanguageModel
 from lab_4_auto_completion.main import WordProcessor
-
 
 def main() -> None:
     """
@@ -17,51 +16,47 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-    with open("./assets/secrets/secret_4.txt", "r", encoding="utf-8") as text_file:
-        letter = text_file.read()
-    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
-        text = text_file.read()
+
+    with open("./assets/secrets/secret_4.txt", "r", encoding="utf-8") as secret_file:
+        secret_letter = secret_file.read()
+    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as harry_file:
+        harry_text = harry_file.read()
+
+    word_processor = WordProcessor("<EoW>")
+
     n_gram_size = 2
     beam_width = 7
     seq_len = 10
 
-    processor = WordProcessor('.')
-    encoded_sentences = processor.encode_sentences(text)
-
-    encoded_corpus = []
+    encoded_sentences = word_processor.encode_sentences(harry_text)
+    encoded_secret = []
     for sentence in encoded_sentences:
-        encoded_corpus.extend(sentence)
-    encoded_corpus = tuple(encoded_corpus)
+        encoded_secret.extend(sentence)
+    encoded_secret = tuple(encoded_secret)
 
-    model = NGramLanguageModel(encoded_corpus, n_gram_size)
-    print(model.build())
+    language_model = NGramLanguageModel(encoded_secret, n_gram_size)
+    language_model.build()
 
-    algorithm = BeamSearcher(beam_width, model)
+    letter_parts = secret_letter.split("<BURNED>")
+    first_part = letter_parts[0].strip()
+    second_part = letter_parts[1]
 
-    parts = letter.split("<BURNED>")
-    part_of_letter = parts[0]
-    after_burned = parts[1]
+    encoded_context = word_processor.encode_sentences(first_part)
+    context = []
+    for sentence in encoded_context:
+        context.extend(sentence)
+    context = tuple(context)
 
-    encoded_context_sentences = processor.encode_sentences(part_of_letter)
+    beam_searcher = BeamSearcher(beam_width, language_model)
 
-    context_sequence = []
-    for sentence in encoded_context_sentences:
-        context_sequence.extend(sentence)
-    context_sequence = tuple(context_sequence)
-
-    if len(context_sequence) >= n_gram_size - 1:
-        initial_sequence = context_sequence[-(n_gram_size - 1):]
-    else:
-        initial_sequence = context_sequence
-
-    sequence_candidates = {initial_sequence: 0.0}
+    sequence_candidates = {context: 0.0}
     for _ in range(seq_len):
         new_candidates = {}
         for sequence, probability in sequence_candidates.items():
-            next_tokens = algorithm.get_next_token(sequence)
+            next_tokens = beam_searcher.get_next_token(sequence)
             if next_tokens is None:
-                return None
-            updated_candidates = algorithm.continue_sequence(
+                continue
+            updated_candidates = beam_searcher.continue_sequence(
                 sequence, next_tokens, {sequence: probability})
             if updated_candidates is not None:
                 for seq, prob in updated_candidates.items():
@@ -69,14 +64,18 @@ def main() -> None:
                         new_candidates[seq] = prob
         if not new_candidates:
             break
-        sequence_candidates = algorithm.prune_sequence_candidates(new_candidates) or {}
+        sequence_candidates = beam_searcher.prune_sequence_candidates(new_candidates) or {}
         if sequence_candidates is None:
             return None
     if not sequence_candidates:
         return None
-    best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0][(n_gram_size - 1):]
-    decoded = [processor.get_token(id) for id in best_sequence]
+
+    best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
+    decoded = [word_processor.get_token(id) for id in best_sequence]
     print(decoded)
+
+    result = decoded
+    assert result
 
 if __name__ == "__main__":
     main()
