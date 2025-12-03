@@ -123,7 +123,7 @@ class TextProcessor:
         """
         if not isinstance(element, str) or len(element) != 1:
             return None
-        if not element in self._storage:
+        if element not in self._storage:
             self._storage[element] = len(self._storage)
         return None
 
