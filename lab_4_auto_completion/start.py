@@ -3,7 +3,7 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearcher, BeamSearchTextGenerator, GreedyTextGenerator, NGramLanguageModel
+from lab_3_generate_by_ngrams.main import BeamSearcher, GreedyTextGenerator, NGramLanguageModel
 from lab_4_auto_completion.main import WordProcessor
 
 
@@ -17,74 +17,74 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-    with open("./assets/secrets/secret_5.txt", "r", encoding="utf-8") as text_file:
-        letter = text_file.read()
-    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
-        text = text_file.read()
+    with open("./assets/secrets/secret_5.txt", "r", encoding="utf-8") as secret_file:
+        secret = secret_file.read()
+    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as hp_file:
+        text = hp_file.read()
     n_gram_size = 4
     beam_width = 3
     seq_len = 25
 
-    processor = WordProcessor('.')
+    processor = WordProcessor('<EoS>')
     encoded_sentences = processor.encode_sentences(text)
-
-    encoded_corpus = []
+    encoded_secret = []
     for sentence in encoded_sentences:
-        encoded_corpus.extend(sentence)
-    encoded_corpus = tuple(encoded_corpus)
+        encoded_secret.extend(sentence)
+    encoded_secret = tuple(encoded_secret)
 
-    model = NGramLanguageModel(encoded_corpus, n_gram_size)
-    print(model.build())
+    language_model = NGramLanguageModel(encoded_secret, n_gram_size)
+    print(language_model.build())
 
-    algorithm = BeamSearcher(beam_width, model)
+    letter_parts = secret.split("<BURNED>")
+    first_part = letter_parts[0].strip()
 
-    parts = letter.split("<BURNED>")
-    part_of_letter = parts[0]
-    after_burned = parts[1]
+    encoded_context = processor.encode_sentences(first_part)
+    context = []
+    for sentence in encoded_context:
+        for token_id in sentence:
+            token = processor.get_token(token_id)
+            if token != '<EoS>':
+                context.append(token_id)
+    context = tuple(context)
 
-    encoded_context_sentences = processor.encode_sentences(part_of_letter)
+    beam_searcher = BeamSearcher(beam_width, language_model)
+    sequence_candidates = {context: 0.0}
 
-    context_sequence = []
-    for sentence in encoded_context_sentences:
-        context_sequence.extend(sentence)
-    context_sequence = tuple(context_sequence)
-
-    if len(context_sequence) >= n_gram_size - 1:
-        initial_sequence = context_sequence[-(n_gram_size - 1):]
-    else:
-        initial_sequence = context_sequence
-
-    sequence_candidates = {initial_sequence: 0.0}
     for _ in range(seq_len):
         new_candidates = {}
-        for sequence, probability in sequence_candidates.items():
-            next_tokens = algorithm.get_next_token(sequence)
-            if next_tokens is None:
-                return None
-            updated_candidates = algorithm.continue_sequence(
-                sequence, next_tokens, {sequence: probability})
-            if updated_candidates is not None:
-                for seq, prob in updated_candidates.items():
-                    if seq not in new_candidates or prob < new_candidates[seq]:
-                        new_candidates[seq] = prob
+        for seq, prob in sequence_candidates.items():
+            next_tokens = beam_searcher.get_next_token(seq)
+            if not next_tokens:
+                continue
+            updated = beam_searcher.continue_sequence(seq, next_tokens, {seq: prob})
+            if not updated:
+                continue
+            for new_seq, new_prob in updated.items():
+                if new_seq not in new_candidates or new_prob < new_candidates[new_seq]:
+                    new_candidates[new_seq] = new_prob
         if not new_candidates:
             break
-        sequence_candidates = algorithm.prune_sequence_candidates(new_candidates) or {}
-        if sequence_candidates is None:
-            return None
-    if not sequence_candidates:
-        return None
-    best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0][(n_gram_size - 1):]
-    decoded_words = [processor.get_token(token_id) for token_id in best_sequence if processor.get_token(token_id) is not None]
-    if decoded_words:
-        generated_text = processor._postprocess_decoded_text(tuple(decoded_words))
-    else:
-        generated_text = ""
-    generated_text = processor._postprocess_decoded_text(tuple(decoded_words))
-    completed_letter = part_of_letter + generated_text + after_burned
-    print(f'\nGenerated text: {generated_text}')
-    print(f'\nCompleted letter:\n{completed_letter}')
-    result = completed_letter
+        pruned = beam_searcher.prune_sequence_candidates(new_candidates)
+        sequence_candidates = pruned or {}
+        if not sequence_candidates:
+            break
+    if sequence_candidates:
+        best_seq = min(sequence_candidates.items(), key=lambda x: x[1])[0]
+        context_len = len(context)
+        new_tokens = []
+        for token_id in best_seq[context_len:]:
+            token = processor.get_token(token_id)
+            if token and token != '<EoS>':
+                new_tokens.append(token)
+        if new_tokens:
+            burned_part = " ".join(new_tokens)
+            words = burned_part.split()
+            if all(len(word) == 1 for word in words):
+                burned_part = burned_part.replace(" ", "")
+            restored = secret.replace("<BURNED>", burned_part)
+            print(f"\nThe whole letter: {restored}")
+
+    result = restored
     assert result, "Result is None"
 
 if __name__ == "__main__":
