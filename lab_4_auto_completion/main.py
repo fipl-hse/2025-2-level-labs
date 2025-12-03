@@ -154,7 +154,7 @@ class WordProcessor(TextProcessor):
         tokenized_words = []
         current_word = []
         for char in text:
-            if char.isalpha():  
+            if char.isalpha(): 
                 current_word.append(char.lower())
             else:
                 if current_word:
@@ -352,8 +352,9 @@ class PrefixTrie:
                     if child.get_name() is None:
                         continue
                     new_sequence = current_sequence + [child.get_name()]
-                    sequences.append(tuple(new_sequence))
-                    stack.append((child, new_sequence))
+                    if new_sequence:
+                        sequences.append(tuple(new_sequence))
+                        stack.append((child, new_sequence))
         return tuple(sequences[::-1])
 
     def _insert(self, sequence: NGramType) -> None:

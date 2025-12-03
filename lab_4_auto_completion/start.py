@@ -4,10 +4,10 @@ Auto-completion start
 
 # pylint:disable=unused-variable
 from lab_3_generate_by_ngrams.main import (
+    BeamSearcher,
     BeamSearchTextGenerator,
     GreedyTextGenerator,
-    NGramLanguageModel,
-    TextProcessor,
+    NGramLanguageModel
 )
 from lab_4_auto_completion.main import NGramTrieLanguageModel, WordProcessor
 
@@ -28,34 +28,75 @@ def main() -> None:
         text = text_file.read()
 
     word_processor = WordProcessor("<EOS>")
-    tk = word_processor._tokenize(hp_letters)
-    print(tk)
-    hp_encoded_corpus = word_processor.encode(hp_letters)
-    print(hp_encoded_corpus)
-    model = NGramTrieLanguageModel((hp_encoded_corpus,), 3)
+    # hp_encoded_corpus = word_processor.encode_sentences(hp_letters)
+    # print(hp_encoded_corpus)
+    sentences = word_processor.encode_sentences(text)
+    if sentences:
+        corpus = []
+        for sentence in sentences:
+            corpus.extend(sentence)
+        hp_encoded_corpus = tuple(corpus)
+    else:
+        hp_encoded_corpus = tuple()
+
+    n_gram_size = 3
+    beam_width = 7
+    seq_len = 10
+    model = NGramLanguageModel(hp_encoded_corpus, n_gram_size)
     build_result = model.build()
     print(build_result)
 
-    greedy_generator = GreedyTextGenerator(model, word_processor)
-    beam_generator = BeamSearchTextGenerator(model, word_processor, 3)
-    test_prompt = "harry potter"
-    seq_len = 52
-    print(f"Text processor type: {type(greedy_generator._text_processor)}")
-    print(f"Text processor EoW token: {greedy_generator._text_processor.get_end_of_word_token()}")
-    greedy_result_before = greedy_generator.run(seq_len, test_prompt)
-    beam_result_before = beam_generator.run(test_prompt, seq_len)
+    letter_parts = letter.split("<BURNED>")
+    first_part = letter_parts[0].strip()
+    encoded_context = word_processor.encode_sentences(first_part)
+    context = []
+    for sentence in encoded_context:
+        context.extend(sentence)
+    if len(context) >= (n_gram_size - 1):
+        gen_context = tuple(context[-(n_gram_size - 1):])
+    else:
+        gen_context = tuple(context)
 
-    ussr_encoded = word_processor.encode_sentences(ussr_letters)
-    model.update(ussr_encoded)
+    beam_searcher = BeamSearcher(beam_width, model)
 
-    greedy_result_after = greedy_generator.run(seq_len, test_prompt)
-    beam_result_after = beam_generator.run(test_prompt, seq_len)
-    print(greedy_result_before)
-    print(greedy_result_after)
-    print(beam_result_before)
-    print(beam_result_after)
+    sequence_candidates = {gen_context: 0.0}
+    for _ in range(seq_len):
+        new_candidates = {}
+        for sequence, probability in sequence_candidates.items():
+            next_tokens = beam_searcher.get_next_token(sequence)
+            if not next_tokens:
+                continue
+            updated_seq = beam_searcher.continue_sequence(sequence,
+                                                          next_tokens, {sequence: probability})
+            if not updated_seq:
+                continue
+            for new_seq, new_prob in updated_seq.items():
+                if new_seq not in new_candidates or new_prob < new_candidates[new_seq]:
+                    new_candidates[new_seq] = new_prob
+        if not new_candidates:
+            break
+        pruned = beam_searcher.prune_sequence_candidates(new_candidates)
+        if not pruned:
+            break
+        sequence_candidates = pruned
 
-    result = (greedy_result_before, beam_result_before, greedy_result_after, beam_result_after)
+    best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
+    if len(best_sequence) > len(gen_context):
+        generated_ids = best_sequence[len(gen_context):]
+        generated_words = []
+        for token_id in generated_ids:
+            token = word_processor.get_token(token_id)
+            if token and token != "<EOS>":
+                generated_words.append(token)
+        burned = " ".join(generated_words)
+        res_letter = letter.replace("<BURNED>", burned)
+        print(res_letter)
+    # beam_generator = BeamSearchTextGenerator(model, word_processor, beam_width)
+    # test_prompt = "harry potter"
+    
+    # beam_result = beam_generator.run(test_prompt, seq_len)
+    # print(beam_result)
+    result = hp_encoded_corpus
     assert result, "Result is None"
 
 
