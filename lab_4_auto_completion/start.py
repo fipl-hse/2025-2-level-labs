@@ -37,16 +37,10 @@ def main() -> None:
     suggestions = prefix_trie.suggest((2,))
     if suggestions:
         first_suggestion = suggestions[0]
-        id_to_word = {v: k for k, v in processor._storage.items()}
-        words = []
-        for word_id in first_suggestion:
-            if word_id in id_to_word:
-                word = id_to_word[word_id]
-                if word != '<EOS>':
-                    words.append(word)
-        words_tuple = tuple(words)
-        print(processor._postprocess_decoded_text(words_tuple))
-    
+        decoded_string = processor.decode(first_suggestion)
+        cleaned_result = decoded_string.replace("<EOS>", "").strip()
+        print(cleaned_result)
+
     model = NGramTrieLanguageModel(encoded_sentences, 5)
     model.build()
 
@@ -68,7 +62,7 @@ def main() -> None:
     beam_after = BeamSearchTextGenerator(model, processor, 3)
     ba_result = beam_after.run('Harry Potter', 52)
     print(f"Beam Generator after: {ba_result}")
-    
+
     result = (gb_result, bb_result, ga_result, ba_result)
     assert result, "Result is None"
 
