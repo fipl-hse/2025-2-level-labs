@@ -26,7 +26,7 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-    with open("./assets/secrets/secret_3.txt", "r", encoding="utf=8") as secret_file:
+    with open("./assets/secrets/secret_2.txt", "r", encoding="utf=8") as secret_file:
         secret = secret_file.read()
     with open("./assets/Harry_Potter.txt", "r", encoding="utf=8") as harry_file:
         text = harry_file.read()
