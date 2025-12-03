@@ -96,7 +96,7 @@ class TextProcessor:
 
         In case of corrupt input arguments or arguments not included in storage, None is returned
         """
-        if not isinstance(element_id, int) or element_id not in self._storage:
+        if not isinstance(element_id, int) or element_id not in self._storage.values():
             return None
         for token, token_id in self._storage.items():
             if token_id == element_id:
