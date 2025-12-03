@@ -245,12 +245,12 @@ class DynamicNgramLMTrieTest(unittest.TestCase):
         child_7 = root_children[1].get_children()[0]
         self.assertEqual(child_7.get_name(), 4)
         self.assertEqual(child_89.get_name(), 5)
-        child_5 = child_89.get_children()
-        self.assertEqual(len(child_5), 2)
-        self.assertEqual(child_5[0].get_name(), 15)
-        self.assertEqual(child_5[1].get_name(), 1)
-        self.assertEqual(child_5[0].get_children()[0].get_name(), 0)
-        self.assertEqual(child_5[1].get_children()[0].get_name(), 5)
+        children_5 = child_89.get_children()
+        self.assertEqual(len(children_5), 2)
+        self.assertEqual(children_5[0].get_name(), 15)
+        self.assertEqual(children_5[1].get_name(), 1)
+        self.assertEqual(children_5[0].get_children()[0].get_name(), 0)
+        self.assertEqual(children_5[1].get_children()[0].get_name(), 5)
 
     @pytest.mark.lab_4_auto_completion
     @pytest.mark.mark10
