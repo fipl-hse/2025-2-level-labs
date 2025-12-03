@@ -12,19 +12,32 @@ NGramType = tuple[int, ...]
 
 
 class TriePrefixNotFoundError(Exception):
-    pass
+    """
+    Exception raised when the prefix required for the transition is not in the tree
+    """
 
 class EncodingError(Exception):
-    pass
+    """
+    Exception raised when text encoding fails due to incorrect input or processing error
+    """
+
 
 class DecodingError(Exception):
-    pass
+    """
+    Exception raised when text decoding fails due to incorrect input or processing error
+    """
+
 
 class IncorrectNgramError(Exception):
-    pass
+    """
+    Exception raised when the size of n-gram is wrong
+    """
+
 
 class MergeTreesError(Exception):
-    pass
+    """
+    Exception raised when merging trees is impossible
+    """
 
 
 class WordProcessor(TextProcessor):
@@ -61,6 +74,20 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
+        tokens = self._tokenize(text)
+        encoded_sentences = []
+        current_sentence = []
+        for token in tokens:
+            self._put(token)
+            token_id = self._storage[token]
+            if token == self._end_of_sentence_token:
+                encoded_sentences.append(tuple(current_sentence + [token_id]))
+                current_sentence = []
+            else:
+                current_sentence.append(token_id)
+        if current_sentence:
+            encoded_sentences.append(tuple(current_sentence))
+        return tuple(encoded_sentences)
 
     def _put(self, element: str) -> None:
         """
@@ -72,6 +99,12 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
+        if not isinstance(element, str):
+            return
+        if not element:
+            return 
+        if element not in self._storage:
+            self._storage[element] = len(self._storage)
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
@@ -86,6 +119,29 @@ class WordProcessor(TextProcessor):
         Returns:
             str: Resulting text
         """
+        if not isinstance(decoded_corpus, tuple):
+            raise DecodingError("Invalid input: decoded_corpus must be a non-empty tuple")
+        if not decoded_corpus:
+            raise DecodingError("Invalid input: decoded_corpus must be a non-empty tuple")
+        sentences = []
+        current_words = []
+        for word in decoded_corpus:
+            if word == self._end_of_sentence_token:
+                if current_words:
+                    sentences.append(" ".join(current_words))
+                    current_words = []
+            else:
+                current_words.append(word)
+        if current_words:
+            sentences.append(" ".join(current_words))
+        if not sentences:
+            raise DecodingError("Postprocessing resulted in empty output")
+        result = []
+        for sentence in sentences:
+            result.append(sentence[0].upper() + sentence[1:] + ".")
+        if not result:
+            raise DecodingError("Postprocessing resulted in empty output")
+        return " ".join(result)
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -100,18 +156,24 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
+        if not isinstance(text, str):
+            raise EncodingError("Invalid input: text must be a non-empty string")
+        if not text:
+            raise EncodingError("Invalid input: text must be a non-empty string")
+        for symbol in '.!?;':
+            text = text.replace(symbol, self._end_of_sentence_token)
         sentences = text.split(self._end_of_sentence_token)
         result_list = []
         for sentence in sentences:
-            lowercase_sentence = sentence.lower()
-            words = lowercase_sentence.split()
+            words = sentence.lower().split()
             for word in words:
                 cleaned_word = ''.join(char for char in word if char.isalpha())
                 if cleaned_word:
                     result_list.append(cleaned_word)
-            result_list.append(self._end_of_sentence_token)
-        if result_list and result_list[-1] == self._end_of_sentence_token:
-            result_list.pop()
+            if sentence != sentences[-1].strip():
+                result_list.append(self._end_of_sentence_token)
+        if not result_list:
+            raise EncodingError("Tokenization resulted in empty output")
         return tuple(result_list)
 
 
@@ -135,6 +197,9 @@ class TrieNode:
             name (int | None, optional): The name of the node.
             value (float, optional): The value stored in the node.
         """
+        self.__name = name
+        self._value = 0.0
+        self._children = []
 
     def __bool__(self) -> bool:
         """
@@ -143,6 +208,9 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
+        if not self._children:
+            return False
+        return True
 
     def __str__(self) -> str:
         """
@@ -151,6 +219,7 @@ class TrieNode:
         Returns:
             str: String representation showing node data and frequency.
         """
+        return f"TrieNode(name={self.__name}, value={self._value})"
 
     def add_child(self, item: int) -> None:
         """
@@ -159,6 +228,8 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
+        child_node = TrieNode(item)
+        self._children.append(child_node)
 
     def get_children(self, item: int | None = None) -> tuple["TrieNode", ...]:
         """
@@ -170,6 +241,9 @@ class TrieNode:
         Returns:
             tuple["TrieNode", ...]: Tuple of child nodes.
         """
+        if item is None:
+            return tuple(self._children)
+        return tuple(child for child in self._children if child.get_name() == item)
 
     def get_name(self) -> int | None:
         """
@@ -178,6 +252,7 @@ class TrieNode:
         Returns:
             int | None: TrieNode data.
         """
+        return self.__name
 
     def get_value(self) -> float:
         """
@@ -186,6 +261,7 @@ class TrieNode:
         Returns:
             float: Frequency value.
         """
+        return self._value
 
     def set_value(self, new_value: float) -> None:
         """
@@ -194,6 +270,7 @@ class TrieNode:
         Args:
             new_value (float): New value to store.
         """
+        self._value = new_value
 
     def has_children(self) -> bool:
         """
@@ -202,6 +279,9 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
+        if self.__bool__():
+            return True
+        return False
 
 
 class PrefixTrie:
@@ -216,6 +296,7 @@ class PrefixTrie:
         """
         Initialize an empty PrefixTrie.
         """
+        self._root = TrieNode()
 
     def clean(self) -> None:
         """
