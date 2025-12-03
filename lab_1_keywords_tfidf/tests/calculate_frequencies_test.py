@@ -65,5 +65,4 @@ class CalculateFrequenciesTest(unittest.TestCase):
         actual = calculate_frequencies(tokens)
         self.assertEqual(expected, len(actual))
         for token in tokens:
-            self.assertTrue(actual[token])
-        self.assertTrue(isinstance(actual[tokens[0]], int))
+            self.assertIsInstance(actual.get(token), int)
