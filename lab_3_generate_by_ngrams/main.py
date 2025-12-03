@@ -119,7 +119,7 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
-        if not isinstance(text, str) or len(text) == 0:
+        if not isinstance(text, str) or not text:
             return None
         encoded_text = []
         tokenized_text = self._tokenize(text)
