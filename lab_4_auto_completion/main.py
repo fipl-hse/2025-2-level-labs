@@ -718,34 +718,21 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         """
         if not isinstance(sequence, tuple) or len(sequence) == 0:
             return None
-        
         if self._current_n_gram_size == 0:
             self._current_n_gram_size = self._max_ngram_size
-        
-        # Используем соответствующую модель
         if self._current_n_gram_size in self._models:
             model = self._models[self._current_n_gram_size]
-            
-            # Проверяем длину последовательности
             if len(sequence) < model.get_n_gram_size() - 1:
                 return {}
-            
-            # Берем контекст
             context = sequence[-(model.get_n_gram_size() - 1):]
-            
             try:
-                # Получаем следующие токены из модели
                 return model.get_next_tokens(context)
             except TriePrefixNotFoundError:
                 return {}
-        
-        # Если модели нет, используем слитое дерево
         context_size = min(self._current_n_gram_size - 1, len(sequence))
         if context_size <= 0:
             return {}
-        
         context = sequence[-context_size:]
-        
         try:
             prefix_node = self.get_prefix(context)
             frequencies = {}

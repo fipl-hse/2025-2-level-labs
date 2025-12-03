@@ -11,7 +11,7 @@ from lab_4_auto_completion.main import (
     DynamicNgramLMTrie,
     DynamicBackOffGenerator,
     save,
-    load
+    load,
 )
 
 
