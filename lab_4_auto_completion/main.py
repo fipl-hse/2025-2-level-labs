@@ -374,7 +374,7 @@ class PrefixTrie:
         processing_queue = [(prefix_node, list(prefix))]
         while processing_queue:
             current_node, current_sequence = processing_queue.pop(0)
-            for child in reversed(list(current_node.get_children())):
+            for child in current_node.get_children():
                 child_name = child.get_name()
                 if child_name is not None:
                     new_sequence = current_sequence + [child_name]
