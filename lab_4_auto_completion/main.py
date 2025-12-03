@@ -522,11 +522,11 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         if not encoded_corpus:
             return
         ngrams = len(encoded_corpus)
-        ngram_counts = {}
+        counts = {}
         for ngram in encoded_corpus:
-            ngram_counts[ngram] = ngram_counts.get(ngram, 0) + 1
-        for ngram, count in ngram_counts.items():
-            frequence = count / ngrams
+            counts[ngram] = counts.get(ngram, 0) + 1
+        for ngram, count in counts.items():
+            frequence = count/ngrams
             try:
                 self.get_prefix(ngram).set_value(frequence)
             except TriePrefixNotFoundError:
@@ -570,24 +570,17 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Returns:
             int: 0 if attribute is filled successfully, otherwise 1.
         """
-        if not isinstance(self._max_ngram_size, int) or self._max_ngram_size < 2:
+        if not isinstance(self._max_ngram_size, int):
             return 1
         if not isinstance(self._encoded_corpus, tuple):
             return 1
         if not self._encoded_corpus:
             return 1
-        for sentence in self._encoded_corpus:
-            if not isinstance(sentence, tuple):
-                return 1
-            if not all(isinstance(x, int) for x in sentence):
-                return 1
         for ngram_size in range(2, self._max_ngram_size + 1):
             model = NGramTrieLanguageModel(self._encoded_corpus, ngram_size)
             result = model.build()
             if result == 0:
                 self._models[ngram_size] = model
-            else:
-                return 1
         try:
             self._merge()
             return 0
@@ -605,9 +598,9 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             self._current_n_gram_size = self._max_ngram_size
             return
         if not isinstance(current_n_gram_size, int) or current_n_gram_size < 2:
-            raise IncorrectNgramError(f"N-gram size must be between 2 and {self._max_ngram_size}")
+            raise IncorrectNgramError
         if current_n_gram_size > self._max_ngram_size:
-            raise IncorrectNgramError(f"N-gram size must be between 2 and {self._max_ngram_size}")
+            raise IncorrectNgramError
         self._current_n_gram_size = current_n_gram_size
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict[int, float] | None:
