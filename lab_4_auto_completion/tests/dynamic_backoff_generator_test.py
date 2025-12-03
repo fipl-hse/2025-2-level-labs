@@ -127,12 +127,12 @@ class DynamicBackOffGeneratorTest(unittest.TestCase):
         bad_len_inputs = [[None], {}, None, (), 1.1, "string", -1]
         bad_prompt_inputs = [1, [None], {}, None, (), 1.1, True, ""]
         expected = None
-        for bad_input in bad_len_inputs:
-            actual = generator.run(bad_input, "The")
+        for bad_len in bad_len_inputs:
+            actual = generator.run(bad_len, "The")
             self.assertEqual(expected, actual)
 
-        for bad_input in bad_prompt_inputs:
-            actual = generator.run(50, bad_input)
+        for bad_prompt in bad_prompt_inputs:
+            actual = generator.run(50, bad_prompt)
             self.assertEqual(expected, actual)
 
     @pytest.mark.lab_4_auto_completion

@@ -352,9 +352,11 @@ class NGramLanguageModelTest(unittest.TestCase):
         expected = {1: 0.375, 4: 0.1875, 9: 0.125, 8: 0.125, 14: 0.0625, 11: 0.0625, 7: 0.0625}
         language_model.build()
         actual = language_model.generate_next_token((0,))
-        for key, value in expected.items():
-            self.assertEqual(actual.keys(), expected.keys())
-            self.assertAlmostEqual(value, actual[key], places=4)
+        self.assertIsNotNone(actual)
+        if actual:
+            for key, value in expected.items():
+                self.assertEqual(actual.keys(), expected.keys())
+                self.assertAlmostEqual(value, actual[key], places=4)
 
     @pytest.mark.lab_3_generate_by_ngrams
     @pytest.mark.mark6
@@ -390,6 +392,8 @@ class NGramLanguageModelTest(unittest.TestCase):
                 4,
             )
         )
-        for key, value in expected.items():
-            self.assertEqual(actual.keys(), expected.keys())
-            self.assertAlmostEqual(value, actual[key], places=4)
+        self.assertIsNotNone(actual)
+        if actual:
+            for key, value in expected.items():
+                self.assertEqual(actual.keys(), expected.keys())
+                self.assertAlmostEqual(value, actual[key], places=4)

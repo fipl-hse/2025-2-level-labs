@@ -4,6 +4,7 @@ Checks the third lab's BackOffGenerator class
 """
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import pytest
 
@@ -69,7 +70,7 @@ class BackOffGeneratorTest(unittest.TestCase):
         Checks BackOffGenerator run method with empty _get_next_token return value
         """
         backoff_text_generator = BackOffGenerator(self.language_models, self.backoff_processor)
-        backoff_text_generator._get_next_token = lambda sequence_to_continue: []
+        backoff_text_generator._get_next_token = mock.Mock(return_value=[])
         actual = backoff_text_generator.run(50, "The")
         expected = "The."
         self.assertEqual(expected, actual)
