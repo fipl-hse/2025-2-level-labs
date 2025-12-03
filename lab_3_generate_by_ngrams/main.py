@@ -50,7 +50,8 @@ class TextProcessor:
         for word in text.split(): 
             letters = [char.lower() for char in word if char.isalpha()]
             tokens.extend(letters)
-            tokens.append(self._end_of_word_token)
+            if letters:
+                tokens.append(self._end_of_word_token)
         if not tokens: 
             return None
         if text and text[-1].isalpha(): 
