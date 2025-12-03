@@ -83,6 +83,7 @@ class TextProcessor:
         Returns:
             str: EoW token
         """
+        return self._end_of_word_token
 
     def get_token(self, element_id: int) -> str | None:
         """
@@ -167,6 +168,12 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
+            return None
+        if not self._decode(encoded_corpus):
+            return None
+        else:
+            return self._postprocess_decoded_text(self._decode(encoded_corpus))
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
@@ -214,6 +221,13 @@ class TextProcessor:
 
         In case of corrupt input arguments, None is returned
         """
+        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
+            return None
+        joined_decoded_string = "".join(decoded_corpus)
+        decoded_string_with_spaces = joined_decoded_string.replace(self._end_of_word_token, " ")
+        decoded_string_no_extra_whitespaces = decoded_string_with_spaces.strip()
+        decoded_string = decoded_string_no_extra_whitespaces.capitalize()
+        return f"{decoded_string}."
 
 
 class NGramLanguageModel:
