@@ -189,6 +189,15 @@ class TextProcessor:
         In case of corrupt input arguments, None is returned.
         In case any of methods used return None, None is returned.
         """
+        if not isinstance(corpus, tuple) or not corpus: 
+            return None
+        decoded_text = []
+        for element_id in corpus:
+            if not self.get_token(element_id): 
+                return None
+            else:
+                decoded_text.append(self.get_token(element_id))
+        return tuple(decoded_text)
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
         """
