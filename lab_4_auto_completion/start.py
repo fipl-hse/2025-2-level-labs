@@ -3,7 +3,7 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, GreedyTextGenerator, NGramLanguageModel
+from lab_3_generate_by_ngrams.main import BeamSearcher, GreedyTextGenerator, NGramLanguageModel
 from lab_4_auto_completion.main import WordProcessor
 
 
@@ -47,10 +47,43 @@ def main() -> None:
                 context.append(token_id)
     context = tuple(context)
 
-    algorithm = BeamSearchTextGenerator(model, processor, beam_width)
-    result = algorithm.run(context, seq_len)
-    print(result)
-    result = result
+    algorithm = BeamSearcher(beam_width, model)
+    sequence_candidates = {context: 0.0}
+
+    for _ in range(seq_len):
+        new_candidates = {}
+        for sequence, probability in sequence_candidates.items():
+            next_tokens = algorithm.get_next_token(sequence)
+            if not next_tokens:
+                continue
+            updated = algorithm.continue_sequence(sequence, next_tokens, {sequence: probability})
+            if not updated:
+                continue
+            for new_seq, new_prob in updated.items():
+                if new_seq not in new_candidates or new_prob < new_candidates[new_seq]:
+                    new_candidates[new_seq] = new_prob
+        if not new_candidates:
+            break
+        pruned = algorithm.prune_sequence_candidates(new_candidates)
+        sequence_candidates = pruned or {}
+        if not sequence_candidates:
+            break
+    if sequence_candidates:
+        best_seq = min(sequence_candidates.items(), key=lambda x: x[1])[0]
+        context_len = len(context)
+        new_tokens = []
+        for token_id in best_seq[context_len:]:
+            token = processor.get_token(token_id)
+            if token and token != '<EoS>':
+                new_tokens.append(token)
+        if new_tokens:
+            burned_part = " ".join(new_tokens)
+            words = burned_part.split()
+            if all(len(word) == 1 for word in words):
+                burned_part = burned_part.replace(" ", "")
+            completed_letter = secret.replace("<BURNED>", burned_part)
+            print(f"\nThe whole letter: {completed_letter}")
+    result = completed_letter
     assert result, "Result is None"
 
 if __name__ == "__main__":
