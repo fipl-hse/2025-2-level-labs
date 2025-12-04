@@ -62,14 +62,6 @@ def main() -> None:
     print(secret_text)
     burned_start = secret_text.find("<BURNED>")
     word_processor = WordProcessor(end_of_sentence_token="<EOS>")
-    hp_letters_path = "../lab_4_auto_completion/assets/hp_letters.txt"
-    with open(hp_letters_path, "r", encoding="utf-8") as hp_file:
-        hp_letters = hp_file.read()
-    encoded_hp = word_processor.encode_sentences(hp_letters)
-    training_corpus = []
-    for sentence in encoded_hp:
-        training_corpus.extend(sentence)
-    training_corpus = tuple(training_corpus)
     context_start = max(0, burned_start - 500)
     context_text = secret_text[context_start:burned_start]
     encoded_context = word_processor.encode_sentences(context_text)
@@ -88,7 +80,14 @@ def main() -> None:
     for token_id in context:
         if token_id in reverse_storage:
             decoded_context_words.append(reverse_storage[token_id])
-    language_model = NGramLanguageModel(training_corpus, n_gram_size_secret)
+    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as hp_file:
+        harry_text = hp_file.read()
+    encoded_harry = word_processor.encode_sentences(harry_text)
+    harry_corpus = []
+    for sentence in encoded_harry:
+        harry_corpus.extend(sentence)
+    harry_corpus = tuple(harry_corpus)
+    language_model = NGramLanguageModel(harry_corpus, n_gram_size_secret)
     build_result = language_model.build()
     if build_result != 0:
         return
