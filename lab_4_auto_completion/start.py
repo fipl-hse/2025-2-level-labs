@@ -21,11 +21,12 @@ def main() -> None:
     words_combined = []
     for sent in encoded_data:
         words_combined.extend(sent)
-    tri_grams = []
-    for idx in range(len(words_combined) - 2):
-        tri_grams.append(tuple(words_combined[idx:idx + 3]))
+    tri_grams_tuple = tuple(
+        tuple(words_combined[idx:idx + 3])
+        for idx in range(len(words_combined) - 2)
+    )
     tree = PrefixTrie()
-    tree.fill(tuple(tri_grams))
+    tree.fill(tri_grams_tuple)
     found = tree.suggest((2,))
     print(f"Found {len(found)} suggestions for prefix (2,)")
     if found:
