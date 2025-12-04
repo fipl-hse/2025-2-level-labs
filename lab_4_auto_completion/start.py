@@ -3,16 +3,9 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator
+from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, GreedyTextGenerator
 from lab_4_auto_completion.main import NGramTrieLanguageModel, WordProcessor
 
-def read_text(file_name: str) -> str:
-    """
-    Read the content from txt file from the ./assets/ directory
-    """
-    with open(f"./assets/{file_name}.txt", "r", encoding="utf-8") as file:
-        text = file.read()
-    return text
 
 def main() -> None:
     """
@@ -20,32 +13,40 @@ def main() -> None:
 
     In any case returns, None is returned
     """
-    # hp_letters = read_text("hp_letters")
-    # ussr_letters = read_text("ussr_letters")
+    with open("./assets/hp_letters.txt", "r", encoding="utf-8") as letters_file:
+        hp_letters = letters_file.read()
+    with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
+        ussr_letters = text_file.read()
 
-    secret_letter = read_text("secret_4")
-    harry_book = read_text("Harry_Potter")
-    harry_letters = read_text("hp_letters.txt")
+    with open("./assets/secrets/secret_4.txt", "r", encoding="utf-8") as secret_file:
+        secret_letter = secret_file.read()
+    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as harry_book_file:
+        harry_book_text = harry_book_file.read()
+    with open("./assets/hp_letters.txt", "r", encoding="utf-8") as harry_letters_file:
+        harry_letters_text = harry_letters_file.read()
 
-    n_gram_size = 7 #2
-    beam_width = 7  #7
-    seq_len = 10    #10
+    n_gram_size = 5 #2
+    beam_width = 3
+    seq_len = 51
 
     word_processor = WordProcessor("<EoS>")
-    encoded_corpus = word_processor.encode_sentences(harry_book)
+    encoded_corpus = word_processor.encode_sentences(harry_book_text)
 
     language_model = NGramTrieLanguageModel(encoded_corpus, n_gram_size)
     print(language_model.build())
-    language_model.update(word_processor.encode_sentences(harry_letters))
+    language_model.update(word_processor.encode_sentences(harry_letters_text))
 
-    prompt = "Vernon"
+    prompt = "Harry Potter"
 
-    encoded_prompt = word_processor.encode_sentences(prompt)
     beam_generator = BeamSearchTextGenerator(language_model, word_processor, beam_width)
-    print("Start_gen")
-    output = beam_generator.run("Vernon", 10)
-    print(output)
-    print("Stop")
+    output_greedy = beam_generator.run(prompt, seq_len)
+
+    greedy_generator = GreedyTextGenerator(language_model, word_processor)
+    output_beam = greedy_generator.run(seq_len, prompt)
+
+    print(f"Greedy: {output_greedy}")
+    print(f"beam: {output_beam}")
+
     # encoded_sentences = word_processor.encode_sentences(harry_text)
 
 
