@@ -153,11 +153,14 @@ class WordProcessor(TextProcessor):
             if element != self._end_of_sentence_token:
                 current_sentence.append(element)
             else:
-                sentence_to_add = " ".join(current_sentence).capitalize()
-                if sentence_to_add == "":
-                    raise DecodingError("Postprocessing resulted in empty output")
                 processed_text.append(" ".join(current_sentence).capitalize())
                 current_sentence = []
+        non_empty_counter = 0
+        for element in processed_text:
+            if element != "":
+                non_empty_counter += 1
+        if non_empty_counter == 0:
+            raise DecodingError("Postprocessing resulted in empty output")
         result = ". ".join(processed_text) + "."
         return result
 
