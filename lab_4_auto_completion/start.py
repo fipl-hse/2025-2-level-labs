@@ -9,7 +9,7 @@ from lab_3_generate_by_ngrams.main import (
     GreedyTextGenerator,
     NGramLanguageModel
 )
-from lab_4_auto_completion.main import NGramTrieLanguageModel, WordProcessor
+from lab_4_auto_completion.main import NGramTrieLanguageModel, WordProcessor, PrefixTrie
 
 
 def main() -> None:
@@ -27,39 +27,37 @@ def main() -> None:
     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
         text = text_file.read()
 
-    word_processor = WordProcessor("<EOS>")
-    # hp_encoded_corpus = word_processor.encode_sentences(hp_letters)
-    # print(hp_encoded_corpus)
-    sentences = word_processor.encode_sentences(text)
-    if sentences:
-        corpus = []
-        for sentence in sentences:
-            corpus.extend(sentence)
-        hp_encoded_corpus = tuple(corpus)
-    else:
-        hp_encoded_corpus = tuple()
+    processor = WordProcessor('<EOS>')
+    hp_encoded_sentences = processor.encode_sentences(hp_letters)
+    prefix_trie = PrefixTrie()
+    prefix_trie.fill(hp_encoded_sentences)
+
+    encoded_sentences = processor.encode_sentences(text)
+    encoded_secret = []
+    for sentence in encoded_sentences:
+        encoded_secret.extend(sentence)
+    encoded_secret = tuple(encoded_secret)
 
     n_gram_size = 3
     beam_width = 7
     seq_len = 10
-    model = NGramLanguageModel(hp_encoded_corpus, n_gram_size)
-    build_result = model.build()
-    print(build_result)
+    language_model = NGramLanguageModel(encoded_secret, n_gram_size)
+    language_model.build()
 
     letter_parts = letter.split("<BURNED>")
     first_part = letter_parts[0].strip()
-    encoded_context = word_processor.encode_sentences(first_part)
+
+    encoded_context = processor.encode_sentences(first_part)
     context = []
     for sentence in encoded_context:
-        context.extend(sentence)
-    if len(context) >= (n_gram_size - 1):
-        gen_context = tuple(context[-(n_gram_size - 1):])
-    else:
-        gen_context = tuple(context)
+        for token_id in sentence:
+            token = processor.get_token(token_id)
+            if token != '<EOS>':
+                context.append(token_id)
+    context = tuple(context)
 
-    beam_searcher = BeamSearcher(beam_width, model)
-
-    sequence_candidates = {gen_context: 0.0}
+    beam_searcher = BeamSearcher(beam_width, language_model)
+    sequence_candidates = {context: 0.0}
     for _ in range(seq_len):
         new_candidates = {}
         for sequence, probability in sequence_candidates.items():
@@ -81,22 +79,18 @@ def main() -> None:
         sequence_candidates = pruned
 
     best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
-    if len(best_sequence) > len(gen_context):
-        generated_ids = best_sequence[len(gen_context):]
+    if len(best_sequence) > len(context):
+        generated_ids = best_sequence[len(context):]
         generated_words = []
         for token_id in generated_ids:
-            token = word_processor.get_token(token_id)
+            token = processor.get_token(token_id)
             if token and token != "<EOS>":
                 generated_words.append(token)
         burned = " ".join(generated_words)
         res_letter = letter.replace("<BURNED>", burned)
         print(res_letter)
-    # beam_generator = BeamSearchTextGenerator(model, word_processor, beam_width)
-    # test_prompt = "harry potter"
-    
-    # beam_result = beam_generator.run(test_prompt, seq_len)
-    # print(beam_result)
-    result = hp_encoded_corpus
+
+    result = res_letter
     assert result, "Result is None"
 
 
