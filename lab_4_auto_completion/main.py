@@ -321,11 +321,13 @@ class PrefixTrie:
         """
         Initialize an empty PrefixTrie.
         """
+        self._root = TrieNode(name=None, value=0.0)
 
     def clean(self) -> None:
         """
         Clean the whole tree.
         """
+        self.root = TrieNode()
 
     def fill(self, encoded_corpus: tuple[NGramType]) -> None:
         """
@@ -334,6 +336,9 @@ class PrefixTrie:
         Args:
             encoded_corpus (tuple[NGramType]): Tokenized corpus.
         """
+        self.clean()
+        for sequence in encoded_corpus:
+            self.insert(sequence)
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
@@ -345,6 +350,15 @@ class PrefixTrie:
         Returns:
             TrieNode: Found TrieNode by prefix
         """
+        current_node = self.root
+    
+        for item in prefix:
+            children = current_node.get_children()
+            if item not in children:
+                raise TriePrefixNotFoundError()
+            current_node = children[item]
+    
+        return current_node
 
     def suggest(self, prefix: NGramType) -> tuple:
         """
@@ -357,6 +371,35 @@ class PrefixTrie:
             tuple: Tuple of all token sequences that begin with the given prefix.
                                    Empty tuple if prefix not found.
         """
+        try:
+            start_node = self.get_prefix(prefix)
+        except TriePrefixNotFoundError:
+            return tuple()
+    
+        suggestions = []
+    
+        if start_node.is_end:
+            suggestions.append(tuple(prefix))
+    
+        stack = [(start_node, list(prefix))]
+    
+        while stack:
+            current_node, current_path = stack.pop()
+        
+            children = current_node.get_children()
+            sorted_items = sorted(children.keys())
+        
+            for item in sorted_items:
+                child = children[item]
+                new_path = current_path + [item]
+            
+                if child.is_end:
+                    suggestions.append(tuple(new_path))
+            
+                if child.has_children():
+                    stack.append((child, new_path))
+    
+        return tuple(sorted(suggestions))
 
     def _insert(self, sequence: NGramType) -> None:
         """
@@ -365,6 +408,16 @@ class PrefixTrie:
         Args:
             sequence (NGramType): Tokens to insert.
         """
+        current_node = self.root
+    
+        for item in sequence:
+            children = current_node.get_children()
+        
+            if item not in children:
+                current_node.add_child(item)
+                children = current_node.get_children()
+        
+            current_node = children[item]
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
