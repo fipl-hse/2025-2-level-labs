@@ -10,6 +10,21 @@ from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, 
 NGramType = tuple[int, ...]
 "Type alias for NGram."
 
+class TriePrefixNotFoundError(Exception):
+    """Required prefix is not found in the trie"""
+
+class EncodingError(Exception):
+    """Encoding failed due to incorrect input or processing error"""
+
+class DecodingError(Exception):
+    """Decoding failed due to incorrect input or processing error"""
+
+class IncorrectNgramError(Exception):
+    """Incorrect n-gram size used"""
+
+class MergeTreesError(Exception):
+    """Unable to merge trees"""
+
 
 class WordProcessor(TextProcessor):
     """
