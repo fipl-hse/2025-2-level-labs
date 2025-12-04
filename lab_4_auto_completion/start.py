@@ -3,6 +3,8 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
+from lab_3_generate_by_ngrams.main import BeamSearcher, GreedyTextGenerator, NGramLanguageModel
+from lab_4_auto_completion.main import PrefixTrie, WordProcessor
 
 
 def main() -> None:
@@ -15,9 +17,18 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-    result = None
+    processor = WordProcessor('<EoS>')
+    hp_encoded = processor.encode_sentences(hp_letters)
+    tree = PrefixTrie()
+    building = tree.fill(hp_encoded)
+    suggestion = tree.suggest((2,))
+    if suggestion:
+        first = suggestion[0]
+        decoded = processor.decode(first)
+        cleaned = decoded.replace('<EoS>', '').strip()
+        print(cleaned)
+    result = cleaned
     assert result, "Result is None"
-
 
 if __name__ == "__main__":
     main()
