@@ -467,12 +467,12 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Mapping of token → relative frequency.
         """
-        prefix = start_sequence[-(self._n_gram_size - 1):]
+        if len(start_sequence) >= self._n_gram_size:
+            prefix = start_sequence[-self._n_gram_size:]
+        else:
+            prefix = start_sequence[-(self._n_gram_size - 1):]
 
-        try:
-            node = self.get_prefix(prefix)
-        except TriePrefixNotFoundError:
-            return {}
+        node = self.get_prefix(prefix)
 
         children = node.get_children()
         if not children:
@@ -502,10 +502,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             dict[int, float] | None: Possible next tokens with their probabilities,
                                      or None if input is invalid or context is too short
         """
-        if not(
-            isinstance(sequence, tuple) or sequence
-            and len(sequence) < (self._n_gram_size - 1)
-        ):
+        if not isinstance(sequence, tuple) or not sequence:
+            return None
+
+        if len(sequence) < self._n_gram_size - 1:
             return None
 
         context = sequence[-(self._n_gram_size - 1):]
@@ -547,7 +547,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         if not self._encoded_corpus:
             self._encoded_corpus = new_corpus
         else:
-            self._encoded_corpus + new_corpus
+            self._encoded_corpus += new_corpus
 
         self.build()
 
@@ -563,7 +563,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             return tuple()
 
         if self._n_gram_size == 1:
-            return tuple(tuple(child.get_name()) for child in children)
+            return tuple(tuple(child.get_name(),) for child in children)
 
         queue = []
         for child in first_children:
@@ -580,11 +580,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             for child in children:
 
                 ngram = current_ngram + (child.get_name(), )
-                print(ngram)
                 if len(ngram) == self._n_gram_size:
                     results.append(ngram)
                 else:
-                    queue.append((ngram, node))
+                    queue.append((ngram, child))
 
         return tuple(results)
 
