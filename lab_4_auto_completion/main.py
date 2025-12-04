@@ -78,13 +78,15 @@ class WordProcessor(TextProcessor):
         encoded_sentences = []
         current_sentence = []
         for token in tokens:
-            self._put(token)
-            token_id = self._storage[token]
             if token == self._end_of_sentence_token:
-                encoded_sentences.append(tuple(current_sentence + [token_id]))
+                self._put(token)
+                current_sentence.append(self._storage[token])
+                encoded_sentences.append(tuple(current_sentence))
                 current_sentence = []
             else:
-                current_sentence.append(token_id)
+                self._put(token)
+                word_id = self._storage[token]
+                current_sentence.append(word_id)
         if current_sentence:
             encoded_sentences.append(tuple(current_sentence))
         return tuple(encoded_sentences)
@@ -102,7 +104,7 @@ class WordProcessor(TextProcessor):
         if not isinstance(element, str):
             return
         if not element:
-            return 
+            return
         if element not in self._storage:
             self._storage[element] = len(self._storage)
 
@@ -302,6 +304,7 @@ class PrefixTrie:
         """
         Clean the whole tree.
         """
+        self._root = TrieNode()
 
     def fill(self, encoded_corpus: tuple[NGramType]) -> None:
         """
@@ -310,6 +313,9 @@ class PrefixTrie:
         Args:
             encoded_corpus (tuple[NGramType]): Tokenized corpus.
         """
+        self.clean()
+        for sequence in encoded_corpus:
+            self._insert(sequence)
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
@@ -321,6 +327,14 @@ class PrefixTrie:
         Returns:
             TrieNode: Found TrieNode by prefix
         """
+        current_node = self._root
+        for item in prefix:
+            matching_children = current_node.get_children(item)
+            if not matching_children:
+                raise TriePrefixNotFoundError(f"Prefix {prefix} not found in the trie")
+            current_node = matching_children[0] 
+        return current_node
+
 
     def suggest(self, prefix: NGramType) -> tuple:
         """
@@ -334,6 +348,7 @@ class PrefixTrie:
                                    Empty tuple if prefix not found.
         """
 
+
     def _insert(self, sequence: NGramType) -> None:
         """
         Inserts a token in PrefixTrie
@@ -341,6 +356,15 @@ class PrefixTrie:
         Args:
             sequence (NGramType): Tokens to insert.
         """
+        current_node = self._root
+        for element in sequence:
+            children_with_element = current_node.get_children(element)
+            if children_with_element:
+                current_node = children_with_element[0]
+            else:
+                current_node.add_child(element)
+                new_children = current_node.get_children(element)
+                current_node = new_children[0]
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
