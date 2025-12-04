@@ -474,7 +474,7 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
-        if not isinstance(sequence, tuple) or not check_list(next_tokens, tuple, True) or not check_dict(sequence_candidates, tuple, float) or sequence not in sequence_candidates:
+        if not isinstance(sequence, tuple) or not check_list(next_tokens, tuple, False) or not check_dict(sequence_candidates, tuple, float, False) or sequence not in sequence_candidates or len(next_tokens) > self._beam_width:
             return None
         sequence_candidates_new = sequence_candidates.copy()
         for token, frequency in next_tokens:
