@@ -724,6 +724,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             encoded_corpus (tuple[NGramType, ...]): Tokenized corpus.
             n_gram_size (int, optional): N-gram size. Defaults to 3.
         """
+        NGramTrieLanguageModel.__init__(self, encoded_corpus, n_gram_size)
         self._root = TrieNode()
         self._encoded_corpus = encoded_corpus
         self._max_ngram_size = n_gram_size
@@ -943,9 +944,8 @@ class DynamicBackOffGenerator(BackOffGenerator):
             dynamic_trie (DynamicNgramLMTrie): Dynamic trie to use for text generation.
             processor (WordProcessor): A WordProcessor instance to handle text processing.
         """
-        super().__init__(language_models = (dynamic_trie,), text_processor=processor)
+        super().__init__((dynamic_trie,), processor)
         self._dynamic_trie = dynamic_trie
-        self._processor = processor
 
     def get_next_token(self, sequence_to_continue: tuple[int, ...]) -> dict[int, float] | None:
         """
@@ -996,31 +996,61 @@ class DynamicBackOffGenerator(BackOffGenerator):
         if not isinstance(seq_len, int) or seq_len < 0:
             return None
 
-        if not isinstance(prompt, str):
+        if not isinstance(prompt, str) or not prompt.strip():
+            return None
+        
+        if self._text_processor.encode(prompt) is None:
             return None
 
         try:
-            encoded_propmt = self._processor.encode(prompt)
+            tokenized_text = self._text_processor._tokenize(prompt)
+            if tokenized_text is None:
+                return None
         except Exception:
             return None
+        
+        eos_char = self._text_processor._end_of_sentence_token
+        token_list = list(tokenized_text)
+        if token_list and token_list[-1] == eos_char:
+            token_list.pop()
 
-        seq_tuple = tuple(encoded_propmt)
+        encoded_prompt = []
+        for element in token_list:
+            self._text_processor._put(element)
+            encoded_prompt.append(self._text_processor._storage[element])
+            
+        if not encoded_prompt:
+            return None
+
+        seq_list = list(encoded_prompt)
+
+        original_sequence = list(seq_list)
         for _ in range(seq_len):
-            candidates = self.get_next_token(encoded_propmt)
-            if not candidates:
+            context = tuple(seq_list)
+            tokens = self.get_next_token(context)
+            if tokens is None:
+                try:
+                    return self._text_processor.decode(seq_list)
+                except Exception:
+                    try:
+                        return self._text_processor.decode(original_sequence)
+                    except Exception:
+                        return None
+
+            if not tokens:
                 break
 
-        best_candidate = max(candidates.items(), key=lambda x: x[1])
-        seq_list = list(seq_tuple)
-        seq_list.append(best_candidate[0])
-        seq_tuple = tuple(seq_list)
+            best_candidates = sorted(tokens.items(),
+                                key=lambda x: (-x[1], -x[0]))[0][0]
+            seq_list.append(best_candidates)
 
         try:
-            generated_sequence = self._processor.decode(list(seq_tuple))
+            return self._text_processor.decode(seq_list)
         except Exception:
-            return None
-
-        return generated_sequence
+            try:
+                return self._text_processor.decode(original_sequence)
+            except Exception:
+                return None
 
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
@@ -1031,6 +1061,36 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
+    root_node = trie.get_root()
+
+    stack = [(root_node, None)]
+    root_dict = None
+
+    while stack:
+        current_node, parent_dictionary = stack.pop()
+        if parent_dictionary is None:
+            node_dict = {
+                "value": None,
+                "freq": 0.0,
+                "children": []
+            }
+            root_dict = node_dict
+        else:
+            node_dict = {
+                "value": current_node.get_name(),
+                "freq": current_node.get_value(),
+                "children": []
+            }
+            parent_dictionary["children"].append(node_dict)
+
+
+        children = current_node.get_children()
+        for i in range(len(children)):
+            stack.append((children[i], node_dict))
+
+    trie_data = {"trie": root_dict}
+    with open(path, 'w', encoding = 'utf-8') as f:
+        json.dump(trie_data, f, indent = 2)
 
 
 def load(path: str) -> DynamicNgramLMTrie:
@@ -1043,3 +1103,29 @@ def load(path: str) -> DynamicNgramLMTrie:
     Returns:
         DynamicNgramLMTrie: Trie from file.
     """
+    with open(path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    information = data.get("trie", {})
+    trie = DynamicNgramLMTrie((), 3)
+    if not information:
+        return trie
+
+    nodes = [(information, None)]
+
+    while nodes:
+        node_data, parent_node = nodes.pop()
+        value = node_data.get("value")
+        freq = node_data.get("freq", 0.0)
+        current_node = TrieNode(value, freq)
+
+        if parent_node is None:
+            trie._root = current_node
+        else:
+            parent_node._children.append(current_node)
+
+        children_data = node_data.get("children", [])
+        for child_data in children_data[::-1]:
+            nodes.append((child_data, current_node))
+
+    return trie
