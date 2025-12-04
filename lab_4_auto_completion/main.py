@@ -4,11 +4,62 @@ Lab 4
 
 # pylint: disable=unused-argument, super-init-not-called, unused-private-member, duplicate-code, unused-import
 import json
+import string
 
 from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, TextProcessor
 
 NGramType = tuple[int, ...]
 "Type alias for NGram."
+
+
+class EncodingError(Exception):
+    """
+    Exception raised when encoding fails due to incorrect input or processing error
+    """
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class TriePrefixNotFoundError(Exception):
+    """
+    Exception raised when prefix trie building fails due to absence of the prefix in it
+    """
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class DecodingError(Exception):
+    """
+    Exception raised when decoding fails due to incorrect input or processing error
+    """
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class IncorrectNgramError(Exception):
+    """
+    Exception raised when something fails due to incorrect size of n-gram
+    """
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+class MergeTreesError(Exception):
+    """
+    Exception raised when tree-merging fails due to its impossibility
+    """
+
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
 
 
 class WordProcessor(TextProcessor):
@@ -28,6 +79,8 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
+        TextProcessor.__init__(self, end_of_sentence_token)
+        self._end_of_sentence_token = end_of_sentence_token
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -43,6 +96,23 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
+        sentences = []
+        last_sentence_end = 0
+        for index, token in enumerate(text):
+            if token in "!?.":
+                sentences.append(text[last_sentence_end:index+1].lower())
+                last_sentence_end = index + 1
+        encoded_text = []
+        for sentence in sentences:
+            current_sentence = []
+            if sentence == "":
+                continue
+            tokenized_sentence = self._tokenize(sentence)
+            for word in tokenized_sentence:
+                self._put(word)
+                current_sentence.append(self._storage[word])
+            encoded_text.append(tuple(current_sentence))
+        return tuple(encoded_text)
 
     def _put(self, element: str) -> None:
         """
@@ -54,6 +124,11 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
+        if not isinstance(element, str) or element == "":
+            return None
+        if element not in self._storage:
+            self._storage[element] = len(self._storage)
+        return None
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
@@ -68,6 +143,26 @@ class WordProcessor(TextProcessor):
         Returns:
             str: Resulting text
         """
+        if not isinstance(decoded_corpus, tuple) or decoded_corpus == ():
+            raise DecodingError('Invalid input: decoded_corpus must be a non-empty tuple')
+        current_sentence = []
+        processed_text = []
+        fixed_decoded_corpus = list(decoded_corpus)
+        fixed_decoded_corpus.append(self._end_of_sentence_token)
+        for element in fixed_decoded_corpus:
+            if element != self._end_of_sentence_token:
+                current_sentence.append(element)
+            else:
+                processed_text.append(" ".join(current_sentence).capitalize())
+                current_sentence = []
+        non_empty_counter = 0
+        for element in processed_text:
+            if element != "":
+                non_empty_counter += 1
+        if non_empty_counter == 0:
+            raise DecodingError("Postprocessing resulted in empty output")
+        result = ". ".join(processed_text) + "."
+        return result
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -82,6 +177,39 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
+        if not isinstance(text, str) or text == "":
+            raise EncodingError("Invalid input: text must be a non-empty string")
+        sentences = []
+        last_sentence_end = 0
+        for index, token in enumerate(text):
+            if token in "!?.":
+                sentences.append(text[last_sentence_end:index+1])
+                last_sentence_end = index + 1
+        words_raw = []
+        words_clean = []
+        for sentence in sentences:
+            last_word_end = 0
+            for index, token in enumerate(sentence.strip()):
+                if token.isspace() or index == len(sentence.strip()) -1:
+                    words_raw.append(sentence.lower()[last_word_end:index+1])
+                    last_word_end = index + 1
+            words_raw.append(self._end_of_sentence_token)
+        empty_elements_amount = 0
+        for word in words_raw:
+            if word != self._end_of_sentence_token:
+                clean_word = ''.join([token for token in word if token.isalpha()])
+                if not clean_word:
+                    empty_elements_amount += 1
+                else:
+                    words_clean.append(clean_word)
+            else:
+                words_clean.append(self._end_of_sentence_token)
+        result = tuple(words_clean)
+        if empty_elements_amount == len(result):
+            raise EncodingError("Tokenization resulted in empty output")
+        if not result:
+            raise EncodingError("Tokenization resulted in empty output")
+        return result
 
 
 class TrieNode:
