@@ -60,6 +60,16 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
+        sentences = []
+        sentence = []
+        for token in super().encode(text):
+            sentence.append(token)
+            if token == 0 and sentence:
+                sentences.append(tuple(sentence))
+                sentence = []
+        if sentence:
+            sentences.append(tuple(sentence))
+        return tuple(sentences)
 
     def _put(self, element: str) -> None:
         """
@@ -71,6 +81,8 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
+        if isinstance(element, str) and element not in self._storage and element:
+            self._storage[element] = len(self._storage)
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
@@ -85,6 +97,22 @@ class WordProcessor(TextProcessor):
         Returns:
             str: Resulting text
         """
+        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
+            raise DecodingError("Invalid input: decoded_corpus must be a non-empty tuple")
+        postprocessed_text = []
+        sentence = []
+        for token in decoded_corpus:
+            if token == self._end_of_sentence_token:
+                if sentence:
+                    postprocessed_text.append(" ".join(sentence).capitalize())
+                    sentence = []
+            else:
+                sentence.append(token)
+        if sentence:
+            postprocessed_text.append(" ".join(sentence).capitalize())
+        if not postprocessed_text:
+            raise DecodingError("Postprocessing resulted in empty output")
+        return f"{'. '.join(postprocessed_text)}."
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -99,6 +127,23 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
+        if not isinstance(text, str) or not text:
+            raise EncodingError("Invalid input: text must be a non-empty string")
+        EoS_marks = '.!?'
+        word = ''
+        tokens = []
+        for char in text:
+            if char.isalpha():
+                word += char.lower()
+            if char.isspace() and word:
+                tokens.append(word)
+                word = ''
+            if char in EoS_marks and word:
+                tokens.extend([word, self._end_of_sentence_token])
+                word = ''
+        if not tokens:
+            raise EncodingError('Tokenization resulted in empty output')
+        return tuple(tokens)
 
 
 class TrieNode:
