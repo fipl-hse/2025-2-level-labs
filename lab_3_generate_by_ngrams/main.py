@@ -6,7 +6,8 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
-from lab_1_keywords_tfidf.main import check_positive_int 
+from math import log
+from lab_1_keywords_tfidf.main import check_positive_int, check_list, check_dict
 
 class TextProcessor:
     """
@@ -420,6 +421,8 @@ class BeamSearcher:
             beam_width (int): Number of candidates to consider at each step
             language_model (NGramLanguageModel): A language model to use for next token prediction
         """
+        self._beam_width = beam_width
+        self._model = language_model
 
     def get_next_token(self, sequence: tuple[int, ...]) -> list[tuple[int, float]] | None:
         """
@@ -439,6 +442,15 @@ class BeamSearcher:
 
         In case of corrupt input arguments or methods used return None.
         """
+        if not isinstance(sequence, tuple) or not sequence:
+            return None
+        candidates = self._model.generate_next_token(sequence)
+        if candidates is None:
+            return None
+        if not candidates:
+            return []
+        best_candidates = sorted(candidates.items(), key=lambda item: item[1], reverse=True)
+        return best_candidates[:self._beam_width]
 
     def continue_sequence(
         self,
@@ -462,6 +474,16 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
+        if not isinstance(sequence, tuple) or not check_list(next_tokens, tuple, True) or not check_dict(sequence_candidates, tuple, float) or sequence not in sequence_candidates:
+            return None
+        sequence_candidates_new = sequence_candidates.copy()
+        for token, frequency in next_tokens:
+            if frequency != 0:
+                sequence_new = sequence + (token,)
+                sequence_candidates_new[sequence_new] = sequence_candidates[sequence] - log(frequency)
+        del sequence_candidates_new[sequence]
+        return sequence_candidates_new
+
 
     def prune_sequence_candidates(
         self, sequence_candidates: dict[tuple[int, ...], float]
