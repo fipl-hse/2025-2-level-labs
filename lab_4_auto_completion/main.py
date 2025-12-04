@@ -230,6 +230,8 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
+        if any(child.get_name() == item for child in self._children):
+            return
         new_node = TrieNode(item)
         self._children.append(new_node)
 
@@ -245,8 +247,7 @@ class TrieNode:
         """
         if item is None:
             return tuple(self._children)
-        children_with_item = tuple(child for child in self._children if child.get_name() == item)
-        return children_with_item
+        return tuple(child for child in self._children if child.get_name() == item)
 
     def get_name(self) -> int | None:
         """
