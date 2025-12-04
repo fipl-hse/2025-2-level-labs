@@ -74,39 +74,27 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
-        if not isinstance(text, str) or not text.strip():
+        if not isinstance(text, str) or not text:
             raise EncodingError("Invalid input: text must be a non-empty string")
 
         encoded_sentences = []
-        
-        words = []
-        for word in text.lower().split():
-            clean_word = ''.join(char for char in word if char.isalpha())
-            if clean_word:
-                self._put(clean_word)
-                words.append(clean_word)
-            if self._end_of_sentence_token in word:
-                words.append(self._end_of_sentence_token)
-        
-        if text.strip().endswith(self._end_of_sentence_token):
-            words.append(self._end_of_sentence_token)
-        
+        words = self._tokenize(text)
         current_sentence = []
+
         for word in words:
-            if word == self._end_of_sentence_token:
-                if current_sentence:
-                    sentence_ids = tuple(self._storage[w] for w in current_sentence)
-                    sentence_ids += (self._storage[self._end_of_sentence_token],)
-                    encoded_sentences.append(sentence_ids)
-                    current_sentence = []
+            if word != self._end_of_sentence_token:
+                self._put(word)
+                word_id = self._storage.get(word)
+                if word_id is not None:
+                    current_sentence.append(word_id)
             else:
-                current_sentence.append(word)
-        
+                if current_sentence:
+                    encoded_sentences.append((*current_sentence, 0))
+                    current_sentence.clear()
+
         if current_sentence:
-            sentence_ids = tuple(self._storage[w] for w in current_sentence)
-            sentence_ids += (self._storage[self._end_of_sentence_token],)
-            encoded_sentences.append(sentence_ids)
-        
+            encoded_sentences.append((*current_sentence, 0))
+
         if not encoded_sentences:
             raise EncodingError("No valid sentences found in text")
 
@@ -179,29 +167,22 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
-        if not isinstance(text, str) or not text.strip():
+        if not isinstance(text, str) or not text:
             raise EncodingError("Invalid input: text must be a non-empty string")
-
+        exceptions = '!?.-'
         tokens = []
+        sentences = text.lower().split()
         
-        sentences = text.split('.')
-        
-        for i, sentence in enumerate(sentences):
+        for sentence in sentences:
             sentence = sentence.strip()
-            if not sentence:
-                continue
-                
-            words = sentence.lower().split()
-            for word in words:
-                clean_word = ''.join(char for char in word if char.isalpha())
-                if clean_word:
-                    tokens.append(clean_word)
-            
-            if i < len(sentences) - 1 or text.strip().endswith('.'):
-                tokens.append(self._end_of_sentence_token)
+            clean_word = ''.join(char for char in sentence if char.isalpha() or char == '-')
+            if clean_word:
+                tokens.append(clean_word)
+                if sentence and sentence[-1] in exceptions:
+                    tokens.append(self._end_of_sentence_token)
         
         if not tokens:
-            raise EncodingError("No valid tokens found in text")
+            raise EncodingError("Tokenization resulted in empty output")
         
         return tuple(tokens)
 
@@ -388,12 +369,10 @@ class PrefixTrie:
                 if len(current_path) > len(prefix):
                     results.append(tuple(current_path))
             else:
-                for child in reversed(children):
+                for child in (children):
                     child_name = child.get_name()
                     if child_name is not None:
                         stack.append((child, current_path + [child_name]))
-
-        results.sort()
         return tuple(results)
 
     def _insert(self, sequence: NGramType) -> None:
