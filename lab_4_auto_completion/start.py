@@ -3,6 +3,11 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
+from lab_3_generate_by_ngrams.main import (
+    BeamSearcher,
+    BeamSearchTextGenerator,
+    GreedyTextGenerator
+)
 from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
@@ -11,12 +16,6 @@ from lab_4_auto_completion.main import (
     WordProcessor,
     load,
     save
-)
-
-from lab_3_generate_by_ngrams.main import (
-    BeamSearcher,
-    BeamSearchTextGenerator,
-    GreedyTextGenerator
 )
 
 
