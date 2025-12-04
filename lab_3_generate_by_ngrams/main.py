@@ -260,6 +260,7 @@ class NGramLanguageModel:
         Returns:
             int: Size of stored n_grams
         """
+        return self._n_gram_size
 
     def set_n_grams(self, frequencies: dict) -> None:
         """
@@ -312,6 +313,16 @@ class NGramLanguageModel:
 
         In case of corrupt input arguments, None is returned
         """
+        if not isinstance(sequence, tuple) or not sequence:
+            return None
+        next_token = {}
+        context = sequence[-(self._n_gram_size - 1):]
+        for n_gram, frequency in self._n_gram_frequencies.items():
+            if n_gram[:-1] == context:
+                next_token[n_gram[-1]] = frequency
+        if not next_token:
+            return None
+        return next_token
 
     def _extract_n_grams(
         self, encoded_corpus: tuple[int, ...]
