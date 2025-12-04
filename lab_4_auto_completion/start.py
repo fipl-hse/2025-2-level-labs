@@ -20,7 +20,7 @@ def main() -> None:
     encoded_data = processor.encode_sentences(hp_letters)
     words_combined = []
     for sent in encoded_data:
-        words_combined.extend(sent)
+        words_combined.extend(map(int, sent))
     tri_grams_tuple = tuple(
         tuple(words_combined[idx:idx + 3])
         for idx in range(len(words_combined) - 2)
