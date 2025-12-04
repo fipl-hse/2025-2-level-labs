@@ -10,6 +10,25 @@ from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, 
 NGramType = tuple[int, ...]
 "Type alias for NGram."
 
+class TriePrefixNotFoundError(Exception):
+    """Exception raised when required prefix is not found in the trie."""
+
+
+class EncodingError(Exception):
+    """Exception raised when text encoding fails due to incorrect input or processing error."""
+
+
+class DecodingError(Exception):
+    """Exception raised when text decoding fails due to incorrect input or processing error."""
+
+
+class IncorrectNgramError(Exception):
+    """Exception raised when trying to use inappropriate n-gram size."""
+
+
+class MergeTreesError(Exception):
+    """Exception raised when it's impossible to merge trees."""
+
 
 class WordProcessor(TextProcessor):
     """
@@ -28,6 +47,8 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
+        self._end_of_sentence_token = end_of_sentence_token
+        super().__init__(end_of_word_token=end_of_sentence_token)
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -43,6 +64,28 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
+        if not isinstance(text, str) or not text:
+            raise EncodingError("Input text must be a non-empty string")
+    
+        tokens = self._tokenize(text)
+        sentences = []
+        current_sentence = []
+    
+        for token in tokens:
+            current_sentence.append(token)
+            if token == self._end_of_sentence_token:
+                encoded_sentence = []
+                for word in current_sentence:
+                    self._put(word)
+                    word_id = self.get_id(word)
+                    encoded_sentence.append(word_id)
+            
+                sentences.append(tuple(encoded_sentence))
+                current_sentence = []
+    
+        return tuple(sentences)
+
+        
 
     def _put(self, element: str) -> None:
         """
@@ -54,6 +97,13 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
+        if not isinstance(element, str):
+            return None
+        
+        if element not in self._storage:
+            self._storage[element] = len(self._storage)
+        
+        return None
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
@@ -68,6 +118,40 @@ class WordProcessor(TextProcessor):
         Returns:
             str: Resulting text
         """
+        if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
+            raise DecodingError("Decoded corpus must be a non-empty tuple")
+    
+        sentences = []
+        current_sentence = []
+    
+        for word in decoded_corpus:
+            if word == self._end_of_sentence_token:
+                if current_sentence:
+                    sentences.append(" ".join(current_sentence))
+                    current_sentence = []
+            else:
+                current_sentence.append(word)
+    
+        if current_sentence:
+            sentences.append(" ".join(current_sentence))
+    
+        if not sentences:
+            raise DecodingError("No valid sentences found after postprocessing")
+    
+        result_parts = []
+        for sentence in sentences:
+            if sentence:
+                capitalized = sentence[0].upper() + sentence[1:]
+                if not capitalized.endswith('.'):
+                    capitalized += '.'
+                result_parts.append(capitalized)
+    
+        result = " ".join(result_parts)
+    
+        if not result.endswith('.'):
+            result += '.'
+    
+        return result
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -82,6 +166,47 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
+        if not isinstance(text, str):
+            raise EncodingError("Input text must be a string")
+
+        if not text:
+            raise EncodingError("Input text cannot be empty")
+    
+        tokens = []
+        current_sentence = ""
+        sentences = []
+    
+        for char in text:
+            current_sentence += char
+            if char in '.!?':
+                sentences.append(current_sentence)
+                current_sentence = ""
+    
+        if current_sentence:
+            sentences.append(current_sentence)
+    
+        for sentence in sentences:
+            if not sentence.strip():
+                continue
+        
+            sentence_lower = sentence.lower()
+            words = sentence_lower.split()
+        
+            for word in words:
+                cleaned_word = ""
+                for char in word:
+                    if char.isalpha():
+                        cleaned_word += char
+            
+                if cleaned_word:
+                    tokens.append(cleaned_word)
+        
+            tokens.append(self._end_of_sentence_token)
+    
+        if not tokens:
+            raise EncodingError("No valid words found after tokenization")
+    
+        return tuple(tokens)
 
 
 class TrieNode:
