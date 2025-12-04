@@ -3,7 +3,7 @@ Generation by NGrams starter
 """
 
 # pylint:disable=unused-import, unused-variable
-from lab_3_generate_by_ngrams.main import TextProcessor
+from lab_3_generate_by_ngrams.main import TextProcessor, NGramLanguageModel, GreedyTextGenerator
 
 
 def main() -> None:
@@ -17,7 +17,15 @@ def main() -> None:
     result = None
     text_processor =  TextProcessor(end_of_word_token = '_')
     encoded_text = text_processor.encode(text)
+    print(encoded_text)
     decoded_text = text_processor.decode(encoded_text)
+    print(decoded_text)
+    n_gram_model = NGramLanguageModel(encoded_text, 7)
+    built_frequency = n_gram_model.build()
+    print(built_frequency)
+    greedy_generator = GreedyTextGenerator(n_gram_model, text_processor)
+    greedy_text = greedy_generator.run(51, 'Vernon')
+    print(greedy_text)  
     result = decoded_text
     assert result
 

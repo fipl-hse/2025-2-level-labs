@@ -6,7 +6,7 @@ Beam-search and natural language generation evaluation
 
 # pylint:disable=too-few-public-methods, unused-import
 import json
-
+from lab_1_keywords_tfidf.main import check_positive_int 
 
 class TextProcessor:
     """
@@ -368,6 +368,8 @@ class GreedyTextGenerator:
             language_model (NGramLanguageModel): A language model to use for text generation
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
         """
+        self._model = language_model
+        self._text_processor = text_processor
 
     def run(self, seq_len: int, prompt: str) -> str | None:
         """
@@ -383,6 +385,22 @@ class GreedyTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
+        if not check_positive_int(seq_len) or not isinstance(prompt, str) or not prompt:
+            return None
+        encoded_text = self._text_processor.encode(prompt)
+        if not encoded_text: 
+            return None
+        generated_sequence = list(encoded_text)
+        for iteration_count in range(seq_len):
+            context = tuple(generated_sequence[-(self._model.get_n_gram_size() - 1) :])
+            candidates = self._model.generate_next_token(context)
+            if not candidates:
+                break
+            token, iteration_count = max(candidates.items(), key=lambda item: (item[1], item[0]))
+            generated_sequence.append(token)
+        generated_sequence_tupled = tuple(generated_sequence)
+        return self._text_processor.decode(generated_sequence_tupled)
+
 
 
 class BeamSearcher:
