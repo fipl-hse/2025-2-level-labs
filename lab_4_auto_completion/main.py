@@ -12,19 +12,30 @@ NGramType = tuple[int, ...]
 
 
 class EncodingError(Exception):
-    pass
+    """
+    Raised when text encoding fails due to invalid input, usupoted
+    encoding or processing issues.
+    """
 
 class DecodingError(Exception):
-    pass
+    """
+    Raised when text decoding fails due to invalid input, unsupported
+    encoding, or processing issues.
+    """
 
 class TriePrefixNotFoundError(Exception):
-    pass
+    """
+    Raised when the required prefix for transition
+    is not found in the trie.
+    """
 
 class MergeTreesError(Exception):
-    pass
+    """Raised when there is an error merging trees."""
 
 class IncorrectNgramError(Exception):
-    pass
+    """
+    Raised when attempting to use an inappropriate n-gram size.
+    """
 
 
 
@@ -467,15 +478,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Mapping of token → relative frequency.
         """
-        if len(start_sequence) >= self._n_gram_size:
-            prefix = start_sequence[-self._n_gram_size:]
-        else:
-            prefix = start_sequence[-(self._n_gram_size - 1):]
 
-        node = self.get_prefix(prefix)
+        node = self.get_prefix(start_sequence)
 
-        children = node.get_children()
-        if not children:
+        if not node.has_children():
             return {}
 
         return self._collect_frequencies(node)
@@ -563,7 +569,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             return tuple()
 
         if self._n_gram_size == 1:
-            return tuple(tuple(child.get_name(),) for child in children)
+            return tuple(tuple(child.get_name(),) for child in first_children)
 
         queue = []
         for child in first_children:

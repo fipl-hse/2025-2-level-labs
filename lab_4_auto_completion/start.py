@@ -3,8 +3,16 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearcher, NGramLanguageModel, BeamSearchTextGenerator
-from lab_4_auto_completion.main import WordProcessor, NGramTrieLanguageModel
+from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator
+from lab_4_auto_completion.main import NGramTrieLanguageModel, WordProcessor
+
+def read_text(file_name: str) -> str:
+    """
+    Read the content from txt file from the ./assets/ directory
+    """
+    with open(f"./assets/{file_name}.txt", "r", encoding="utf-8") as file:
+        text = file.read()
+    return text
 
 def main() -> None:
     """
@@ -12,28 +20,23 @@ def main() -> None:
 
     In any case returns, None is returned
     """
-    with open("./assets/hp_letters.txt", "r", encoding="utf-8") as letters_file:
-        hp_letters = letters_file.read()
-    with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
-        ussr_letters = text_file.read()
+    # hp_letters = read_text("hp_letters")
+    # ussr_letters = read_text("ussr_letters")
 
-    with open("./assets/secrets/secret_4.txt", "r", encoding="utf-8") as secret_file:
-        secret_letter = secret_file.read()
-    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as harry_book_file:
-        harry_book_text = harry_book_file.read()
-    with open("./assets/hp_letters.txt", "r", encoding="utf-8") as harry_letters_file:
-        harry_letters_text = harry_letters_file.read()
+    secret_letter = read_text("secret_4")
+    harry_book = read_text("Harry_Potter")
+    harry_letters = read_text("hp_letters.txt")
 
     n_gram_size = 7 #2
-    beam_width = 7
-    seq_len = 10
+    beam_width = 7  #7
+    seq_len = 10    #10
 
     word_processor = WordProcessor("<EoS>")
-    encoded_corpus = word_processor.encode_sentences(harry_book_text)
+    encoded_corpus = word_processor.encode_sentences(harry_book)
 
     language_model = NGramTrieLanguageModel(encoded_corpus, n_gram_size)
     print(language_model.build())
-    language_model.update(word_processor.encode_sentences(harry_letters_text))
+    language_model.update(word_processor.encode_sentences(harry_letters))
 
     prompt = "Vernon"
 
