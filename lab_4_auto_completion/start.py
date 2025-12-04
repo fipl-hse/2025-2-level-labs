@@ -12,11 +12,11 @@ from lab_3_generate_by_ngrams.main import (
 from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
-    load,
     NGramTrieLanguageModel,
     PrefixTrie,
-    save,
-    WordProcessor
+    WordProcessor,
+    load,
+    save
 )
 
 
