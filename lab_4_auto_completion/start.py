@@ -3,8 +3,17 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, NGramLanguageModel, TextProcessor
-from lab_4_auto_completion.main import WordProcessor, PrefixTrie
+from lab_3_generate_by_ngrams.main import (
+    BeamSearchTextGenerator, 
+    GreedyTextGenerator,
+    NGramLanguageModel, 
+    TextProcessor
+)
+from lab_4_auto_completion.main import (
+    WordProcessor, 
+    PrefixTrie,
+    NGramTrieLanguageModel
+    )
 
 
 def main() -> None:
