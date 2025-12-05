@@ -486,10 +486,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
                 ngram = sentence[i:i + self._n_gram_size]
                 self._insert(ngram)
                 all_ngrams.append(ngram)
-        if all_ngrams:
-            self._fill_frequencies(tuple(all_ngrams))
-            return 0
-        return 1
+        if not all_ngrams:
+            return 1
+        self._fill_frequencies(tuple(all_ngrams))
+        return 0
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
         """
@@ -501,11 +501,8 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Mapping of token → relative frequency.
         """
-        try:
-            prefix_node = self.get_prefix(start_sequence)
-            return self._collect_frequencies(prefix_node)
-        except TriePrefixNotFoundError:
-            raise
+        prefix_node = self.get_prefix(start_sequence)
+        return self._collect_frequencies(prefix_node)
 
     def get_root(self) -> TrieNode:
         """
@@ -566,7 +563,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Args:
             new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
-        if not self._encoded_corpus:
+        if self._encoded_corpus is None:
             self._encoded_corpus = new_corpus
         else:
             self._encoded_corpus = self._encoded_corpus + new_corpus
@@ -670,12 +667,12 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Returns:
             int: 0 if attribute is filled successfully, otherwise 1.
         """
-        if not self._encoded_corpus or not isinstance(self._encoded_corpus, tuple):
-            return 1
-        for sentence in self._encoded_corpus:
-            if not isinstance(sentence, tuple):
-                return 1
-        if not isinstance(self._max_ngram_size, int) or self._max_ngram_size < 2:
+        if (
+            not isinstance(self._encoded_corpus, tuple)
+            or not all(isinstance(sentence, tuple) for sentence in self._encoded_corpus)
+            or not isinstance(self._max_ngram_size, int)
+            or self._max_ngram_size < 2
+        ):
             return 1
         self._models = {}
         for n_size in range(2, self._max_ngram_size + 1):
@@ -699,12 +696,11 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         """
         if current_n_gram_size is None:
             self._current_n_gram_size = self._max_ngram_size
-        else:
-            if not isinstance(current_n_gram_size, int):
-                raise IncorrectNgramError("Invalid n-gram size")
-            if current_n_gram_size < 2 or current_n_gram_size > self._max_ngram_size:
-                raise IncorrectNgramError("Invalid n-gram size")
-            self._current_n_gram_size = current_n_gram_size
+        if not isinstance(current_n_gram_size, int):
+            raise IncorrectNgramError("Invalid n-gram size")
+        if current_n_gram_size < 2 or current_n_gram_size > self._max_ngram_size:
+            raise IncorrectNgramError("Invalid n-gram size")
+        self._current_n_gram_size = current_n_gram_size
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict[int, float] | None:
         """
@@ -718,7 +714,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         """
         if not isinstance(sequence, tuple) or len(sequence) == 0:
             return None
-        if self._current_n_gram_size == 0:
+        if self._current_n_gram_size < 2:
             self._current_n_gram_size = self._max_ngram_size
         if self._current_n_gram_size in self._models:
             model = self._models[self._current_n_gram_size]
@@ -760,8 +756,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             raise ValueError("Node name must be a non-negative integer")
         for child in parent._children:
             if child.get_name() == node_name:
-                if freq != 0.0:
-                    child.set_value(freq)
+                child.set_value(freq)
                 return child
         new_child = TrieNode(name=node_name, value=freq)
         parent._children.append(new_child)
