@@ -266,7 +266,7 @@ class TrieNode:
         for child in self._children:
             if child.get_name() == item:
                 return (child,)
-        return tuple()
+        return ()
 
     def get_name(self) -> int | None:
         """
@@ -332,9 +332,9 @@ class PrefixTrie:
         Args:
             encoded_corpus (tuple[NGramType]): Tokenized corpus.
         """
+        if not all(all(isinstance(token, int) for token in seq) for seq in encoded_corpus):
+            raise ValueError("All tokens in sequence must be integers")
         for sequence in encoded_corpus:
-            if not all(isinstance(token, int) for token in sequence):
-                raise ValueError("All tokens in sequence must be integers")
             self._insert(sequence)
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
@@ -376,7 +376,7 @@ class PrefixTrie:
             current_node, current_sequence = processing_queue.pop(0)
             for child in current_node.get_children():
                 child_name = child.get_name()
-                if child_name is not None:
+                if child_name:
                     new_sequence = current_sequence + [child_name]
                     processing_queue.append((child, new_sequence))
                     if not child.has_children():
@@ -436,18 +436,18 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         """
         if not self._encoded_corpus:
             return 1
+        ngrams = []
+        for sentence in self._encoded_corpus:
+            for i in range(len(sentence) - self._n_gram_size + 1):
+                ngram = sentence[i:i + self._n_gram_size]
+                ngrams.append(ngram)
         try:
-            ngrams = []
-            for sentence in self._encoded_corpus:
-                for i in range(len(sentence) - self._n_gram_size + 1):
-                    ngram = sentence[i:i + self._n_gram_size]
-                    ngrams.append(ngram)
             for ngram in ngrams:
                 self._insert(ngram)
             all_ngrams = self._collect_all_ngrams()
             self._fill_frequencies(all_ngrams)
             return 0
-        except CustomException:
+        except (TriePrefixNotFoundError, EncodingError, DecodingError):
             return 1
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
@@ -624,6 +624,12 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             encoded_corpus (tuple[NGramType, ...]): Tokenized corpus.
             n_gram_size (int, optional): N-gram size. Defaults to 3.
         """
+        super().__init__(encoded_corpus, n_gram_size)
+        self._root = TrieNode()
+        self._encoded_corpus = encoded_corpus
+        self._current_n_gram_size = 0
+        self._max_ngram_size = n_gram_size
+        self._models = {}
 
     def build(self) -> int:
         """
@@ -664,6 +670,16 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Returns:
             TrieNode: Existing or new TrieNode.
         """
+        if not isinstance(node_name, int) or node_name < 0:
+            raise ValueError(" _ ")
+        for child in parent.get_children():
+            if child.get_name() == node_name:
+                if freq != 0.0:
+                    child.set_value(freq)
+                return child
+        new_node = TrieNode(node_name, freq)
+        parent._children.append(new_node)
+        return new_node
 
     def _merge(self) -> None:
         """
@@ -677,6 +693,22 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Args:
             source_root (TrieNode): Source root to insert tree
         """
+        if not source_root:
+            return
+    
+        stack = [(source_root, self._root)]
+        
+        while stack:
+            source_node, target_node = stack.pop()
+            source_name = source_node.get_name()
+            if source_name:
+                source_value = source_node.get_value()
+                try:
+                    target_node = self._assign_child(target_node, source_name, source_value)
+                except ValueError:
+                    continue
+            for source_child in source_node.get_children():
+                stack.append((source_child, target_node))
 
 
 class DynamicBackOffGenerator(BackOffGenerator):
