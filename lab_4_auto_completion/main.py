@@ -424,13 +424,12 @@ class PrefixTrie:
                 full_sequence = list(prefix) + completion
                 sequences.append(tuple(full_sequence))
 
-            for child in children_node:
+            for child in reversed(children_node):
                 if child.get_name() is not None:
                     new_continuation = completion + [child.get_name()]
                     stack.append((child, new_continuation))
 
         return tuple(sequences)
-
 
     def _insert(self, sequence: NGramType) -> None:
         """
