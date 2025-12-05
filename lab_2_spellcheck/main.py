@@ -71,6 +71,7 @@ def calculate_jaccard_distance(token: str, candidate: str) -> float | None:
     return 1-(tokens_intersection/tokens_union)
 
 
+
 def calculate_distance(
     first_token: str,
     vocabulary: dict[str, float],
@@ -504,21 +505,24 @@ def count_transpositions(
         or not check_list(candidate_matches, bool, False)
         ):
         return None
-    matched_token_indexes = []
-    matched_candidate_indexes = []
-    max_len = max(len(token), len(candidate))
-    for index in range(max_len):
-        if index < len(token) and index < len(token_matches) and token_matches[index]:
-            matched_token_indexes.append(index)
-        if index < len(candidate) and index < len(candidate_matches) and candidate_matches[index]:
-            matched_candidate_indexes.append(index)
-    transpositions = 0
-    min_length = min(len(matched_token_indexes), len(matched_candidate_indexes))
-    for index in range(min_length):
-        matched_token_symbol = token[matched_token_indexes[index]]
-        matched_candidate_symbol = candidate[matched_candidate_indexes[index]]
-        if matched_token_symbol != matched_candidate_symbol:
+
+    if  len(token_matches) != len(token) or len(candidate_matches) != len(candidate):
+        return None
+    
+    i = j = transpositions = 0
+
+    while i < len(token) and j < len(candidate):
+        while i < len(token) and not token_matches[i]:
+            i += 1
+        while j < len(candidate) and not candidate_matches[j]:
+            j += 1
+        if i >= len(token) or j >= len(candidate):
+            break
+        if token[i] != candidate[j]:
             transpositions += 1
+        i += 1
+        j += 1
+    
     return transpositions // 2
 
 
