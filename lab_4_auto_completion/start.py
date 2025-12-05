@@ -4,10 +4,8 @@ Auto-completion start
 
 # pylint:disable=unused-variable
 from lab_3_generate_by_ngrams.main import (
-    BeamSearcher,
     BeamSearchTextGenerator,
     GreedyTextGenerator,
-    NGramLanguageModel,
 )
 from lab_4_auto_completion.main import (
     NGramTrieLanguageModel,
@@ -34,10 +32,8 @@ def main() -> None:
     prefix_trie.fill(encoded_sentences)
     suggestions = prefix_trie.suggest((2,))
     if suggestions:
-        first_suggestion = suggestions[0]
-        decoded_string = processor.decode(first_suggestion)
-        cleaned_result = decoded_string.replace("<EOS>", "").strip()
-        print(cleaned_result)
+        decoded = processor.decode(suggestions[0])
+        print(decoded.replace("<EOS>", "").strip())
 
     model = NGramTrieLanguageModel(encoded_sentences, 5)
     model.build()

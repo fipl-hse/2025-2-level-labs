@@ -678,7 +678,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                     child.set_value(freq)
                 return child
         new_node = TrieNode(node_name, freq)
-        parent._children.append(new_node)
+        parent.add_child(node_name)
         return new_node
 
     def _merge(self) -> None:
@@ -695,9 +695,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         """
         if not source_root:
             return
-    
         stack = [(source_root, self._root)]
-        
         while stack:
             source_node, target_node = stack.pop()
             source_name = source_node.get_name()
