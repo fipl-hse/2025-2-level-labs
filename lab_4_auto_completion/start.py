@@ -4,17 +4,20 @@ Auto-completion start
 
 # pylint:disable=unused-variable
 from lab_3_generate_by_ngrams.main import (
+    BeamSearcher,
     BeamSearchTextGenerator,
-    GreedyTextGenerator,
-    NGramLanguageModel,
-    TextProcessor
+    GreedyTextGenerator
 )
 from lab_4_auto_completion.main import (
+    DynamicBackOffGenerator,
     DynamicNgramLMTrie,
-    WordProcessor,
+    NGramTrieLanguageModel,
     PrefixTrie,
-    NGramTrieLanguageModel
-    )
+    WordProcessor,
+    load,
+    save
+)
+
 
 
 def main() -> None:

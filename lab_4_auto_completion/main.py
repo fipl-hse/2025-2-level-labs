@@ -418,7 +418,7 @@ class PrefixTrie:
 
         while stack:
             current_node, completion = stack.pop()
-            
+
             children_node = current_node.get_children()
             if not children_node and completion:
                 full_sequence = list(prefix) + completion
@@ -527,11 +527,11 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             if all_ngrams:
                 self._fill_frequencies(all_ngrams)
             else:
-                return 
+                return
 
             return 0
 
-        except Exception as e:
+        except Exception:
             return 1
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
@@ -751,15 +751,15 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             not isinstance(self._encoded_corpus, tuple) or
             not self._encoded_corpus):
             return 1
-        
+
         for sentence in self._encoded_corpus:
             if not isinstance(sentence, tuple):
                 return 1
-            
+
             for token in sentence:
                 if not isinstance(token, int):
                     return 1
-    
+
         max_length = 0
         for element in self._encoded_corpus:
             if element:
@@ -1036,7 +1036,6 @@ class DynamicBackOffGenerator(BackOffGenerator):
             return None
 
         seq_list = list(encoded_prompt)
-        original_sequence = list(seq_list)
         for _ in range(seq_len):
             context = tuple(seq_list)
             tokens = self.get_next_token(context)
