@@ -125,7 +125,6 @@ class WordProcessor(TextProcessor):
         """
         if not isinstance(element, str) or not element:
             return None
-        
         if element in self._storage:
             return
 
@@ -493,17 +492,17 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             int: 0 if attribute is filled successfully, otherwise 1
         """
+        self._root = TrieNode(None)
+
+        if not self._encoded_corpus:
+            return 1
+
+        if self._n_gram_size <= 0:
+            return 1
+
+        n_grams_count = 0
+
         try:
-            self._root = TrieNode(None)
-
-            if not self._encoded_corpus:
-                return 1
-
-            if self._n_gram_size <= 0:
-                return 1
-
-            n_grams_count = 0
-
             for sentence in self._encoded_corpus:
                 if not sentence:
                     continue
@@ -528,7 +527,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             if all_ngrams:
                 self._fill_frequencies(all_ngrams)
             else:
-                return 1 
+                return 
 
             return 0
 
@@ -747,31 +746,48 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Returns:
             int: 0 if attribute is filled successfully, otherwise 1.
         """
+        if (not isinstance(self._max_ngram_size, int) or
+            self._max_ngram_size < 2 or
+            not isinstance(self._encoded_corpus, tuple) or
+            not self._encoded_corpus):
+            return 1
+        
+        for sentence in self._encoded_corpus:
+            if not isinstance(sentence, tuple):
+                return 1
+            
+            for token in sentence:
+                if not isinstance(token, int):
+                    return 1
+    
+        max_length = 0
+        for element in self._encoded_corpus:
+            if element:
+                max_length = max(max_length, len(element))
+
+        if max_length < 2:
+            return 1
+
+        max_ngram_to_build = min(max_length, self._max_ngram_size)
+        if max_ngram_to_build < 2:
+            return 1
+
+        self._models = {}
+
+        for n_gram_size in range(2, max_ngram_to_build + 1):
+            model = NGramTrieLanguageModel(self._encoded_corpus, n_gram_size)
+            if model.build() == 0:
+                self._models[n_gram_size] = model
+            else:
+                return 1
+
+        if not self._models:
+            return 1
+
         try:
-            max_length = 0
-            for element in self._encoded_corpus:
-                if element:
-                    max_length = max(max_length, len(element))
-
-            if max_length < 2:
-                return 1
-
-            max_ngram_to_build = min(max_length, self._max_ngram_size)
-            if max_ngram_to_build < 2:
-                return 1
-
-            self._models = {}
-            for n_gram_size in range(2, max_length + 1):
-                model = NGramTrieLanguageModel(self._encoded_corpus, n_gram_size)
-                if model.build() == 0:
-                    self._models[n_gram_size] = model
-
-            if not self._models:
-                return 1
             self._merge()
             return 0
-
-        except Exception:
+        except MergeTreesError:
             return 1
 
     def set_current_ngram_size(self, current_n_gram_size: int | None) -> None:
@@ -808,40 +824,39 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         if not isinstance(sequence, tuple) or not sequence:
             return None
 
-        if not sequence:
-            return self._collect_frequencies(self._root) if self._root else None
-
         if self._current_n_gram_size is None or self._current_n_gram_size < 2:
-            return None
+            return {}
 
         context_length = min(self._current_n_gram_size - 1, len(sequence))
-        if context_length > 0:
-            context = sequence[-context_length:]
-        else:
-            context = ()
+        if len(sequence) < self._current_n_gram_size - 1:
+            return self._collect_frequencies(self._root) if self._root else {}
 
         current_node = self._root
-        for element in context:
-            found_child = None
+        if context_length > 0:
+            context = sequence[-context_length:]
 
-            for child in current_node.get_children():
-                if child.get_name() == element:
-                    found_child = child
-                    break
+            for element in context:
+                found_child = None
 
-            if found_child is None:
-                return {}
-            current_node = found_child
+                for child in current_node.get_children():
+                    if child.get_name() == element:
+                        found_child = child
+                        break
+
+                if found_child is None:
+                    return {}
+
+                current_node = found_child
 
         next_tokens = {}
         for child in current_node.get_children():
-            value = child.get_value()
             name = child.get_name()
+            value = child.get_value()
 
             if name is not None and value is not None:
                 next_tokens[name] = value
 
-        return next_tokens if next_tokens else {}
+        return next_tokens
 
     def _assign_child(self, parent: TrieNode, node_name: int, freq: float = 0.0) -> TrieNode:
         """
@@ -993,13 +1008,11 @@ class DynamicBackOffGenerator(BackOffGenerator):
         Returns:
             str | None: Generated sequence
         """
-        if not isinstance(seq_len, int) or seq_len < 0:
-            return None
-
-        if not isinstance(prompt, str) or not prompt.strip():
-            return None
-        
-        if self._text_processor.encode(prompt) is None:
+        if (
+            not isinstance(seq_len, int) or seq_len <= 0
+            or not isinstance(prompt, str) or not prompt.strip()
+            or self._text_processor.encode(prompt) is None
+        ):
             return None
 
         try:
@@ -1008,7 +1021,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
                 return None
         except Exception:
             return None
-        
+
         eos_char = self._text_processor._end_of_sentence_token
         token_list = list(tokenized_text)
         if token_list and token_list[-1] == eos_char:
@@ -1018,40 +1031,34 @@ class DynamicBackOffGenerator(BackOffGenerator):
         for element in token_list:
             self._text_processor._put(element)
             encoded_prompt.append(self._text_processor._storage[element])
-            
+
         if not encoded_prompt:
             return None
 
         seq_list = list(encoded_prompt)
-
         original_sequence = list(seq_list)
         for _ in range(seq_len):
             context = tuple(seq_list)
             tokens = self.get_next_token(context)
-            if tokens is None:
-                try:
-                    return self._text_processor.decode(seq_list)
-                except Exception:
-                    try:
-                        return self._text_processor.decode(original_sequence)
-                    except Exception:
-                        return None
-
-            if not tokens:
+            if tokens is None or not tokens:
                 break
 
             best_candidates = sorted(tokens.items(),
                                 key=lambda x: (-x[1], -x[0]))[0][0]
             seq_list.append(best_candidates)
 
-        try:
-            return self._text_processor.decode(seq_list)
-        except Exception:
-            try:
-                return self._text_processor.decode(original_sequence)
-            except Exception:
-                return None
+        decoded_words = []
+        for token_id in seq_list:
+            for word, word_id in self._text_processor._storage.items():
+                if word_id == token_id:
+                    decoded_words.append(word)
+                    break
 
+        try:
+            postprocess_method = self._text_processor._postprocess_decoded_text
+            return str(postprocess_method(tuple(decoded_words)))
+        except AttributeError:
+            return ' '.join(decoded_words)
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
@@ -1083,9 +1090,8 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
             }
             parent_dictionary["children"].append(node_dict)
 
-
         children = current_node.get_children()
-        for i in range(len(children)):
+        for i in range(len(children) - 1, -1, -1):
             stack.append((children[i], node_dict))
 
     trie_data = {"trie": root_dict}
