@@ -70,20 +70,31 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
-        if not isinstance(text, str) or not text:
-            return None
-        tokenized_text = self._tokenize(text)
-        id_sentence = []
-        encoded_sentences = []
-        for token in tokenized_text:
-            if token == self._end_of_sentence_token:
-                if id_sentence:
-                    id_sentence.append(self._storage[token])
-                encoded_sentences.append(tuple(id_sentence))
-                id_sentence = []
-            else:
+        if not isinstance(text, str):
+            raise EncodingError("Invalid input: text must be a string")
+        if not text.strip():
+            raise EncodingError("Invalid input: text must be a non-empty string")
+        token_sequence = self._tokenize(text)
+        for token in token_sequence:
+            if token != self._end_of_sentence_token:
                 self._put(token)
-                id_sentence.append(self._storage[token])
+        encoded_sentences = []
+        current_encoded_sentence = []
+        for token in token_sequence:
+            if token == self._end_of_sentence_token:
+                if current_encoded_sentence:
+                    eos_id = self.get_id(self._end_of_sentence_token)
+                    current_encoded_sentence.append(eos_id)
+                    encoded_sentences.append(tuple(current_encoded_sentence))
+                    current_encoded_sentence = []
+            else:
+                word_id = self.get_id(token)
+                current_encoded_sentence.append(word_id)
+        if current_encoded_sentence:
+            eos_id = self.get_id(self._end_of_sentence_token)
+            current_encoded_sentence.append(eos_id)
+            encoded_sentence = tuple(current_encoded_sentence)
+            encoded_sentences.append(encoded_sentence)
         return tuple(encoded_sentences)
 
     def _put(self, element: str) -> None:
@@ -146,30 +157,42 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
-        if not isinstance(text, str) or not text:
-            raise EncodingError("Incorrect input: text must be a non-empty string")
-        text = text.lower()
-        for punct in ['!', '?']:
-            text = text.replace(punct, '.')
-        sentences = text.split('.')
-        word_tokens = []
-        for sentence in sentences:
-            if not sentence.strip():
-                continue
-            words = sentence.strip().split()
+        if not isinstance(text, str):
+            raise EncodingError("Invalid input: text must be a string")
+        if not text.strip():
+            raise EncodingError("Invalid input: text must be a non-empty string")
+        processed_tokens = []
+        current_sentence_chars = []
+        extracted_sentences = []
+        for character in text:
+            if character in '.!?':
+                complete_sentence = ''.join(current_sentence_chars).strip()
+                if complete_sentence:
+                    extracted_sentences.append(complete_sentence)
+                current_sentence_chars = []
+            else:
+                current_sentence_chars.append(character)
+        if current_sentence_chars:
+            final_sentence = ''.join(current_sentence_chars).strip()
+            if final_sentence:
+                extracted_sentences.append(final_sentence)
+        for sentence in extracted_sentences:
+            words = sentence.lower().split()
+            clean_words = []
             for word in words:
-                cleaned_word = []
-                for char in word:
-                    if char.isalpha():
-                        cleaned_word.append(char)
+                cleaned_word = ''
+                for symbol in word:
+                    if symbol.isalpha():
+                        cleaned_word = cleaned_word + symbol
                 if cleaned_word:
-                    word_tokens.append(''.join(cleaned_word))
-            word_tokens.append(self._end_of_sentence_token)
-            if word_tokens and word_tokens[-1] == self._end_of_sentence_token:
-                word_tokens.pop()
-            if not word_tokens:
-                raise EncodingError("Tokenization resulted in empty output")
-            return tuple(word_tokens)
+                    clean_words.append(cleaned_word)
+            if clean_words:
+                for clean_word in clean_words:
+                    processed_tokens.append(clean_word)
+                processed_tokens.append(self._end_of_sentence_token)
+        if not processed_tokens:
+            raise EncodingError("Tokenization resulted in empty output")
+        return tuple(processed_tokens)
             
         
 
