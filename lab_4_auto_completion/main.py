@@ -4,6 +4,7 @@ Lab 4
 
 # pylint: disable=unused-argument, super-init-not-called, unused-private-member, duplicate-code, unused-import
 import json
+import string
 
 from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, TextProcessor
 
@@ -82,7 +83,7 @@ class WordProcessor(TextProcessor):
 
         for element in text:
             current_sentence += element
-            if element in '?!.':
+            if element in string.punctuation:
                 without_punctuation.append(current_sentence.strip())
                 current_sentence = ''
 
@@ -124,7 +125,7 @@ class WordProcessor(TextProcessor):
         an element is not added to storage
         """
         if not isinstance(element, str) or not element:
-            return None
+            return
         if element in self._storage:
             return
 
@@ -275,8 +276,6 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
-        if not isinstance(item, int):
-            raise ValueError('Item must be an integer')
 
         new_node = TrieNode(item)
         self._children.append(new_node)
@@ -618,7 +617,8 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
         if not isinstance(new_corpus, tuple) or not new_corpus:
-            return None
+            return
+
         if not self._encoded_corpus:
             self._encoded_corpus = new_corpus
         else:
@@ -901,19 +901,21 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
 
         self._root = TrieNode(None)
 
-        if isinstance(self._models, dict):
-            for model in self._models.values():
-                if model is not None:
-                    model_root = model.get_root()
-                    if model_root is not None:
-                        self._insert_trie(model_root)
+        models_to_process = (
+            self._models.values()
+            if isinstance(self._models, dict)
+            else self._models
+            )
 
-        else:
-            for element in self._models:
-                if element is not None:
-                    model_root = element.get_root()
-                if model_root is not None:
-                    self._insert_trie(model_root)
+        for model in models_to_process:
+            if model is None:
+                continue
+
+            model_root = model.get_root()
+            if model_root is None:
+                continue
+
+            self._insert_trie(model_root)
 
     def _insert_trie(self, source_root: TrieNode) -> None:
         """
@@ -985,17 +987,17 @@ class DynamicBackOffGenerator(BackOffGenerator):
             return None
 
         for ngram_size in n_gram_size:
+            self._dynamic_trie.set_current_ngram_size(ngram_size)
             try:
-                self._dynamic_trie.set_current_ngram_size(ngram_size)
                 candidates = self._dynamic_trie.generate_next_token(sequence_to_continue)
-                if candidates is None:
-                    continue
-
-                if candidates:
-                    return candidates
-
             except Exception:
                 continue
+
+            if candidates is None:
+                continue
+
+            if candidates:
+                return candidates
 
         return None
 
