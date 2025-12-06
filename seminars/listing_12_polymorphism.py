@@ -1,4 +1,3 @@
-
 """
 Programming 2025.
 

@@ -156,40 +156,25 @@ class WordProcessor(TextProcessor):
         if not isinstance(text, str) or not text:
             raise EncodingError("Invalid input: text must be a non-empty string")
 
-        sentences = []
-        sentence = []
-        for symbol in text:
-
-            sentence.append(symbol)
-            if symbol in "!?.":
-
-                if sentence:
-                    sentences.append("".join(sentence).strip().lower())
-                    sentence.clear()
-
-        if sentence:
-            sentences.append("".join(sentence).strip().lower())
-
         tokens = []
+        for word in text.lower().split():
+            punctuation_end = False
 
-        for sentence in sentences:
-            has_words = False
+            if any(word.endswith(mark) for mark in "?!."):
+                punctuation_end = True
 
-            for word in sentence.split():
-                cleaned_word = "".join(symbol for symbol in word if symbol.isalpha())
+            cleaned_word = "".join(symbol for symbol in word if symbol.isalpha())
 
-                if cleaned_word:
-                    tokens.append(cleaned_word)
-                    has_words = True
+            if cleaned_word:
+                tokens.append(cleaned_word)
 
-            if has_words:
-                tokens.append(self._end_of_word_token)
+                if punctuation_end:
+                    tokens.append(self._end_of_sentence_token)
 
         if not tokens:
             raise EncodingError("Tokenization resulted in empty output")
 
         return tuple(tokens)
-
 
 
 class TrieNode:
@@ -388,8 +373,9 @@ class PrefixTrie:
                 name = child.get_name()
                 if name is not None:
                     queue.append((current_prefix + (name,), child))
-                else:
-                    queue.append((current_prefix, child))
+                    continue
+
+                queue.append((current_prefix, child))
 
         return tuple(results)
 
@@ -409,9 +395,10 @@ class PrefixTrie:
 
             if children_with_token:
                 current_node = children_with_token[0]
-            else:
-                current_node.add_child(token)
-                current_node = current_node.get_children(token)[0]
+                continue
+
+            current_node.add_child(token)
+            current_node = current_node.get_children(token)[0]
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
@@ -714,6 +701,12 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Returns:
             dict[int, float] | None: Possible next tokens with their probabilities.
         """
+        if not isinstance(sequence, tuple):
+            return None
+
+        if len(sequence) == 0:
+            return None
+
         context = tuple()
         if len(sequence) < self._current_n_gram_size:
             context = sequence
@@ -866,32 +859,6 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         path (str): Path for saving
     """
 
-    root = trie.get_root()
-
-    queue = [(root,
-        {
-        "value": root.get_name(),
-        "freq": root.get_value(),
-        "children": []
-        }),]
-
-    trie_to_save = {"trie": queue[0][1]}
-
-    while queue:
-        node, node_dict = queue.pop()
-
-        children = node.get_children()
-        for child in children:
-            child_dict = {
-                "value": child.get_name(),
-                "freq": child.get_value(),
-                "children": []
-            }
-            node_dict["children"].append(child_dict)
-            queue.append((child, child_dict))
-
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(trie_to_save, f)
 
 def load(path: str) -> DynamicNgramLMTrie:
     """
