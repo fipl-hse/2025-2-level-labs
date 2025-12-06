@@ -25,8 +25,8 @@ def main() -> None:
     suggestions = prefix_trie.suggest((2,))
     if suggestions:
         decoded = processor.decode(suggestions[0])
-        print(decoded.replace("<EOS>", "").strip())
-    result = decoded 
+        result = decoded.replace("<EOS>", "").strip()
+        print(result) 
     assert result, "Result is None"
 
 
