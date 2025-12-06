@@ -561,6 +561,9 @@ class BeamSearchTextGenerator:
 
         In case of corrupt input arguments return None.
         """
+        if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
+            return None
+        return self.beam_searcher.get_next_token(sequence_to_continue)
         
 
 
