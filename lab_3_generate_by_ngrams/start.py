@@ -26,7 +26,7 @@ def main() -> None:
     print(built_frequency)
     greedy_generator = GreedyTextGenerator(n_gram_model, text_processor)
     greedy_text = greedy_generator.run(51, 'Vernon')
-    print(greedy_text)  
+    print(greedy_text)
     beam_generator = BeamSearchTextGenerator(n_gram_model, text_processor, 7)
     result = beam_generator.run("Vernon", 56)
     print(result)

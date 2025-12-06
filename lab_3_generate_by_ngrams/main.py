@@ -471,13 +471,21 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
-        if not isinstance(sequence, tuple) or not check_list(next_tokens, tuple, False) or not check_dict(sequence_candidates, tuple, float, False) or sequence not in sequence_candidates or len(next_tokens) > self._beam_width:
+        if (
+            not isinstance(sequence, tuple)
+            or not check_list(next_tokens, tuple, False)
+            or not check_dict(sequence_candidates, tuple, float, False)
+            or sequence not in sequence_candidates
+            or len(next_tokens) > self._beam_width
+        ):
             return None
         sequence_candidates_new = sequence_candidates.copy()
         for token, frequency in next_tokens:
             if frequency != 0:
                 sequence_new = sequence + (token,)
-                sequence_candidates_new[sequence_new] = sequence_candidates[sequence] - log(frequency)
+                sequence_candidates_new[sequence_new] = (
+                    sequence_candidates[sequence] - log(frequency)
+                    )
         del sequence_candidates_new[sequence]
         return sequence_candidates_new
 
@@ -544,7 +552,10 @@ class BeamSearchTextGenerator:
         In case of corrupt input arguments or methods used return None,
         None is returned
         """
-        if not isinstance(prompt, str) or not isinstance(seq_len, int) or not prompt or seq_len <= 0:
+        if (not isinstance(prompt, str)
+            or not isinstance(seq_len, int)
+            or not prompt
+            or seq_len <= 0):
             return None
         encoded_text = self._text_processor.encode(prompt)
         if not encoded_text:
