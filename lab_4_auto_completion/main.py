@@ -854,7 +854,7 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
-    stack = [(trie.get_root(), None)]
+    stack: list[tuple[TrieNode, list | None]] = [(trie.get_root(), None)]
     root_dict = None
     while stack:
         current_node, parent_list = stack.pop()
@@ -867,8 +867,7 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
             root_dict = node_dict
             child_list = node_dict["children"]
         else:
-            if isinstance(parent_list, list):
-                parent_list.append(node_dict)
+            parent_list.append(node_dict)
             child_list = node_dict["children"]
         children = list(current_node.get_children())
         for child in reversed(children):

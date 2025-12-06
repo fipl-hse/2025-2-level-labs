@@ -8,8 +8,13 @@ from lab_3_generate_by_ngrams.main import (
     GreedyTextGenerator,
 )
 from lab_4_auto_completion.main import (
+    DynamicBackOffGenerator,
+    DynamicNgramLMTrie,
+    IncorrectNgramError,
+    load,
     NGramTrieLanguageModel,
     PrefixTrie,
+    save,
     WordProcessor,
 )
 
@@ -57,7 +62,26 @@ def main() -> None:
     ba_result = beam_after.run('Harry Potter', 52)
     print(f"Beam Generator after: {ba_result}")
 
-    result = (gb_result, bb_result, ga_result, ba_result)
+    dynamic_trie = DynamicNgramLMTrie(encoded_sentences, 5)
+    dynamic_trie.build()
+
+    save_path = "./saved_dynamic_trie.json"
+    save(dynamic_trie, save_path)
+    loaded_trie = load(save_path)
+
+    dynamic_generator = DynamicBackOffGenerator(loaded_trie, processor)
+    dynamic_result_before = dynamic_generator.run(50, 'Ivanov')
+
+    loaded_trie.update(encoded_ussr_sentences)
+    loaded_trie.set_current_ngram_size(5)
+    try:
+        loaded_trie.set_current_ngram_size(5)
+    except IncorrectNgramError:
+        loaded_trie.set_current_ngram_size(None)
+
+    dynamic_result_after = dynamic_generator.run(50, 'Ivanov')
+
+    result = (dynamic_result_before, dynamic_result_after)
     assert result, "Result is None"
 
 
