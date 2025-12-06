@@ -17,7 +17,7 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-    result = None
+    result = ""
     processor = WordProcessor('<EOS>')
     encoded_sentences = processor.encode_sentences(hp_letters)
     prefix_trie = PrefixTrie()
@@ -27,7 +27,7 @@ def main() -> None:
         decoded = processor.decode(suggestions[0])
         result = decoded.replace("<EOS>", "").strip()
         print(result) 
-    assert result, "Result is None"
+    assert result is not None and result != "", "Result is None or empty"
 
 
 if __name__ == "__main__":
