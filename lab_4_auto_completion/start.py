@@ -3,8 +3,8 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from main import WordProcessor
-from lab_3_generate_by_ngrams.main import BeamSearcher, NGramLanguageModel, BeamSearchTextGenerator
+from main import PrefixTrie, WordProcessor
+
 
 def main() -> None:
     """
@@ -16,22 +16,18 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-    #result = None
-    #assert result, "Result is None"
-    with open("./assets/secrets/secret_5.txt", "r", encoding="utf-8") as secret_file:
-        secret = secret_file.read()
-    print(secret)
-    processor = WordProcessor("_")
-    encoded_secret = processor.encode(secret)
-    print(encoded_secret)
+    
+    processor = WordProcessor('<EOS>')
+    encoded_sentences = processor.encode_sentences(hp_letters)
 
-    model = NGramLanguageModel(encoded_secret, 4)
-    model.build()
-
-    beam_search = BeamSearchTextGenerator(model, processor, 3)
-    result = beam_search.run("Percy Weasley and Hermione ", 25)
-    result_beam = result
-    print(result_beam)
+    prefix_trie = PrefixTrie()
+    prefix_trie.fill(encoded_sentences)
+    suggestions = prefix_trie.suggest((2,))
+    if suggestions:
+        decoded = processor.decode(suggestions[0])
+        print(decoded.replace("<EOS>", "").strip())
+    result = None
+    assert result, "Result is None"
 
 
 if __name__ == "__main__":
