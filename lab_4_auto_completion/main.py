@@ -177,6 +177,7 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
+        return bool(self._children)
 
     def __str__(self) -> str:
         """
@@ -185,6 +186,7 @@ class TrieNode:
         Returns:
             str: String representation showing node data and frequency.
         """
+        return f"TrieNode(name={self.__name}, value={self._value})"
 
     def add_child(self, item: int) -> None:
         """
@@ -193,6 +195,7 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
+        self._children.append(TrieNode(item))
 
     def get_children(self, item: int | None = None) -> tuple["TrieNode", ...]:
         """
@@ -204,6 +207,12 @@ class TrieNode:
         Returns:
             tuple["TrieNode", ...]: Tuple of child nodes.
         """
+        if item is None:
+            return tuple(self._children)
+
+        return tuple(
+            child for child in self._children if child.get_name() == item
+        )
 
     def get_name(self) -> int | None:
         """
@@ -212,6 +221,7 @@ class TrieNode:
         Returns:
             int | None: TrieNode data.
         """
+        return self.__name
 
     def get_value(self) -> float:
         """
@@ -220,6 +230,7 @@ class TrieNode:
         Returns:
             float: Frequency value.
         """
+        return self._value
 
     def set_value(self, new_value: float) -> None:
         """
@@ -228,6 +239,7 @@ class TrieNode:
         Args:
             new_value (float): New value to store.
         """
+        self._value = new_value
 
     def has_children(self) -> bool:
         """
@@ -236,6 +248,7 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
+        return bool(self)
 
 
 class PrefixTrie:
