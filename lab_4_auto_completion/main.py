@@ -52,10 +52,8 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
-        super().__init__(end_of_sentence_token)
+        super().__init__(end_of_word_token = end_of_sentence_token)
         self._end_of_sentence_token = end_of_sentence_token
-        self._storage = {self._end_of_sentence_token: 0}
-
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -71,23 +69,37 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
-        tokens = self._tokenize(text)
-        encoded_sentences = []
-        current_sentence = []
-        for token in tokens:
-            self._put(token)
-            if token == self._end_of_sentence_token:
-                if current_sentence:
-                    eos_id = self._storage[self._end_of_sentence_token]
-                    current_sentence.append(eos_id)
-                    encoded_sentences.append(tuple(current_sentence))
-                    current_sentence = []
-            else:
+        raw_sentences = []
+        current = []
+        for char in text:
+            current.append(char)
+            if char in '.!?' and (len(current) == len(text) or text[len(current)].isspace()):
+                sent = ''.join(current).strip()
+                if sent:
+                    raw_sentences.append(sent)
+                current = []
+        if current:
+            sent = ''.join(current).strip()
+            if sent:
+                raw_sentences.append(sent)
+        clean_sentences = [s.lower().strip() for s in raw_sentences]
+        encoded = []
+        for clean_sentence in clean_sentences:
+            if not clean_sentence:
+                continue
+            tokens = self._tokenize(clean_sentence)
+            encoded_sentence = []
+            for token in tokens:
+                self._put(token)
                 word_id = self._storage[token]
-                current_sentence.append(word_id)
-        if current_sentence:
-            encoded_sentences.append(tuple(current_sentence))
-        return tuple(encoded_sentences)
+                encoded_sentence.append(word_id)
+            if encoded_sentence:
+                if (self._end_of_sentence_token in self._storage and 
+                    (not tokens or tokens[-1] != self._end_of_sentence_token)):
+                    eos_id = self._storage[self._end_of_sentence_token]
+                    encoded_sentence.append(eos_id)
+                encoded.append(tuple(encoded_sentence))
+        return tuple(encoded)
 
     def _put(self, element: str) -> None:
         """
@@ -102,8 +114,8 @@ class WordProcessor(TextProcessor):
         if not isinstance(element, str) or not element:
             return
         if element not in self._storage:
-            new_id = len(self._storage)
-            self._storage[element] = new_id
+            self._storage[element] = len(self._storage)
+        return None
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
@@ -221,7 +233,7 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
-        self._children.append(TrieNode(item))
+        self._children.append(TrieNode(name=item))
 
     def get_children(self, item: int | None = None) -> tuple["TrieNode", ...]:
         """
