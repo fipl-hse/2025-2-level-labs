@@ -67,25 +67,25 @@ def main() -> None:
 
     greedy_generator = GreedyTextGenerator(model, word_processor)
     greedy_result_before = greedy_generator.run(seq_len=30, prompt="Ivanov")
-    print(f"Result Greedy: {greedy_result_before}")
+    print('Result Greedy: ', greedy_result_before)
 
     beam_searcher = BeamSearcher(3, 10)
     beam_generator = BeamSearchTextGenerator(model, word_processor, beam_searcher)
     beam_result_before = beam_generator.run(seq_len=30, prompt="Ivanov")
-    print(f"Result BeamSearch: {beam_result_before}")
+    print('Result BeamSearch: ', beam_result_before)
 
     encoded_ussr = word_processor.encode_sentences(ussr_letters)
     model.update(encoded_ussr)
 
     greedy_result_after = greedy_generator.run(seq_len=30, prompt="Ivanov")
-    print(f"Result Greedy update: {greedy_result_after}")
+    print('Result Greedy update: ', greedy_result_after)
     
     beam_result_after = beam_generator.run(seq_len=30, prompt="Ivanov")
-    print(f"Result BeamSearch update: {beam_result_after}")
+    print('Result BeamSearch update: ', beam_result_after)
 
     dynamic_model = DynamicNgramLMTrie(encoded_hp, n_gram_size=5)
     dynamic_build_result = dynamic_model.build()
-    print(f"Dynamic model built: {dynamic_build_result == 0}")
+    print('Dynamic model built: ', dynamic_build_result == 0)
 
     save_path = "./dynamic_model.json"
     save(dynamic_model, save_path)
