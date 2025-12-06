@@ -337,7 +337,7 @@ class PrefixTrie:
                     if child_name is not None:
                         stack.append((child, current_path + [child_name]))
         return tuple(results)
-    
+
     def _insert(self, sequence: NGramType) -> None:
         """
         Inserts a token in PrefixTrie
