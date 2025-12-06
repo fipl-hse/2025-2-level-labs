@@ -63,14 +63,14 @@ class CalculateDistanceTest(unittest.TestCase):
         bad_vocabularies = [None, True, 42, 3.14, (), "document", [], {}, {"good": "bad"}, {1: 0}]
         bad_methods = ["jacard", None, True, 42, 3.14, (), "", [], {}]
 
-        for bad_input in bad_tokens:
-            self.assertIsNone(calculate_distance(bad_input, self.vocabulary, self.methods[0]))
+        for bad_token in bad_tokens:
+            self.assertIsNone(calculate_distance(bad_token, self.vocabulary, self.methods[0]))
 
-        for bad_input in bad_vocabularies:
-            self.assertIsNone(calculate_distance(good_token, bad_input, self.methods[0]))
+        for bad_vocab in bad_vocabularies:
+            self.assertIsNone(calculate_distance(good_token, bad_vocab, self.methods[0]))
 
-        for bad_input in bad_methods:
-            self.assertIsNone(calculate_distance(good_token, self.vocabulary, bad_input))
+        for bad_method in bad_methods:
+            self.assertIsNone(calculate_distance(good_token, self.vocabulary, bad_method))
 
         self.assertIsNone(calculate_distance(bad_tokens[0], bad_vocabularies[0], bad_methods[1]))
 

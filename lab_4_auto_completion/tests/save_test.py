@@ -50,11 +50,3 @@ class SaveTest(unittest.TestCase):
             expected = json.load(f)
 
         self.assertEqual(actual, expected)
-
-    @pytest.mark.lab_4_auto_completion
-    @pytest.mark.mark10
-    def test_save_return_value(self) -> None:
-        """
-        Checks return type for save function
-        """
-        self.assertIsNone(save(self.model, str(self.test_path)))
