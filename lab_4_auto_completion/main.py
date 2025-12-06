@@ -308,6 +308,12 @@ class PrefixTrie:
         Args:
             sequence (NGramType): Tokens to insert.
         """
+        current_node = self._root
+        for token in sequence:
+            children_with_token = current_node.get_children(token)
+            if not children_with_token:
+                current_node.add_child(token)
+            current_node = current_node.get_children(token)[0]
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
