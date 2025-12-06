@@ -25,6 +25,7 @@ def main() -> None:
     model.build()
     greedy_generator = GreedyTextGenerator(model, processor)
     print(greedy_generator.run(51, "Vernon"))
+    
     beam_search = BeamSearchTextGenerator(model, processor, 3)
     print(beam_search.run("Vernon", 56))
 
