@@ -414,20 +414,23 @@ class PrefixTrie:
             return tuple()
 
         sequences = []
-        stack = [(prefix_node, [])]
+        stack = [(prefix_node, list(prefix))]
 
         while stack:
             current_node, completion = stack.pop()
 
-            children_node = current_node.get_children()
-            if not children_node and completion:
-                full_sequence = list(prefix) + completion
-                sequences.append(tuple(full_sequence))
-
-            for child in children_node:
+            result = []
+            for child in current_node.get_children():
                 if child.get_name() is not None:
-                    new_continuation = completion + [child.get_name()]
-                    stack.append((child, new_continuation))
+                    new_path = completion + [child.get_name()]
+
+                    if not child.get_children():
+                        result.append(tuple(new_path))
+
+                    else:
+                        stack.append((child, new_path))
+
+            sequences.extend(sorted(result, reverse = True))
 
         return tuple(sequences)
 

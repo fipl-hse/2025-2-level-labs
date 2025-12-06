@@ -44,7 +44,7 @@ def main() -> None:
     tree.fill(tri_grams_tuple)
     found = tree.suggest((2,))
     print(f"Found {len(found)} suggestions for prefix (2,)")
-    
+
     if found:
         best = found[0]
         print(f"First suggestion: {best}")
@@ -66,21 +66,21 @@ def main() -> None:
     model.build()
 
     greedy_generator = GreedyTextGenerator(model, word_processor)
-    greedy_result_before = greedy_generator.run(seq_len=30, prompt="Ivanov")
+    greedy_result_before = greedy_generator.run(seq_len = 30, prompt = "Ivanov")
     print('Result Greedy: ', greedy_result_before)
 
     beam_searcher = BeamSearcher(3, 10)
     beam_generator = BeamSearchTextGenerator(model, word_processor, beam_searcher)
-    beam_result_before = beam_generator.run(seq_len=30, prompt="Ivanov")
+    beam_result_before = beam_generator.run(seq_len = 30, prompt = "Ivanov")
     print('Result BeamSearch: ', beam_result_before)
 
     encoded_ussr = word_processor.encode_sentences(ussr_letters)
     model.update(encoded_ussr)
 
-    greedy_result_after = greedy_generator.run(seq_len=30, prompt="Ivanov")
+    greedy_result_after = greedy_generator.run(seq_len = 30, prompt = "Ivanov")
     print('Result Greedy update: ', greedy_result_after)
-    
-    beam_result_after = beam_generator.run(seq_len=30, prompt="Ivanov")
+
+    beam_result_after = beam_generator.run(seq_len = 30, prompt = "Ivanov")
     print('Result BeamSearch update: ', beam_result_after)
 
     dynamic_model = DynamicNgramLMTrie(encoded_hp, n_gram_size=5)
@@ -92,12 +92,12 @@ def main() -> None:
     loaded_model = load(save_path)
 
     dynamic_generator = DynamicBackOffGenerator(dynamic_model, word_processor)
-    dynamic_result_before = dynamic_generator.run(seq_len=50, prompt="Ivanov")
+    dynamic_result_before = dynamic_generator.run(seq_len=50, prompt = "Ivanov")
     print(f"Result BackOff (before):\n{dynamic_result_before}")
 
     dynamic_model.update(encoded_ussr)
 
-    dynamic_result_after = dynamic_generator.run(seq_len=50, prompt="Ivanov")
+    dynamic_result_after = dynamic_generator.run(seq_len=50, prompt = "Ivanov")
     print(f"Result BackOff (after):\n{dynamic_result_after}")
 
     result = dynamic_result_after
