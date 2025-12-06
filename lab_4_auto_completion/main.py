@@ -683,7 +683,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             dict[int, float] | None: Possible next tokens with their probabilities.
         """
         if not isinstance(sequence, tuple) or not sequence:
-                return None
+            return None
         if self._current_n_gram_size < 2:
             self._current_n_gram_size = self._max_ngram_size
         if self._current_n_gram_size in self._models:
@@ -765,17 +765,15 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 child_name = source_child.get_name()
                 if child_name is None:
                     continue
-                target_child = None
-                for existing_child in target_parent.get_children():
-                    if existing_child.get_name() == child_name:
-                        target_child = existing_child
-                        break
+                target_child = next(
+                    (c for c in target_parent.get_children() if c.get_name() == child_name),
+                    None
+                )
                 if target_child is None:
                     target_parent.add_child(child_name)
-                    for child in target_parent.get_children():
-                        if child.get_name() == child_name:
-                            target_child = child
-                            break
+                    target_child = next(
+                        c for c in target_parent.get_children() if c.get_name() == child_name
+                    )
                 source_value = source_child.get_value()
                 if source_value != 0.0:
                     target_child.set_value(source_value)
@@ -869,7 +867,8 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
             root_dict = node_dict
             child_list = node_dict["children"]
         else:
-            parent_list.append(node_dict)
+            if isinstance(parent_list, list):
+                parent_list.append(node_dict)
             child_list = node_dict["children"]
         children = list(current_node.get_children())
         for child in reversed(children):
