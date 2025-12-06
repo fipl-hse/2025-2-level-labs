@@ -212,7 +212,8 @@ class TextProcessor:
             decoded_text.append(self.get_token(element_id))
         if decoded_text is None:
             return None
-        return tuple(decoded_text)
+        decoded_text_tuple = tuple(decoded_text)
+        return decoded_text_tuple
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
         """
