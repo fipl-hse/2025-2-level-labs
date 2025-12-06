@@ -177,6 +177,8 @@ class TextProcessor:
         if not self._decode(encoded_corpus):
             return None
         decoded_text = self._decode(encoded_corpus)
+        if decoded_text is None:
+            return None
         postprocessed_text = self._postprocess_decoded_text(decoded_text)
         return postprocessed_text
 
