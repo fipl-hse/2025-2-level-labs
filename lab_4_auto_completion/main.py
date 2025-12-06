@@ -414,6 +414,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             n_gram_size (int): A size of n-grams to use for language modelling
         """
         NGramLanguageModel.__init__(self, encoded_corpus, n_gram_size)
+        PrefixTrie.__init__(self)
         self._root = TrieNode()
         self._n_gram_size = n_gram_size
 
@@ -611,7 +612,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             encoded_corpus (tuple[NGramType, ...]): Tokenized corpus.
             n_gram_size (int, optional): N-gram size. Defaults to 3.
         """
-        self._root = TrieNode()
+        super().__init__(encoded_corpus, n_gram_size)
         self._current_n_gram_size = 0
         self._max_ngram_size = n_gram_size
         self._models = {}
@@ -721,8 +722,11 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                     child.set_value(freq)
                 return child
         new_child = TrieNode(node_name, freq)
-        if hasattr(parent, '_children'):
-            parent._children.append(new_child)
+        parent.add_child(node_name)
+        for child in parent.get_children():
+            if child.get_name() == node_name:
+                child.set_value(freq)
+                return child
         return new_child
 
     def _merge(self) -> None:
@@ -793,7 +797,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
         """
         if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
             return None
-        max_possible_size = min(self._dynamic_trie._max_ngram_size, len(sequence_to_continue) + 1)
+        max_possible_size = self._dynamic_trie.get_n_gram_size()
         ngram_sizes = list(range(max_possible_size, 1, -1))
         for ngram_size in ngram_sizes:
             try:
