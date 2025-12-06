@@ -72,75 +72,71 @@ def main() -> None:
         dynamic_result_after = dynamic_generator.run(15, "Ivanov")
         print(f"Dynamic generator after update: {dynamic_result_after}")
 
-    print("\nSolution of the 3rd secret")
-    n_gram_size_secret = 4
-    beam_width = 6
-    seq_len = 10
+    print('\nSolution of the 2nd secret')
+    n_size = 4
+    beam_size = 3
+    generate_length = 25
     with open("./assets/secrets/secret_3.txt", "r", encoding="utf-8") as file:
-        secret_text = file.read()
-    burned_pos = secret_text.find("<BURNED>")
-    if burned_pos == -1:
-        return
-    lines = secret_text.split('\n')
-    prompt_text = ""
-    for line in lines:
-        if "<BURNED>" in line:
-            before_burned = line.split("<BURNED>")[0].strip()
-            before_burned = before_burned.replace('"', '').replace('"', '').strip()
-            words = before_burned.split()
-            if words:
-                prompt_text = before_burned.lower()
-            break
-    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as f:
-        hp_text = f.read()
-    word_processor = WordProcessor(end_of_sentence_token="<EOS>")
-    encoded_sentences = word_processor.encode_sentences(hp_text)
-    flat_word_sequence = []
-    for sentence in encoded_sentences:
-        flat_word_sequence.extend(sentence)
-    flat_word_sequence = tuple(flat_word_sequence)
-    word_model = NGramLanguageModel(flat_word_sequence, n_gram_size_secret)
-    if word_model.build() != 0:
-        return
-    encoded_prompt = word_processor.encode(prompt_text)
-    if not encoded_prompt:
-        return
-    beam_searcher = BeamSearcher(beam_width, word_model)
-    sequences = {encoded_prompt: 0.0}
-    for step in range(seq_len):
-        new_sequences = {}
-        for seq, score in sequences.items():
-            next_tokens = beam_searcher.get_next_token(seq)
-            if not next_tokens:
-                new_sequences[seq] = score
+        encrypted_text = file.read()
+    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as text_file:
+        harry_potter_text = text_file.read()
+    sentences_encoded = processor.encode_sentences(harry_potter_text)
+    all_tokens = []
+    for sent in sentences_encoded:
+        all_tokens.extend(sent)
+    corpus_tokens = tuple(all_tokens)
+    model = NGramLanguageModel(corpus_tokens, n_size)
+    model.build()
+    text_parts = encrypted_text.split("<BURNED>")
+    beginning = text_parts[0].strip()
+    beginning_encoded = processor.encode_sentences(beginning)
+    initial_context = []
+    for sentence in beginning_encoded:
+        for token_id in sentence:
+            word = processor.get_token(token_id)
+            if word != '<EOS>':
+                initial_context.append(token_id)
+    current_context = tuple(initial_context)
+    search_engine = BeamSearcher(beam_size, model)
+    possible_sequences = {current_context: 0.0}
+    for step in range(generate_length):
+        updated_sequences = {}
+        for sequence, probability in possible_sequences.items():
+            possible_next = search_engine.get_next_token(sequence)
+            if not possible_next:
                 continue
-            for token_id, probability in next_tokens:
-                if probability <= 0:
-                    continue
-                new_seq = seq + (token_id,)
-                new_score = score - math.log(probability)
-                new_sequences[new_seq] = new_score
-        if not new_sequences:
+            extended = search_engine.continue_sequence(
+                sequence, possible_next, {sequence: probability}
+            )
+            if not extended:
+                continue
+            for extended_seq, extended_prob in extended.items():
+                if (
+                    extended_seq not in updated_sequences or 
+                    extended_prob < updated_sequences[extended_seq]
+                ):
+                    updated_sequences[extended_seq] = extended_prob
+        if not updated_sequences:
             break
-        sorted_sequences = sorted(new_sequences.items(), key=lambda x: x[1])
-        sequences = dict(sorted_sequences[:beam_width])
-    best_seq, _ = min(sequences.items(), key=lambda x: x[1])
-    all_words = []
-    for token_id in best_seq:
-        word = word_processor.get_token(token_id)
-        if word and word != '<EOS>':
-            all_words.append(word)
-    prompt_words = prompt_text.split()
-    generated_words = all_words[len(prompt_words):]
-    burned_part = " ".join(generated_words).strip()    
-    burned_part = burned_part.replace("<EOS>", "").strip()
-    burned_part = burned_part.rstrip('.!?,;')
-    if burned_part and burned_part[0].isupper():
-        burned_part = burned_part[0].lower() + burned_part[1:]
-    print(f"\nGenerated text: '{burned_part}'")
-    result = secret_text.replace("<BURNED>", burned_part)
-    print("\nComplete letter:")
-    print(result)
+        filtered = search_engine.prune_sequence_candidates(updated_sequences)
+        possible_sequences = filtered or {}
+        if not possible_sequences:
+            break
+    if possible_sequences:
+        optimal_sequence = min(possible_sequences.items(), key=lambda x: x[1])[0]
+        context_length = len(current_context)
+        predicted_tokens = []
+        for token_id in optimal_sequence[context_length:]:
+            word = processor.get_token(token_id)
+            if word and word != '<EOS>':
+                predicted_tokens.append(word)
+        if predicted_tokens:
+            missing_section = " ".join(predicted_tokens)
+            split_words = missing_section.split()
+            if all(len(w) == 1 for w in split_words):
+                missing_section = missing_section.replace(" ", "")
+            completed_text = encrypted_text.replace("<BURNED>", missing_section)
+            print(f"\nComplete letter:\n{completed_text}")
 
     results = (gb_result, bb_result, ga_result, ba_result, dynamic_result)
     assert all(results), "Result is None"
