@@ -300,6 +300,11 @@ class PrefixTrie:
         Args:
             encoded_corpus (tuple[NGramType]): Tokenized corpus.
         """
+        if not isinstance(encoded_corpus, tuple):
+            return None
+        self.clean()
+        for el in encoded_corpus:
+            self._insert(el)
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
@@ -314,8 +319,8 @@ class PrefixTrie:
         root = self._root
         for el in prefix:
             sequence_children = root.get_children(el)
-            if not root.has_children():
-                raise TriePrefixNotFoundError
+            if not sequence_children:
+                raise TriePrefixNotFoundError()
             root = sequence_children[0]
         return root
 
@@ -330,10 +335,20 @@ class PrefixTrie:
             tuple: Tuple of all token sequences that begin with the given prefix.
                                    Empty tuple if prefix not found.
         """
-        node = self.get_prefix(prefix)
-        if not node:
+        try:
+            node = self.get_prefix(prefix)
+        except TriePrefixNotFoundError:
             return tuple()
-        
+        sequences = []
+        sequence = list(prefix)
+        nodes = [(node, sequence)]
+        while nodes:
+            node, sequence  = nodes.pop(0)
+            for child in node.get_children():
+                sequence.append(child.get_name())
+                sequences.append(tuple(sequence))
+                nodes.append((child, sequence))
+        return tuple(sequences)
 
     def _insert(self, sequence: NGramType) -> None:
         """
