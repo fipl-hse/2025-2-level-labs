@@ -684,29 +684,21 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         """
         if not isinstance(sequence, tuple) or not sequence:
                 return None
-        
         if self._current_n_gram_size < 2:
             self._current_n_gram_size = self._max_ngram_size
-        
-        # Если есть модель для текущего размера, используем ее
         if self._current_n_gram_size in self._models:
             model = self._models[self._current_n_gram_size]
             ngram_size = model.get_n_gram_size()
-            
             if len(sequence) < ngram_size - 1:
                 return {}
-            
             context = sequence[-(ngram_size - 1):]
             try:
                 return model.get_next_tokens(context)
             except TriePrefixNotFoundError:
                 return {}
-        
-        # Иначе используем объединенное дерево
         context_size = min(self._current_n_gram_size - 1, len(sequence))
         if context_size <= 0:
             return {}
-        
         context = sequence[-context_size:]
         try:
             prefix_node = self.get_prefix(context)
@@ -768,17 +760,26 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             return
         stack = [(source_root, self._root)]
         while stack:
-            source, target = stack.pop()
-            named_children = [
-                child for child in source.get_children()
-                if child.get_name() is not None
-            ]
-            for child in named_children:
-                name = child.get_name()
-                value = child.get_value()
-                new_target = self._assign_child(target, name, value)
-                stack.append((child, new_target))
-
+            source_node, target_parent = stack.pop()
+            for source_child in source_node.get_children():
+                child_name = source_child.get_name()
+                if child_name is None:
+                    continue
+                target_child = None
+                for existing_child in target_parent.get_children():
+                    if existing_child.get_name() == child_name:
+                        target_child = existing_child
+                        break
+                if target_child is None:
+                    target_parent.add_child(child_name)
+                    for child in target_parent.get_children():
+                        if child.get_name() == child_name:
+                            target_child = child
+                            break
+                source_value = source_child.get_value()
+                if source_value != 0.0:
+                    target_child.set_value(source_value)
+                stack.append((source_child, target_child))
 
 class DynamicBackOffGenerator(BackOffGenerator):
     """
@@ -810,7 +811,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
             dict[int, float] | None: Next tokens for sequence continuation
         """
         if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
-                return None
+            return None
         max_size = self._dynamic_trie.get_n_gram_size()
         for n in range(max_size, 1, -1):
             self._dynamic_trie.set_current_ngram_size(n)
@@ -857,7 +858,6 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
     stack = [(trie.get_root(), None)]
     root_dict = None
-    current_parent_list: list[dict] = []
     while stack:
         current_node, parent_list = stack.pop()
         node_dict = {
@@ -867,16 +867,14 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         }
         if parent_list is None:
             root_dict = node_dict
-            current_parent_list = node_dict["children"]
+            child_list = node_dict["children"]
         else:
             parent_list.append(node_dict)
-            current_parent_list = node_dict["children"]
+            child_list = node_dict["children"]
         children = list(current_node.get_children())
         for child in reversed(children):
-            stack.append((child, current_parent_list))
-    data = {
-        "trie": root_dict
-    }
+            stack.append((child, child_list))
+    data = {"trie": root_dict or {}}
     with open(path, 'w', encoding='utf-8') as file:
         json.dump(data, file, indent=2)
 
