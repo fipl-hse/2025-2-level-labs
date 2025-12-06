@@ -17,17 +17,21 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-    result = ""
-    processor = WordProcessor('<EOS>')
-    encoded_sentences = processor.encode_sentences(hp_letters)
-    prefix_trie = PrefixTrie()
-    prefix_trie.fill(encoded_sentences)
-    suggestions = prefix_trie.suggest((2,))
-    if suggestions:
-        decoded = processor.decode(suggestions[0])
-        result = decoded.replace("<EOS>", "").strip()
-        print(result) 
-    assert result is not None and result != "", "Result is None or empty"
+    result = None
+    word_processor = WordProcessor(".")
+    trie = PrefixTrie()
+    encoded_letters = word_processor.encode_sentences(hp_letters)
+    trie.fill(encoded_letters)
+    suggested = trie.suggest((2,))
+    first_suggested_sentence = suggested[0]
+    words_list = []
+    for element in first_suggested_sentence:
+        token = word_processor.get_token(element)
+        words_list.append(token)
+    decoded_text = word_processor._postprocess_decoded_text(tuple(words_list))
+    print(decoded_text)
+    result = decoded_text
+    assert result, "Result is None"
 
 
 if __name__ == "__main__":
