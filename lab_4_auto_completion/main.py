@@ -361,11 +361,11 @@ class PrefixTrie:
         token_sequences = []
         current_sequence = list(prefix)
         current_sequences_list = []
-        while current_node.has_children():
-            for child in current_node.get_children():
-                current_sequence.append(child)
-                current_sequences_list.append(current_sequence)
-            #current_node = #gave up and went to sleep but it shouldn't be very hard
+        # while current_node.has_children():
+        #     for child in current_node.get_children():
+        #         current_sequence.append(child)
+        #         current_sequences_list.append(current_sequence)
+        #     #current_node = #gave up and went to sleep but it shouldn't be very hard
 
 
     def _insert(self, sequence: NGramType) -> None:
