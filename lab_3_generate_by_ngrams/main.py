@@ -53,6 +53,8 @@ class TextProcessor:
             tokens.extend(letters)
             if letters:
                 tokens.append(self._end_of_word_token)
+            if not letters:
+                continue
         if not tokens: 
             return None
         if text and text[-1].isalpha(): 
@@ -103,7 +105,6 @@ class TextProcessor:
         for token, token_id in self._storage.items():
             if token_id == element_id:
                 return token
-        return None
 
     def encode(self, text: str) -> tuple[int, ...] | None:
         """
@@ -173,8 +174,7 @@ class TextProcessor:
             return None
         if not self._decode(encoded_corpus):
             return None
-        else:
-            return self._postprocess_decoded_text(self._decode(encoded_corpus))
+        return self._postprocess_decoded_text(self._decode(encoded_corpus))
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
@@ -203,8 +203,7 @@ class TextProcessor:
         for element_id in corpus:
             if not self.get_token(element_id): 
                 return None
-            else:
-                decoded_text.append(self.get_token(element_id))
+            decoded_text.append(self.get_token(element_id))
         return tuple(decoded_text)
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
@@ -299,8 +298,7 @@ class NGramLanguageModel:
                 self._n_gram_frequencies[n_gram] = count / context_counts[n_gram[:len(n_gram) - 1]]
         if not self._n_gram_frequencies:
             return 1
-        else:
-            return 0
+        return 0
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
@@ -499,6 +497,10 @@ class BeamSearcher:
 
         In case of corrupt input arguments return None.
         """
+        if not check_dict(sequence_candidates, tuple, float, False):
+            return None
+        candidates_sorted = sorted(sequence_candidates.items(), key=lambda item: item[1])
+        return dict(candidates_sorted[:self._beam_width])
 
 
 class BeamSearchTextGenerator:
@@ -523,6 +525,11 @@ class BeamSearchTextGenerator:
             text_processor (TextProcessor): A TextProcessor instance to handle text processing
             beam_width (int): Beam width parameter for generation
         """
+        self._language_model = language_model
+        self._text_processor = text_processor
+        self._beam_width = beam_width
+        self.beam_searcher = BeamSearcher(beam_width, language_model)
+
 
     def run(self, prompt: str, seq_len: int) -> str | None:
         """
@@ -554,6 +561,7 @@ class BeamSearchTextGenerator:
 
         In case of corrupt input arguments return None.
         """
+        
 
 
 class NGramLanguageModelReader:
