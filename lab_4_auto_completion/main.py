@@ -78,22 +78,38 @@ class WordProcessor(TextProcessor):
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
         if not isinstance(text, str) or not text:
-            return None
-        tokens = self._tokenize(text)
+            return tuple()
+        raw_sentences = []
         current_sentence = []
+        for char in text:
+            current_sentence.append(char)
+            if char in '.!?':
+                sentence = ''.join(current_sentence).strip()
+                if sentence:
+                    raw_sentences.append(sentence)
+                current_sentence = []
+        if current_sentence:
+            sentence = ''.join(current_sentence).strip()
+            if sentence:
+                raw_sentences.append(sentence)
+        clean_sentences = []
+        for sentence in raw_sentences:
+            clean_sentence = sentence.strip().lower()
+            if clean_sentence:
+                clean_sentences.append(clean_sentence)
         encoded_sentences = []
-        for token in tokens:
-            if token == self._end_of_sentence_token:
-                if current_sentence:
-                    encoded_sentences.append(tuple(current_sentence) + (0,))
-                    current_sentence = []
-            else:
+        for clean_sentence in clean_sentences:
+            tokens = self._tokenize(clean_sentence)
+            encoded_sentence = []
+            for token in tokens:
+                if token == self._end_of_sentence_token:
+                    continue
                 self._put(token)
                 word_id = self._storage.get(token)
                 if word_id is not None:
-                    current_sentence.append(word_id)
-        if current_sentence:
-            encoded_sentences.append(tuple(current_sentence) + (0,))
+                    encoded_sentence.append(word_id)
+            if encoded_sentence:
+                encoded_sentences.append(tuple(encoded_sentence) + (0,))
         return tuple(encoded_sentences)
 
     def _put(self, element: str) -> None:
@@ -365,22 +381,13 @@ class PrefixTrie:
         Args:
             sequence (NGramType): Tokens to insert.
         """
-        current_node = self._root
-        for element in sequence:
-            children = current_node.get_children()
-            child_node = None
-            for child in children:
-                if child.get_name() == element:
-                    child_node = child
-                    break
-            if child_node is None:
-                current_node.add_child(element)
-                updated_children = current_node.get_children()
-                for child in updated_children:
-                    if child.get_name() == element:
-                        child_node = child
-                        break
-            current_node = child_node
+        current = self._root
+        for token in sequence:
+            children = current.get_children(token)
+            if not children:
+                current.add_child(token)
+                children = current.get_children(token)
+            current = children[0]
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
@@ -418,31 +425,21 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             int: 0 if attribute is filled successfully, otherwise 1
         """
-        attempt = 1
-        if attempt:
-            print('Start...')
-            self._root = TrieNode()
-            print(f'The corpus has {len(self._encoded_corpus)} sentences')
-            all_ngrams = []
-            for sentence in self._encoded_corpus:
-                if not isinstance(sentence, (tuple, list)) or not sentence:
-                    print(f'Skipping invalid sentence: {sentence} (type: {type(sentence)})')
-                    continue
-                if len(sentence) < self._n_gram_size:
-                    continue
-                for i in range(len(sentence) - self._n_gram_size + 1):
-                    ngram = tuple(sentence[i:i + self._n_gram_size])
-                    all_ngrams.append(ngram)
-            print(f'There are {len(all_ngrams)} ngrams')
-            self.fill(tuple(all_ngrams))
-            print('The tree is done')
-            collected_ngrams = self._collect_all_ngrams()
-            print(f'Collected {len(collected_ngrams)} ngrams from the tree')
-            self._fill_frequencies(collected_ngrams)
-            print('Frequencies completed')
+        if not self._encoded_corpus:
+            return 1
+        self._root = TrieNode()
+        all_ngrams = []
+        for sentence in self._encoded_corpus:
+            for i in range(len(sentence) - self._n_gram_size + 1):
+                ngram = tuple(sentence[i:i + self._n_gram_size])
+                all_ngrams.append(ngram)
+        try:
+            for ngram in all_ngrams:
+                self._insert(ngram)
+            final_ngrams = self._collect_all_ngrams()
+            self._fill_frequencies(final_ngrams)
             return 0
-        else:
-            print('Error:')
+        except:
             return 1
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
@@ -664,7 +661,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             or current_n_gram_size < 2
             or self._max_ngram_size < current_n_gram_size
         ):
-            raise IncorrectNgramError
+            raise IncorrectNgramError('Error! Incorrect input data')
         self._current_n_gram_size = current_n_gram_size
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict[int, float] | None:
@@ -737,7 +734,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Merge all built N-gram trie models into a single unified trie.
         """
         if not self._models:
-            raise MergeTreesError("No models to merge")
+            raise MergeTreesError('No models to merge')
         self._root = TrieNode()
         for n_size in sorted(self._models):
             model = self._models[n_size]
