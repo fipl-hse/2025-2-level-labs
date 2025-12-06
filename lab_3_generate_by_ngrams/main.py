@@ -390,12 +390,12 @@ class GreedyTextGenerator:
         if not encoded_text: 
             return None
         generated_sequence = list(encoded_text)
-        for iteration_count in range(seq_len):
+        for _ in range(seq_len):
             context = tuple(generated_sequence[-(self._model.get_n_gram_size() - 1) :])
             candidates = self._model.generate_next_token(context)
             if not candidates:
                 break
-            token, iteration_count = max(candidates.items(), key=lambda item: (item[1], item[0]))
+            token, _ = max(candidates.items(), key=lambda item: (item[1], item[0]))
             generated_sequence.append(token)
         generated_sequence_tupled = tuple(generated_sequence)
         return self._text_processor.decode(generated_sequence_tupled)
