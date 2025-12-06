@@ -176,7 +176,9 @@ class TextProcessor:
             return None
         if not self._decode(encoded_corpus):
             return None
-        return self._postprocess_decoded_text(self._decode(encoded_corpus))
+        decoded_text = self._decode(encoded_corpus)
+        postprocessed_text = self._postprocess_decoded_text(decoded_text)
+        return postprocessed_text
 
     def fill_from_ngrams(self, content: dict) -> None:
         """
