@@ -17,19 +17,11 @@ class EncodingError(Exception):
     Exception raised when encoding fails due to incorrect input or processing error
     """
 
-    def __init__(self, message):
-        self.message = message
-        super().__init__(message)
-
 
 class TriePrefixNotFoundError(Exception):
     """
     Exception raised when prefix trie building fails due to absence of the prefix in it
     """
-
-    def __init__(self, message):
-        self.message = message
-        super().__init__(message)
 
 
 class DecodingError(Exception):
@@ -37,29 +29,17 @@ class DecodingError(Exception):
     Exception raised when decoding fails due to incorrect input or processing error
     """
 
-    def __init__(self, message):
-        self.message = message
-        super().__init__(message)
-
 
 class IncorrectNgramError(Exception):
     """
     Exception raised when something fails due to incorrect size of n-gram
     """
 
-    def __init__(self, message):
-        self.message = message
-        super().__init__(message)
-
 
 class MergeTreesError(Exception):
     """
     Exception raised when tree-merging fails due to its impossibility
     """
-
-    def __init__(self, message):
-        self.message = message
-        super().__init__(message)
 
 
 class WordProcessor(TextProcessor):
@@ -99,7 +79,7 @@ class WordProcessor(TextProcessor):
         sentences = []
         last_sentence_end = 0
         for index, token in enumerate(text):
-            if token in "!?.":
+            if token in "!?.<":
                 sentences.append(text[last_sentence_end:index+1].lower())
                 last_sentence_end = index + 1
         encoded_text = []
@@ -182,7 +162,7 @@ class WordProcessor(TextProcessor):
         sentences = []
         last_sentence_end = 0
         for index, token in enumerate(text):
-            if token in "!?.":
+            if token in "!?." or index == len(text) - 1:
                 sentences.append(text[last_sentence_end:index+1])
                 last_sentence_end = index + 1
         words_raw = []
@@ -232,6 +212,9 @@ class TrieNode:
             name (int | None, optional): The name of the node.
             value (float, optional): The value stored in the node.
         """
+        self.__name = name
+        self._value = value
+        self._children = []
 
     def __bool__(self) -> bool:
         """
@@ -240,6 +223,9 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
+        if len(self.get_children()) >= 1:
+            return True
+        return False
 
     def __str__(self) -> str:
         """
@@ -248,6 +234,7 @@ class TrieNode:
         Returns:
             str: String representation showing node data and frequency.
         """
+        return f"TrieNode(name={self.__name}, value={self._value})"
 
     def add_child(self, item: int) -> None:
         """
@@ -256,6 +243,8 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
+        new_child = TrieNode(item)
+        self._children.append(new_child)
 
     def get_children(self, item: int | None = None) -> tuple["TrieNode", ...]:
         """
@@ -267,6 +256,9 @@ class TrieNode:
         Returns:
             tuple["TrieNode", ...]: Tuple of child nodes.
         """
+        if not item:
+            return tuple(self._children)
+        return tuple([child_name for child_name in self._children if child_name.get_name() == item])
 
     def get_name(self) -> int | None:
         """
@@ -275,6 +267,7 @@ class TrieNode:
         Returns:
             int | None: TrieNode data.
         """
+        return self.__name
 
     def get_value(self) -> float:
         """
@@ -283,6 +276,7 @@ class TrieNode:
         Returns:
             float: Frequency value.
         """
+        return self._value
 
     def set_value(self, new_value: float) -> None:
         """
@@ -291,6 +285,7 @@ class TrieNode:
         Args:
             new_value (float): New value to store.
         """
+        self._value = new_value
 
     def has_children(self) -> bool:
         """
@@ -299,6 +294,7 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
+        return self.__bool__()
 
 
 class PrefixTrie:
@@ -313,11 +309,13 @@ class PrefixTrie:
         """
         Initialize an empty PrefixTrie.
         """
+        self._root = TrieNode()
 
     def clean(self) -> None:
         """
         Clean the whole tree.
         """
+        self._root = TrieNode()
 
     def fill(self, encoded_corpus: tuple[NGramType]) -> None:
         """
@@ -337,6 +335,13 @@ class PrefixTrie:
         Returns:
             TrieNode: Found TrieNode by prefix
         """
+        current_node = self._root
+        for element in prefix:
+            current_child = current_node.get_children(element)
+            if not current_child:
+                raise TriePrefixNotFoundError()
+            current_node = current_child
+        return current_node
 
     def suggest(self, prefix: NGramType) -> tuple:
         """
@@ -349,6 +354,19 @@ class PrefixTrie:
             tuple: Tuple of all token sequences that begin with the given prefix.
                                    Empty tuple if prefix not found.
         """
+        try:
+            current_node = self.get_prefix(prefix)
+        except TriePrefixNotFoundError:
+            return ()
+        token_sequences = []
+        current_sequence = list(prefix)
+        current_sequences_list = []
+        while current_node.has_children():
+            for child in current_node.get_children():
+                current_sequence.append(child)
+                current_sequences_list.append(current_sequence)
+            #current_node = #gave up and went to sleep but it shouldn't be very hard
+
 
     def _insert(self, sequence: NGramType) -> None:
         """
@@ -357,6 +375,12 @@ class PrefixTrie:
         Args:
             sequence (NGramType): Tokens to insert.
         """
+        current_node = TrieNode()
+        current_node = self._root
+        for element in sequence:
+            if element not in current_node.get_children(element):
+                current_node.add_child(element)
+            current_node = element
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
