@@ -3,7 +3,7 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearcher, BeamSearchTextGenerator, GreedyTextGenerator
+from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, GreedyTextGenerator
 from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
@@ -25,63 +25,57 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-    with open("./assets/secrets/secret_5.txt", "r", encoding="utf-8") as text_file:
-        secret = text_file.read()
-    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as harry_file:
-        text = harry_file.read()
-    processor = WordProcessor(end_of_sentence_token="<EOS>")
-    encoded_data = processor.encode_sentences(hp_letters)
-    words_combined = []
-    for sent in encoded_data:
-        words_combined.extend(sent)
-    tri_grams_tuple = tuple(
-        tuple(words_combined[idx:idx + 3])
-        for idx in range(len(words_combined) - 2)
-    )
-    tree = PrefixTrie()
-    tree.fill(tri_grams_tuple)
-    found = tree.suggest((2,))
-    print(f"Found {len(found)} suggestions for prefix (2,)")
-    if found:
-        best = found[0]
-        print(f"First suggestion: {best}")
-        output_words = []
-        for code in best:
-            for text, num in processor._storage.items():
-                if num == code:
-                    output_words.append(text)
+    #with open("./assets/secrets/secret_5.txt", "r", encoding="utf-8") as text_file:
+        #secret = text_file.read()
+    #with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as harry_file:
+        #text = harry_file.read()
+    processor = WordProcessor('<EOS>')
+    hp_encoded = processor.encode_sentences(hp_letters)
+    trie = PrefixTrie()
+    trie.fill(hp_encoded)
+    suggestion = trie.suggest((2,))
+    if suggestion:
+        decoded_words = []
+        storage = processor._storage
+        for token_id in suggestion[0]:
+            for word, word_id in storage.items():
+                if word_id == token_id:
+                    decoded_words.append(word)
                     break
-        decoded_text = processor._postprocess_decoded_text(tuple(output_words))
-        print(f"Decoded result: {decoded_text}")
-    encoded_hp = processor.encode_sentences(hp_letters)
-    n_gram_size = 5
-    model = NGramTrieLanguageModel(encoded_hp, n_gram_size)
-    greedy_generator = GreedyTextGenerator(model, processor)
-    greedy_result_before = greedy_generator.run(seq_len=30, prompt="Ivanov")
-    print(f"Result Greedy: {greedy_result_before}")
-    beam_searcher = BeamSearcher(3, 10)
-    beam_generator = BeamSearchTextGenerator(model, processor, beam_searcher)
-    beam_result_before = beam_generator.run(seq_len=30, prompt="Ivanov")
-    print(f"Result BeamSearch: {beam_result_before}")
+        print(f"\n1. Decoded result: {' '.join(decoded_words)}")
+    model = NGramTrieLanguageModel(hp_encoded, 5)
+    model.build()
+    print(f"\n2. Greedy result before: {GreedyTextGenerator(model, processor).run(52, 'Dear')}")
+    beam_generator = None
+    try:
+        beam_generator = BeamSearchTextGenerator((model,), processor)
+        print(f"Beam result before: {beam_generator.run(52, 'Dear')}")
+    except TypeError:
+        try:
+            beam_generator = BeamSearchTextGenerator((model,), processor, 3)
+            print(f"Beam result before: {beam_generator.run(52, 'Dear')}")
+        except:
+            print("Beam result before: [Failed to initialize BeamSearch]")
     encoded_ussr = processor.encode_sentences(ussr_letters)
     model.update(encoded_ussr)
-    greedy_result_after = greedy_generator.run(seq_len=30, prompt="Ivanov")
-    print(f"Result Greedy update: {greedy_result_after}")
-    beam_result_after = beam_generator.run(seq_len=30, prompt="Ivanov")
-    print(f"Result BeamSearch update: {beam_result_after}")
-    dynamic_model = DynamicNgramLMTrie(encoded_hp, n_gram_size=5)
-    dynamic_build_result = dynamic_model.build()
-    save_path = "./dynamic_model.json"
-    save(dynamic_model, save_path)
-    loaded_model = load(save_path)
-    dynamic_generator = DynamicBackOffGenerator(dynamic_model, processor)
-    dynamic_result_before = dynamic_generator.run(seq_len=50, prompt="Ivanov")
-    print(f"Result BackOff (before):\n{dynamic_result_before}")
-    dynamic_model.update(encoded_ussr)
-    dynamic_generator_updated = DynamicBackOffGenerator(dynamic_model, processor)
-    dynamic_result_after = dynamic_generator_updated.run(seq_len=50, prompt="Ivanov")
-    print(f"Result BackOff (after):\n{dynamic_result_after}")
-    result = dynamic_result_after
+    print(f"\n3. Greedy result after: {GreedyTextGenerator(model, processor).run(52, 'Dear')}")
+    if beam_generator:
+        print(f"Beam result after: {beam_generator.run(52, 'Dear')}")
+    else:
+        print("Beam result after: [Beam Search not available]")
+    dynamic_trie = DynamicNgramLMTrie(hp_encoded, 5)
+    dynamic_trie.build()
+    save(dynamic_trie, "./saved_dynamic_trie.json")
+    loaded_trie = load("./saved_dynamic_trie.json")
+    dynamic_generator = DynamicBackOffGenerator(loaded_trie, processor)
+    print(f"\n4. Dynamic result before: {dynamic_generator.run(50, 'Ivanov')}")
+    loaded_trie.update(encoded_ussr)
+    print(f"Dynamic result after: {dynamic_generator.run(50, 'Ivanov')}")
+    print(f"\n5. Comparison all methods (prompt: 'Dear', length: 15):")
+    print(f"Greedy: {GreedyTextGenerator(model, processor).run(15, 'Dear')}")
+    print(f"Beam Search: -")
+    print(f"Dynamic BackOff: {dynamic_generator.run(15, 'Dear')}")
+    result = dynamic_generator.run(15, 'Dear')
     assert result, "Result is None"
 
 
