@@ -113,7 +113,7 @@ class WordProcessor(TextProcessor):
             str: Resulting text
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
-            raise DecodingError("Invalid input: decoded_corpus can not be an empty tuple")
+            raise DecodingError('Invalid input: decoded_corpus must be a non-empty string')
         sentences_list = []
         current_sentence_list = []
         for token in decoded_corpus:
@@ -130,7 +130,7 @@ class WordProcessor(TextProcessor):
             if sentence_str:
                 sentences_list.append(sentence_str.capitalize())
         if not sentences_list:
-            raise DecodingError("Empty output: missing any tokens!")
+            raise DecodingError('Postprocessing resulted in empty output')
         return '. '.join(sentences_list) + '.'
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
@@ -147,7 +147,7 @@ class WordProcessor(TextProcessor):
             tuple[str, ...]: Tokenized text as words
         """
         if not isinstance(text, str) or not text:
-            raise EncodingError("Invalid input: text can not be an empty string!")
+            raise EncodingError('Invalid input: text must be a non-empty string')
         exceptions = '?.!'
         token_list = []
         sentence_list = text.lower().split()
@@ -159,7 +159,7 @@ class WordProcessor(TextProcessor):
                 if sentence and sentence[-1] in exceptions:
                     token_list.append(self._end_of_sentence_token)
         if not token_list:
-            raise EncodingError("Empty output: missing any tokens!")
+            raise EncodingError('Tokenization resulted in empty output')
         return tuple(token_list)
 
 
