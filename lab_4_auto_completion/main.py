@@ -432,9 +432,9 @@ class PrefixTrie:
                 else:
                     stack.append((child, new_path))
 
-            sequences.extend(sorted(result, reverse=True))
+            sequences.extend(result)
 
-        return tuple(sorted(sequences, reverse=True))
+        return tuple(sorted(sequences))
 
     def _insert(self, sequence: NGramType) -> None:
         """

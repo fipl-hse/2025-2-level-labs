@@ -37,13 +37,13 @@ def main() -> None:
     encoded_data = word_processor.encode_sentences(hp_letters)
     words_combined = [word for sent in encoded_data for word in sent]
     tri_grams = tuple(tuple(words_combined[i:i + 3]) for i in range(len(words_combined) - 2))
-    
+
     tree = PrefixTrie()
     tree.fill(tri_grams)
-    
+
     if (found := tree.suggest((2,))):
         best = found[0]
-        output_words = [next(text for text, num in word_processor._storage.items() if num == code) 
+        output_words = [next(text for text, num in word_processor._storage.items() if num == code)
                        for code in best]
         decoded = word_processor._postprocess_decoded_text(tuple(output_words))
         print(f"Found {len(found)} suggestions, first: {decoded}")
