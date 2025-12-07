@@ -147,30 +147,30 @@ class WordProcessor(TextProcessor):
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             raise DecodingError('Invalid input: decoded_corpus must be a non-empty tuple')
 
-        result = []
+        sentences_list = []
         current_sentence = []
         for element in decoded_corpus:
             if element == self._end_of_sentence_token:
                 if current_sentence:
-                    result.append(' '.join(current_sentence))
+                    sentences_list.append(' '.join(current_sentence))
                     current_sentence = []
             else:
                 current_sentence.append(element)
 
         if current_sentence:
-            result.append(' '.join(current_sentence))
+            sentences_list.append(' '.join(current_sentence))
 
-        if not result:
+        if not sentences_list:
             raise DecodingError('Postprocessing resulted in empty output')
 
         postprocess_text = []
-        for sentence in result:
+        for sentence in sentences_list:
             if sentence:
                 capitalaze = sentence[0].upper() + sentence[1:] + '.'
                 postprocess_text.append(capitalaze)
 
-        result = ' '.join(postprocess_text)
-        return result
+        final_text = ' '.join(postprocess_text)
+        return final_text
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -276,7 +276,6 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
-
         new_node = TrieNode(item)
         self._children.append(new_node)
         return new_node
@@ -446,20 +445,20 @@ class PrefixTrie:
         current_node = self._root
         for step in sequence:
             children_node = current_node.get_children()
-
             found_child = None
-
             for child in children_node:
                 if child.get_name() == step:
                     found_child = child
                     break
 
             if found_child is None:
-                new_node = current_node.add_child(step)
-                current_node = new_node
+                current_node.add_child(step)
+                for child in current_node.get_children():
+                    if child.get_name() == step:
+                        current_node = child
+                        break
             else:
                 current_node = found_child
-
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
     """
