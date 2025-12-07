@@ -30,12 +30,12 @@ def main() -> None:
     model = NGramTrieLanguageModel(hp_encoded_sentences, 5)
     model.build()
 
-    greedy_res = GreedyTextGenerator(model, processor).run(20, 'Dear Harry')
-    beam_res = BeamSearchTextGenerator(model, processor, 3).run('Dear Harry', 20)
+    greedy_res = GreedyTextGenerator(model, processor).run(50, 'Harry')
+    beam_res = BeamSearchTextGenerator(model, processor, 3).run('Harry', 50)
 
     model.update(processor.encode_sentences(ussr_letters))
-    greedy_upd_res = GreedyTextGenerator(model, processor).run(20, 'Dear Harry')
-    beam_upd_res = BeamSearchTextGenerator(model, processor, 3).run('Dear Harry', 20)
+    greedy_upd_res = GreedyTextGenerator(model, processor).run(50, 'Harry')
+    beam_upd_res = BeamSearchTextGenerator(model, processor, 3).run('Harry', 50)
     print(greedy_res)
     print(greedy_upd_res)
     print(beam_res)
