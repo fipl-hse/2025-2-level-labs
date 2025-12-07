@@ -870,21 +870,23 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
-    stack= [(trie.get_root(), None)]
-    root_dict = None
+    root_node = trie.get_root()
+    root_dict = {
+        "value": root_node.get_name(),
+        "freq": root_node.get_value(),
+        "children": []
+    }
+    stack = [(root_node, root_dict)]
     while stack:
-        current_node, parent_dict = stack.pop()
-        node_dict = {
-            "value": current_node.get_name(),
-            "freq": current_node.get_value(),
-            "children": []
-        }
-        if parent_dict is None:
-            root_dict = node_dict
-        else:
-            parent_dict["children"].append(node_dict)
-        for child in reversed(current_node.get_children()):
-            stack.append((child, node_dict))
+        current_node, current_dict = stack.pop()
+        for child in current_node.get_children():
+            child_dict = {
+                "value": child.get_name(),
+                "freq": child.get_value(),
+                "children": []
+            }
+            current_dict["children"].append(child_dict)
+            stack.append((child, child_dict))
     trie_data = {
         "trie": root_dict
     }
@@ -907,15 +909,40 @@ def load(path: str) -> DynamicNgramLMTrie:
     root_dict = trie_data.get("trie")
     if root_dict:
         root_value = root_dict.get("value")
-        if root_value is not None:
-            trie._root = TrieNode(root_value, root_dict.get("freq", 0.0))
-        else:
-            trie._root = TrieNode(None, root_dict.get("freq", 0.0))
-        stack = [(root_dict, trie._root)]
+        root_freq = root_dict.get("freq", 0.0)
+        build_result = trie.build()
+        if build_result != 0:
+            return DynamicNgramLMTrie((), 3)
+        root_node = trie.get_root()
+        if root_node:
+            if hasattr(root_node, 'set_name'):
+                root_node.set_name(root_value)
+            elif hasattr(root_node, '_TrieNode__name'):
+                root_node._TrieNode__name = root_value
+            if hasattr(root_node, 'set_value'):
+                root_node.set_value(root_freq)
+            elif hasattr(root_node, '_value'):
+                root_node._value = root_freq
+        stack = [(root_dict, root_node)]
         while stack:
             current_dict, current_node = stack.pop()
-            for child_dict in reversed(current_dict.get("children", [])):
-                child_node = TrieNode(child_dict.get("value"), child_dict.get("freq", 0.0))
-                current_node._children.append(child_node)
+            children_list = current_dict.get("children", [])
+            for child_dict in reversed(children_list):
+                child_value = child_dict.get("value")
+                child_freq = child_dict.get("freq", 0.0)
+                child_node = TrieNode(child_value, child_freq)
+                if hasattr(current_node, 'add_child') and callable(current_node.add_child):
+                    if child_value is not None:
+                        current_node.add_child(child_value)
+                    for existing_child in current_node.get_children():
+                        if existing_child.get_name() == child_value:
+                            existing_child.set_value(child_freq)
+                            child_node = existing_child
+                            break
+                else:
+                    children = list(current_node.get_children())
+                    children.append(child_node)
+                    if hasattr(current_node, 'set_children'):
+                        current_node.set_children(children)
                 stack.append((child_dict, child_node))
     return trie
