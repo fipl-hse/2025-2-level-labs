@@ -480,7 +480,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             else:
                 return 1
             return 0
-        except Exception:
+        except ValueError:
             return 1
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
