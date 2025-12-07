@@ -71,10 +71,6 @@ def main() -> None:
     print(f"\n4. Dynamic result before: {dynamic_generator.run(50, 'Ivanov')}")
     loaded_trie.update(encoded_ussr)
     print(f"Dynamic result after: {dynamic_generator.run(50, 'Ivanov')}")
-    print(f"\n5. Comparison all methods (prompt: 'Dear', length: 15):")
-    print(f"Greedy: {GreedyTextGenerator(model, processor).run(15, 'Dear')}")
-    print(f"Beam Search: -")
-    print(f"Dynamic BackOff: {dynamic_generator.run(15, 'Dear')}")
     result = dynamic_generator.run(15, 'Dear')
     assert result, "Result is None"
 
