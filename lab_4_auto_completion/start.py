@@ -37,7 +37,7 @@ def main() -> None:
     )
 
     tree = PrefixTrie()
-    tree.fill((tri_grams,))
+    tree.fill(tri_grams)
 
     if (found := tree.suggest((2,))):
         best = found[0]
