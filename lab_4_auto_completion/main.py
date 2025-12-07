@@ -85,18 +85,15 @@ class WordProcessor(TextProcessor):
             current_sentence.append(char)
             if char in '.!?':
                 sentence = ''.join(current_sentence).strip()
-                if sentence:
-                    raw_sentences.append(sentence)
+                raw_sentences.append(sentence)
                 current_sentence = []
         if current_sentence:
             sentence = ''.join(current_sentence).strip()
-            if sentence:
-                raw_sentences.append(sentence)
+            raw_sentences.append(sentence)
         clean_sentences = []
         for sentence in raw_sentences:
             clean_sentence = sentence.strip().lower()
-            if clean_sentence:
-                clean_sentences.append(clean_sentence)
+            clean_sentences.append(clean_sentence)
         encoded_sentences = []
         for clean_sentence in clean_sentences:
             tokens = self._tokenize(clean_sentence)
@@ -108,8 +105,7 @@ class WordProcessor(TextProcessor):
                 word_id = self._storage.get(token)
                 if word_id is not None:
                     encoded_sentence.append(word_id)
-            if encoded_sentence:
-                encoded_sentences.append(tuple(encoded_sentence) + (0,))
+            encoded_sentences.append(tuple(encoded_sentence) + (0,))
         return tuple(encoded_sentences)
 
     def _put(self, element: str) -> None:
@@ -123,7 +119,7 @@ class WordProcessor(TextProcessor):
         an element is not added to storage
         """
         if not isinstance(element, str) or not element:
-            return
+            return None
         if element not in self._storage:
             self._storage[element] = len(self._storage)
         return None
@@ -441,7 +437,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             final_ngrams = self._collect_all_ngrams()
             self._fill_frequencies(final_ngrams)
             return 0
-        except:
+        except TriePrefixNotFoundError:
             return 1
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
@@ -525,7 +521,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             return None
         if not self._encoded_corpus:
             self._encoded_corpus = new_corpus
-        self.build()
+        return self.build()
 
     def _collect_all_ngrams(self) -> tuple[NGramType, ...]:
         """
@@ -727,9 +723,12 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 if freq != 0.0:
                     child.set_value(freq)
                 return child
-        new_node = TrieNode(name=node_name, value=freq)
-        parent._children.append(new_node)
-        return new_node
+        parent.add_child(node_name)
+        for child in parent.get_children():
+            if child.get_name() == node_name:
+                if freq != 0.0:
+                    child.set_value(freq)
+                return child
 
     def _merge(self) -> None:
         """
@@ -740,7 +739,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         self._root = TrieNode()
         for n_size in sorted(self._models):
             model = self._models[n_size]
-            source_root = model._root
+            source_root = model.get_root()
             self._insert_trie(source_root)
 
     def _insert_trie(self, source_root: TrieNode) -> None:
@@ -800,15 +799,11 @@ class DynamicBackOffGenerator(BackOffGenerator):
             return None
         max_size = self._dynamic_trie.get_n_gram_size()
         ngram_sizes = list(range(max_size, 1, -1))
-        seq_len = len(sequence_to_continue)
         for ngram in ngram_sizes:
-            try:
-                self._dynamic_trie.set_current_ngram_size(ngram)
-                next_tokens = self._dynamic_trie.generate_next_token(sequence_to_continue)
-                if next_tokens:
-                    return next_tokens
-            except:
-                continue
+            self._dynamic_trie.set_current_ngram_size(ngram)
+            next_tokens = self._dynamic_trie.generate_next_token(sequence_to_continue)
+            if next_tokens:
+                return next_tokens
         return None
 
     def run(self, seq_len: int, prompt: str) -> str | None:
@@ -847,8 +842,9 @@ class DynamicBackOffGenerator(BackOffGenerator):
             best_token = max(next_tokens.items(), key=lambda x: (x[1], x[0]))[0]
             tokens.append(best_token)
         words = []
+        storage = getattr(self._text_processor, '_storage', None)
         for token_id in tokens:
-            for word, word_id in self._text_processor._storage.items():
+            for word, word_id in storage.items():
                 if word_id == token_id:
                     words.append(word)
                     break
@@ -868,11 +864,11 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
     if not isinstance(path, str) or not path:
         raise ValueError('Invalid path')
     data = {
-    'value': trie._root.get_name(),
-    'freq': trie._root.get_value(),
+    'value': trie.get_root().get_name(),
+    'freq': trie.get_root().get_value(),
     'children': []
     }
-    stack = [(trie._root, data['children'])]
+    stack = [(trie.get_root(), data['children'])]
     while stack:
         current_node, parent_children_list = stack.pop()
         children = current_node.get_children()
@@ -900,28 +896,11 @@ def load(path: str) -> DynamicNgramLMTrie:
     """
     with open(path, 'r', encoding='utf-8') as file:
         data = json.load(file)
-    trie_data = data.get('trie', {})
     encoded_corpus = tuple(data.get('encoded_corpus', ()))
     max_ngram_size = data.get('max_ngram_size', 3)
     loaded_trie = DynamicNgramLMTrie(encoded_corpus, max_ngram_size)
-    if trie_data:
-        root_node = TrieNode(
-            trie_data.get('value'),
-            trie_data.get('freq', 0.0)
-        )
-        stack = [(trie_data, root_node)]
-        while stack:
-            current_data, current_node = stack.pop()
-            children_data = current_data.get('children', [])
-            for child_data in children_data:
-                child_node = TrieNode(
-                    child_data.get('value'),
-                    child_data.get('freq', 0.0)
-                )
-                current_node._children.append(child_node)
-                stack.append((child_data, child_node))
-        loaded_trie._root = root_node
-    loaded_trie._current_n_gram_size = data.get('current_n_gram_size', 0)
-    loaded_trie._max_ngram_size = max_ngram_size
-    loaded_trie._encoded_corpus = encoded_corpus
+    result = loaded_trie.build()
+    if result != 0:
+        return DynamicNgramLMTrie(tuple(), max_ngram_size)
+    loaded_trie.set_current_ngram_size(data.get('current_n_gram_size', max_ngram_size))
     return loaded_trie
