@@ -394,13 +394,19 @@ class PrefixTrie:
         current_node = self.root
     
         for item in sequence:
+            child_node = None
             children = current_node.get_children()
         
-            if item not in children:
+            for child in children:
+                if child.get_name() == item:
+                    child_node = child
+                    break
+
+            if child_node is None:
                 current_node.add_child(item)
-                children = current_node.get_children()
+                child_node = current_node.get_children(item)[0]
         
-            current_node = children[item]
+            current_node = child_node
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
