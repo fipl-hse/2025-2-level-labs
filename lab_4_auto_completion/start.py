@@ -30,7 +30,7 @@ def main() -> None:
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
 
-    processor = WordProcessor('<EOS>')
+    processor = WordProcessor("<EOS>")
     encoded_sentences = processor.encode_sentences(hp_letters)
 
     prefix_trie = PrefixTrie()
@@ -44,7 +44,9 @@ def main() -> None:
 
     print(f"Previous result of Greedy: {GreedyTextGenerator(model, processor).run(52, 'Harry')}")
 
-    print(f"Previous result of Beam: {BeamSearchTextGenerator(model, processor, 3).run('Harry', 52)}")
+    print(
+        f"Previous result of Beam: {BeamSearchTextGenerator(model, processor, 3).run('Harry', 52)}"
+    )
 
     encoded_ussr_sentences = processor.encode_sentences(ussr_letters)
     model.update(encoded_ussr_sentences)
@@ -73,6 +75,7 @@ def main() -> None:
 
     result = dynamic_generator
     assert result, "Result is None"
+
 
 if __name__ == "__main__":
     main()
