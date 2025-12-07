@@ -17,15 +17,7 @@ from lab_4_auto_completion.main import (
     load,
     save
 )
-beam = None
-greedy = None
-greedy_first = None
-beam_first = None
-beam = None
-beam_searcher = None
-backoff = None
-backoff_first = None
-backoff_second = None
+
 
 def main() -> None:
     """
