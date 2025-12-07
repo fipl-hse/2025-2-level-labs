@@ -27,14 +27,9 @@ def main() -> None:
         ussr_letters = text_file.read()
 
     word_processor = WordProcessor(end_of_sentence_token = '<EoW>')
-
-    encoded_data = word_processor.encode_sentences(hp_letters)
-    words_combined = [word for sent in encoded_data for word in sent]
-    words_combined = [int(x) for x in words_combined]
-    tri_grams = tuple(tuple(words_combined[i:i + 3]) for i in range(len(words_combined) - 2))
-
+    encoded_hp = word_processor.encode_sentences(hp_letters)
     tree = PrefixTrie()
-    tree.fill(tri_grams)
+    tree.fill(encoded_hp)
 
     if (found := tree.suggest((2,))):
         best = found[0]
@@ -45,7 +40,6 @@ def main() -> None:
     else:
         print('No continuations found')
 
-    encoded_hp = word_processor.encode_sentences(hp_letters)
     model = NGramTrieLanguageModel(encoded_hp, 5)
     model.build()
 
