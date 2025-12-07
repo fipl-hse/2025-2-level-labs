@@ -52,9 +52,9 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
+        super().__init__(end_of_word_token = end_of_sentence_token)
         self._end_of_sentence_token = end_of_sentence_token
-        super().__init__(end_of_word_token=end_of_sentence_token)
-        self._storage = {"<EOS>": 0}
+        self._storage = {self._end_of_sentence_token: 0}
     
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -70,22 +70,31 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
-        tokens = self._tokenize(text)
+        if not isinstance(text, str):
+            raise EncodingError("Invalid input: text must be a string")
+        if not text.strip():
+            raise EncodingError("Invalid input: text must be a non-empty string")
+        token_sequence = self._tokenize(text)
+        for token in token_sequence:
+            if token != self._end_of_sentence_token:
+                self._put(token)
         encoded_sentences = []
-        current_sentence = []
-        for token in tokens:
-            self._put(token)
+        current_encoded_sentence = []
+        for token in token_sequence:
             if token == self._end_of_sentence_token:
-                if current_sentence:
-                    eos_id = self._storage[self._end_of_sentence_token]
-                    current_sentence.append(eos_id)
-                    encoded_sentences.append(tuple(current_sentence))
-                    current_sentence = []
+                if current_encoded_sentence:
+                    eos_id = self.get_id(self._end_of_sentence_token)
+                    current_encoded_sentence.append(eos_id)
+                    encoded_sentences.append(tuple(current_encoded_sentence))
+                    current_encoded_sentence = []
             else:
-                word_id = self._storage[token]
-                current_sentence.append(word_id)
-        if current_sentence:
-            encoded_sentences.append(tuple(current_sentence))
+                word_id = self.get_id(token)
+                current_encoded_sentence.append(word_id)
+        if current_encoded_sentence:
+            eos_id = self.get_id(self._end_of_sentence_token)
+            current_encoded_sentence.append(eos_id)
+            encoded_sentence = tuple(current_encoded_sentence)
+            encoded_sentences.append(encoded_sentence)
         return tuple(encoded_sentences)
     
     def _put(self, element: str) -> None:
@@ -98,13 +107,11 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
-        if not element or not isinstance(element, str):
+        if not isinstance(element, str) or not element.strip():
             return
         if element in self._storage:
-            return self._storage[element]
-        new_id = len(self._storage)
-        self._storage[element] = new_id
-        return new_id
+            return
+        self._storage[element] = len(self._storage)
     
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
@@ -121,32 +128,21 @@ class WordProcessor(TextProcessor):
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             raise DecodingError("Invalid input: decoded_corpus must be a non-empty tuple")
-        check_corpus = False
-        for token in decoded_corpus:
-            if token != self._end_of_sentence_token or token.isalpha():
-                check_corpus = True
-                break
-        if not check_corpus:
+        if len(decoded_corpus) == decoded_corpus.count(self._end_of_sentence_token):
             raise DecodingError("Postprocessing resulted in empty output")
-
-        tokens = list(decoded_corpus)
-        processed_tokens = ""
-        prev_token_eos = True
-        for token in tokens:
-            if prev_token_eos:
-                token = token.capitalize()
-                prev_token_eos = False
-            if token == self._end_of_sentence_token:
-                processed_tokens = processed_tokens[:-1]
-                token = "."
-                prev_token_eos = True
-            processed_tokens += f"{token} "
-
-        processed_tokens = processed_tokens[:-1]
-        processed_tokens += "."
-        if not processed_tokens:
-            raise DecodingError("Postprocessing resulted in empty output")
-        return processed_tokens
+        decoded_list = []
+        decoded_str = ' '.join(decoded_corpus)
+        decoded_str = decoded_str.replace(f' {self._end_of_sentence_token} ', '.')
+        decoded_list.extend(decoded_str.split('.'))
+        sentence_index = 0
+        if decoded_list[-1] == '':
+            decoded_list = decoded_list[:-1]
+        for sentence in decoded_list:
+            capitalized_sentence = sentence.capitalize()
+            decoded_list[sentence_index] = capitalized_sentence
+            sentence_index += 1
+        decoded_text = ". ".join(decoded_list) + "."
+        return decoded_text
     
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -163,24 +159,16 @@ class WordProcessor(TextProcessor):
         """
         if not isinstance(text, str) or not text:
             raise EncodingError("Invalid input: text must be a non-empty string")
+        words = text.lower().split()
         tokenized_words = []
-        current_word = []
-        for char in text:
-            if char.isalpha():  
-                current_word.append(char.lower())
-            else:
-                if current_word:
-                    word = ''.join(current_word)
-                    tokenized_words.append(word)
-                    current_word = []
-                if char in '.!?':
-                    if tokenized_words and tokenized_words[-1] != self._end_of_sentence_token:
-                        tokenized_words.append(self._end_of_sentence_token)
-        if current_word:
-            word = ''.join(current_word)
-            tokenized_words.append(word)
+        for word in words:
+            letters = ''.join(letter for letter in word if letter.isalpha() or letter == '-')
+            if letters:
+                tokenized_words.append(letters)
+                if word and word[-1] in '!?.':
+                    tokenized_words.append(self._end_of_sentence_token)
         if not tokenized_words:
-            raise EncodingError("Tokenization resulted in empty output")
+            raise EncodingError('Tokenization resulted in empty output')
         return tuple(tokenized_words)
 
 class TrieNode:
@@ -285,7 +273,7 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
-        return self.__bool__()
+        return bool(self)
 
 class PrefixTrie:
     """
@@ -299,11 +287,13 @@ class PrefixTrie:
         """
         Initialize an empty PrefixTrie.
         """
+        self._root = TrieNode()
 
     def clean(self) -> None:
         """
         Clean the whole tree.
         """
+        self._root = TrieNode()
 
     def fill(self, encoded_corpus: tuple[NGramType]) -> None:
         """
@@ -312,6 +302,9 @@ class PrefixTrie:
         Args:
             encoded_corpus (tuple[NGramType]): Tokenized corpus.
         """
+        self.clean()
+        for token in encoded_corpus:
+            self._insert(token)
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
@@ -323,6 +316,18 @@ class PrefixTrie:
         Returns:
             TrieNode: Found TrieNode by prefix
         """
+        current_node = self._root
+        for item in prefix:
+            children_nodes = current_node.get_children(item)
+            if not children_nodes:
+                raise TriePrefixNotFoundError("Such prefix not found")
+            for next_node in children_nodes:
+                if next_node.get_name() == item:
+                    current_node = next_node
+                    break
+            if next_node != current_node:
+                raise TriePrefixNotFoundError("Such prefix not found")
+        return current_node
 
     def suggest(self, prefix: NGramType) -> tuple:
         """
@@ -335,6 +340,25 @@ class PrefixTrie:
             tuple: Tuple of all token sequences that begin with the given prefix.
                                    Empty tuple if prefix not found.
         """
+        try:
+            prefix_node = self.get_prefix(prefix)
+        except TriePrefixNotFoundError:
+            return tuple()
+        sequences = []
+        stack = [(prefix_node, list(prefix))]
+        while stack:
+            current_node, current_sequence = stack.pop()
+            if current_node.has_children():
+                children = list(current_node.get_children())
+                for child in children:
+                    child_name = child.get_name()
+                    if child_name is None:
+                        continue
+                    new_sequence = current_sequence + [child_name]
+                    if new_sequence:
+                        sequences.append(tuple(new_sequence))
+                        stack.append((child, new_sequence))
+        return tuple(sequences)
 
     def _insert(self, sequence: NGramType) -> None:
         """
@@ -343,7 +367,21 @@ class PrefixTrie:
         Args:
             sequence (NGramType): Tokens to insert.
         """
-
+        current_node = self._root
+        for token in sequence:
+            found_child = False
+            for child in current_node.get_children():
+                if child.get_name() == token:
+                    current_node = child
+                    found_child = True
+                    break
+            if not found_child:
+                current_node.add_child(token)
+                for child in current_node.get_children():
+                    if child.get_name() == token:
+                        current_node = child
+                        break
+        return None
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
     """
