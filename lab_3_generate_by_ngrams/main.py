@@ -207,11 +207,13 @@ class TextProcessor:
             return None
         decoded_text = []
         for element_id in corpus:
+            if not self.get_token(element_id):
+                return None
             decoded_text.append(self.get_token(element_id))
-        if decoded_text is None or None in decoded_text:
+        if decoded_text is None:
             return None
         decoded_text_tuple = tuple(decoded_text)
-        return decoded_text_tuple
+        return decoded_text_tuple or None
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str | None:
         """
