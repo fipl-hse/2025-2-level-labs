@@ -82,7 +82,7 @@ class WordProcessor(TextProcessor):
                     encoded_sentence.append(word_id)
 
                 sentences.append(tuple(encoded_sentence))
-                current_sentence: list[str] = []
+                current_sentence.clear()
 
         return tuple(sentences)
 
@@ -127,7 +127,7 @@ class WordProcessor(TextProcessor):
             if word == self._end_of_sentence_token:
                 if current_sentence:
                     sentences.append(" ".join(current_sentence))
-                    current_sentence: list[str] = []
+                    current_sentence.clear()
             else:
                 current_sentence.append(word)
         if current_sentence:
