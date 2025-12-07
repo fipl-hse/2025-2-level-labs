@@ -496,22 +496,17 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             int: 0 if attribute is filled successfully, otherwise 1
         """
         self._root = TrieNode(None)
-
         if not self._encoded_corpus:
             return 1
-
         if self._n_gram_size <= 0:
             return 1
-
         n_grams_count = 0
 
         try:
             for sentence in self._encoded_corpus:
                 if not sentence:
                     continue
-
                 sentence_len = len(sentence)
-
                 if sentence_len < self._n_gram_size:
                     continue
 
@@ -530,10 +525,9 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             if all_ngrams:
                 self._fill_frequencies(all_ngrams)
             else:
-                return
+                return 1
 
             return 0
-
         except Exception:
             return 1
 
@@ -578,7 +572,6 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         if len(sequence) < self.get_n_gram_size() - 1:
             return None
         context = sequence[-(self.get_n_gram_size() - 1):]
-
         try:
             generated_tokens = self.get_next_tokens(context)
             return generated_tokens
@@ -666,7 +659,6 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             if token is not None:
                 freq_token = element.get_value()
                 dictionary[token] = freq_token
-
         return dictionary
 
     def _fill_frequencies(self, encoded_corpus: tuple[NGramType, ...]) -> None:
@@ -697,7 +689,6 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
                 last_node.set_value(frequency)
             except TriePrefixNotFoundError:
                 continue
-
 
 class DynamicNgramLMTrie(NGramTrieLanguageModel):
     """
@@ -818,14 +809,11 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
-
         if self._current_n_gram_size is None or self._current_n_gram_size < 2:
             return {}
-
         context_length = min(self._current_n_gram_size - 1, len(sequence))
         if len(sequence) < self._current_n_gram_size - 1:
             return self._collect_frequencies(self._root) if self._root else {}
-
         current_node = self._root
         if context_length > 0:
             context = sequence[-context_length:]
@@ -918,10 +906,8 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             source_root (TrieNode): Source root to insert tree
         """
         stack = [(source_root, self._root)]
-
         while stack:
             source_node, target_node = stack.pop()
-
             if target_node is None:
                 continue
 
@@ -938,7 +924,6 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                     )
 
                     stack.append((source_child, target_child))
-
 
 class DynamicBackOffGenerator(BackOffGenerator):
     """
@@ -1111,12 +1096,12 @@ def load(path: str) -> DynamicNgramLMTrie:
     encoded_corpus = tuple(evidence.get('encoded_corpus', ()))
     max_ngram_size = evidence.get('max_ngram_size', 3)
 
-    load = DynamicNgramLMTrie(encoded_corpus, max_ngram_size)
-    result = load.build()
+    load_file = DynamicNgramLMTrie(encoded_corpus, max_ngram_size)
+    result = load_file.build()
 
     if result != 0:
         return DynamicNgramLMTrie(tuple(), max_ngram_size)
 
-    load.set_current_ngram_size(evidence.get('current_n_gram_size', max_ngram_size))
-    return load
+    load_file.set_current_ngram_size(evidence.get('current_n_gram_size', max_ngram_size))
+    return load_file
 
