@@ -24,7 +24,6 @@ def main() -> None:
     suggestions = prefix_trie.suggest((2,))
     decoded_suggestion = processor.decode(suggestions[0])
     result = decoded_suggestion
-    
 
     model = NGramTrieLanguageModel(encoded_sentences, 5)
     model.build()
