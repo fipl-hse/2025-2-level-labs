@@ -744,16 +744,17 @@ class DynamicBackOffGenerator(BackOffGenerator):
         Returns:
             str | None: Generated sequence
         """
+        text_processor = self._text_processor
         if not isinstance(seq_len, int) or seq_len <= 0:
             return None
         if not isinstance(prompt, str) or not prompt.strip():
             return None
-        encoded = self._text_processor.encode(prompt)
+        encoded = text_processor.encode(prompt)
         if encoded is None:
             return None
         tokens = None
         try:
-            tokens = self._text_processor._tokenize(prompt)
+            tokens = text_processor._tokenize(prompt)
         except EncodingError:
             return None
         tokens_all = list(tokens)
