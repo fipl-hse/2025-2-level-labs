@@ -638,16 +638,19 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Returns:
             int: 0 if attribute is filled successfully, otherwise 1.
         """
-        if not isinstance(self._encoded_corpus, tuple) or not self._encoded_corpus:
-            return 1
-        if not isinstance(self._max_ngram_size, int) or self._max_ngram_size < 2:
+        if (
+            not isinstance(self._encoded_corpus, tuple)
+            or not self._encoded_corpus
+            or not isinstance(self._max_ngram_size, int) 
+            or self._max_ngram_size < 2
+        ):
             return 1
         self._models = {}
-        for n in range(2, self._max_ngram_size + 1):
-            model = NGramTrieLanguageModel(self._encoded_corpus, n)
+        for ngram_size in range(2, self._max_ngram_size + 1):
+            model = NGramTrieLanguageModel(self._encoded_corpus, ngram_size)
             if model.build() != 0:
                 return 1
-            self._models[n] = model
+            self._models[ngram_size] = model
         try:
             self._merge()
             return 0
@@ -729,13 +732,11 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 if freq != 0.0:
                     child.set_value(freq)
                 return child
-        new_node = TrieNode(node_name, freq)
         parent.add_child(node_name)
         for child in parent.get_children():
             if child.get_name() == node_name:
                 child.set_value(freq)
                 return child
-        return new_node
 
     def _merge(self) -> None:
         """
@@ -763,21 +764,13 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             source_node, target_parent = stack.pop()
             for source_child in source_node.get_children():
                 child_name = source_child.get_name()
-                if child_name is None:
-                    continue
-                target_child = next(
-                    (c for c in target_parent.get_children() if c.get_name() == child_name),
-                    None
-                )
-                if target_child is None:
-                    target_parent.add_child(child_name)
-                    target_child = next(
-                        c for c in target_parent.get_children() if c.get_name() == child_name
+                if child_name is not None:
+                    dest_child = self._assign_child(
+                        target_parent, 
+                        child_name, 
+                        source_child.get_value()
                     )
-                source_value = source_child.get_value()
-                if source_value != 0.0:
-                    target_child.set_value(source_value)
-                stack.append((source_child, target_child))
+                    stack.append((source_child, dest_child))
 
 class DynamicBackOffGenerator(BackOffGenerator):
     """
@@ -829,9 +822,12 @@ class DynamicBackOffGenerator(BackOffGenerator):
         Returns:
             str | None: Generated sequence
         """
-        if not isinstance(seq_len, int) or seq_len <= 0:
-            return None
-        if not isinstance(prompt, str) or not prompt:
+        if (
+            not isinstance(seq_len, int) 
+            or seq_len <= 0
+            or not isinstance(prompt, str)
+            or not prompt
+        ):
             return None
         encoded = self._text_processor.encode(prompt)
         if encoded is None:
@@ -843,8 +839,12 @@ class DynamicBackOffGenerator(BackOffGenerator):
                 break
             best = max(next_options.items(), key=lambda x: x[1])[0]
             tokens.append(best)
-        decoded_text = self._text_processor.decode(tuple(tokens))
-        return decoded_text.replace(" ", "")
+        reverse_map = {v: k for k, v in self._text_processor._storage.items()}
+        words = [reverse_map[t] for t in tokens if t in reverse_map]
+        eos = self._text_processor._end_of_sentence_token
+        if words and words[-1] != eos:
+            words.append(eos)
+        return self._text_processor._postprocess_decoded_text(tuple(words))
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
@@ -854,27 +854,26 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
-    stack: list[tuple[TrieNode, list | None]] = [(trie.get_root(), None)]
-    root_dict = None
+    data = {
+        'value': trie._root.get_name(),
+        'freq': trie._root.get_value(),
+        'children': []
+    }
+    stack = [(trie._root, data['children'])]
     while stack:
-        current_node, parent_list = stack.pop()
-        node_dict = {
-            "value": current_node.get_name(),
-            "freq": current_node.get_value(),
-            "children": []
-        }
-        if parent_list is None:
-            root_dict = node_dict
-            child_list = node_dict["children"]
-        else:
-            parent_list.append(node_dict)
-            child_list = node_dict["children"]
-        children = list(current_node.get_children())
-        for child in reversed(children):
-            stack.append((child, child_list))
-    data = {"trie": root_dict or {}}
+        current_node, parent_children_list = stack.pop()
+        children = current_node.get_children()
+        for child in children:
+            child_dict = {
+                'value': child.get_name(),
+                'freq': child.get_value(),
+                'children': []
+            }
+            parent_children_list.append(child_dict)
+            stack.append((child, child_dict['children']))
+    trie_data = {'trie': data}
     with open(path, 'w', encoding='utf-8') as file:
-        json.dump(data, file, indent=2)
+        json.dump(trie_data, file, indent=2)
 
 
 def load(path: str) -> DynamicNgramLMTrie:
