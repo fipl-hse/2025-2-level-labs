@@ -62,11 +62,11 @@ Ron"""
         new_cands = {}
         for seq in list(candidates.keys()):
             next_tokens = searcher.get_next_token(seq)
-                if next_tokens is None:
-                    continue
-                if next_tokens:
+            if next_tokens is None:
+                continue
+            if next_tokens:
                 updated = searcher.continue_sequence(seq, next_tokens, {seq: candidates[seq]})
-                if updated:
+            if updated:
                     new_cands.update(updated)
             else:
                 new_cands[seq] = candidates[seq]
