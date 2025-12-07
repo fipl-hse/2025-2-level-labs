@@ -14,31 +14,26 @@ class TriePrefixNotFoundError(Exception):
     """
     Exception raised when the required prefix for transition is not found in the trie.
     """
-    pass
 
 class EncodingError(Exception):
     """
     Exception raised during text encoding failure due to invalid input or processing error.
     """
-    pass
 
 class DecodingError(Exception):
     """
     Exception raised during text decoding failure due to invalid input or processing error.
     """
-    pass
 
 class IncorrectNgramError(Exception):
     """
     Exception raised when attempting to use an inappropriate n-gram size.
     """
-    pass
 
 class MergeTreesError(Exception):
     """
     Exception raised when tree merging is impossible.
     """
-    pass
 
 class WordProcessor(TextProcessor):
     """
@@ -57,8 +52,8 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
-        self._end_of_sentence_token = end_of_sentence_token
         super().__init__(end_of_word_token=end_of_sentence_token)
+        self._end_of_sentence_token = end_of_sentence_token
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -357,7 +352,7 @@ class PrefixTrie:
         try:
             start_node = self.get_prefix(prefix)
         except TriePrefixNotFoundError:
-            return tuple()
+            return ()
 
         results = []
         stack = [(start_node, list(prefix))]
@@ -373,7 +368,7 @@ class PrefixTrie:
                     child_name = child.get_name()
                     if child_name is not None:
                         stack.append((child, current_path + [child_name]))
-        return tuple(results)
+        return tuple(sorted(results))
 
     def _insert(self, sequence: NGramType) -> None:
         """
