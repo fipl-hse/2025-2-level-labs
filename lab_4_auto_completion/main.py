@@ -931,6 +931,7 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
     with open(path, 'w', encoding='utf-8') as file:
         json.dump(trie_data, file, indent=2)
 
+
 def load(path: str) -> DynamicNgramLMTrie:
     """
     Load DynamicNgramLMTrie from file.
@@ -942,12 +943,12 @@ def load(path: str) -> DynamicNgramLMTrie:
         DynamicNgramLMTrie: Trie from file.
     """
     with open(path, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-    encoded_corpus = tuple(data.get('encoded_corpus', ()))
-    max_ngram_size = data.get('max_ngram_size', 3)
+        trie_data = json.load(file)
+    encoded_corpus = tuple(trie_data.get('encoded_corpus', ()))
+    max_ngram_size = trie_data.get('max_ngram_size', 3)
     loaded_trie = DynamicNgramLMTrie(encoded_corpus, max_ngram_size)
     result = loaded_trie.build()
     if result != 0:
         return DynamicNgramLMTrie(tuple(), max_ngram_size)
-    loaded_trie.set_current_ngram_size(data.get('current_n_gram_size', max_ngram_size))
+    loaded_trie.set_current_ngram_size(trie_data.get('current_n_gram_size', max_ngram_size))
     return loaded_trie
