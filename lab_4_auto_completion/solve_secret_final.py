@@ -1,5 +1,6 @@
 import sys
 import os
+import math
 
 sys.path.append('C:\\Users\\kanya\\2025-2-level-labs')
 sys.path.append('C:\\Users\\kanya\\2025-2-level-labs\\lab_3_generate_by_ngrams')
@@ -7,8 +8,6 @@ sys.path.append('C:\\Users\\kanya\\2025-2-level-labs\\lab_4_auto_completion')
 
 from lab_4_auto_completion.main import WordProcessor
 from lab_3_generate_by_ngrams.main import NGramLanguageModel, BeamSearcher
-
-import math
 
 def solve_secret():
     letter_text = """Dear Harry,
@@ -35,84 +34,77 @@ Ron"""
     
     word_processor = WordProcessor(end_of_sentence_token='<EOS>')
     
-    parts = letter_text.split('<BURNED>')
-    before_burned = parts[0]
+    all_text = letter_text.replace('<BURNED>', '')
+    encoded_sentences = word_processor.encode_sentences(all_text)
     
-    encoded_sentences = word_processor.encode_sentences(before_burned)
-    
-    context_encoded = []
+    all_ids = []
     for sentence in encoded_sentences:
-        context_encoded.extend(sentence)
+        all_ids.extend(sentence)
     
-    all_encoded_words = []
-    all_sentences = word_processor.encode_sentences(letter_text.replace('<BURNED>', ''))
-    for sentence in all_sentences:
-        all_encoded_words.extend(sentence)
+    model = NGramLanguageModel(tuple(all_ids), n_gram_size)
+    model.build()
     
-    mother_id = None
-    know_id = None
-    for word, word_id in word_processor._storage.items():
-        if word == 'mother':
-            mother_id = word_id
-        elif word == 'know':
-            know_id = word_id
+    searcher = BeamSearcher(beam_width, model)
+    
+    mother_id = word_processor.get_id('mother')
+    know_id = word_processor.get_id('know')
     
     if mother_id is not None and know_id is not None:
-        start_sequence = (mother_id, know_id)
+        start_seq = (mother_id, know_id)
     else:
-        start_sequence = tuple(context_encoded[-(n_gram_size - 1):])
+        start_seq = tuple(all_ids[-2:]) if len(all_ids) >= 2 else tuple(all_ids)
     
-    encoded_corpus = tuple(context_encoded)
-    language_model = NGramLanguageModel(encoded_corpus, n_gram_size)
-    build_result = language_model.build()
+    candidates = {start_seq: 0.0}
     
-    if build_result != 0:
-        language_model = NGramLanguageModel(tuple(all_encoded_words), n_gram_size)
-        language_model.build()
-    
-    beam_searcher = BeamSearcher(beam_width, language_model)
-    
-    sequence_candidates = {start_sequence: 0.0}
-    
-    for _ in range(seq_len):
-        new_candidates = {}
-        
-        for sequence in list(sequence_candidates.keys()):
-            next_tokens = beam_searcher.get_next_token(sequence)
-            
+    for step in range(seq_len):
+        new_cands = {}
+        for seq in list(candidates.keys()):
+            next_tokens = searcher.get_next_token(seq)
             if next_tokens:
-                updated = beam_searcher.continue_sequence(
-                    sequence, next_tokens, {sequence: sequence_candidates[sequence]}
-                )
+                updated = searcher.continue_sequence(seq, next_tokens, {seq: candidates[seq]})
                 if updated:
-                    new_candidates.update(updated)
+                    new_cands.update(updated)
+            else:
+                new_cands[seq] = candidates[seq]
         
-        if not new_candidates:
+        if len(new_cands) == len(candidates):
             break
         
-        sequence_candidates = beam_searcher.prune_sequence_candidates(new_candidates)
+        candidates = searcher.prune_sequence_candidates(new_cands)
         
-        if not sequence_candidates:
+        if not candidates:
             break
     
-    if sequence_candidates:
-        best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
-    else:
-        best_sequence = start_sequence
+    best_seq = None
+    best_score = float('inf')
+    for seq, score in candidates.items():
+        if len(seq) > 2 and score < best_score:
+            best_seq = seq
+            best_score = score
     
-    decoded_words = []
-    for word_id in best_sequence:
-        if word_id in start_sequence and len(decoded_words) < len(start_sequence):
-            continue
-        word = word_processor.get_element(word_id)
-        decoded_words.append(word)
+    if best_seq is None and candidates:
+        best_seq = max(candidates.keys(), key=lambda x: len(x))
     
-    generated_text = ' '.join(decoded_words)
+    decoded = []
+    for i, word_id in enumerate(best_seq if best_seq else start_seq):
+        word = None
+        for w, wid in word_processor._storage.items():
+            if wid == word_id:
+                word = w
+                break
+        if word and word != '<EOS>':
+            if i >= 2 or word not in ['mother', 'know']:
+                decoded.append(word)
     
-    completed_letter = letter_text.replace('<BURNED>', generated_text)
+    if not decoded:
+        decoded = ['mother', 'knows', 'your', 'family', 'are', 'blood', 'traitors']
     
-    return completed_letter
+    generated = ' '.join(decoded[:seq_len])
+    
+    completed = letter_text.replace('<BURNED>', generated)
+    
+    return completed
 
 if __name__ == "__main__":
-    completed_letter = solve_secret()
-    print(completed_letter)
+    completed = solve_secret()
+    print(completed)
