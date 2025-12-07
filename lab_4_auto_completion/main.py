@@ -149,43 +149,56 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
+
+    def _tokenize(self, text: str) -> tuple[str, ...]:
+        """
+        Tokenize text into words, separating sentences with special token.
+
+        Punctuation and digits are removed from words.
+        Sentences are separated by the end_of_sentence_token.
+
+        Args:
+            text (str): Original text
+
+        Returns:
+            tuple[str, ...]: Tokenized text as words
+        """
         if not isinstance(text, str) or not text:
             raise EncodingError('Invalid input: text must be a non-empty string')
         eos = self._end_of_sentence_token
         sentences = []
-        sentence = []
+        current_sentence = []
         index = 0
-        text_len = len(text)
-        while index < text_len:
-            symbol = text[index]
-            if symbol in '.!?':
-                if sentence:
-                    sentences.append(''.join(sentence).strip())
-                    sentence = []
-                while index < text_len and text[index] in '.!? ':
+        text_length = len(text)
+        while index < text_length:
+            char = text[index]
+            if char in '.!?':
+                if current_sentence:
+                    sentences.append(''.join(current_sentence).strip())
+                    current_sentence = []
+                while index < text_length and text[index] in '.!? ':
                     index += 1
                 continue
-            sentence.append(symbol)
+            current_sentence.append(char)
             index += 1
-        if sentence:
-            sentences.append(''.join(sentence).strip())
+        if current_sentence:
+            sentences.append(''.join(current_sentence).strip())
         tokens = []
         for sentence in sentences:
             if not sentence:
                 continue
             words = sentence.split()
             for word in words:
-                word = ''.join(x for x in word.lower() if x.isalpha() or x == "'")
-                if word:
-                    tokens.append(word)
+                cleaned_word = ''.join(x for x in word.lower() if x.isalpha() or x == "'")
+                if cleaned_word:
+                    tokens.append(cleaned_word)
             tokens.append(eos)
-        text_clean = text.strip() and text.strip()[-1] in '.!?'
-        if not text_clean and tokens and tokens[-1] == eos:
+        text_ends_with_punctuation = text.strip() and text.strip()[-1] in '.!?'
+        if not text_ends_with_punctuation and tokens and tokens[-1] == eos:
             tokens = tokens[:-1]
         if not tokens:
             raise EncodingError("Tokenization resulted in empty output")
         return tuple(tokens)
-
 
 class TrieNode:
     """
@@ -710,7 +723,6 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         for ngram_size in sorted(self._models.keys()):
             model = self._models[ngram_size]
             self._insert_trie(model.get_root())
-
     def _insert_trie(self, source_root: TrieNode) -> None:
         """
         Insert all nodes of source root trie into our main root.
@@ -718,18 +730,21 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Args:
             source_root (TrieNode): Source root to insert tree
         """
-        if not source_root or not source_root.has_children():
+        if not source_root.has_children():
             return
         stack = [(source_root, self._root)]
         while stack:
-            source_node, target_node = stack.pop()
-            for source_child in source_node.get_children():
-                source_child_name = source_child.get_name()
-                if source_child.get_name() is not None:
-                    source_child_name = source_child.get_name()
-                    target_child = self._assign_child(target_node, source_child_name, source_child.get_value())
-                    if source_child.has_children():
-                        stack.append((source_child, target_child))
+            source_node, node = stack.pop()
+            children = source_node.get_children()
+            for source_child in children:
+                child_name = source_child.get_name()
+                if child_name is not None:
+                    target_child = self._assign_child(
+                        node,
+                        child_name,
+                        source_child.get_value()
+                    )
+                    stack.append((source_child, target_child))
 
 
 class DynamicBackOffGenerator(BackOffGenerator):
@@ -820,7 +835,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
         postprocess_method = getattr(self._text_processor, '_postprocess_decoded_text', None)
         if postprocess_method:
             return str(postprocess_method(tuple(words)))
-        return ' '.join(words)
+        return ''.join(words)
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
