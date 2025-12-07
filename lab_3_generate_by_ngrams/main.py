@@ -236,6 +236,7 @@ class TextProcessor:
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             return None
+
         result = ""
         for element in decoded_corpus:
             if element == self._end_of_word_token:
@@ -276,7 +277,6 @@ class NGramLanguageModel:
             int: Size of stored n_grams
         """
         return self._n_gram_size
-
 
     def set_n_grams(self, frequencies: dict) -> None:
         """
@@ -320,6 +320,19 @@ class NGramLanguageModel:
             self._n_gram_frequencies[n_gram] = count / prefix_counts[context]
         return 0
 
+        for n_gram in n_grams:
+            context = n_gram[:-1]
+            context_counts[context] = context_counts.get(context, 0) + 1
+            n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
+        
+        for n_gram, count in n_gram_counts.items():
+            context = n_gram[:-1]
+            context_count = context_counts[context]
+            self._n_gram_frequencies[n_gram] = count / context_count
+        
+        return 0
+
+ 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict | None:
         """
         Retrieve tokens that can continue the given sequence along with their probabilities.
@@ -360,6 +373,7 @@ class NGramLanguageModel:
         """
         if not isinstance(encoded_corpus, tuple) or not encoded_corpus:
             return None
+
         result = []
         for i in range(len(encoded_corpus) - self._n_gram_size + 1):
             n_gram = encoded_corpus[i:i + self._n_gram_size]
