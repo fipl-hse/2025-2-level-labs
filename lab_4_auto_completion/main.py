@@ -813,26 +813,22 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
-    stack= [(trie.get_root(), None)]
-    root_dict = None
-    while stack:
-        current_node, parent_dict = stack.pop()
-        node_dict = {
-            "value": current_node.get_name(),
-            "freq": current_node.get_value(),
-            "children": []
-        }
-        if parent_dict is None:
-            root_dict = node_dict
+    queue = [(trie.get_root(), None)]
+    roots = None
+    while queue:
+        current_node, main_dict = queue.pop()
+        nodes = {"value": current_node.get_name(), "freq": current_node.get_value(), "children": []}
+        if main_dict is None:
+            roots = nodes
         else:
-            parent_dict["children"].append(node_dict)
+            main_dict["children"].append(nodes)
         for child in reversed(current_node.get_children()):
-            stack.append((child, node_dict))
-    trie_data = {
-        "trie": root_dict
+            queue.append((child, nodes))
+    trie = {
+        "trie": roots
     }
     with open(path, 'w', encoding='utf-8') as f:
-        json.dump(trie_data, f, indent=2)
+        json.dump(trie, f, indent=2)
 
 def load(path: str) -> DynamicNgramLMTrie:
     """
@@ -847,18 +843,18 @@ def load(path: str) -> DynamicNgramLMTrie:
     with open(path, 'r', encoding='utf-8') as f:
         trie_data = json.load(f)
     trie = DynamicNgramLMTrie((), 3)
-    root_dict = trie_data.get("trie")
-    if root_dict:
-        root_value = root_dict.get("value")
+    root = trie_data.get("trie")
+    if root:
+        root_value = root.get("value")
         if root_value is not None:
-            trie._root = TrieNode(root_value, root_dict.get("freq", 0.0))
+            trie._root = TrieNode(root_value, root.get("freq", 0.0))
         else:
-            trie._root = TrieNode(None, root_dict.get("freq", 0.0))
-        stack = [(root_dict, trie._root)]
+            trie._root = TrieNode(None, root.get("freq", 0.0))
+        stack = [(root, trie._root)]
         while stack:
-            current_dict, current_node = stack.pop()
-            for child_dict in reversed(current_dict.get("children", [])):
-                child_node = TrieNode(child_dict.get("value"), child_dict.get("freq", 0.0))
-                current_node._children.append(child_node)
-                stack.append((child_dict, child_node))
+            current_dict, node = stack.pop()
+            for child in reversed(current_dict.get("children", [])):
+                child_node = TrieNode(child.get("value"), child.get("freq", 0.0))
+                node._children.append(child_node)
+                stack.append((child, child_node))
     return trie
