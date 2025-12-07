@@ -335,15 +335,16 @@ class PrefixTrie:
         stack = [(start_node, list(prefix))]
         while stack:
             current_node, current_path = stack.pop()
-            children = current_node.get_children()
-            if not children:
-                if len(current_path) > len(prefix):
-                    results.append(tuple(current_path))
-            else:
-                for child in (children):
+            if current_node.has_children():
+                for child in current_node.get_children():
                     child_name = child.get_name()
-                    if child_name is not None:
-                        stack.append((child, current_path + [child_name]))
+                    if child_name is None:
+                        continue
+                    next_sequence = current_path + [child_name,]
+                    stack.append((child, next_sequence))
+            else:
+                if current_path != prefix:
+                    results.append(current_path)
         return tuple(results)
 
     def _insert(self, sequence: NGramType) -> None:
