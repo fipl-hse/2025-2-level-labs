@@ -679,17 +679,18 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Returns:
             int: 0 if attribute is filled successfully, otherwise 1.
         """
-        if (not isinstance(self._max_ngram_size, int) or
-            self._max_ngram_size < 2 or
-            not isinstance(self._encoded_corpus, tuple) or
-            not self._encoded_corpus):
+        if not (
+            isinstance(self._max_ngram_size, int) and
+            self._max_ngram_size >= 2 and
+            isinstance(self._encoded_corpus, tuple) and
+            self._encoded_corpus and
+            all(
+                isinstance(sentence, tuple) and
+                all(isinstance(token, int) for token in sentence)
+                for sentence in self._encoded_corpus
+            )
+        ):
             return 1
-        for sentence in self._encoded_corpus:
-            if not isinstance(sentence, tuple):
-                return 1
-            for token in sentence:
-                if not isinstance(token, int):
-                    return 1
         max_length = 0
         for element in self._encoded_corpus:
             if element:
@@ -867,23 +868,18 @@ class DynamicBackOffGenerator(BackOffGenerator):
         Returns:
             dict[int, float] | None: Next tokens for sequence continuation
         """
-        if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
+        if (
+            not isinstance(sequence_to_continue, tuple)
+            or len(sequence_to_continue) == 0
+        ):
             return None
-        max_n_gram_size = self._dynamic_trie._max_ngram_size
-        max_use_n = min(max_n_gram_size, len(sequence_to_continue) + 1)
-        n_gram_size = list(range(max_use_n, 1, -1))
-        if not n_gram_size:
-            return None
-        for ngram_size in n_gram_size:
-            self._dynamic_trie.set_current_ngram_size(ngram_size)
-            try:
-                candidates = self._dynamic_trie.generate_next_token(sequence_to_continue)
-            except Exception:
-                continue
-            if candidates is None:
-                continue
-            if candidates:
-                return candidates
+        max_size = self._dynamic_trie.get_n_gram_size()
+        ngram_sizes = list(range(max_size, 1, -1))
+        for ngram in ngram_sizes:
+            self._dynamic_trie.set_current_ngram_size(ngram)
+            next_tokens = self._dynamic_trie.generate_next_token(sequence_to_continue)
+            if next_tokens:
+                return next_tokens
         return None
 
     def run(self, seq_len: int, prompt: str) -> str | None:
@@ -899,46 +895,39 @@ class DynamicBackOffGenerator(BackOffGenerator):
         """
         if (
             not isinstance(seq_len, int) or seq_len <= 0
-            or not isinstance(prompt, str) or not prompt.strip()
-            or self._text_processor.encode(prompt) is None
+            or not isinstance(prompt, str) or len(prompt) == 0
         ):
             return None
         try:
-            tokenized_text = self._text_processor._tokenize(prompt)
-            if tokenized_text is None:
-                return None
-        except Exception:
+            encoded_sequence = self._text_processor.encode(prompt)
+        except EncodingError:
             return None
-        eos_char = self._text_processor._end_of_sentence_token
-        token_list = list(tokenized_text)
-        if token_list and token_list[-1] == eos_char:
+        if not encoded_sequence:
+            return None
+        token_list = list(encoded_sequence)
+        eos_token_id = getattr(self._text_processor, '_end_of_word_token', None)
+        if eos_token_id is None:
+            eos_token_id = getattr(self._text_processor, 'get_end_of_word_token', lambda: None)()
+        if eos_token_id is not None and token_list and token_list[-1] == eos_token_id:
             token_list.pop()
-        encoded_prompt = []
-        for element in token_list:
-            self._text_processor._put(element)
-            encoded_prompt.append(self._text_processor._storage[element])
-        if not encoded_prompt:
-            return None
-        seq_list = list(encoded_prompt)
         for _ in range(seq_len):
-            context = tuple(seq_list)
-            tokens = self.get_next_token(context)
-            if tokens is None or not tokens:
+            next_tokens = self.get_next_token(tuple(token_list))
+            if not next_tokens:
                 break
-            best_candidates = sorted(tokens.items(),
-                                key=lambda x: (-x[1], -x[0]))[0][0]
-            seq_list.append(best_candidates)
-        decoded_words = []
-        for token_id in seq_list:
-            for word, word_id in self._text_processor._storage.items():
-                if word_id == token_id:
-                    decoded_words.append(word)
-                    break
-        try:
-            postprocess_method = self._text_processor._postprocess_decoded_text
-            return str(postprocess_method(tuple(decoded_words)))
-        except AttributeError:
-            return ' '.join(decoded_words)
+            best_token = max(next_tokens.items(), key=lambda x: (-x[1], x[0]))[0]
+            token_list.append(best_token)
+        words = []
+        storage = getattr(self._text_processor, '_storage', None)
+        if storage:
+            for token_id in token_list:
+                for word, word_id in storage.items():
+                    if word_id == token_id:
+                        words.append(word)
+                        break
+        postprocess_text = getattr(self._text_processor, '_postprocess_decoded_text', None)
+        if postprocess_text:
+            return str(postprocess_text(tuple(words)))
+        return ' '.join(words)
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
