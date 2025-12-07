@@ -12,41 +12,32 @@ NGramType = tuple[int, ...]
 
 class TextProcessingError(Exception):
     """Base exception for errors occurng during text processing."""
-    pass
 
 class EncodingError(TextProcessingError):
     """
     Raised when text encoding fails due to invalid input, usupoted
     encoding or processing issues.
     """
-    pass
 
 class DecodingError(TextProcessingError):
     """
     Raised when text decoding fails due to invalid input, unsupported
     encoding, or processing issues.
     """
-    pass
 
-class TrieError(Exception):
-    pass
-
-class TriePrefixNotFoundError(TrieError):
+class TriePrefixNotFoundError(Exception):
     """
     Raised when the required prefix for transition
     is not found in the trie.
     """
-    pass
 
-class MergeTreesError(TrieError):
+class MergeTreesError(Exception):
     """Raised when there is an error merging trees."""
-    pass
 
 class IncorrectNgramError(Exception):
     """
     Raised when attempting to use an inappropriate n-gram size.
     """
-    pass
 
 
 
@@ -742,7 +733,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
                 tokens = self._dynamic_trie.generate_next_token(sequence_to_continue)
                 if tokens:
                     return tokens
-            except (IncorrectNgramError):
+            except IncorrectNgramError:
                 continue
         return None
 
@@ -782,7 +773,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
         if not encoded_prompt:
             return None
         sequence = list(encoded_prompt)
-        for i in range(seq_len):
+        for _ in range(seq_len):
             next = self.get_next_token(tuple(sequence))
             if not next:
                 break
