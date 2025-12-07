@@ -3,7 +3,7 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, GreedyTextGenerator
+from lab_3_generate_by_ngrams.main import BeamSearcher, BeamSearchTextGenerator, GreedyTextGenerator
 from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
@@ -52,17 +52,15 @@ def main() -> None:
     print(f"\n2. Greedy result before: {GreedyTextGenerator(model, processor).run(52, 'Dear')}")
     beam_gen = None
     try:
-        from lab_3_generate_by_ngrams.main import BeamSearcher
-        beam_searcher = BeamSearcher(beam_width=3, language_model=model)
-        beam_gen = BeamSearchTextGenerator(model, processor, beam_searcher)
-        print(f"Beam result before: {beam_gen.run(52, 'Dear')}")
+        beam_gen = BeamSearchTextGenerator(model, processor, 3)
+        print(f"Beam result before: {beam_gen.run('Dear', 52)}")
     except (TypeError, ImportError) as e:
-        print(f"Beam result before: [BeamSearch initialization failed]")
+        print("Beam result before: [BeamSearch initialization failed]")
     encoded_ussr = processor.encode_sentences(ussr_letters)
     model.update(encoded_ussr)
     print(f"\n3. Greedy result after: {GreedyTextGenerator(model, processor).run(52, 'Dear')}")
     if beam_gen:
-        print(f"Beam result after: {beam_gen.run(52, 'Dear')}")
+        print(f"Beam result after: {beam_gen.run('Dear', 52)}")
     else:
         print("Beam result after: [Beam Search not available]")
     dynamic_trie = DynamicNgramLMTrie(hp_encoded, 5)
