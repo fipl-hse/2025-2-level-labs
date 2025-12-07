@@ -70,19 +70,19 @@ class WordProcessor(TextProcessor):
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
         raw_sentences = []
-        current = []
+        current_sentence = []
         for char in text:
             current.append(char)
             if char in '.!?' and (len(current) == len(text) or text[len(current)].isspace()):
-                sent = ''.join(current).strip()
-                if sent:
-                    raw_sentences.append(sent)
+                sentence = ''.join(current).strip()
+                if sentence:
+                    raw_sentences.append(sentence)
                 current = []
-        if current:
-            sent = ''.join(current).strip()
-            if sent:
-                raw_sentences.append(sent)
-        clean_sentences = [s.lower().strip() for s in raw_sentences]
+        if current_sentence:
+            sentence = ''.join(current).strip()
+            if sentence:
+                raw_sentences.append(sentence)
+        clean_sentences = [sentence.lower().strip() for sentence in raw_sentences]
         encoded = []
         for clean_sentence in clean_sentences:
             if not clean_sentence:
@@ -163,24 +163,16 @@ class WordProcessor(TextProcessor):
         """
         if not isinstance(text, str) or not text:
             raise EncodingError("Invalid input: text must be a non-empty string")
+        words = text.lower().split()
         tokenized_words = []
-        current_word = []
-        for char in text:
-            if char.isalpha(): 
-                current_word.append(char.lower())
-            else:
-                if current_word:
-                    word = ''.join(current_word)
-                    tokenized_words.append(word)
-                    current_word = []
-                if char in '.!?':
-                    if tokenized_words and tokenized_words[-1] != self._end_of_sentence_token:
-                        tokenized_words.append(self._end_of_sentence_token)
-        if current_word:
-            word = ''.join(current_word)
-            tokenized_words.append(word)
+        for word in words:
+            letters = ''.join(letter for letter in word if letter.isalpha() or letter == '-')
+            if letters:
+                tokenized_words.append(letters)
+                if word and word[-1] in '!?.':
+                    tokenized_words.append(self._end_of_sentence_token)
         if not tokenized_words:
-            raise EncodingError("Tokenization resulted in empty output")
+            raise EncodingError('Tokenization resulted in empty output')
         return tuple(tokenized_words)
 
 
@@ -360,14 +352,15 @@ class PrefixTrie:
             current_node, current_sequence = stack.pop()
             if current_node.has_children():
                 children = list(current_node.get_children())
-                for child in reversed(children):
-                    if child.get_name() is None:
+                for child in children:
+                    child_name = child.get_name()
+                    if child_name is None:
                         continue
                     new_sequence = current_sequence + [child.get_name()]
                     if new_sequence:
                         sequences.append(tuple(new_sequence))
                         stack.append((child, new_sequence))
-        return tuple(sequences[::-1])
+        return tuple(sequences)
 
     def _insert(self, sequence: NGramType) -> None:
         """
@@ -385,9 +378,11 @@ class PrefixTrie:
                     found_child = True
                     break
             if not found_child:
-                new_node = TrieNode(token)
-                current_node._children.append(new_node)
-                current_node = new_node
+                current_node.add_child(token) 
+                for child in current_node.get_children():
+                    if child.get_name() == token:
+                        current_node = child
+                        break
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
@@ -407,7 +402,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             n_gram_size (int): A size of n-grams to use for language modelling
         """
         NGramLanguageModel.__init__(self, encoded_corpus, n_gram_size)
-        self._root = TrieNode(value=0.0)
+        self._root = TrieNode(0.0)
 
     def __str__(self) -> str:
         """
@@ -428,20 +423,19 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         self._root = TrieNode(value=0.0)
         if self._encoded_corpus is None:
             return 1
-        try:
-            all_ngrams = []
-            for sentence in self._encoded_corpus:
-                if len(sentence) >= self._n_gram_size:
-                    for i in range(len(sentence) - self._n_gram_size + 1):
-                        ngram = tuple(sentence[i:i + self._n_gram_size])
-                        all_ngrams.append(ngram)
-            for ngram in all_ngrams:
-                self._insert(ngram)
-            collected_ngrams = self._collect_all_ngrams()
-            self._fill_frequencies(collected_ngrams)
-            return 0
-        except Exception:
+        all_ngrams = []
+        for sentence in self._encoded_corpus:
+            if len(sentence) >= self._n_gram_size:
+                for i in range(len(sentence) - self._n_gram_size + 1):
+                    ngram = tuple(sentence[i:i + self._n_gram_size])
+                    all_ngrams.append(ngram)
+        if not all_ngrams:
             return 1
+        for ngram in all_ngrams:
+            self._insert(ngram)
+        collected_ngrams = self._collect_all_ngrams()
+        self._fill_frequencies(collected_ngrams)
+        return 0
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
         """
@@ -517,10 +511,12 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Args:
             new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
-        if self._encoded_corpus is None or not self._encoded_corpus:
+        if not new_corpus:
+            return
+        if self._encoded_corpus is None:
             self._encoded_corpus = new_corpus
         else:
-            self._encoded_corpus = tuple(list(self._encoded_corpus) + list(new_corpus))
+            self._encoded_corpus = self._encoded_corpus + new_corpus
         self.build()
 
     def _collect_all_ngrams(self) -> tuple[NGramType, ...]:
@@ -580,10 +576,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         for ngram, ngram_count in ngram_counts.items():
             try:
                 node = self.get_prefix(ngram)
-                relative_frequency = ngram_count / total_count
-                node.set_value(relative_frequency)
             except TriePrefixNotFoundError:
                 continue
+            relative_frequency = ngram_count / total_count
+            node.set_value(relative_frequency)
 
 
 class DynamicNgramLMTrie(NGramTrieLanguageModel):

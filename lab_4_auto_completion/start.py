@@ -31,6 +31,8 @@ def main() -> None:
     hp_encoded_sentences = processor.encode_sentences(hp_letters)
     prefix_trie = PrefixTrie()
     prefix_trie.fill(hp_encoded_sentences)
+    suggestion = prefix_trie.suggest((1, 2))
+    print(suggestion)
     test_text = "Hello world."
     encoded = processor.encode_sentences(test_text)
     print(f"Encoded: {encoded}")
