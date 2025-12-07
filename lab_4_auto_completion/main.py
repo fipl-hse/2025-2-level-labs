@@ -97,11 +97,11 @@ class WordProcessor(TextProcessor):
         an element is not added to storage
         """
         if not isinstance(element, str):
-            return
+            return None
 
         if element not in self._storage:
             self._storage[element] = len(self._storage)
-
+    
         return None
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
@@ -315,7 +315,6 @@ class PrefixTrie:
         self._root = TrieNode(name=None, value=0.0)
 
     def clean(self) -> None:
-        self._root = TrieNode()
         """
         Clean the whole tree.
         """
@@ -389,13 +388,13 @@ class PrefixTrie:
                 children_with_names.append((name, child))
 
         children_with_names.sort(key=lambda x: x[0])
-    
+
         for name, child in children_with_names:
             new_path = current_path + [name]
-        
+
             if child.is_end:
                 suggestions.append(tuple(new_path))
-            
+
             if child.has_children():
                 stack.append((child, new_path))
 
@@ -429,6 +428,7 @@ class PrefixTrie:
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
+
     """
     Trie specialized for storing and updating n-grams with frequency information.
     """
@@ -508,8 +508,6 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
                 result[token] = child.get_value()
 
         return result
-
-        return {}
 
     def get_root(self) -> TrieNode:
         """
@@ -743,6 +741,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
+    
         if not 2 <= self._current_n_gram_size <= self._max_ngram_size:
             self._current_n_gram_size = self._max_ngram_size
 
@@ -755,7 +754,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
 
             if found_size is None:
                 return {}
-
+        
             self._current_n_gram_size = found_size
 
         selected_model = self._models[self._current_n_gram_size]
@@ -783,28 +782,6 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
 
         except TriePrefixNotFoundError:
             return {}
-
-        current_node = self._dynamic_trie._root
-
-        context_length = min(len(sequence), self._current_n_gram_size - 1)
-
-        for i in range(context_length):
-            children = current_node.get_children(sequence[i])
-            if not children:
-                return {}
-            current_node = children[0]
-
-        result = {}
-        all_children = current_node.get_children()
-
-        for child in all_children:
-            child_name = child.get_name()
-            child_freq = child.get_value()
-
-            if child_name is not None and child_freq != 0.0:
-                result[child_name] = child_freq
-
-        return result if result else {}
 
     def _assign_child(self, parent: TrieNode, node_name: int, freq: float = 0.0) -> TrieNode:
         """
@@ -899,8 +876,6 @@ class DynamicBackOffGenerator(BackOffGenerator):
 
     def get_next_token(self, sequence_to_continue: tuple[int, ...]) -> dict[int, float] | None:
         """
-        Retrieve next tokens for sequence continuation.
-
         Args:
             sequence_to_continue (tuple[int, ...]): Sequence to continue
 
@@ -937,8 +912,6 @@ class DynamicBackOffGenerator(BackOffGenerator):
 
     def run(self, seq_len: int, prompt: str) -> str | None:
         """
-        Generate sequence based on dynamic N-gram trie and prompt provided.
-
         Args:
             seq_len (int): Number of tokens to generate
             prompt (str): Beginning of sequence
@@ -972,44 +945,24 @@ class DynamicBackOffGenerator(BackOffGenerator):
 
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
-    """
-    Save DynamicNgramLMTrie.
-
-    Args:
-        trie (DynamicNgramLMTrie): Trie for saving
-        path (str): Path for saving
-    """
     if not isinstance(path, str) or not path:
-        raise ValueError('Invalid path')
-    
+        raise ValueError("Invalid path")
+
     def node_to_dict(node: TrieNode) -> dict:
-        result: dict = {
-            'value': node.get_name(),
-            'freq': node.get_value(),
-            'children': []
-        }
-        
+        result: dict = {"value": node.get_name(), "freq": node.get_value(), "children": []}
+
         for child in node.get_children():
-            result['children'].append(node_to_dict(child))
-        
+            result["children"].append(node_to_dict(child))
+
         return result
-    
-    trie_data = {'trie': node_to_dict(trie.get_root())}
-    
-    with open(path, 'w', encoding='utf-8') as file:
+
+    trie_data = {"trie": node_to_dict(trie.get_root())}
+
+    with open(path, "w", encoding="utf-8") as file:
         json.dump(trie_data, file, indent=2)
 
 
 def load(path: str) -> DynamicNgramLMTrie:
-    """
-    Load DynamicNgramLMTrie from file.
-
-    Args:
-        path (str): Trie path
-
-    Returns:
-        DynamicNgramLMTrie: Trie from file.
-    """
     with open(path, "r", encoding="utf-8") as file:
         data = json.load(file)
     encoded_corpus = tuple(data.get("encoded_corpus", ()))
@@ -1020,7 +973,3 @@ def load(path: str) -> DynamicNgramLMTrie:
         return DynamicNgramLMTrie(tuple(), max_ngram_size)
     loaded_trie.set_current_ngram_size(data.get("current_n_gram_size", max_ngram_size))
     return loaded_trie
-
-
-
-
