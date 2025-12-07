@@ -898,7 +898,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
         eos_marker = getattr(self._text_processor, '_end_of_word_token',
                             self._text_processor.get_end_of_word_token())
         if token_list and token_list[-1] == eos_marker:
-            token_sequence = token_sequence[:-1]
+            token_list = token_list[:-1]
         for _ in range(seq_len):
             candidates = self.get_next_token(tuple(token_list))
             if candidates is None or len(candidates) == 0:
