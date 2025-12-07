@@ -97,12 +97,11 @@ class WordProcessor(TextProcessor):
         an element is not added to storage
         """
         if not isinstance(element, str):
-            return None
+            return
 
         if element not in self._storage:
             self._storage[element] = len(self._storage)
-    
-        return None
+
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
@@ -318,7 +317,7 @@ class PrefixTrie:
         """
         Clean the whole tree.
         """
-        self.root = TrieNode()
+        self._root = TrieNode()
 
     def fill(self, encoded_corpus: tuple[NGramType]) -> None:
         """
@@ -379,26 +378,26 @@ class PrefixTrie:
         while stack:
             current_node, current_path = stack.pop()
 
-        children = current_node.get_children()
+            children = current_node.get_children()
 
-        children_with_names = []
-        for child in children:
-            name = child.get_name()
-            if name is not None:
-                children_with_names.append((name, child))
+            children_with_names = []
+            for child in children:
+                name = child.get_name()
+                if name is not None:
+                    children_with_names.append((name, child))
 
-        children_with_names.sort(key=lambda x: x[0])
+            children_with_names.sort(key=lambda x: x[0])
 
-        for name, child in children_with_names:
-            new_path = current_path + [name]
+            for name, child in children_with_names:
+                new_path = current_path + [name]
 
-            if child.is_end:
-                suggestions.append(tuple(new_path))
+                if child.is_end:
+                    suggestions.append(tuple(new_path))
 
-            if child.has_children():
-                stack.append((child, new_path))
+                if child.has_children():
+                    stack.append((child, new_path))
 
-        return tuple(sorted(suggestions))
+            return tuple(sorted(suggestions))
 
     def _insert(self, sequence: NGramType) -> None:
         """
@@ -499,15 +498,19 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
 
         context = start_sequence[-(self._n_gram_size - 1) :]
 
-        node = self.get_node_by_prefix(context)
-        result = {}
+        try:
+            node = self.get_node_by_prefix(context)
+            result = {}
 
-        for child in node.get_children():
-            token = child.get_name()
-            if token is not None:
-                result[token] = child.get_value()
+            for child in node.get_children():
+                token = child.get_name()
+                if token is not None:
+                    result[token] = child.get_value()
 
-        return result
+            return result
+
+        except TriePrefixNotFoundError:
+            return {}
 
     def get_root(self) -> TrieNode:
         """
@@ -547,7 +550,6 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             return {}
 
     def get_n_gram_size(self) -> int:
-        return self._n_gram_size
         """
         Get the configured n-gram size.
 
@@ -741,7 +743,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
-    
+
         if not 2 <= self._current_n_gram_size <= self._max_ngram_size:
             self._current_n_gram_size = self._max_ngram_size
 
@@ -754,7 +756,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
 
             if found_size is None:
                 return {}
-        
+
             self._current_n_gram_size = found_size
 
         selected_model = self._models[self._current_n_gram_size]
@@ -847,11 +849,11 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 if child_name is not None:
                     target_child = self._assign_child(target_node, child_name, child_freq)
 
-                if child.has_children():
-                    stack.append((child, target_child))
-
-                if child.is_end:
-                    target_child.is_end = True
+                    if child.has_children():
+                        stack.append((child, target_child))
+                
+                    if child.is_end:
+                        target_child.is_end = True
 
 
 class DynamicBackOffGenerator(BackOffGenerator):
@@ -945,24 +947,41 @@ class DynamicBackOffGenerator(BackOffGenerator):
 
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
+    """
+    Save DynamicNgramLMTrie.
+    
+    """
     if not isinstance(path, str) or not path:
-        raise ValueError("Invalid path")
-
-    def node_to_dict(node: TrieNode) -> dict:
-        result: dict = {"value": node.get_name(), "freq": node.get_value(), "children": []}
-
-        for child in node.get_children():
-            result["children"].append(node_to_dict(child))
-
-        return result
-
-    trie_data = {"trie": node_to_dict(trie.get_root())}
-
-    with open(path, "w", encoding="utf-8") as file:
+        raise ValueError('Invalid path')
+    data = {
+    'value': trie.get_root().get_name(),
+    'freq': trie.get_root().get_value(),
+    'children': []
+    }
+    stack = [(trie.get_root(), data['children'])]
+    while stack:
+        current_node, parent_children_list = stack.pop()
+        children = current_node.get_children()
+        for child in children:
+            child_dict = {
+                'value': child.get_name(),
+                'freq': child.get_value(),
+                'children': []
+            }
+            parent_children_list.append(child_dict)
+            stack.append((child, child_dict['children']))
+    trie_data = {'trie': data}
+    with open(path, 'w', encoding='utf-8') as file:
         json.dump(trie_data, file, indent=2)
+
+    
 
 
 def load(path: str) -> DynamicNgramLMTrie:
+    """
+    Load DynamicNgramLMTrie from file.
+
+    """
     with open(path, "r", encoding="utf-8") as file:
         data = json.load(file)
     encoded_corpus = tuple(data.get("encoded_corpus", ()))
