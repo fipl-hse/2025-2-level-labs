@@ -7,9 +7,9 @@ from lab_3_generate_by_ngrams.main import (
     BeamSearcher,
     BeamSearchTextGenerator,
     GreedyTextGenerator,
-    NGramLanguageModel
+    NGramLanguageModel,
 )
-from lab_4_auto_completion.main import NGramTrieLanguageModel, WordProcessor, PrefixTrie
+from lab_4_auto_completion.main import NGramTrieLanguageModel, PrefixTrie, WordProcessor
 
 
 def main() -> None:

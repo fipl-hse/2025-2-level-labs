@@ -72,14 +72,14 @@ class WordProcessor(TextProcessor):
         raw_sentences = []
         current_sentence = []
         for char in text:
-            current.append(char)
-            if char in '.!?' and (len(current) == len(text) or text[len(current)].isspace()):
-                sentence = ''.join(current).strip()
+            current_sentence.append(char)
+            if char in '.!?' and (len(current_sentence) == len(text) or text[len(current_sentence)].isspace()):
+                sentence = ''.join(current_sentence).strip()
                 if sentence:
                     raw_sentences.append(sentence)
-                current = []
+                current_sentence = []
         if current_sentence:
-            sentence = ''.join(current).strip()
+            sentence = ''.join(current_sentence).strip()
             if sentence:
                 raw_sentences.append(sentence)
         clean_sentences = [sentence.lower().strip() for sentence in raw_sentences]
@@ -94,7 +94,7 @@ class WordProcessor(TextProcessor):
                 word_id = self._storage[token]
                 encoded_sentence.append(word_id)
             if encoded_sentence:
-                if (self._end_of_sentence_token in self._storage and 
+                if (self._end_of_sentence_token in self._storage and
                     (not tokens or tokens[-1] != self._end_of_sentence_token)):
                     eos_id = self._storage[self._end_of_sentence_token]
                     encoded_sentence.append(eos_id)
@@ -275,7 +275,7 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
-        return self.__bool__()
+        return bool(self)
 
 
 class PrefixTrie:
@@ -378,7 +378,7 @@ class PrefixTrie:
                     found_child = True
                     break
             if not found_child:
-                current_node.add_child(token) 
+                current_node.add_child(token)
                 for child in current_node.get_children():
                     if child.get_name() == token:
                         current_node = child
