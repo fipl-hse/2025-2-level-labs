@@ -818,7 +818,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
         if not encoded_result:
             return None
         token_sequence = list(encoded_result)
-        eos_marker = getattr(self._text_processor, '_end_of_word_token', 
+        eos_marker = getattr(self._text_processor, '_end_of_word_token',
                             self._text_processor.get_end_of_word_token())
         if token_sequence and token_sequence[-1] == eos_marker:
             token_sequence = token_sequence[:-1]
@@ -826,19 +826,16 @@ class DynamicBackOffGenerator(BackOffGenerator):
             candidate_tokens = self.get_next_token(tuple(token_sequence))
             if candidate_tokens is None or len(candidate_tokens) == 0:
                 break
-            selected_token, _ = max(candidate_tokens.items(), 
+            selected_token, _ = max(candidate_tokens.items(),
                                 key=lambda pair: (pair[1], pair[0]))
             token_sequence.append(selected_token)
         word_list = []
         token_storage = getattr(self._text_processor, '_storage', {})
         for current_token_id in token_sequence:
-            word_found = None
             for vocab_word, vocab_id in token_storage.items():
                 if vocab_id == current_token_id:
-                    word_found = vocab_word
+                    word_list.append(vocab_word)
                     break
-            if word_found:
-                word_list.append(word_found)
         text_processor = getattr(self._text_processor, '_postprocess_decoded_text', None)
         if text_processor:
             processed_output = text_processor(tuple(word_list))
