@@ -3,7 +3,7 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearcher, BeamSearchTextGenerator, GreedyTextGenerator
+from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, GreedyTextGenerator
 from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
@@ -37,8 +37,7 @@ def main() -> None:
     if suggestion:
         decoded_words = []
         storage = getattr(processor, '_storage', {})
-        first_suggestion = suggestion[0]
-        for token_id in first_suggestion:
+        for token_id in suggestion[0]:
             word_found = None
             for word, word_id in storage.items():
                 if word_id == token_id:
