@@ -30,11 +30,8 @@ def main() -> None:
 
     encoded_data = word_processor.encode_sentences(hp_letters)
     words_combined = [word for sent in encoded_data for word in sent]
-    words_combined = [int(x) if isinstance(x, str) else int(x) for x in words_combined]
-    tri_grams = tuple(
-        tuple(int(num) for num in words_combined[i:i + 3])
-        for i in range(len(words_combined) - 2)
-    )
+    words_combined = [int(x) for x in words_combined]
+    tri_grams = tuple(tuple(words_combined[i:i + 3]) for i in range(len(words_combined) - 2))
 
     tree = PrefixTrie()
     tree.fill(tri_grams)
