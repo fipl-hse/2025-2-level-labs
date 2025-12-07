@@ -113,7 +113,7 @@ class WordProcessor(TextProcessor):
             str: Resulting text
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
-            raise DecodingError('Invalid input: decoded_corpus must be a non-empty string')
+            raise DecodingError('Invalid input: decoded_corpus must be a non-empty tuple')
         sentences_list = []
         current_sentence_list = []
         for token in decoded_corpus:
@@ -203,6 +203,7 @@ class TrieNode:
         Returns:
             str: String representation showing node data and frequency.
         """
+        return f"TrieNode(name={self.__name}, value={self._value})"
 
     def add_child(self, item: int) -> None:
         """
@@ -254,6 +255,7 @@ class TrieNode:
         Args:
             new_value (float): New value to store.
         """
+        self._value = new_value
 
     def has_children(self) -> bool:
         """
