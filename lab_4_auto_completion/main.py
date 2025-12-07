@@ -890,7 +890,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
                 return candidates
         return None
 
-    def run(self, seq_len: int, prompt: str) -> str | None:
+    def run(self, seq_len: int, prompt: str) -> str | None: # pylint: disable=protected-access
         """
         Generate sequence based on dynamic N-gram trie and prompt provided.
 
@@ -911,11 +911,10 @@ class DynamicBackOffGenerator(BackOffGenerator):
             tokenized_text = self._text_processor._tokenize(prompt)
             if tokenized_text is None:
                 return None
-        except Exception:
+        except ValueError:
             return None
-        eos_char = self._text_processor._end_of_sentence_token
         token_list = list(tokenized_text)
-        if token_list and token_list[-1] == eos_char:
+        if token_list and token_list[-1] == self._text_processor._end_of_sentence_token:
             token_list.pop()
             encoded_prompt = []
         for element in token_list:
@@ -929,9 +928,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
             tokens = self.get_next_token(context)
             if tokens is None or not tokens:
                 break
-            best_candidates = sorted(tokens.items(),
-                                     key=lambda x: (-x[1], -x[0]))[0][0]
-            seq_list.append(best_candidates)
+            seq_list.append(sorted(tokens.items(), key=lambda x: (-x[1], -x[0]))[0][0])
         decoded_words = []
         for token_id in seq_list:
             for word, word_id in self._text_processor._storage.items():
