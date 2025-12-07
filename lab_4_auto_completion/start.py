@@ -36,10 +36,9 @@ def main() -> None:
     suggestion = trie.suggest((2,))
     if suggestion:
         decoded_words = []
-        storage = getattr(processor, '_storage', {})
         for token_id in suggestion[0]:
             word_found = None
-            for word, word_id in storage.items():
+            for word, word_id in getattr(processor, '_storage', {}).items():
                 if word_id == token_id:
                     word_found = word
                     break
