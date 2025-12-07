@@ -95,26 +95,23 @@ class WordProcessor(TextProcessor):
         if not isinstance(text, str) or not text:
             return tuple()
         sentences = []
-        current_sentence = []
+        sentence_chars = []
         for char in text:
-            current_sentence.append(char)
+            sentence_chars.append(char)
             if char in '.!?':
-                sentence = ''.join(current_sentence).strip()
-                if sentence:
-                    sentences.append(sentence)
-                current_sentence = []
-        if current_sentence:
-            sentence = ''.join(current_sentence).strip()
-            if sentence:
-                sentences.append(sentence)
-        clean_sentences = []
-        for sentence in sentences:
-            clean_sentence = sentence.strip().lower()
-            if clean_sentence:
-                clean_sentences.append(clean_sentence)
+                sentence_text = ''.join(sentence_chars).strip()
+                sentence_chars = []
+                if sentence_text:
+                    sentences.append(sentence_text.strip().lower())
+        if sentence_chars:
+            sentence_text = ''.join(sentence_chars).strip()
+            if sentence_text:
+                sentences.append(sentence_text.strip().lower())
         encoded_sentences = []
-        for clean_sentence in clean_sentences:
-            tokens = self._tokenize(clean_sentence)
+        for sentence in sentences:
+            if not sentence:
+                continue
+            tokens = self._tokenize(sentence)
             encoded_sentence = []
             for token in tokens:
                 if token == self._end_of_sentence_token:
@@ -142,7 +139,6 @@ class WordProcessor(TextProcessor):
         if element not in self._storage:
             new_id = len(self._storage)
             self._storage[element] = new_id
-        return None
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
@@ -404,7 +400,7 @@ class PrefixTrie:
         try:
             prefix_node = self.get_prefix(prefix)
         except TriePrefixNotFoundError:
-            return []
+            return tuple()
         sequences = []
         stack = [(prefix_node, list(prefix))]
         while stack:
@@ -487,7 +483,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             final_ngrams = self._collect_all_ngrams()
             self._fill_frequencies(final_ngrams)
             return 0
-        except:
+        except Exception:
             return 1
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
@@ -568,7 +564,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
         if not isinstance(new_corpus, tuple) or not new_corpus:
-            return None
+            return
         if not self._encoded_corpus:
             self._encoded_corpus = new_corpus
         else:
@@ -767,6 +763,12 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             or node_name < 0
         ):
             raise ValueError('Node name must be non-negative integer')
+        for child in parent.get_children():
+            if child.get_name() == node_name:
+                if freq != 0.0:
+                    child.set_value(freq)
+                return child
+        parent.add_child(node_name)
         for child in parent.get_children():
             if child.get_name() == node_name:
                 if freq != 0.0:
