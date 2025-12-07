@@ -168,11 +168,20 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
-        if not isinstance(text, str):
+        if not isinstance(text, str) or not text:
             raise EncodingError('Invalid input: text must be a non-empty string')
-        if not text.strip():
-            raise EncodingError('Invalid input: text must be a non-empty string')
+        words = text.lower().split()
         tokens = []
+        for word in words:
+            letters = ''.join(letter for letter in word if letter.isalpha() or letter == '-')
+            if letters:
+                tokens.append(letters)
+                if word and word[-1] in '.!?':
+                    tokens.append(self._end_of_sentence_token)
+        if not tokens:
+            raise EncodingError("Tokenization resulted in empty output")
+        return tuple(tokens)
+        '''tokens = []
         clear_sentences = []
         current_sentence = ""
 
@@ -197,7 +206,7 @@ class WordProcessor(TextProcessor):
                 tokens.append(self._end_of_sentence_token)
         if not tokens:
             raise EncodingError('Tokenization resulted in empty output')
-        return tuple(tokens)
+        return tuple(tokens)'''
 
 class TrieNode:
     """
@@ -890,7 +899,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
                 return candidates
         return None
 
-    def run(self, seq_len: int, prompt: str) -> str | None: # pylint: disable=protected-access
+    def run(self, seq_len: int, prompt: str) -> str | None:
         """
         Generate sequence based on dynamic N-gram trie and prompt provided.
 
@@ -902,6 +911,40 @@ class DynamicBackOffGenerator(BackOffGenerator):
             str | None: Generated sequence
         """
         if (
+            not isinstance(seq_len, int)
+            or seq_len <= 0
+            or not isinstance(prompt, str)
+            or not prompt
+        ):
+            return None
+        encoded_result = self._text_processor.encode(prompt)
+        if not encoded_result:
+            return None
+        token_sequence = list(encoded_result)
+        eos_marker = getattr(self._text_processor, '_end_of_word_token',
+                            self._text_processor.get_end_of_word_token())
+        if token_sequence and token_sequence[-1] == eos_marker:
+            token_sequence = token_sequence[:-1]
+        for _ in range(seq_len):
+            candidate_tokens = self.get_next_token(tuple(token_sequence))
+            if candidate_tokens is None or len(candidate_tokens) == 0:
+                break
+            selected_token, _ = max(candidate_tokens.items(),
+                                key=lambda pair: (pair[1], pair[0]))
+            token_sequence.append(selected_token)
+        word_list = []
+        token_storage = getattr(self._text_processor, '_storage', {})
+        for current_token_id in token_sequence:
+            for vocab_word, vocab_id in token_storage.items():
+                if vocab_id == current_token_id:
+                    word_list.append(vocab_word)
+                    break
+        text_processor = getattr(self._text_processor, '_postprocess_decoded_text', None)
+        if text_processor:
+            processed_output = text_processor(tuple(word_list))
+            return str(processed_output)
+        return ' '.join(word_list)
+        '''if (
             not isinstance(seq_len, int) or seq_len <= 0
             or not isinstance(prompt, str) or not prompt.strip()
             or self._text_processor.encode(prompt) is None
@@ -939,7 +982,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
             postprocess_method = self._text_processor._postprocess_decoded_text
             return str(postprocess_method(tuple(decoded_words)))
         except AttributeError:
-            return ' '.join(decoded_words)
+            return ' '.join(decoded_words)'''
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
