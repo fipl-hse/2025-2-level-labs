@@ -434,7 +434,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         for sentence in self._encoded_corpus:
             if len(sentence) >= self._n_gram_size:
                 for i in range(len(sentence)):
-                    sized_ngram = sentence[i:i + self._n_gram_size]
+                    sized_ngram = tuple(sentence[i:i + self._n_gram_size])
                     ngrams.append(sized_ngram)
         if not ngrams:
             return 1
