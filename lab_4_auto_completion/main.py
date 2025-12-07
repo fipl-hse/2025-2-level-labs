@@ -70,7 +70,7 @@ class WordProcessor(TextProcessor):
 
         tokens = self._tokenize(text)
         sentences = []
-        current_sentence = []
+        current_sentence: list[str] = []
 
         for token in tokens:
             current_sentence.append(token)
@@ -82,7 +82,7 @@ class WordProcessor(TextProcessor):
                     encoded_sentence.append(word_id)
 
                 sentences.append(tuple(encoded_sentence))
-                current_sentence = []
+                current_sentence: list[str] = []
 
         return tuple(sentences)
 
@@ -122,12 +122,12 @@ class WordProcessor(TextProcessor):
         if all(token == self._end_of_sentence_token for token in decoded_corpus):
             raise DecodingError("Postprocessing resulted in empty output")
         sentences = []
-        current_sentence = []
+        current_sentence: list[str] = []
         for word in decoded_corpus:
             if word == self._end_of_sentence_token:
                 if current_sentence:
                     sentences.append(" ".join(current_sentence))
-                    current_sentence = []
+                    current_sentence: list[str] = []
             else:
                 current_sentence.append(word)
         if current_sentence:
@@ -595,7 +595,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             tuple[NGramType, ...]: Tuple of all n-grams stored in the trie.
         """
         ngrams = []
-        stack = [(self._root, [])]
+        stack: list[tuple[TrieNode, list[int]]] = [(self._root, [])]
 
         while stack:
             current_node, current_path = stack.pop()
@@ -641,7 +641,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Args:
             encoded_corpus (tuple[NGramType, ...]): Tuple of n-grams extracted from the corpus.
         """
-        absolute_counts = {}
+        absolute_counts: dict[tuple[int, ...], int] = {}
         for ngram in encoded_corpus:
             absolute_counts[ngram] = absolute_counts.get(ngram, 0) + 1
 
@@ -980,22 +980,23 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         path (str): Path for saving
     """
     if not isinstance(path, str) or not path:
-        raise ValueError("Invalid path")
-    data = {
-        "value": trie.get_root().get_name(),
-        "freq": trie.get_root().get_value(),
-        "children": [],
-    }
-    stack = [(trie.get_root(), data["children"])]
-    while stack:
-        current_node, parent_children_list = stack.pop()
-        children = current_node.get_children()
-        for child in children:
-            child_dict = {"value": child.get_name(), "freq": child.get_value(), "children": []}
-            parent_children_list.append(child_dict)
-            stack.append((child, child_dict["children"]))
-    trie_data = {"trie": data}
-    with open(path, "w", encoding="utf-8") as file:
+        raise ValueError('Invalid path')
+    
+    def node_to_dict(node: TrieNode) -> dict:
+        result: dict = {
+            'value': node.get_name(),
+            'freq': node.get_value(),
+            'children': []
+        }
+        
+        for child in node.get_children():
+            result['children'].append(node_to_dict(child))
+        
+        return result
+    
+    trie_data = {'trie': node_to_dict(trie.get_root())}
+    
+    with open(path, 'w', encoding='utf-8') as file:
         json.dump(trie_data, file, indent=2)
 
 
