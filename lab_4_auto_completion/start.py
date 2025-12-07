@@ -18,15 +18,15 @@ def main() -> None:
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
     processor = WordProcessor('<EOS>')
-    encoded_sentences = processor.encode_sentences(hp_letters)
+    #encoded_sentences = processor.encode_sentences(hp_letters)
     prefix_trie = PrefixTrie()
-    prefix_trie.fill(encoded_sentences)
+    prefix_trie.fill(processor.encode_sentences(hp_letters))
     suggestions = prefix_trie.suggest((2,))
     if suggestions:
         processor.decode(suggestions[0])
         print(f"Первое продолжение для префикса 2: {processor.decode(suggestions[0])}")
 
-    model = NGramTrieLanguageModel(encoded_sentences, 5)
+    model = NGramTrieLanguageModel(processor.encode_sentences(hp_letters), 5)
     model.build()
 
     greedy_generator = GreedyTextGenerator(model, processor)
@@ -51,7 +51,6 @@ def main() -> None:
     print(f"Результат: {beam_result_after}")
 
     result = greedy_result_before
-    print(f"Итоговый результат: {result}")
 
     print(result)
     assert result, "Result is None"
