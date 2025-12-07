@@ -28,7 +28,7 @@ def main() -> None:
     if suggestions:
         decoded = processor.decode(suggestions[0])
         print(decoded.replace("<EOS>", "").strip())
-    result = decoded 
+    result = decoded
     assert result, "Result is None"
 
 
