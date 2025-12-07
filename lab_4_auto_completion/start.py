@@ -35,8 +35,7 @@ def main() -> None:
     encoded_ussr = processor.encode_sentences(ussr_letters)
     trie = PrefixTrie()
     trie.fill(hp_encoded)
-    suggestion = trie.suggest((2,))[0]
-    print(f"\nDecoded output: {processor.decode(suggestion)}")
+    print(f"\nDecoded output: {processor.decode(trie.suggest((2,))[0])}")
     model = NGramTrieLanguageModel(hp_encoded, 5)
     model.build()
     print(f"\nGreedy before: {GreedyTextGenerator(model, processor).run(52, 'Dear')}")
@@ -53,13 +52,14 @@ def main() -> None:
     generator = DynamicBackOffGenerator(loaded, processor)
     print(f"\nDynamic before: {generator.run(50, 'Ivanov')}")
     loaded.update(encoded_ussr)
+    loaded.set_current_ngram_size(3)
     try:
         loaded.set_current_ngram_size(3)
     except IncorrectNgramError:
         loaded.set_current_ngram_size(None)
     dynamic_result = generator.run(50, 'Ivanov')
     print(f"Dynamic after: {dynamic_result}\n")
-    assert dynamic_result, "Result is None"
+    assert dynamic, "Result is None"
 
 if __name__ == "__main__":
     main()
