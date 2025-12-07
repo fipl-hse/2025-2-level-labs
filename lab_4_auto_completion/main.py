@@ -692,11 +692,8 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             if result != 0:
                 return 1
             self._models[ngram_size] = model
-        try:
-            self._merge()
-            return 0
-        except MergeTreesError:
-            return 1
+        self._merge()
+        return 0
 
     def set_current_ngram_size(self, current_n_gram_size: int | None) -> None:
         """
@@ -883,16 +880,24 @@ class DynamicBackOffGenerator(BackOffGenerator):
             or len(prompt) == 0
         ):
             return None
-        encoded_seq = self._text_processor.encode(prompt)
+        try:
+            encoded_seq = self._text_processor.encode(prompt)
+        except EncodingError:
+            return None
         if not encoded_seq:
             return None
         tokens = list(encoded_seq)
+        eos_token_id = getattr(self._text_processor, '_end_of_word_token', None)
+        if eos_token_id is None:
+            eos_token_id = self._text_processor.get_end_of_word_token()
+        if tokens and tokens[-1] == eos_token_id:
+            tokens.pop()
         for _ in range(seq_len):
             next_tokens = self.get_next_token(tuple(tokens))
             if not next_tokens:
                 break
-            best = max(next_tokens.items(), key=lambda x: x[1])[0]
-            tokens.append(best)
+            best_token = max(next_tokens.items(), key=lambda x: (x[1], x[0]))[0]
+            tokens.append(best_token)
         decoded = {value: key for key, value in self._text_processor._storage.items()}
         words = [decoded[token] for token in tokens if token in decoded]
         ending = self._text_processor.get_end_of_word_token()
