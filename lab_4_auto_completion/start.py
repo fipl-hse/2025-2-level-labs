@@ -3,8 +3,20 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, GreedyTextGenerator
-from lab_4_auto_completion.main import NGramTrieLanguageModel, PrefixTrie, WordProcessor
+from lab_3_generate_by_ngrams.main import (
+    BeamSearchTextGenerator,
+    GreedyTextGenerator,
+)
+from lab_4_auto_completion.main import (
+    DynamicBackOffGenerator,
+    DynamicNgramLMTrie,
+    IncorrectNgramError,
+    load,
+    NGramTrieLanguageModel,
+    PrefixTrie,
+    save,
+    WordProcessor,
+)
 
 
 def main() -> None:
@@ -21,28 +33,47 @@ def main() -> None:
     assert result, "Result is None"
 
     processor = WordProcessor('<EOS>')
-    hp_encoded_sentences = processor.encode_sentences(hp_letters)
+    encoded_sentences = processor.encode_sentences(hp_letters)
+
     prefix_trie = PrefixTrie()
-    prefix_trie.fill(hp_encoded_sentences)
+    prefix_trie.fill(encoded_sentences)
     suggestions = prefix_trie.suggest((2,))
     if suggestions:
-        decoded = processor.decode(suggestions[0])
-        print(f"suggestion: {decoded.replace('<EOS>', '').strip()}")
+        print(f"Decoded: {processor.decode(suggestions[0]).replace("<EOS>", "").strip()}")
 
-    model = NGramTrieLanguageModel(hp_encoded_sentences, 5)
+    model = NGramTrieLanguageModel(encoded_sentences, 5)
     model.build()
 
-    greedy_res = GreedyTextGenerator(model, processor).run(50, 'Harry')
-    beam_res = BeamSearchTextGenerator(model, processor, 3).run('Harry', 50)
+    print(f"Previous result of Greedy: {GreedyTextGenerator(model, processor).run(52, 'Harry')}")
 
-    model.update(processor.encode_sentences(ussr_letters))
-    greedy_upd_res = GreedyTextGenerator(model, processor).run(50, 'Harry')
-    beam_upd_res = BeamSearchTextGenerator(model, processor, 3).run('Harry', 50)
-    print(greedy_res)
-    print(greedy_upd_res)
-    print(beam_res)
-    print(beam_upd_res)
-    result = [greedy_res, beam_res, greedy_upd_res, beam_upd_res]
+    print(f"Previous result of Beam: {BeamSearchTextGenerator(model, processor, 3).run('Harry', 52)}")
+
+    encoded_ussr_sentences = processor.encode_sentences(ussr_letters)
+    model.update(encoded_ussr_sentences)
+
+    print(f"Actual result of Greedy: {GreedyTextGenerator(model, processor).run(52, 'Harry')}")
+
+    print(f"Actual result of Beem: {BeamSearchTextGenerator(model, processor, 3).run('Harry', 52)}")
+
+    dynamic_trie = DynamicNgramLMTrie(encoded_sentences, 5)
+    dynamic_trie.build()
+
+    save(dynamic_trie, "./saved_dynamic_trie.json")
+    loaded_trie = load("./saved_dynamic_trie.json")
+
+    dynamic_generator = DynamicBackOffGenerator(loaded_trie, processor)
+    print(f"Dynamic before: {dynamic_generator.run(50, 'Ivanov')}")
+
+    loaded_trie.update(encoded_ussr_sentences)
+    loaded_trie.set_current_ngram_size(3)
+    try:
+        loaded_trie.set_current_ngram_size(3)
+    except IncorrectNgramError:
+        loaded_trie.set_current_ngram_size(None)
+
+    print(f"Actual Dynamik: {dynamic_generator.run(50, 'Ivanov')}")
+
+    result = dynamic_generator
     assert result, "Result is None"
 
 if __name__ == "__main__":
