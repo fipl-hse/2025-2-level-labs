@@ -381,14 +381,18 @@ class PrefixTrie:
             current_node, current_path = stack.pop()
 
             children = current_node.get_children()
-            sorted_children = sorted(children, key=lambda child: child.get_name())
+            sorted_children = sorted(
+                [child for child in children if child.get_name() is not None],
+                key=lambda child: child.get_name()
+            )
 
             for child in sorted_children:
                 item = child.get_name()
-                new_path = current_path + [item]
-
-                if child.is_end:
-                    suggestions.append(tuple(new_path))
+                if item is not None:
+                    new_path = current_path + [item]
+                    
+                    if child.is_end:
+                        suggestions.append(tuple(new_path))
 
                 if child.has_children():
                     stack.append((child, new_path))
@@ -863,7 +867,8 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 child_name = child.get_name()
                 child_freq = child.get_value()
 
-                target_child = self._assign_child(target_node, child_name, child_freq)
+                if child_name is not None:
+                    target_child = self._assign_child(target_node, child_name, child_freq)
 
                 if child.has_children():
                     stack.append((child, target_child))
@@ -1014,3 +1019,6 @@ def load(path: str) -> DynamicNgramLMTrie:
         return DynamicNgramLMTrie(tuple(), max_ngram_size)
     loaded_trie.set_current_ngram_size(data.get("current_n_gram_size", max_ngram_size))
     return loaded_trie
+
+
+

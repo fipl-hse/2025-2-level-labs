@@ -11,7 +11,7 @@ from lab_3_generate_by_ngrams.main import NGramLanguageModel, BeamSearcher
 from lab_4_auto_completion.main import WordProcessor
 
 
-def solve_secret():
+def solve_secret() -> str:
     letter_text = """Dear Harry,
 You won't believe what happened today in the common room.
 I was just minding my own business when Malfoy decided to
