@@ -338,12 +338,12 @@ class PrefixTrie:
         nodes = [(node, sequence)]
         while nodes:
             node, sequence = nodes.pop(0)
-            for child in node.get_children():
-                if child.get_name() is None:
-                    continue
-                new_sequence = sequence + [child.get_name()]
-                sequences.append(tuple(new_sequence))
-                nodes.append((child, new_sequence))
+            if len(sequence) > len(prefix) and node.has_children() is False:
+                sequences.append(tuple(sequence))
+            else:
+                for child in node.get_children():
+                    new_sequence = sequence + [child.get_name()]
+                    nodes.append((child, new_sequence))
         return tuple(sequences)
 
     def _insert(self, sequence: NGramType) -> None:
@@ -381,7 +381,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             n_gram_size (int): A size of n-grams to use for language modelling
         """
         NGramLanguageModel.__init__(self, encoded_corpus, n_gram_size)
-        PrefixTrie.__init__(self)
+        self._root = TrieNode()
 
     def __str__(self) -> str:
         """
@@ -390,6 +390,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             str: String representation showing n-gram size.
         """
+        return f"NGramTrieLanguageModel({self._n_gram_size})"
 
     def build(self) -> int:
         """
@@ -398,6 +399,22 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             int: 0 if attribute is filled successfully, otherwise 1
         """
+        if not self._encoded_corpus:
+            return 1
+        self.clean
+        all_n_grams = []
+        for sentence in self._encoded_corpus:
+            n_grams = self._extract_n_grams(sentence)
+            if not n_grams:
+                return 1
+            all_n_grams.extend(n_grams)
+        if not all_n_grams:
+            return 1
+        for n_gram in all_n_grams:
+            self._insert(n_gram)
+        collected_n_grams = self._collect_all_ngrams()
+        self._fill_frequencies(collected_n_grams)
+        return 0
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
         """
@@ -434,6 +451,16 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             dict[int, float] | None: Possible next tokens with their probabilities,
                                      or None if input is invalid or context is too short
         """
+        if (not isinstance(sequence, tuple) 
+            or not sequence
+            or len(sequence) < (self._n_gram_size-1)):
+            return None
+        context = sequence[-(self._n_gram_size-1):]
+        try:
+            node = self.get_next_tokens(context)
+        except TriePrefixNotFoundError:
+            return {}
+        return node
 
     def get_n_gram_size(self) -> int:
         """
@@ -463,6 +490,12 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Args:
             new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
+        if not self._encoded_corpus:
+            self._encoded_corpus = new_corpus
+        else:
+            encoded_corpus = self._encoded_corpus
+            self._encoded_corpus = encoded_corpus + new_corpus
+        self.build()
 
     def _collect_all_ngrams(self) -> tuple[NGramType, ...]:
         """
@@ -471,7 +504,18 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             tuple[NGramType, ...]: Tuple of all n-grams stored in the trie.
         """
-        node = self._root
+        sequences =[]
+        nodes = [(self._root, [])]
+        while nodes:
+            node, sequence = nodes.pop(0)
+            if len(sequence) == self._n_gram_size:
+                sequences.append(tuple(sequence))
+            if len(sequence) > self._n_gram_size:
+                continue
+            for child in node.get_children():
+                if child.get_name():
+                    nodes.append((child, sequence + [child.get_name()]))
+        return tuple(sequences)
 
 
     def _collect_frequencies(self, node: TrieNode) -> dict[int, float]:
@@ -499,9 +543,17 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         of each n-gram sequence.
 
         Args:
-            encoded_corpus (tuple[NGramType, ...]): Tuple of n-grams extracted from the corpus.
+            encode
+            d_corpus (tuple[NGramType, ...]): Tuple of n-grams extracted from the corpus.
         """
-
+        n_gram_counts = {}
+        for n_gram in encoded_corpus:
+            n_gram_counts[n_gram] = n_gram_counts.get(n_gram, 0) + 1
+        for n_gram, count in n_gram_counts.items():
+            node = self.get_node_by_prefix(n_gram)
+            new_value = count / len(encoded_corpus)
+            if node is not None:
+                node.set_value(new_value)
 
 class DynamicNgramLMTrie(NGramTrieLanguageModel):
     """
