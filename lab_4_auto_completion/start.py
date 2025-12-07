@@ -3,7 +3,7 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from main import PrefixTrie, WordProcessor
+from main import PrefixTrie, NGramTrieLanguageModel, WordProcessor
 
 
 def main() -> None:
@@ -24,6 +24,8 @@ def main() -> None:
     print(suggestions[0])
     decoded_suggestion = processor.decode(suggestions[0])
     result = decoded_suggestion
+    model = NGramTrieLanguageModel(encoded_sentences, 5)
+    model.build()
     print(result)
     assert result, "Result is None"
 
