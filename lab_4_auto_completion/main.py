@@ -1075,12 +1075,12 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
     root_node = trie.get_root()
 
-    stack = [(root_node, None)]
+    stack = [(root_node, {})] 
     root_dict = None
 
     while stack:
         current_node, parent_dictionary = stack.pop()
-        if parent_dictionary is None:
+        if not parent_dictionary:
             node_dict = {
                 "value": None,
                 "freq": 0.0,
@@ -1097,7 +1097,7 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
 
         children = current_node.get_children()
         for i in range(len(children) - 1, -1, -1):
-            stack.append((children[i], node_dict))
+            stack.append((children[i], node_dict)) 
 
     trie_data = {"trie": root_dict}
     with open(path, 'w', encoding = 'utf-8') as f:
@@ -1121,9 +1121,7 @@ def load(path: str) -> DynamicNgramLMTrie:
     trie = DynamicNgramLMTrie((), 3)
     if not information:
         return trie
-
     nodes = [(information, None)]
-
     while nodes:
         node_data, parent_node = nodes.pop()
         value = node_data.get("value")
