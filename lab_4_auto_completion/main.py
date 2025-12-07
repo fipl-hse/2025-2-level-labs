@@ -149,33 +149,16 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
-        if not isinstance(text, str) or not text.strip():
+        if not isinstance(text, str) or not text:
             raise EncodingError("Invalid input: text must be a non-empty string")
+        words = text.lower().split()
         tokens = []
-        sentences = []
-        current_sentence = []
-        for char in text:
-            if char in '.!?':
-                sentence = ''.join(current_sentence).strip()
-                if sentence:
-                    sentences.append(sentence)
-                current_sentence = []
-            else:
-                current_sentence.append(char)
-        last_sentence = ''.join(current_sentence).strip()
-        if last_sentence:
-            sentences.append(last_sentence)
-        for sentence in sentences:
-            words = sentence.split()
-            cleaned_words = []
-            for word in words:
-                word = word.lower()
-                cleaned_word = ''.join(char for char in word if char.isalpha())
-                if cleaned_word:
-                    cleaned_words.append(cleaned_word)
-            if cleaned_words:
-                tokens.extend(cleaned_words)
-                tokens.append(self._end_of_sentence_token)
+        for word in words:
+            letters = ''.join(letter for letter in word if letter.isalpha() or letter == '-')
+            if letters:
+                tokens.append(letters)
+                if word and word[-1] in '.!?':
+                    tokens.append(self._end_of_sentence_token)
         if not tokens:
             raise EncodingError("Tokenization resulted in empty output")
         return tuple(tokens)
@@ -820,47 +803,41 @@ class DynamicBackOffGenerator(BackOffGenerator):
         Returns:
             str | None: Generated sequence
         """
-        if not isinstance(seq_len, int) or seq_len <= 0:
+        if (
+            not isinstance(seq_len, int)
+            or seq_len <= 0
+            or not isinstance(prompt, str)
+            or not prompt.strip()
+        ):
             return None
-        if not isinstance(prompt, str) or not prompt.strip():
-            return None
-        encoded_prompt_test = self._text_processor.encode(prompt)
-        if encoded_prompt_test is None:
-            return None
-        token_tuple = None
         try:
-            token_tuple = self._text_processor._tokenize(prompt)
+            encoded_seq = self._text_processor.encode(prompt)
+            if encoded_seq is None:
+                return None
         except EncodingError:
             return None
-        if token_tuple is None:
-            return None
-        tokens = list(token_tuple)
-        eos_token = self._text_processor._end_of_sentence_token
-        if tokens and tokens[-1] == eos_token:
+        tokens = list(encoded_seq)
+        eos_token_id = getattr(self._text_processor, '_end_of_sentence_token', None)
+        if tokens and eos_token_id is not None and tokens[-1] == eos_token_id:
             tokens.pop()
-        encoded_prompt = []
-        for token in tokens:
-            self._text_processor._put(token)
-            encoded_prompt.append(self._text_processor._storage[token])
-        if not encoded_prompt:
-            return None
-        current_sequence = list(encoded_prompt)
         for _ in range(seq_len):
-            next_tokens = self.get_next_token(tuple(current_sequence))
+            next_tokens = self.get_next_token(tuple(tokens))
             if not next_tokens:
                 break
-            best_token = sorted(next_tokens.items(), key=lambda x: (-x[1], -x[0]))[0][0]
-            current_sequence.append(best_token)
-        decoded_words = []
-        for token_id in current_sequence:
-            for word, word_id in self._text_processor._storage.items():
-                if word_id == token_id:
-                    decoded_words.append(word)
-                    break
+            best_token = max(next_tokens.items(), key=lambda x: (x[1], x[0]))[0]
+            tokens.append(best_token)
+        words = []
+        storage = getattr(self._text_processor, '_storage', None)
+        if storage:
+            id_to_word = {word_id: word for word, word_id in storage.items()}
+            for token_id in tokens:
+                word = id_to_word.get(token_id)
+                if word is not None:
+                    words.append(word)
         postprocess_method = getattr(self._text_processor, '_postprocess_decoded_text', None)
         if postprocess_method:
-            return str(postprocess_method(tuple(decoded_words)))
-        return ' '.join(decoded_words)
+            return str(postprocess_method(tuple(words)))
+        return ' '.join(words)
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
