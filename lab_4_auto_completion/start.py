@@ -7,11 +7,11 @@ from lab_3_generate_by_ngrams.main import BeamSearcher, BeamSearchTextGenerator,
 from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
+    load,
     NGramTrieLanguageModel,
     PrefixTrie,
+    save,
     WordProcessor,
-    load,
-    save
 )
 
 
@@ -52,13 +52,13 @@ def main() -> None:
     greedy = GreedyTextGenerator(model, word_processor)
     beam = BeamSearchTextGenerator(model, word_processor, 3)
 
-    greedy_before = greedy.run("Ivanov", 30)
+    greedy_before = greedy.run(30, "Ivanov")
     beam_before = beam.run("Ivanov", 30)
     print(f'Greedy: {greedy_before}\nBeam: {beam_before}')
 
     model.update(word_processor.encode_sentences(ussr_letters))
 
-    greedy_after = greedy.run("Ivanov", 30)
+    greedy_after = greedy.run(30, "Ivanov")
     beam_after = beam.run("Ivanov", 30)
     print(f'Greedy update: {greedy_after}\nBeam update: {beam_after}')
 

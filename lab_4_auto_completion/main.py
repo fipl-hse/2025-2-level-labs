@@ -548,7 +548,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             dict[int, float]: Mapping of token → relative frequency.
         """
         node = self.get_prefix(start_sequence)
-        if not node.get_children():
+        if not node.has_children():
             return {}
         return self._collect_frequencies(node)
 
@@ -1106,26 +1106,17 @@ def load(path: str) -> DynamicNgramLMTrie:
         DynamicNgramLMTrie: Trie from file.
     """
     with open(path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+        evidence = json.load(f)
 
-    information = data.get("trie", {})
-    trie = DynamicNgramLMTrie((), 3)
-    if not information:
-        return trie
-    nodes = [(information, None)]
-    while nodes:
-        node_data, parent_node = nodes.pop()
-        value = node_data.get("value")
-        freq = node_data.get("freq", 0.0)
-        current_node = TrieNode(value, freq)
+    encoded_corpus = tuple(evidence.get('encoded_corpus', ()))
+    max_ngram_size = evidence.get('max_ngram_size', 3)
 
-        if parent_node is None:
-            trie._root = current_node
-        else:
-            parent_node._children.append(current_node)
+    load = DynamicNgramLMTrie(encoded_corpus, max_ngram_size)
+    result = load.build()
 
-        children_data = node_data.get("children", [])
-        for child_data in children_data[::-1]:
-            nodes.append((child_data, current_node))
+    if result != 0:
+        return DynamicNgramLMTrie(tuple(), max_ngram_size)
 
-    return trie
+    load.set_current_ngram_size(evidence.get('current_n_gram_size', max_ngram_size))
+    return load
+
