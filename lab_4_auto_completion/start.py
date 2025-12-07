@@ -3,7 +3,7 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from main import PrefixTrie, NGramTrieLanguageModel, WordProcessor
+from lab_4_auto_completion.main import NGramTrieLanguageModel, PrefixTrie, WordProcessor
 
 
 def main() -> None:

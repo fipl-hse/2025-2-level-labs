@@ -328,7 +328,7 @@ class PrefixTrie:
             matching_children = current_node.get_children(item)
             if not matching_children:
                 raise TriePrefixNotFoundError(f"Prefix {prefix} not found in the trie")
-            current_node = matching_children[0] 
+            current_node = matching_children[0]
         return current_node
 
     def suggest(self, prefix: NGramType) -> tuple:
@@ -435,8 +435,8 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         try:
             for ngram in all_ngrams:
                 self._insert(ngram)
-            all_ngrams = self._collect_all_ngrams()
-            self._fill_frequencies(all_ngrams)
+            ngrams = self._collect_all_ngrams()
+            self._fill_frequencies(ngrams)
             return 0
         except TriePrefixNotFoundError:
             return 1
