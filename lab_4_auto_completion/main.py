@@ -60,9 +60,7 @@ class WordProcessor(TextProcessor):
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
         tokens = self._tokenize(text)
-        sentences = []
         encoded_sentences = []
-        new_sentence = []
 
         current_sentence = []
         for token in tokens:
@@ -541,7 +539,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         while stack:
             current_node, current_seq = stack.pop(0)
             if len(current_seq) == self._n_gram_size:
-                proper_children.append(current_seq)
+                proper_children.append(tuple(current_seq))
                 continue
 
             for child in current_node.get_children():
