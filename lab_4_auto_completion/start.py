@@ -24,7 +24,7 @@ def main() -> None:
     prefix_trie.fill(hp_encoded_sentences)
     suggestions = prefix_trie.suggest((2,))
     if suggestions:
-        decoded = processor.decode(first_suggestionsuggestions[0])
+        decoded = processor.decode(suggestions[0])
         print(f"suggestion: {decoded.replace('<EOS>', '').strip()}")
 
     model = NGramTrieLanguageModel(hp_encoded_sentences, 5)
@@ -40,7 +40,7 @@ def main() -> None:
     print(greedy_upd_res)
     print(beam_res)
     print(beam_upd_res)
-    result = [greedy_res, beam_res, greedy_upd, beam_upd]
+    result = [greedy_res, beam_res, greedy_upd_res, beam_upd_res]
     assert result, "Result is None"
 
 
