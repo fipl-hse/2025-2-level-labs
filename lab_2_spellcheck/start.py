@@ -6,6 +6,10 @@ Spellcheck starter
 from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words
 from lab_2_spellcheck.main import (
     build_vocabulary,
+    calculate_distance,
+    calculate_frequency_distance,
+    calculate_jaro_winkler_distance,
+    calculate_levenshtein_distance,
     find_correct_word,
     find_out_of_vocab_words,
 )
@@ -27,113 +31,51 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
+    tokens = clean_and_tokenize(text) or []
+    tokens_without_stopwords = remove_stop_words(tokens, stop_words) or []
+    tokens_vocab = build_vocabulary(tokens_without_stopwords) or {}
+    print(tokens_vocab)
 
-    alphabet = [
-        'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м',
-        'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь',
-        'э', 'ю', 'я'
-    ]
+    tokens_not_in_vocab = find_out_of_vocab_words(tokens_without_stopwords, tokens_vocab) or []
+    print(tokens_not_in_vocab)
 
-    cleaned_tokens = clean_and_tokenize(text)
-    removed_words = remove_stop_words(cleaned_tokens, stop_words) if cleaned_tokens else None
+    jaccard_distance = calculate_distance("кот", {"кот": 0.5, "пёс": 0.5},
+                                                 method = "jaccard") or {}
+    print(jaccard_distance)
 
-    if not (cleaned_tokens and removed_words):
-        return
+    alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+    freq_distances = calculate_frequency_distance("маладой", tokens_vocab, alphabet) or {}
+    print(freq_distances)
 
-    built_voc = build_vocabulary(removed_words)
-    if not built_voc:
-        return
+    levenshtein_distance = calculate_levenshtein_distance("кот", "кто")
+    print(levenshtein_distance)
 
-    print('Введи предложение для проверки:')
-    user_sentence = input()   
+    jaro_winkler_distance = calculate_jaro_winkler_distance("кот", "кто")
+    print(jaro_winkler_distance)
+    result = jaro_winkler_distance
 
-    results = []
-    cleaned_and_tokenized = clean_and_tokenize(user_sentence)
-    if cleaned_and_tokenized:
-        filtered_user_sentence = remove_stop_words(cleaned_and_tokenized, stop_words)
-    else:
-        return None
-    if filtered_user_sentence:
-        out_of_voc_words = find_out_of_vocab_words(filtered_user_sentence, built_voc)
-    else:
-        return None
-    # if not (cleaned_and_tokenized, filtered_user_sentence, out_of_voc_words):
-    corrected_user = []
-    new_sentence = []
-    if out_of_voc_words is not None:
-        for wrong_word in out_of_voc_words:
-            correct_word = (
-                find_correct_word(wrong_word, built_voc, "frequency-based", alphabet) or
-                find_correct_word(wrong_word, built_voc, "levenshtein", None) or
-                find_correct_word(wrong_word, built_voc, "jaccard", None)
-            )
-            if correct_word:
-                corrected_user.append((wrong_word, correct_word))
-                new_sentence.append(correct_word)
-    new_sentence = " ".join(new_sentence)
-    if corrected_user:
-        results.append({
-            'sentence': user_sentence,
-            'corrections': corrected_user,
-            'new_sentence': new_sentence
-        })
-    
-    # for word in new_sentence:
-    #     if word != correct_word:
-    #         new_sentence.append(word)
-    #     else:
-    #         new_sentence.append(correct_word)
-    
+    all_wrong_words = []
+    for sentence in sentences:
+        sentence_tokens = clean_and_tokenize(sentence) or []
+        out_of_vocab = find_out_of_vocab_words(sentence_tokens, tokens_vocab) or []
+        all_wrong_words.extend(out_of_vocab)
+    unique_wrong_words = sorted(set(all_wrong_words))
 
-                    
-
-    # for sentence in sentences:
-    #     sentence_tokens = clean_and_tokenize(sentence)
-    #     sentence_filtered = (
-    #         remove_stop_words(sentence_tokens, stop_words)
-    #         if sentence_tokens else None
-    #     )
-    #     out_of_vocab_words = (
-    #         find_out_of_vocab_words(sentence_filtered, built_voc)
-    #         if sentence_filtered else None
-    #     )
-
-    #     if not (sentence_tokens, sentence_filtered, out_of_vocab_words):
-    #         continue
-
-    #     corrections = []
-    #     if out_of_vocab_words is not None:
-    #         for wrong_word in out_of_vocab_words:
-    #             correct_word = (
-    #                 find_correct_word(wrong_word, built_voc, "frequency-based", alphabet) or
-    #                 find_correct_word(wrong_word, built_voc, "levenshtein", None) or
-    #                 find_correct_word(wrong_word, built_voc, "jaccard", None)
-    #             )
-
-    #             if correct_word:
-    #                 corrections.append((wrong_word, correct_word))
-
-    #     if corrections:
-    #         results.append({
-    #             'sentence': sentence,
-    #             'corrections': corrections
-    #         })
-
-    if results:
-        for i, result in enumerate(results, 1):
-            print(f"\n{i}. Исходное предложение: {result['sentence']}")
-            print("   Исправления:")
-            for wrong, correct in result['corrections']:
-                print(f"     '{wrong}' → '{correct}'")
-            print(f'    Новое предложение: {result['new_sentence']}')
-
-
-    else:
-        print("Ошибки не найдены.")
-
-    
-
-    assert results is not None
+    for wrong_word in unique_wrong_words:
+        print(f"Исправления для слова '{wrong_word}':")
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "jaccard", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"jaccard: {correct_word}")
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "frequency-based", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"frequency-based: {correct_word}")
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "levenshtein", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"levenshtein: {correct_word}")
+        correct_word = find_correct_word(wrong_word, tokens_vocab, "jaro-winkler", alphabet)
+        if correct_word and correct_word != wrong_word:
+            print(f"jaro-winkler: {correct_word}")
+    assert result, "Result is None"
 
 if __name__ == "__main__":
     main()
