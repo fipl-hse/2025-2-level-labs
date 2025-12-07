@@ -276,9 +276,9 @@ class TrieNode:
         Args:
             item (int): Data value for the new child node.
         """
-        new_node = TrieNode(item)
-        self._children.append(new_node)
-        return new_node
+        if item is not None:
+            new_child = TrieNode(name = item, value = 0.0)
+            self._children.append(new_child)
 
     def get_children(self, item: int | None = None) -> tuple["TrieNode", ...]:
         """
@@ -547,11 +547,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Mapping of token → relative frequency.
         """
-        try:
-            node = self.get_prefix(start_sequence)
-        except TriePrefixNotFoundError:
-            raise
-
+        node = self.get_prefix(start_sequence)
         if not node.get_children():
             return {}
         return self._collect_frequencies(node)
@@ -801,10 +797,6 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Args:
             current_n_gram_size (int | None): Current N-gram size for generation.
         """
-        if current_n_gram_size is None:
-            self._current_n_gram_size = None
-            return
-
         if not isinstance(current_n_gram_size, int):
             raise IncorrectNgramError('The variable must be an integer or None')
 
@@ -812,7 +804,6 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             raise  IncorrectNgramError(
                 f'N-gram size must be between 2 and {self._max_ngram_size}'
                 )
-
         self._current_n_gram_size = current_n_gram_size
 
     def generate_next_token(self, sequence: tuple[int, ...]) -> dict[int, float] | None:
