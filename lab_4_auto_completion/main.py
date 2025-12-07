@@ -382,10 +382,10 @@ class PrefixTrie:
             children_with_element = current_node.get_children(element)
             if children_with_element:
                 current_node = children_with_element[0]
-            else:
-                current_node.add_child(element)
-                new_children = current_node.get_children(element)
-                current_node = new_children[0]
+                continue
+            current_node.add_child(element)
+            new_children = current_node.get_children(element)
+            current_node = new_children[0]
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
