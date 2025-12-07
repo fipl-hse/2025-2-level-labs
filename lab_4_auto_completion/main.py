@@ -532,7 +532,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             tuple[NGramType, ...]: Tuple of all n-grams stored in the trie.
         """
         result = []
-        stack = [(self._root, [], 0)] #depth-first search
+        stack = [(self._root, [], 0)]
         while stack:
             node, current_path, current_depth = stack.pop()
             if node.get_name() is not None:

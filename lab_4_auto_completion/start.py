@@ -23,7 +23,7 @@ def main() -> None:
     prefix_trie.fill(encoded_sentences)
     suggestions = prefix_trie.suggest((2,))
     decoded_suggestion = processor.decode(suggestions[0])
-    result = decoded_suggestion
+    #result = decoded_suggestion
 
     model = NGramTrieLanguageModel(encoded_sentences, 5)
     model.build()
@@ -36,7 +36,7 @@ def main() -> None:
 
     result_generator = greedy_generator.run(51, "Harry ")
     print(result_generator)
-
+    result = None
     print(result)
     assert result, "Result is None"
 
