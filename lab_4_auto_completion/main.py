@@ -364,7 +364,7 @@ class PrefixTrie:
                 if len(current_path) > len(prefix):
                     results.append(tuple(current_path))
             else:
-                for child in (children):
+                for child in children:
                     child_name = child.get_name()
                     if child_name is not None:
                         stack.append((child, current_path + [child_name]))
