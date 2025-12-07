@@ -73,7 +73,7 @@ class WordProcessor(TextProcessor):
         current_sentence = []
         for char in text:
             current_sentence.append(char)
-            if char in '.!?' and (len(current_sentence) == len(text) or text[len(current_sentence)].isspace()):
+            if char in '.!?' and (len(current_sentence) == len(text)):
                 sentence = ''.join(current_sentence).strip()
                 if sentence:
                     raw_sentences.append(sentence)
@@ -356,7 +356,7 @@ class PrefixTrie:
                     child_name = child.get_name()
                     if child_name is None:
                         continue
-                    new_sequence = current_sequence + [child.get_name()]
+                    new_sequence = current_sequence + [child_name]
                     if new_sequence:
                         sequences.append(tuple(new_sequence))
                         stack.append((child, new_sequence))
@@ -402,7 +402,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             n_gram_size (int): A size of n-grams to use for language modelling
         """
         NGramLanguageModel.__init__(self, encoded_corpus, n_gram_size)
-        self._root = TrieNode(0.0)
+        self._root = TrieNode()
 
     def __str__(self) -> str:
         """
