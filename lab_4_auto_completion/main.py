@@ -14,31 +14,26 @@ class TriePrefixNotFoundError(Exception):
     """
     Exception raised when something fails due to something
     """
-    pass
 
 class EncodingError(Exception):
     """
     Exception raised when something fails due to something
     """
-    pass
 
 class DecodingError(Exception):
     """
     Exception raised when something fails due to something
     """
-    pass
 
 class IncorrectNgramError(Exception):
     """
     Exception raised when something fails due to something
     """
-    pass
 
 class MergeTreesError(Exception):
     """
     Exception raised when something fails due to something
     """
-    pass
 
 class WordProcessor(TextProcessor):
     """
@@ -343,11 +338,13 @@ class PrefixTrie:
         sequence = list(prefix)
         nodes = [(node, sequence)]
         while nodes:
-            node, sequence  = nodes.pop(0)
+            node, sequence = nodes.pop(0)
             for child in node.get_children():
-                sequence.append(child.get_name())
-                sequences.append(tuple(sequence))
-                nodes.append((child, sequence))
+                if child.get_name() is None:
+                    continue
+                new_sequence = sequence + [child.get_name()]
+                sequences.append(tuple(new_sequence))
+                nodes.append((child, new_sequence))
         return tuple(sequences)
 
     def _insert(self, sequence: NGramType) -> None:
@@ -366,7 +363,7 @@ class PrefixTrie:
                 root = sequence_children[0]
             else:
                 root.add_child(el)
-                root = TrieNode(el)
+                root = root.get_children(el)[0]
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
@@ -385,6 +382,8 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             encoded_corpus (tuple | None): Encoded text
             n_gram_size (int): A size of n-grams to use for language modelling
         """
+        NGramLanguageModel.__init__(self, encoded_corpus, n_gram_size)
+        PrefixTrie.__init__(self)
 
     def __str__(self) -> str:
         """
@@ -441,6 +440,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             int: The current n-gram size.
         """
+        return self._n_gram_size
 
     def get_node_by_prefix(self, prefix: NGramType) -> TrieNode:
         """
@@ -452,6 +452,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             TrieNode: Found node by prefix.
         """
+        return self.get_prefix(prefix)
 
     def update(self, new_corpus: tuple[NGramType]) -> None:
         """
@@ -479,6 +480,12 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Collected frequencies of items.
         """
+        frequencies = {}
+        for child in node.get_children():
+            child_name = child.get_name()
+            if child_name:
+                frequencies[child_name] = child.get_value()
+        return frequencies
 
     def _fill_frequencies(self, encoded_corpus: tuple[NGramType, ...]) -> None:
         """
