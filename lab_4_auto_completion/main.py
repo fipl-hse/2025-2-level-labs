@@ -69,11 +69,14 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
+        if not isinstance(text, str) or not text:
+            return tuple()
         raw_sentences = []
         current_sentence = []
         for char in text:
             current_sentence.append(char)
-            if char in '.!?' and (len(current_sentence) == len(text)):
+            if char in '.!?' and (len(current_sentence) == len(text)
+                                  or text[len(current_sentence)].isspace()):
                 sentence = ''.join(current_sentence).strip()
                 if sentence:
                     raw_sentences.append(sentence)
