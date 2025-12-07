@@ -22,8 +22,12 @@ def main() -> None:
     prefix_trie.fill(encoded_letters)
     suggestion = prefix_trie.suggest((2,))
     first_suggestion = suggestion[0]
-    words_list = [word_processor.get_token(element) for element in first_suggestion]
-    decoded = word_processor._postprocess_decoded_text(tuple(words_list))
+    words_list = []
+    for element in first_suggestion:
+        token = word_processor.get_token(element)
+        if token is not None:
+            words_list.append(token)
+    decoded = word_processor.postprocess_decoded_text(tuple(words_list))
     print(decoded)
     result = decoded
     assert result, "Result is None"

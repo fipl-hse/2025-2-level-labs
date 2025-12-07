@@ -133,6 +133,13 @@ class WordProcessor(TextProcessor):
             raise DecodingError('Postprocessing resulted in empty output')
         return '. '.join(sentences_list) + '.'
 
+    def postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
+        """
+        Created to eliminate 
+        "Access to a protected member _postprocess_decoded_text of a client class" warning
+        """
+        return self._postprocess_decoded_text(decoded_corpus)
+
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
         Tokenize text into words, separating sentences with special token.
@@ -334,17 +341,17 @@ class PrefixTrie:
         results = []
         stack = [(start_node, list(prefix))]
         while stack:
-            current_node, current_path = stack.pop()
-            if current_node.has_children():
+            current_node, current_path = stack.pop(0)
+            if not current_node.has_children():
+                if current_path != list(prefix):
+                    results.append(tuple(current_path))
+            else:
                 for child in current_node.get_children():
                     child_name = child.get_name()
-                    if child_name is None:
-                        continue
-                    next_sequence = current_path + [child_name,]
-                    stack.append((child, next_sequence))
-            else:
-                if current_path != prefix:
-                    results.append(current_path)
+                    if child_name is not None:
+                        next_sequence = current_path + [child_name]
+                        stack.append((child, next_sequence))
+        results.sort()
         return tuple(results)
 
     def _insert(self, sequence: NGramType) -> None:
