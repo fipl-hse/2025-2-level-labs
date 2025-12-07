@@ -62,7 +62,9 @@ Ron"""
         new_cands = {}
         for seq in list(candidates.keys()):
             next_tokens = searcher.get_next_token(seq)
-            if next_tokens:
+                if next_tokens is None:
+                    continue
+                if next_tokens:
                 updated = searcher.continue_sequence(seq, next_tokens, {seq: candidates[seq]})
                 if updated:
                     new_cands.update(updated)
@@ -111,3 +113,4 @@ Ron"""
 if __name__ == "__main__":
     completed = solve_secret()
     print(completed)
+
