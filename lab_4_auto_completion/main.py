@@ -149,20 +149,6 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
-
-    def _tokenize(self, text: str) -> tuple[str, ...]:
-        """
-        Tokenize text into words, separating sentences with special token.
-
-        Punctuation and digits are removed from words.
-        Sentences are separated by the end_of_sentence_token.
-
-        Args:
-            text (str): Original text
-
-        Returns:
-            tuple[str, ...]: Tokenized text as words
-        """
         if not isinstance(text, str) or not text:
             raise EncodingError('Invalid input: text must be a non-empty string')
         eos = self._end_of_sentence_token
