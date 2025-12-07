@@ -47,8 +47,9 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
-        self._end_of_sentence_token = end_of_sentence_token
-        super().__init__(end_of_word_token=end_of_sentence_token)
+        def __init__(self, end_of_sentence_token='<EOS>'):
+            self._end_of_sentence_token = end_of_sentence_token
+            super().__init__(end_of_word_token=end_of_sentence_token)
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -138,20 +139,7 @@ class WordProcessor(TextProcessor):
         if not sentences:
             raise DecodingError("No valid sentences found after postprocessing")
     
-        result_parts = []
-        for sentence in sentences:
-            if sentence:
-                capitalized = sentence[0].upper() + sentence[1:]
-                if not capitalized.endswith('.'):
-                    capitalized += '.'
-                result_parts.append(capitalized)
-    
-        result = " ".join(result_parts)
-    
-        if not result.endswith('.'):
-            result += '.'
-    
-        return result
+        return " ".join(sentences)
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -166,38 +154,30 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
-        if not isinstance(text, str):
-            raise EncodingError("Input text must be a string")
-
-        if not text:
-            raise EncodingError("Input text cannot be empty")
+        if not isinstance(text, str) or not text:
+            raise EncodingError("Input text must be a non-empty string")
     
         tokens = []
-        current_sentence = ""
         sentences = []
+        current = ""
     
         for char in text:
-            current_sentence += char
+            current += char
             if char in '.!?':
-                sentences.append(current_sentence)
-                current_sentence = ""
+                sentences.append(current)
+                current = ""
     
-        if current_sentence:
-            sentences.append(current_sentence)
+        if current:
+            sentences.append(current)
     
         for sentence in sentences:
             if not sentence.strip():
                 continue
         
-            sentence_lower = sentence.lower()
-            words = sentence_lower.split()
+            words = sentence.lower().split()
         
             for word in words:
-                cleaned_word = ""
-                for char in word:
-                    if char.isalpha():
-                        cleaned_word += char
-            
+                cleaned_word = ''.join(filter(str.isalpha, word))
                 if cleaned_word:
                     tokens.append(cleaned_word)
         
@@ -207,7 +187,6 @@ class WordProcessor(TextProcessor):
             raise EncodingError("No valid words found after tokenization")
     
         return tuple(tokens)
-
 
 class TrieNode:
     """
@@ -237,7 +216,7 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
-        return bool(self.children)
+        return isinstance(self.children, dict) and bool(self.children)
 
     def __str__(self) -> str:
         """
@@ -256,7 +235,7 @@ class TrieNode:
             item (int): Data value for the new child node.
         """
         child_node = TrieNode(name=item, value=0.0)
-        self.children[item] = child_node
+        self.children.append(child_node)
 
     def get_children(self, item: int | None = None) -> tuple["TrieNode", ...]:
         """
@@ -270,7 +249,10 @@ class TrieNode:
         """
         if item is None:
             return tuple(self._children)
-        return tuple(child for child in self._children if child.get_name() == item)
+
+        return tuple(
+            child for child in self._children if child.get_name() == item
+        )
 
     def get_name(self) -> int | None:
         """
@@ -353,10 +335,12 @@ class PrefixTrie:
         current_node = self.root
     
         for item in prefix:
-            children = current_node.get_children()
-            if item not in children:
-                raise TriePrefixNotFoundError()
-            current_node = children[item]
+            children_tuple = current_node.get_children(item)
+        
+        if len(children_tuple) != 1:
+            raise TriePrefixNotFoundError()
+        
+        current_node = children_tuple[0]
     
         return current_node
 
@@ -387,10 +371,10 @@ class PrefixTrie:
             current_node, current_path = stack.pop()
         
             children = current_node.get_children()
-            sorted_items = sorted(children.keys())
+            sorted_children = sorted(children, key=lambda child: child.get_name())
         
-            for item in sorted_items:
-                child = children[item]
+            for child in sorted_children:
+                item = child.get_name()
                 new_path = current_path + [item]
             
                 if child.is_end:
