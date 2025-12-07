@@ -71,21 +71,18 @@ class WordProcessor(TextProcessor):
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
         if not isinstance(text, str) or not text:
-            raise EncodingError("Invalid input: text must be a non-empty string")
+            return None
         encoded_text = []
-        text=text.lower()
-        for punctuation in [".", "!", "?"]:
-            text = text.replace(punctuation, self._end_of_sentence_token)
-        text=text.strip(self._end_of_sentence_token)
-        for sentence in text.split(self._end_of_sentence_token):
-            encoded_sentence = []
-            for token in sentence.split():
-                token = "".join([letter for letter in token if letter.isalpha()])
-                if token:
-                    self._put(token)
+        encoded_sentence = []
+        text = self._tokenize(text)
+        for token in text:
+            if token == self._end_of_sentence_token:
+                encoded_sentence.append(self._storage.get(self._end_of_sentence_token))
+                encoded_text.append(tuple(encoded_sentence))
+                encoded_sentence = []
+            else:
+                self._put(token)
                 encoded_sentence.append(self._storage.get(token))
-            encoded_sentence.append(self._storage.get(self._end_of_sentence_token))
-            encoded_text.append(tuple(encoded_sentence))
         return tuple(encoded_text)
 
 
@@ -99,11 +96,12 @@ class WordProcessor(TextProcessor):
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """            
-        if (isinstance(element, str) and
-            element and
-            element not in self._storage and
-            element.isalpha()):
-            self._storage[element] = len(self._storage)
+        if (not isinstance(element, str) or
+            not element or
+            element in self._storage or
+            not element.isalpha()):
+            return None
+        self._storage[element] = len(self._storage)
 
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
@@ -145,8 +143,11 @@ class WordProcessor(TextProcessor):
         if not isinstance(text, str) or not text:
             raise EncodingError("Invalid input: text must be a non-empty string")
         text=text.lower()
-        for punctuation in [".", "!", "?"]:
-            text = text.replace(punctuation, f" {self._end_of_sentence_token}  ")
+        text = (
+            text.replace(".", f" {self._end_of_sentence_token}  ")
+            .replace("!", f" {self._end_of_sentence_token}  ")
+            .replace("?", f" {self._end_of_sentence_token}  ")
+            )
         tokens = []
         for token in text.split():
             if token == self._end_of_sentence_token:
@@ -155,7 +156,7 @@ class WordProcessor(TextProcessor):
                 token = "".join([letter for letter in token if letter.isalpha()])
                 if token:
                     tokens.append(token)
-        if not tokens or not [el for el in tokens if el.isalpha()]:
+        if not tokens or not any(el.isalpha() for el in tokens):
             raise EncodingError("Tokenization resulted in empty output")
         if tokens[-1]!=self._end_of_sentence_token:
             tokens.append(self._end_of_sentence_token)
@@ -225,8 +226,7 @@ class TrieNode:
         """
         if item is None:
             return tuple(self._children)
-        else:
-            return tuple([child for child in self._children if child.get_name() == item])
+        return tuple([child for child in self._children if child.get_name() == item])
 
     def get_name(self) -> int | None:
         """
@@ -256,7 +256,6 @@ class TrieNode:
         if not isinstance(new_value, float) or not new_value:
             return None
         self._value = new_value
-        return None
 
     def has_children(self) -> bool:
         """
@@ -358,11 +357,10 @@ class PrefixTrie:
             return None
         root = self._root
         for el in sequence:
-            sequence_children = root.get_children(el)
-            if sequence_children:
-                root = sequence_children[0]
-            else:
+            if not root.get_children(el):
                 root.add_child(el)
+                root = root.get_children(el)[0]
+            else:
                 root = root.get_children(el)[0]
 
 
@@ -411,6 +409,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Mapping of token → relative frequency.
         """
+        node = self.get_prefix(start_sequence)
+        if not node.has_children():
+            return {}
+        return self._collect_frequencies(node)
 
     def get_root(self) -> TrieNode:
         """
@@ -469,6 +471,8 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             tuple[NGramType, ...]: Tuple of all n-grams stored in the trie.
         """
+        node = self._root
+
 
     def _collect_frequencies(self, node: TrieNode) -> dict[int, float]:
         """
