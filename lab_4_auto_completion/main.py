@@ -882,7 +882,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
             self._dynamic_trie.set_current_ngram_size(ngram_size)
             try:
                 candidates = self._dynamic_trie.generate_next_token(sequence_to_continue)
-            except Exception:
+            except ValueError:
                 continue
             if candidates is None:
                 continue
