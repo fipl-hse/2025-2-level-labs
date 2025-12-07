@@ -826,7 +826,7 @@ def load(path: str) -> DynamicNgramLMTrie:
             trie._root = TrieNode(root_value, root.get("freq", 0.0))
         else:
             trie._root = TrieNode(None, root.get("freq", 0.0))
-        stack = [(root, trie._root)]
+        stack = [(root, trie.get_root())]
         while stack:
             current_dict, node = stack.pop()
             for child in reversed(current_dict.get("children", [])):
