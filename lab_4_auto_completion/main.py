@@ -197,7 +197,8 @@ class TrieNode:
     #: Children nodes
     _children: list["TrieNode"]
 
-    def __init__(self,name: int | None = None, value: float = 0.0, children: list["TrieNode"] | None = None,
+    def __init__(self,name: int | None = None, value: float = 0.0, 
+                 children: list["TrieNode"] | None = None,
         ) -> None:
         """
         Initialize a Trie node.
