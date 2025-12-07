@@ -30,24 +30,24 @@ class FakeNGramLanguageModel:
         self._encoded_corpus = encoded_corpus
         self._n_gram_frequencies = {}
 
-    def generate_next_token(self, sequence: str) -> dict[int, float] | None:
+    def generate_next_token(self, sequence: tuple[int, ...]) -> dict[int, float] | None:
         """
         Generate next token
 
         Args:
-            sequence(str): sequence for token generation
+            sequence(tuple[int, ...]): sequence for token generation
 
         Returns:
             dict[int, float] | None: Next tokens
         """
-        sequence = tuple(sequence[-(self._n_gram_size - 1) :])
-        next_tokens = {
+        context = sequence[-(self._n_gram_size - 1) :]
+        next_tokens: dict[tuple[int, ...], dict[int, float]] = {
             (1,): {2: 0.5, 3: 0.3, 4: 0.2},
             (2,): {5: 0.5, 6: 0.2, 7: 0.1},
             (3,): {8: 0.9, 9: 0.7, 10: 0.2},
             (4,): {11: 1.5, 12: 0.5, 13: 0.5},
         }
-        return next_tokens.get(sequence)
+        return next_tokens[context]
 
 
 class BeamSearcherTest(unittest.TestCase):
@@ -74,16 +74,22 @@ class BeamSearcherTest(unittest.TestCase):
         expected = [(0, 1, 2, 5), (0, 1, 3, 8), (0, 1, 4, 11)]
         for beam_width in range(1, 4):
             fake_bm = BeamSearcher(beam_width=beam_width, language_model=self.fake_model)
-            seq_candidates = {(0, 1): 0.0}
+            seq_candidates: dict[tuple[int, ...], float] = {(0, 1): 0.0}
             sequences_to_continue = list(seq_candidates.keys())
             for _ in range(1, 3):
                 for seq in sequences_to_continue:
                     next_tokens = fake_bm.get_next_token(seq)
-                    seq_candidates = fake_bm.continue_sequence(
-                        sequence=seq, next_tokens=next_tokens, sequence_candidates=seq_candidates
-                    )
+                    if next_tokens:
+                        new_candidates = fake_bm.continue_sequence(
+                            sequence=seq,
+                            next_tokens=next_tokens,
+                            sequence_candidates=seq_candidates,
+                        )
+                        if new_candidates:
+                            seq_candidates = new_candidates
                 pruned_candidates = fake_bm.prune_sequence_candidates(seq_candidates)
-                seq_candidates = pruned_candidates
-                sequences_to_continue = list(seq_candidates)
+                if pruned_candidates:
+                    seq_candidates = pruned_candidates
+                    sequences_to_continue = list(seq_candidates)
             actual = min(seq_candidates.items(), key=lambda x: (x[1], x[0]))[0]
             self.assertEqual(expected[beam_width - 1], actual)
