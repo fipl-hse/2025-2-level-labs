@@ -29,37 +29,38 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-    text_processor = WordProcessor('<EoS>')
-    encoded_hp = text_processor.encode_sentences(hp_letters)
-    prefix_tree = PrefixTrie()
-    prefix_tree.fill(encoded_hp)
-    recommended = prefix_tree.suggest((2,))[0]
-    print(f"\nDecoded output: {text_processor.decode(recommended)}")
-    language_model = NGramTrieLanguageModel(encoded_hp, 5)
-    language_model.build()
-    greedy_gen = GreedyTextGenerator(language_model, text_processor)
-    beam_gen = BeamSearchTextGenerator(language_model, text_processor, 3)
-    print(f"\nGreedy output prior update: {greedy_gen.run(52, 'Dear')}")
-    print(f"Beam output prior update: {beam_gen.run('Dear', 52)}")
-    encoded_ussr = text_processor.encode_sentences(ussr_letters)
-    language_model.update(encoded_ussr)
-    print(f"\nGreedy output after update: {greedy_gen.run(52, 'Dear')}")
-    beam_output_updated = BeamSearchTextGenerator(language_model, text_processor, 3).run('Dear', 52)
-    print(f"Beam output after update: {beam_output_updated}")
-    dynamic_model = DynamicNgramLMTrie(encoded_hp, 5)
-    dynamic_model.build()
-    save(dynamic_model, "./saved_dynamic_trie.json")
-    restored_trie = load("./saved_dynamic_trie.json")
-    dynamic_generator = DynamicBackOffGenerator(restored_trie, text_processor)
-    print(f"\nDynamic output prior update: {dynamic_generator.run(50, 'Ivanov')}")
-    restored_trie.update(encoded_ussr)
-    target_size = 3
-    if target_size >= 2 and target_size <= restored_trie._max_ngram_size:
-        restored_trie.set_current_ngram_size(target_size)
+    processor = WordProcessor('<EoS>')
+    encoded_hp = processor.encode_sentences(hp_letters)
+    trie = PrefixTrie()
+    trie.fill(encoded_hp)
+    suggestion = trie.suggest((2,))[0]
+    print(f"\nDecoded output: {processor.decode(suggestion)}")
+    model = NGramTrieLanguageModel(encoded_hp, 5)
+    model.build()
+    greedy_before = GreedyTextGenerator(model, processor).run(52, 'Dear')
+    beam_before = BeamSearchTextGenerator(model, processor, 3).run('Dear', 52)
+    print(f"\nGreedy before: {greedy_before}")
+    print(f"Beam before: {beam_before}")
+    encoded_ussr = processor.encode_sentences(ussr_letters)
+    model.update(encoded_ussr)
+    greedy_after = GreedyTextGenerator(model, processor).run(52, 'Dear')
+    beam_after = BeamSearchTextGenerator(model, processor, 3).run('Dear', 52)
+    print(f"\nGreedy after: {greedy_after}")
+    print(f"Beam after: {beam_after}")
+    dynamic = DynamicNgramLMTrie(encoded_hp, 5)
+    dynamic.build()
+    save(dynamic, "./saved_dynamic_trie.json")
+    loaded = load("./saved_dynamic_trie.json")
+    generator = DynamicBackOffGenerator(loaded, processor)
+    print(f"\nDynamic before: {generator.run(50, 'Ivanov')}")
+    loaded.update(encoded_ussr)
+    size = 3
+    max_n = loaded._max_ngram_size 
+    if 2 <= size <= max_n:
+        loaded.set_current_ngram_size(size)
     else:
-        restored_trie.set_current_ngram_size(restored_trie._max_ngram_size)
-    print(f"Dynamic output after update: {dynamic_generator.run(50, 'Ivanov')}\n")
-    final_result = dynamic_generator
+        loaded.set_current_ngram_size(max_n)
+    print(f"Dynamic after: {generator.run(50, 'Ivanov')}\n")
     # print('\nSolution of the 2nd secret')
     # n_size = 4
     # beam_size = 3
@@ -100,7 +101,7 @@ def main() -> None:
     #             continue
     #         for extended_seq, extended_prob in extended.items():
     #             if (
-    #                 extended_seq not in updated_sequences or 
+    #                 extended_seq not in updated_sequences or
     #                 extended_prob < updated_sequences[extended_seq]
     #             ):
     #                 updated_sequences[extended_seq] = extended_prob
@@ -125,7 +126,7 @@ def main() -> None:
     #             missing_section = missing_section.replace(" ", "")
     #         completed_text = encrypted_text.replace("<BURNED>", missing_section)
     #         print(f"\nComplete letter:\n{completed_text}")
-    assert final_result, "Result is None"
+    assert dynamic, "Result is None"
 
 if __name__ == "__main__":
     main()

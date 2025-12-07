@@ -6,7 +6,6 @@ Lab 4
 import json
 
 from lab_1_keywords_tfidf.main import check_positive_int
-
 from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, TextProcessor
 
 NGramType = tuple[int, ...]
@@ -402,15 +401,16 @@ class PrefixTrie:
         except TriePrefixNotFoundError:
             return tuple()
         sequences = []
-        stack = [(prefix_node, list(prefix))]
+        stack: list[tuple[TrieNode, list[int]]] = [(prefix_node, list(prefix))]
         while stack:
             current_node, current_sequence = stack.pop()
             if current_node.has_children():
                 children = list(current_node.get_children())
                 for child in children[::-1]:
-                    if child.get_name() is None:
+                    child_name = child.get_name()
+                    if child_name is None:
                         continue
-                    new_sequence = current_sequence + [child.get_name()]
+                    new_sequence = current_sequence + [child_name]
                     sequences.append(tuple(new_sequence))
                     stack.append((child, new_sequence))
         return tuple(sequences[::-1])
