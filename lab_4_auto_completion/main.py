@@ -881,20 +881,12 @@ def load(path: str) -> DynamicNgramLMTrie:
         DynamicNgramLMTrie: Trie from file.
     """
     with open(path, 'r', encoding='utf-8') as f:
-        trie_data = json.load(f)
-    trie = DynamicNgramLMTrie((), 3)
-    root_dict = trie_data.get("trie")
-    if root_dict:
-        root_value = root_dict.get("value")
-        if root_value is not None:
-            trie._root = TrieNode(root_value, root_dict.get("freq", 0.0))
-        else:
-            trie._root = TrieNode(None, root_dict.get("freq", 0.0))
-        stack = [(root_dict, trie._root)]
-        while stack:
-            current_dict, current_node = stack.pop()
-            for child_dict in reversed(current_dict.get("children", [])):
-                child_node = TrieNode(child_dict.get("value"), child_dict.get("freq", 0.0))
-                current_node._children.append(child_node)
-                stack.append((child_dict, child_node))
-    return trie
+        data = json.load(f)
+    encoded_corpus = tuple(data.get('encoded_corpus', ()))
+    max_ngram_size = data.get('max_ngram_size', 3)
+    loaded_trie = DynamicNgramLMTrie(encoded_corpus, max_ngram_size)
+    result = loaded_trie.build()
+    if result != 0:
+        return DynamicNgramLMTrie(tuple(), max_ngram_size)
+    loaded_trie.set_current_ngram_size(data.get('current_n_gram_size', max_ngram_size))
+    return loaded_trie
