@@ -76,22 +76,6 @@ class WordProcessor(TextProcessor):
             encoded_sentences.append(tuple(current_sentence))
         return tuple(encoded_sentences)
 
-        # for token in tokens:
-        #     if token == self._end_of_sentence_token:
-        #         if new_sentence:
-        #             new_sentence.append(self._end_of_sentence_token)
-        #             sentences.append(new_sentence)
-        #             new_sentence = []
-        #     else:
-        #         new_sentence.append(token)
-
-        # for sentence in sentences:
-        #     id_sentence = []
-        #     for word in sentence:
-        #         self._put(word)
-        #         id_sentence.append(self._storage[word])
-            # encoded_sentences.append(tuple(id_sentence))
-
     def _put(self, element: str) -> None:
         """
         Put an element into the storage, assign a unique id to it.
@@ -138,8 +122,6 @@ class WordProcessor(TextProcessor):
                     processed_tokens += f"{token} "
         if not check_corpus:
             raise DecodingError("Postprocessing resulted in empty output")
-
-        
 
         processed_tokens = processed_tokens[:-1]
         processed_tokens += "."
@@ -522,7 +504,6 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             self._encoded_corpus = new_corpus
         else:
             encoded_corpus = self._encoded_corpus
-            new_corpus = new_corpus
             self._encoded_corpus = encoded_corpus + new_corpus
         self.build()
 
