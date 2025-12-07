@@ -641,7 +641,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         if (
             not isinstance(self._encoded_corpus, tuple)
             or not self._encoded_corpus
-            or not isinstance(self._max_ngram_size, int) 
+            or not isinstance(self._max_ngram_size, int)
             or self._max_ngram_size < 2
         ):
             return 1
@@ -732,11 +732,13 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 if freq != 0.0:
                     child.set_value(freq)
                 return child
+        new_node = TrieNode(node_name, freq)
         parent.add_child(node_name)
         for child in parent.get_children():
             if child.get_name() == node_name:
                 child.set_value(freq)
                 return child
+        return new_node
 
     def _merge(self) -> None:
         """
@@ -766,8 +768,8 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 child_name = source_child.get_name()
                 if child_name is not None:
                     dest_child = self._assign_child(
-                        target_parent, 
-                        child_name, 
+                        target_parent,
+                        child_name,
                         source_child.get_value()
                     )
                     stack.append((source_child, dest_child))
@@ -823,7 +825,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
             str | None: Generated sequence
         """
         if (
-            not isinstance(seq_len, int) 
+            not isinstance(seq_len, int)
             or seq_len <= 0
             or not isinstance(prompt, str)
             or not prompt
