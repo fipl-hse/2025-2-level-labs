@@ -850,12 +850,14 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
+    if not isinstance(path, str) or not path:
+        raise ValueError('Invalid path')
     data = {
-        'value': trie._root.get_name(),
-        'freq': trie._root.get_value(),
-        'children': []
+    'value': trie.get_root().get_name(),
+    'freq': trie.get_root().get_value(),
+    'children': []
     }
-    stack = [(trie._root, data['children'])]
+    stack = [(trie.get_root(), data['children'])]
     while stack:
         current_node, parent_children_list = stack.pop()
         children = current_node.get_children()
