@@ -11,6 +11,7 @@ from lab_3_generate_by_ngrams.main import (
 from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
+    IncorrectNgramError,
     load,
     NGramTrieLanguageModel,
     PrefixTrie,
@@ -55,11 +56,10 @@ def main() -> None:
     print(f"\nDynamic before: {generator.run(50, 'Ivanov')}")
     loaded.update(encoded_ussr)
     size = 3
-    max_size = loaded._max_ngram_size
-    if 2 <= size <= max_size:
+    try:
         loaded.set_current_ngram_size(size)
-    else:
-        loaded.set_current_ngram_size(max_size)
+    except IncorrectNgramError:
+        loaded.set_current_ngram_size(None)
     dynamic_result = generator.run(50, 'Ivanov')
     print(f"Dynamic after: {dynamic_result}\n")
     assert dynamic_result, "Result is None"
