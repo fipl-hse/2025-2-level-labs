@@ -870,16 +870,24 @@ class DynamicBackOffGenerator(BackOffGenerator):
         """
         if (
             not isinstance(sequence_to_continue, tuple)
-            or len(sequence_to_continue) == 0
-        ):
+            or not sequence_to_continue
+            ):
             return None
-        max_size = self._dynamic_trie.get_n_gram_size()
-        ngram_sizes = list(range(max_size, 1, -1))
-        for ngram in ngram_sizes:
-            self._dynamic_trie.set_current_ngram_size(ngram)
-            next_tokens = self._dynamic_trie.generate_next_token(sequence_to_continue)
-            if next_tokens:
-                return next_tokens
+        max_n_gram_size = self._dynamic_trie.get_n_gram_size()
+        max_use_n = min(max_n_gram_size, len(sequence_to_continue) + 1)
+        n_gram_size = list(range(max_use_n, 1, -1))
+        if not n_gram_size:
+            return None
+        for ngram_size in n_gram_size:
+            self._dynamic_trie.set_current_ngram_size(ngram_size)
+            try:
+                candidates = self._dynamic_trie.generate_next_token(sequence_to_continue)
+            except Exception:
+                continue
+            if candidates is None:
+                continue
+            if candidates:
+                return candidates
         return None
 
     def run(self, seq_len: int, prompt: str) -> str | None:
@@ -895,7 +903,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
         """
         if (
             not isinstance(seq_len, int) or seq_len <= 0
-            or not isinstance(prompt, str) or len(prompt) == 0
+            or not isinstance(prompt, str) or not prompt.strip() == 0
         ):
             return None
         try:
@@ -912,9 +920,9 @@ class DynamicBackOffGenerator(BackOffGenerator):
             token_list.pop()
         for _ in range(seq_len):
             next_tokens = self.get_next_token(tuple(token_list))
-            if not next_tokens:
+            if next_tokens is None or not next_tokens:
                 break
-            best_token = max(next_tokens.items(), key=lambda x: (-x[1], x[0]))[0]
+            best_token = max(next_tokens.items(), key=lambda x: (-x[1], -x[0]))[0]
             token_list.append(best_token)
         words = []
         storage = getattr(self._text_processor, '_storage', None)

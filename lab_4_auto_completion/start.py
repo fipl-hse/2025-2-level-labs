@@ -33,25 +33,21 @@ def main() -> None:
     tree.fill(encoded_hp)
 
     if (found := tree.suggest((2,))):
-        best = found[0]
-        decoded = word_processor.decode(best)
-        print(f"Found {len(found)} suggestions, first: {decoded}")
+        print(f"Found {len(found)} suggestions, first: {word_processor.decode(found[0])}")
     else:
         print('No continuations found')
 
     model = NGramTrieLanguageModel(encoded_hp, 5)
     model.build()
 
-    greedy_before = GreedyTextGenerator(model, word_processor).run(52, "Dear")
-    beam_before = BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 52)
-    print(f'Greedy: {greedy_before}\nBeam: {beam_before}')
+    print(f'Greedy: {GreedyTextGenerator(model, word_processor).run(52, "Dear")}')
+    print(f'Beam: {BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 52)}')
 
     encoded = word_processor.encode_sentences(ussr_letters)
     model.update(encoded)
 
-    greedy_after = GreedyTextGenerator(model, word_processor).run(52, "Dear")
-    beam_after = BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 52)
-    print(f'Greedy update: {greedy_after}\nBeam update: {beam_after}')
+    print(f'Greedy update: {GreedyTextGenerator(model, word_processor).run(52, "Dear")}')
+    print(f'Beam update: {BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 52)}')
 
     dynamic_model = DynamicNgramLMTrie(encoded_hp, 5)
     dynamic_model.build()
@@ -65,15 +61,13 @@ def main() -> None:
     except IncorrectNgramError:
         loaded_file.set_current_ngram_size(None)
 
-    dynamic_generator = DynamicBackOffGenerator(loaded_file, word_processor)
-    dynamic = dynamic_generator.run(50, "Ivanov")
-    print(f'BackOff before:\n{dynamic}')
+    dynamic_gen = DynamicBackOffGenerator(loaded_file, word_processor)
+    print(f'BackOff before:\n{dynamic_gen.run(50, "Ivanov")}')
 
     loaded_file.update(encoded)
-    dynamic_after = dynamic_generator.run(50, "Ivanov")
-    print(f'BackOff after:\n{dynamic_after}')
+    print(f'BackOff after:\n{dynamic_gen.run(50, "Ivanov")}')
 
-    result = dynamic_generator
+    result = dynamic_gen
     assert result, "Result is None"
 
 if __name__ == "__main__":
