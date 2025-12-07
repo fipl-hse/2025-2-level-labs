@@ -256,9 +256,9 @@ class TrieNode:
         Returns:
             tuple["TrieNode", ...]: Tuple of child nodes.
         """
-        if not item:
+        if item is None:
             return tuple(self._children)
-        return tuple([child_name for child_name in self._children if child_name.get_name() == item])
+        return tuple([child for child in self._children if child.get_name() == item])
 
     def get_name(self) -> int | None:
         """
@@ -324,6 +324,9 @@ class PrefixTrie:
         Args:
             encoded_corpus (tuple[NGramType]): Tokenized corpus.
         """
+        self.clean()
+        for element in encoded_corpus:
+            self._insert(element)
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
@@ -338,9 +341,9 @@ class PrefixTrie:
         current_node = self._root
         for element in prefix:
             current_child = current_node.get_children(element)
-            if not current_child:
+            if current_child == ():
                 raise TriePrefixNotFoundError()
-            current_node = current_child
+            current_node = current_child[0]
         return current_node
 
     def suggest(self, prefix: NGramType) -> tuple:
@@ -359,13 +362,15 @@ class PrefixTrie:
         except TriePrefixNotFoundError:
             return ()
         token_sequences = []
-        current_sequence = list(prefix)
-        current_sequences_list = []
-        # while current_node.has_children():
-        #     for child in current_node.get_children():
-        #         current_sequence.append(child)
-        #         current_sequences_list.append(current_sequence)
-        #     #current_node = #gave up and went to sleep but it shouldn't be very hard
+        for child in current_node.get_children():
+            new_prefix = list(prefix)
+            child_name = child.get_name()
+            if not child_name:
+                continue
+            new_prefix.append(child_name)
+            if not child.has_children():
+                token_sequences.append(tuple(new_prefix))
+        return tuple(token_sequences)
 
 
     def _insert(self, sequence: NGramType) -> None:
@@ -375,12 +380,11 @@ class PrefixTrie:
         Args:
             sequence (NGramType): Tokens to insert.
         """
-        current_node = TrieNode()
         current_node = self._root
         for element in sequence:
-            if element not in current_node.get_children(element):
+            if element not in current_node.get_children():
                 current_node.add_child(element)
-            current_node = element
+            current_node = current_node.get_children(element)[0]
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
