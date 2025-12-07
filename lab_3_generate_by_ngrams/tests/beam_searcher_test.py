@@ -93,7 +93,7 @@ class BeamSearcherTest(unittest.TestCase):
         Checks BeamSearcher run method with empty generate_next_token
         """
         beam_search = BeamSearcher(3, self.model)
-        beam_search._model.generate_next_token = lambda sequence: []
+        beam_search._model.generate_next_token = lambda sequence: {}
         actual = beam_search.get_next_token((4, 9, 7))
         expected = []
         self.assertEqual(expected, actual)
