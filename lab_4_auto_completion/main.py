@@ -267,7 +267,7 @@ class TrieNode:
         Returns:
             str: String representation showing node data and frequency.
         """
-        return "TrieNode(name={}, value={})".format(self.get_name(), self.get_value())
+        return f'TrieNode(name={self.get_name()}, value={self.get_value()})'
 
     def add_child(self, item: int) -> None:
         """
@@ -418,7 +418,7 @@ class PrefixTrie:
 
         while stack:
             current_node, completion = stack.pop()
-            children_list = list(reversed(current_node.get_children()))
+            children_list = list(current_node.get_children())
 
             result = []
             for child in children_list:
@@ -428,13 +428,13 @@ class PrefixTrie:
 
                 new_path = completion + [child_name]
                 if not child.has_children():
-                        result.append(tuple(new_path))
+                    result.append(tuple(new_path))
                 else:
                     stack.append((child, new_path))
 
-            sequences.extend(sorted(result, key = lambda x: x[-1] if x else 0, reverse = True))
+            sequences.extend(sorted(result, reverse=True))
 
-        return tuple(sequences)
+        return tuple(sorted(sequences, reverse=True))
 
     def _insert(self, sequence: NGramType) -> None:
         """
