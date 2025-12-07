@@ -310,6 +310,8 @@ class PrefixTrie:
         current_node = self._root
         for item in prefix:
             children = current_node.get_children(item)
+            if not children:
+                raise TriePrefixNotFoundError("Prefix not found in trie")
             current_node = children[0]
         return current_node
 
@@ -324,7 +326,10 @@ class PrefixTrie:
             tuple: Tuple of all token sequences that begin with the given prefix.
                                    Empty tuple if prefix not found.
         """
-        start_node = self.get_prefix(prefix)
+        try:
+            start_node = self.get_prefix(prefix)
+        except TriePrefixNotFoundError:
+            return tuple()
         results = []
         stack = [(start_node, list(prefix))]
         while stack:
