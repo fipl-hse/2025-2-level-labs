@@ -949,7 +949,7 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         path (str): Path for saving
     """
     root_node = trie.get_root()
-    stack = [(root_node, {})] 
+    stack = [(root_node, {})]
     root_dict = None
     while stack:
         current_node, parent_dictionary = stack.pop()
@@ -969,7 +969,7 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
             parent_dictionary["children"].append(node_dict)
         children = current_node.get_children()
         for i in range(len(children) - 1, -1, -1):
-            stack.append((children[i], node_dict)) 
+            stack.append((children[i], node_dict))
     trie_data = {"trie": root_dict}
     with open(path, 'w', encoding = 'utf-8') as f:
         json.dump(trie_data, f, indent = 2)
@@ -994,4 +994,3 @@ def load(path: str) -> DynamicNgramLMTrie:
         return DynamicNgramLMTrie(tuple(), max_ngram_size)
     load_file.set_current_ngram_size(evidence.get('current_n_gram_size', max_ngram_size))
     return load_file
-

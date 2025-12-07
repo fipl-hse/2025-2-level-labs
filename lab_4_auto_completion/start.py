@@ -3,10 +3,11 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearcher, BeamSearchTextGenerator, GreedyTextGenerator
+from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, GreedyTextGenerator
 from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
+    IncorrectNgramError,
     load,
     NGramTrieLanguageModel,
     PrefixTrie,
@@ -26,16 +27,14 @@ def main() -> None:
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
 
-    word_processor = WordProcessor(end_of_sentence_token = '<EoW>')
+    word_processor = WordProcessor('<EoW>')
     encoded_hp = word_processor.encode_sentences(hp_letters)
     tree = PrefixTrie()
     tree.fill(encoded_hp)
 
     if (found := tree.suggest((2,))):
         best = found[0]
-        output_words = [next(text for text, num in word_processor._storage.items() if num == code)
-                       for code in best]
-        decoded = word_processor._postprocess_decoded_text(tuple(output_words))
+        decoded = word_processor.decode(best)
         print(f"Found {len(found)} suggestions, first: {decoded}")
     else:
         print('No continuations found')
@@ -43,34 +42,38 @@ def main() -> None:
     model = NGramTrieLanguageModel(encoded_hp, 5)
     model.build()
 
-    greedy = GreedyTextGenerator(model, word_processor)
-    beam = BeamSearchTextGenerator(model, word_processor, 3)
-
-    greedy_before = greedy.run(30, "Ivanov")
-    beam_before = beam.run("Ivanov", 30)
+    greedy_before = GreedyTextGenerator(model, word_processor).run(52, "Dear")
+    beam_before = BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 52)
     print(f'Greedy: {greedy_before}\nBeam: {beam_before}')
 
-    model.update(word_processor.encode_sentences(ussr_letters))
+    encoded = word_processor.encode_sentences(ussr_letters)
+    model.update(encoded)
 
-    greedy_after = greedy.run(30, "Ivanov")
-    beam_after = beam.run("Ivanov", 30)
+    greedy_after = GreedyTextGenerator(model, word_processor).run(52, "Dear")
+    beam_after = BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 52)
     print(f'Greedy update: {greedy_after}\nBeam update: {beam_after}')
 
     dynamic_model = DynamicNgramLMTrie(encoded_hp, 5)
     dynamic_model.build()
 
     save(dynamic_model, "./dynamic_model.json")
-    load("./dynamic_model.json")
+    loaded_file = load("./dynamic_model.json")
 
-    dynamic_gen = DynamicBackOffGenerator(dynamic_model, word_processor)
-    dynamic = dynamic_gen.run(50, "Ivanov")
+    loaded_file.set_current_ngram_size(3)
+    try:
+        loaded_file.set_current_ngram_size(3)
+    except IncorrectNgramError:
+        loaded_file.set_current_ngram_size(None)
+
+    dynamic_generator = DynamicBackOffGenerator(loaded_file, word_processor)
+    dynamic = dynamic_generator.run(50, "Ivanov")
     print(f'BackOff before:\n{dynamic}')
 
-    dynamic_model.update(word_processor.encode_sentences(ussr_letters))
-    dynamic_after = dynamic_gen.run(50, "Ivanov")
+    loaded_file.update(encoded)
+    dynamic_after = dynamic_generator.run(50, "Ivanov")
     print(f'BackOff after:\n{dynamic_after}')
 
-    result = dynamic_after
+    result = dynamic_generator
     assert result, "Result is None"
 
 if __name__ == "__main__":
