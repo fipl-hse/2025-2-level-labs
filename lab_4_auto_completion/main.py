@@ -47,9 +47,8 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
-        def __init__(self, end_of_sentence_token='<EOS>'):
-            self._end_of_sentence_token = end_of_sentence_token
-            super().__init__(end_of_word_token=end_of_sentence_token)
+        self._end_of_sentence_token = end_of_sentence_token
+        super().__init__(end_of_word_token = end_of_sentence_token)
 
     def encode_sentences(self, text: str) -> tuple:
         """

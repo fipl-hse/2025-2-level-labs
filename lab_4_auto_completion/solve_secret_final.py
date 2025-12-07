@@ -1,10 +1,18 @@
-import math
+import sys
+import os
+
+sys.path.append('C:\\Users\\kanya\\2025-2-level-labs')
+sys.path.append('C:\\Users\\kanya\\2025-2-level-labs\\lab_3_generate_by_ngrams')
+sys.path.append('C:\\Users\\kanya\\2025-2-level-labs\\lab_4_auto_completion')
+
 from lab_4_auto_completion.main import WordProcessor
 from lab_3_generate_by_ngrams.main import NGramLanguageModel, BeamSearcher
 
+import math
+
 def solve_secret():
     letter_text = """Dear Harry,
-You won’t believe what happened today in the common room.
+You won't believe what happened today in the common room.
 I was just minding my own business when Malfoy decided to
 show up and start one of his usual speeches about "proper
 wizarding families." Honestly, you'd think he'd have grown
