@@ -41,20 +41,13 @@ def main() -> None:
     print(f"\nDecoded output: {processor.decode(suggestion)}")
     model = NGramTrieLanguageModel(encoded_texts['hp'], 5)
     model.build()
-    generation_results = {}
-    generation_results['before'] = {
-        'greedy': GreedyTextGenerator(model, processor).run(52, 'Dear'),
-        'beam': BeamSearchTextGenerator(model, processor, 3).run('Dear', 52)
-    }
+    print(f"\nGreedy before: {GreedyTextGenerator(model, processor).run(52, 'Dear')}")
+    beam_before = BeamSearchTextGenerator(model, processor, 3).run('Dear', 52)
+    print(f"Beam before: {beam_before}")
     model.update(encoded_texts['ussr'])
-    generation_results['after'] = {
-        'greedy': GreedyTextGenerator(model, processor).run(52, 'Dear'),
-        'beam': BeamSearchTextGenerator(model, processor, 3).run('Dear', 52)
-    }
-    print(f"\nGreedy before: {generation_results['before']['greedy']}")
-    print(f"Beam before: {generation_results['before']['beam']}")
-    print(f"\nGreedy after: {generation_results['after']['greedy']}")
-    print(f"Beam after: {generation_results['after']['beam']}")
+    print(f"\nGreedy after: {GreedyTextGenerator(model, processor).run(52, 'Dear')}")
+    beam_after = BeamSearchTextGenerator(model, processor, 3).run('Dear', 52)
+    print(f"Beam after: {beam_after}")
     dynamic = DynamicNgramLMTrie(encoded_texts['hp'], 5)
     dynamic.build()
     save(dynamic, "./saved_dynamic_trie.json")
@@ -62,9 +55,8 @@ def main() -> None:
     generator = DynamicBackOffGenerator(loaded, processor)
     print(f"\nDynamic before: {generator.run(50, 'Ivanov')}")
     loaded.update(encoded_texts['ussr'])
-    size = 3
     try:
-        loaded.set_current_ngram_size(size)
+        loaded.set_current_ngram_size(3)
     except IncorrectNgramError:
         loaded.set_current_ngram_size(None)
     dynamic_result = generator.run(50, 'Ivanov')
