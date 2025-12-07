@@ -144,13 +144,12 @@ class WordProcessor(TextProcessor):
             sentences.append("".join(sentence).lower())
         tokens = []
         for sentence in sentences:
-            if isinstance(sentence, str):
-                for word in sentence.split():
-                    cleaned_word = "".join(symbol for symbol in word if symbol.isalpha())
-                    if cleaned_word:
-                        tokens.append(cleaned_word)
+            for word in sentence.split():
+                cleaned_word = "".join(symbol for symbol in word if symbol.isalpha())
                 if cleaned_word:
-                    tokens.append(self._end_of_word_token)
+                    tokens.append(cleaned_word)
+            if cleaned_word:
+                tokens.append(self._end_of_word_token)
         if not tokens:
             raise EncodingError("Tokenization resulted in empty output")
         return tuple(tokens)
@@ -315,16 +314,23 @@ class PrefixTrie:
             prefix_node = self.get_prefix(prefix)
         except TriePrefixNotFoundError:
             return tuple()
-        if not prefix_node.has_children():
-            return tuple()
-        children = [(prefix_node, list(prefix))]
         sequences = []
-        while children:
-            current_node, sequence = children.pop(0)
-            if not current_node.has_children():
-                sequences.append(tuple(sequence))
-            for children_node in current_node.get_children():
-                children.append([children_node, sequence + [children_node.get_name()]])
+        prefixes = list(prefix)
+        stack = [(prefix_node, prefixes)]
+        while stack:
+            node, path = stack.pop()
+            children = list(node.get_children())
+            results = []
+            for child in children:
+                child_name = child.get_name()
+                if child_name is None:
+                    continue
+                new_path = path + [child_name]
+                if not child.has_children():
+                    results.append(tuple(new_path))
+                else:
+                    stack.append((child, new_path))
+            sequences.extend(sorted(results))
         return tuple(sequences)
 
     def _insert(self, sequence: NGramType) -> None:
@@ -497,9 +503,12 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Collected frequencies of items.
         """
-        return {child.get_name(): child.get_value()
-                for child in node.get_children()
-                if child.get_name() is not None}
+        frequencies = {}
+        for child in node.get_children():
+            name = child.get_name()
+            if name is not None:
+                frequencies[name] = child.get_value()
+        return frequencies
 
     def _fill_frequencies(self, encoded_corpus: tuple[NGramType, ...]) -> None:
         """
@@ -757,7 +766,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
         except EncodingError:
             return None
         tokens_all = list(tokens)
-        if tokens_all and tokens_all[-1] == self._text_processor._end_of_sentence_token:
+        if tokens_all and tokens_all[-1] == self._text_processor.get_end_of_word_token():
             tokens_all.pop()
         encoded_prompt = []
         for token in tokens_all:

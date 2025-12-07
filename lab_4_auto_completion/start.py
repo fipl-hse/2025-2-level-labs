@@ -61,7 +61,7 @@ def main() -> None:
     greedy_first = greedy.run(seq_len=30, prompt="Ivanov")
     beam_searcher = BeamSearcher(3, 10)
     beam = BeamSearchTextGenerator(model, processor, beam_searcher)
-    beam_first = beam.run(seq_len=30, prompt="Ivanov")
+    beam_first = BeamSearchTextGenerator(model, processor, beam_searcher).run(seq_len=30, prompt="Ivanov")
     encoded_ussr = processor.encode_sentences(ussr_letters)
     model.update(encoded_ussr)
     greedy_second = greedy.run(seq_len=30, prompt="Ivanov")
