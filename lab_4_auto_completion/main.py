@@ -5,6 +5,7 @@ Lab 4
 # pylint: disable=unused-argument, super-init-not-called, unused-private-member, duplicate-code, unused-import
 import json
 
+from lab_1_keywords_tfidf.main import check_positive_int
 from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, TextProcessor
 
 NGramType = tuple[int, ...]
@@ -398,7 +399,12 @@ class PrefixTrie:
                 continue
 
             current_node.add_child(token)
-            current_node = current_node.get_children(token)[0]
+
+            new_children = current_node.get_children(token)
+            if not new_children:
+                return
+
+            current_node = new_children[0]
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
@@ -556,11 +562,18 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             return tuple()
 
         if self._n_gram_size == 1:
-            return tuple((child.get_name(),) for child in first_children)
+            result = []
+            for child in first_children:
+                name = child.get_name()
+                if name is not None:
+                    result.append((name,))
+            return tuple(result)
 
-        queue = []
+        queue: list[tuple[tuple[int, ...], TrieNode]] = []
         for child in first_children:
-            queue.append(((child.get_name(), ), child))
+            name = child.get_name()
+            if name is not None:
+                queue.append(((name,), child))
 
         results = []
         while queue:
@@ -571,8 +584,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
                 continue
 
             for child in children:
-
-                ngram = current_ngram + (child.get_name(), )
+                name = child.get_name()
+                if name is None:
+                    continue
+                ngram = current_ngram + (name,)
                 if len(ngram) == self._n_gram_size:
                     results.append(ngram)
                 else:
@@ -590,9 +605,14 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Collected frequencies of items.
         """
-        return {child.get_name(): child.get_value()
-                for child in node.get_children()
-                if child.get_name() is not None}
+        freq = {}
+        for child in node.get_children():
+            name = child.get_name()
+            if name is None:
+                continue
+            freq[name] = child.get_value()
+
+        return freq
 
     def _fill_frequencies(self, encoded_corpus: tuple[NGramType, ...]) -> None:
         """
@@ -716,16 +736,19 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         current_node = self._root
 
         for token in context:
-            node = current_node.get_children(token)[0]
+            child: tuple[TrieNode, ...] = current_node.get_children(token)
 
-            if not node:
+            if not child:
                 return {}
 
-            current_node = node
+            current_node = child[0]
 
-        candidates = {}
+        candidates: dict[int, float] = {}
         for node in current_node.get_children():
-            candidates[node.get_name()] = node.get_value()
+            name = node.get_name()
+            if name is None:
+                continue
+            candidates[name] = node.get_value()
 
         return candidates
 
@@ -751,7 +774,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         child = parent.get_children(node_name)[0]
 
         if freq != 0.0:
-            child.set_value(freq)
+            child.set_value(child.get_value() + freq)
 
         return child
 
@@ -775,18 +798,18 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Args:
             source_root (TrieNode): Source root to insert tree
         """
-        queue = [(child, self._root) for child in source_root.get_children()]
+        queue = [(source_root, self._root)]
 
         while queue:
-            node, parent = queue.pop()
-            name = node.get_name()
-            value = node.get_value()
-
-            new_parrent = self._assign_child(parent, name, value)
+            node, parent = queue.pop(0)
 
             for child in node.get_children():
+                name = child.get_name()
+                if name is None:
+                    continue
+                value = child.get_value()
+                new_parrent = self._assign_child(parent, name, value)
                 queue.append((child, new_parrent))
-
 
 
 class DynamicBackOffGenerator(BackOffGenerator):
@@ -822,20 +845,19 @@ class DynamicBackOffGenerator(BackOffGenerator):
         if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
             return None
 
-        ngram_sizes = sorted(self._dynamic_trie._models, reverse=True)
+        for ngram_size in range(self._dynamic_trie.get_n_gram_size(), 1, -1):
 
-        if not ngram_sizes:
-            return None
+            context = sequence_to_continue[-min(ngram_size - 1, len(sequence_to_continue)):]
 
-        for ngram_size in ngram_sizes:
-            self._dynamic_trie.set_current_ngram_size(min(len(sequence_to_continue), ngram_size))
+            self._dynamic_trie.set_current_ngram_size(ngram_size)
 
-            candidates = self._dynamic_trie.generate_next_token(sequence_to_continue)
+            candidates = self._dynamic_trie.generate_next_token(context)
 
             if candidates:
                 return candidates
 
         return None
+
 
     def run(self, seq_len: int, prompt: str) -> str | None:
         """
@@ -848,7 +870,43 @@ class DynamicBackOffGenerator(BackOffGenerator):
         Returns:
             str | None: Generated sequence
         """
+        if not isinstance(prompt, str) or not check_positive_int(seq_len):
+            return None
 
+        encoded_prompt = self._text_processor.encode(prompt)
+        if encoded_prompt is None:
+            return None
+
+        result_sequence = list(encoded_prompt)
+
+        for _ in range(seq_len):
+            candidates = self.get_next_token(tuple(result_sequence))
+            if not candidates:
+                break
+            next_element = max(candidates.items(), key=lambda x: (x[1], x[0]))[0]
+            result_sequence.append(next_element)
+
+        decoded = tuple(
+            token for token in (self._text_processor.get_token(t) for t in result_sequence)
+            if token is not None
+        )
+
+        if not decoded:
+            return None
+
+        decoded_text = []
+        sentence = []
+        for token in decoded:
+            if token == self._text_processor.get_end_of_word_token():
+                decoded_text.append(" ".join(sentence).capitalize() + ".")
+                sentence.clear()
+                continue
+            sentence.append(token)
+
+        if sentence:
+            decoded_text.append(" ".join(sentence).capitalize() + ".")
+
+        return " ".join(decoded_text)
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
@@ -858,7 +916,33 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
+    root = trie.get_root()
 
+    root_json = {
+        "value": root.get_name(),
+        "freq": root.get_value(),
+        "children": []
+    }
+
+    queue = [(root, root_json)]
+
+    while queue:
+
+        current_node, current_json = queue.pop()
+        for child in current_node.get_children():
+            child_json = {
+                "value": child.get_name(),
+                "freq": child.get_value(),
+                "children": []
+            }
+
+            current_json["children"].append(child_json)
+            queue.append((child, child_json))
+
+    output_json = {"trie": root_json}
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(output_json, f)
 
 def load(path: str) -> DynamicNgramLMTrie:
     """
@@ -870,3 +954,34 @@ def load(path: str) -> DynamicNgramLMTrie:
     Returns:
         DynamicNgramLMTrie: Trie from file.
     """
+    with open(path, "r", encoding="utf-8") as f:
+        input_json = json.load(f)
+
+    trie_json = input_json.get("trie")
+    trie = DynamicNgramLMTrie(tuple())
+
+    root = trie.get_root()
+
+    queue = [(root, trie_json)]
+
+    while queue:
+        current_node, current_json = queue.pop(0)
+
+        for child_json in current_json.get("children", []):
+            value = child_json["value"]
+            freq = child_json["freq"]
+
+            children = current_node.get_children(value)
+
+            child_node = TrieNode()
+            if children:
+                child_node = children[0]
+            else:
+                current_node.add_child(value)
+                child_node = current_node.get_children(value)[0]
+
+            child_node.set_value(freq)
+
+            queue.append((child_node, child_json))
+
+    return trie

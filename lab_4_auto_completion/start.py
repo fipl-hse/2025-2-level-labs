@@ -3,8 +3,56 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, GreedyTextGenerator
-from lab_4_auto_completion.main import NGramTrieLanguageModel, WordProcessor
+from lab_4_auto_completion.main import (
+    DynamicBackOffGenerator,
+    DynamicNgramLMTrie,
+    load,
+    save,
+    WordProcessor,
+)
+
+# def secret() -> None:
+#     """
+#     Launches secret solving algorithm.
+
+#     In any case returns, None is returned
+#     """
+#     with open("./assets/secrets/secret_4.txt", "r", encoding="utf-8") as secret_file:
+#         secret_letter = secret_file.read()
+#     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as harry_book_file:
+#         harry_book_text = harry_book_file.read()
+#     with open("./assets/hp_letters.txt", "r", encoding="utf-8") as harry_letters_file:
+#         harry_letters_text = harry_letters_file.read()
+
+#     n_gram_size = 2
+#     beam_width = 7
+#     seq_len = 10
+
+#     processor = WordProcessor(end_of_sentence_token="<EoS>")
+#     encoded_corpus = processor.encode_sentences(harry_book_text)
+
+#     language_model = DynamicNgramLMTrie(encoded_corpus, n_gram_size)
+
+#     language_model.clean()
+#     language_model.update(encoded_corpus)
+
+#     encoded_corpus = processor.encode_sentences(harry_letters_text)
+
+#     language_model.update(encoded_corpus)
+
+#     letter_parts = secret_letter.split("<BURNED>")
+#     first_part = letter_parts[0].strip()
+#     # second_part = letter_parts[1]
+
+#     beam_generator = BeamSearchTextGenerator(language_model, processor, beam_width)
+#     backoff_generator = DynamicBackOffGenerator(language_model, processor)
+
+#     prompt = "".join(first_part.split()[-n_gram_size:])
+
+#     output = beam_generator.run(prompt, seq_len)
+#     print(f"beam secret: {output}")
+#     output = backoff_generator.run(seq_len, prompt)
+#     print(f"backoff: {output}")
 
 
 def main() -> None:
@@ -18,84 +66,34 @@ def main() -> None:
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
 
-    with open("./assets/secrets/secret_4.txt", "r", encoding="utf-8") as secret_file:
-        secret_letter = secret_file.read()
-    with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as harry_book_file:
-        harry_book_text = harry_book_file.read()
-    with open("./assets/hp_letters.txt", "r", encoding="utf-8") as harry_letters_file:
-        harry_letters_text = harry_letters_file.read()
 
-    n_gram_size = 5 #2
-    beam_width = 3
-    seq_len = 51
+    processor = WordProcessor("<EoS>")
+    encoded_corpus = processor.encode_sentences(hp_letters)
 
-    word_processor = WordProcessor("<EoS>")
-    encoded_corpus = word_processor.encode_sentences(harry_book_text)
+    language_model = DynamicNgramLMTrie(encoded_corpus, 5)
+    language_model.build()
 
-    language_model = NGramTrieLanguageModel(encoded_corpus, n_gram_size)
-    print(language_model.build())
-    language_model.update(word_processor.encode_sentences(harry_letters_text))
+    path = r"C:\Users\artem\hse\2025-2-level-labs\lab_4_auto_completion\assets\dynamic_trie.json"
 
-    prompt = "Harry Potter"
-
-    beam_generator = BeamSearchTextGenerator(language_model, word_processor, beam_width)
-    output_greedy = beam_generator.run(prompt, seq_len)
-
-    greedy_generator = GreedyTextGenerator(language_model, word_processor)
-    output_beam = greedy_generator.run(seq_len, prompt)
-
-    print(f"Greedy: {output_greedy}")
-    print(f"beam: {output_beam}")
-
-    # encoded_sentences = word_processor.encode_sentences(harry_text)
+    save(language_model, path)
+    loaded_model = load(path)
 
 
-    # for sentence in encoded_sentences:
-    #     encoded_secret.extend(sentence)
-    # encoded_secret = tuple(encoded_secret)
+    generator = DynamicBackOffGenerator(loaded_model, processor)
 
-    # language_model = NGramLanguageModel(encoded_secret, n_gram_size)
-    # language_model.build()
+    prompt = "Ivanov"
 
-    # letter_parts = secret_letter.split("<BURNED>")
-    # first_part = letter_parts[0].strip()
-    # second_part = letter_parts[1]
+    print(f"Dynamic BackOFF with 1 corpus: {generator.run(50, prompt)}")
 
-    # encoded_context = word_processor.encode_sentences(first_part)
-    # context = []
-    # for sentence in encoded_context:
-    #     context.extend(sentence)
-    # context = tuple(context)
+    encoded_corpus = processor.encode_sentences(ussr_letters)
+    loaded_model.update(encoded_corpus)
 
-    # beam_searcher = BeamSearcher(beam_width, language_model)
+    print(f"Dynamic BackOFF with 2 corpuses: {generator.run(50, prompt)}")
 
-    # sequence_candidates = {context: 0.0}
-    # for _ in range(seq_len):
-    #     new_candidates = {}
-    #     for sequence, probability in sequence_candidates.items():
-    #         next_tokens = beam_searcher.get_next_token(sequence)
-    #         if next_tokens is None:
-    #             continue
-    #         updated_candidates = beam_searcher.continue_sequence(
-    #             sequence, next_tokens, {sequence: probability})
-    #         if updated_candidates is not None:
-    #             for seq, prob in updated_candidates.items():
-    #                 if seq not in new_candidates or prob < new_candidates[seq]:
-    #                     new_candidates[seq] = prob
-    #     if not new_candidates:
-    #         break
-    #     sequence_candidates = beam_searcher.prune_sequence_candidates(new_candidates) or {}
-    #     if sequence_candidates is None:
-    #         return None
-    # if not sequence_candidates:
-    #     return None
 
-    # best_sequence = min(sequence_candidates.items(), key=lambda x: x[1])[0]
-    # decoded = [word_processor.get_token(id) for id in best_sequence]
-    # print(decoded)
+    result = loaded_model
+    assert result
 
-    # result = decoded
-    # assert result
 
 if __name__ == "__main__":
     main()
