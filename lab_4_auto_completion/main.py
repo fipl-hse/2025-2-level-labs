@@ -319,7 +319,7 @@ class PrefixTrie:
         """
         self.clean()
         for sequence in encoded_corpus:
-            self.insert(sequence)
+            self._insert(sequence)
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
