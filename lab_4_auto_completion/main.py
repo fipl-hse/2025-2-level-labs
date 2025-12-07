@@ -504,10 +504,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Args:
             new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
-        if self._encoded_corpus is None:
+        if self._encoded_corpus is None or len(self._encoded_corpus) == 0:
             self._encoded_corpus = new_corpus
         else:
-            self._encoded_corpus = tuple(list(self._encoded_corpus) + list(new_corpus))
+            self._encoded_corpus = self._encoded_corpus + new_corpus
         self.build()
 
     def _collect_all_ngrams(self) -> tuple[NGramType, ...]:
@@ -665,25 +665,26 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         if context_size <= 0:
             return {}
         context = sequence[-context_size:]
-        try:
-            current_node = self._root
-            for item in context:
-                found = False
-                for child in current_node.get_children():
-                    if child.get_name() == item:
-                        current_node = child
-                        found = True
-                        break
-                if not found:
-                    return {}
-            frequencies = dict[int, float]()
+        current_node = self._root
+        for item in context:
+            found = False
             for child in current_node.get_children():
-                name = child.get_name()
-                if name is not None and child.get_value() > 0:
-                    frequencies[name] = child.get_value()
-            return frequencies
+                if child.get_name() == item:
+                    current_node = child
+                    found = True
+                    break
+            if not found:
+                return {}
+        try:
+            prefix_node = self.get_prefix(context)
         except TriePrefixNotFoundError:
             return {}
+        frequencies = dict[int, float]()
+        for child in prefix_node.get_children():
+            name = child.get_name()
+            if name is not None and child.get_value() > 0:
+                frequencies[name] = child.get_value()
+        return frequencies
 
     def _assign_child(self, parent: TrieNode, node_name: int, freq: float = 0.0) -> TrieNode:
         """
@@ -737,16 +738,14 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             source_node, target_node = stack.pop()
             for source_child in source_node.get_children():
                 source_child_name = source_child.get_name()
-                if source_child.get_name() is not None:
-                    source_child_name = source_child.get_name()
-                    if source_child_name is not None:
-                        target_child = self._assign_child(
-                            target_node,
-                            source_child_name,
-                            source_child.get_value()
-                        )
-                        if source_child.has_children():
-                            stack.append((source_child, target_child))
+                if source_child_name is not None:
+                    target_child = self._assign_child(
+                        target_node,
+                        source_child_name,
+                        source_child.get_value()
+                    )
+                    if source_child.has_children():
+                        stack.append((source_child, target_child))
 
 
 class DynamicBackOffGenerator(BackOffGenerator):
