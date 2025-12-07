@@ -8,6 +8,7 @@ from lab_4_auto_completion.main import (
     WordProcessor,
 )
 
+
 def main() -> None:
     """
     Launches an implementation.

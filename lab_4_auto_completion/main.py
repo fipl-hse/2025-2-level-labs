@@ -107,7 +107,7 @@ class WordProcessor(TextProcessor):
         """
         if not isinstance(element, str) or not element:
             return
-    
+
         if element not in self._storage:
             self._storage[element] = len(self._storage)
 
@@ -138,7 +138,7 @@ class WordProcessor(TextProcessor):
                     current_sentence = []
             else:
                 current_sentence.append(token)
-        
+
         if current_sentence:
             sentence_str = ' '.join(current_sentence)
             if sentence_str:
@@ -167,7 +167,7 @@ class WordProcessor(TextProcessor):
         exceptions = '!?.-'
         tokens = []
         sentences = text.lower().split()
-        
+
         for sentence in sentences:
             sentence = sentence.strip()
             clean_word = ''.join(char for char in sentence if char.isalpha() or char == '-')
@@ -175,10 +175,10 @@ class WordProcessor(TextProcessor):
                 tokens.append(clean_word)
                 if sentence and sentence[-1] in exceptions:
                     tokens.append(self._end_of_sentence_token)
-        
+
         if not tokens:
             raise EncodingError("Tokenization resulted in empty output")
-        
+
         return tuple(tokens)
 
 
@@ -246,7 +246,7 @@ class TrieNode:
         """
         if item is None:
             return tuple(self._children)
-        
+
         matching_children = [child for child in self._children if child.get_name() == item]
         return tuple(matching_children)
 
@@ -329,13 +329,13 @@ class PrefixTrie:
             TrieNode: Found TrieNode by prefix
         """
         current_node = self._root
-    
+
         for item in prefix:
             children = current_node.get_children(item)
             if not children:
                 raise TriePrefixNotFoundError("Prefix not found in trie")
             current_node = children[0]
-    
+
         return current_node
 
     def suggest(self, prefix: NGramType) -> tuple:
@@ -378,12 +378,12 @@ class PrefixTrie:
             sequence (NGramType): Tokens to insert.
         """
         current_node = self._root
-    
+
         for item in sequence:
             children = current_node.get_children(item)
             if not children:
                 current_node.add_child(item)
-            
+
             current_node = current_node.get_children(item)[0]
 
 
@@ -478,10 +478,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         """
         if not isinstance(sequence, tuple) or not sequence:
             return None
-        
+
         if len(sequence) < self._n_gram_size - 1:
             return None
-        
+
         context = sequence[-self._n_gram_size + 1:]
         try:
             next_tokens = self.get_next_tokens(context)
@@ -521,7 +521,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             self._encoded_corpus = new_corpus
         else:
             self._encoded_corpus = self._encoded_corpus + new_corpus
-        
+
         self.build()
 
     def _collect_all_ngrams(self) -> tuple[NGramType, ...]:
@@ -576,11 +576,15 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Args:
             encoded_corpus (tuple[NGramType, ...]): Tuple of n-grams extracted from the corpus.
         """
-        from collections import Counter
-        
         total_ngrams = len(encoded_corpus)
-        ngram_counts = Counter(encoded_corpus)
-        
+        ngram_counts = {}
+
+        for ngram in encoded_corpus:
+            if ngram in ngram_counts:
+                ngram_counts[ngram] += 1
+            else:
+                ngram_counts[ngram] = 1
+
         for ngram, count in ngram_counts.items():
             node = self.get_prefix(ngram)
             relative_freq = count / total_ngrams
