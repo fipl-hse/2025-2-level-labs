@@ -534,10 +534,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             tuple[NGramType, ...]: Tuple of all n-grams stored in the trie.
         """
         proper_children = []
-        stack = [(self._root, ())]
+        stack = [(self._root, [])]
 
         while stack:
-            current_node, current_seq = stack.pop(0)
+            current_node, current_seq = stack.pop()
             if len(current_seq) == self._n_gram_size:
                 proper_children.append(tuple(current_seq))
                 continue
@@ -545,8 +545,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             for child in current_node.get_children():
                 child_name = child.get_name()
                 if child_name is not None:
-                    new_sequence = tuple(current_seq + (child_name,))
-                    stack.append((child, new_sequence))
+                    stack.append((child, current_seq + [child_name]))
 
         return tuple(proper_children)
 
