@@ -380,22 +380,24 @@ class PrefixTrie:
         while stack:
             current_node, current_path = stack.pop()
 
-            children = current_node.get_children()
-            sorted_children = sorted(
-                [child for child in children if child.get_name() is not None],
-                key=lambda child: child.get_name()
-            )
+        children = current_node.get_children()
 
-            for child in sorted_children:
-                item = child.get_name()
-                if item is not None:
-                    new_path = current_path + [item]
-                    
-                    if child.is_end:
-                        suggestions.append(tuple(new_path))
+        children_with_names = []
+        for child in children:
+            name = child.get_name()
+            if name is not None:
+                children_with_names.append((name, child))
 
-                if child.has_children():
-                    stack.append((child, new_path))
+        children_with_names.sort(key=lambda x: x[0])
+    
+        for name, child in children_with_names:
+            new_path = current_path + [name]
+        
+            if child.is_end:
+                suggestions.append(tuple(new_path))
+            
+            if child.has_children():
+                stack.append((child, new_path))
 
         return tuple(sorted(suggestions))
 
@@ -609,8 +611,6 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
                 if token is not None:
                     stack.append((child, current_path + [token]))
 
-        if not ngrams:
-            return False
         return tuple(ngrams)
 
     def _collect_frequencies(self, node: TrieNode) -> dict[int, float]:

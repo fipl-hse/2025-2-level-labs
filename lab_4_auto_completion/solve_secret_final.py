@@ -1,15 +1,14 @@
+"""
+Solution for the secret task.
+"""
+
 import json
 import math
 import os
 import sys
 
-sys.path.append("C:\\Users\\kanya\\2025-2-level-labs")
-sys.path.append("C:\\Users\\kanya\\2025-2-level-labs\\lab_3_generate_by_ngrams")
-sys.path.append("C:\\Users\\kanya\\2025-2-level-labs\\lab_4_auto_completion")
-
-from lab_3_generate_by_ngrams.main import NGramLanguageModel, BeamSearcher
+from lab_3_generate_by_ngrams.main import BeamSearcher, NGramLanguageModel
 from lab_4_auto_completion.main import WordProcessor
-
 
 def solve_secret() -> str:
     letter_text = """Dear Harry,
@@ -66,7 +65,7 @@ Ron"""
                 continue
             if next_tokens:
                 updated = searcher.continue_sequence(seq, next_tokens, {seq: candidates[seq]})
-            if updated:
+                if updated:
                     new_cands.update(updated)
             else:
                 new_cands[seq] = candidates[seq]
