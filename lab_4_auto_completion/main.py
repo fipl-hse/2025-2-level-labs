@@ -466,9 +466,6 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         """
         if not self._encoded_corpus:
             self._encoded_corpus = new_corpus
-        else:
-            self._encoded_corpus + new_corpus
-
         self.build()
 
     def _collect_all_ngrams(self) -> tuple[NGramType, ...]:
@@ -740,7 +737,6 @@ class DynamicBackOffGenerator(BackOffGenerator):
     def run(self, seq_len: int, prompt: str) -> str | None:
         """
         Generate sequence based on dynamic N-gram trie and prompt provided.
-
         Args:
             seq_len (int): Number of tokens to generate
             prompt (str): Beginning of sequence
@@ -760,29 +756,24 @@ class DynamicBackOffGenerator(BackOffGenerator):
             tokens = self._text_processor._tokenize(prompt)
         except EncodingError:
             return None
-        if tokens is None:
-            return None
         tokens_all = list(tokens)
-        eos = self._text_processor._end_of_sentence_token
-        if tokens_all and tokens_all[-1] == eos:
+        if tokens_all and tokens_all[-1] == self._text_processor._end_of_sentence_token:
             tokens_all.pop()
         encoded_prompt = []
         for token in tokens_all:
             self._text_processor._put(token)
             encoded_prompt.append(self._text_processor._storage[token])
-        if not encoded_prompt:
-            return None
         sequence = list(encoded_prompt)
         for _ in range(seq_len):
-            next = self.get_next_token(tuple(sequence))
-            if not next:
+            next_token = self.get_next_token(tuple(sequence))
+            if not next_token:
                 break
-            token = sorted(next.items(), key=lambda x: (-x[1], -x[0]))[0][0]
+            token = sorted(next_token.items(), key=lambda x: (-x[1], -x[0]))[0][0]
             sequence.append(token)
         decoded = []
         for ids in sequence:
-            for word, id in self._text_processor._storage.items():
-                if id == ids:
+            for word, t_id in self._text_processor._storage.items():
+                if t_id == ids:
                     decoded.append(word)
                     break
         postprocess = getattr(self._text_processor, '_postprocess_decoded_text', None)
