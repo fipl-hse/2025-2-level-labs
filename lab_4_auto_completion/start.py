@@ -5,10 +5,7 @@ Auto-completion start
 from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, GreedyTextGenerator
 
 # pylint:disable=unused-variable
-from lab_4_auto_completion.main import (
-    NGramTrieLanguageModel,
-    PrefixTrie,
-    WordProcessor)
+from lab_4_auto_completion.main import NGramTrieLanguageModel, PrefixTrie, WordProcessor
 
 
 def main() -> None:
