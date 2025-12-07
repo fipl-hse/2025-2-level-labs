@@ -324,23 +324,17 @@ class PrefixTrie:
             prefix_node = self.get_prefix(prefix)
         except TriePrefixNotFoundError:
             return tuple()
-        results = []
-        queue = [(tuple(prefix), prefix_node)]
-        prefix_len = len(prefix)
-        while queue:
-            new_prefix, new_node = queue.pop(0)
-            children = new_node.get_children()
-            if not children:
-                if len(new_prefix) > prefix_len:
-                    results.append(new_prefix)
-                continue
-            for child in children:
-                name = child.get_name()
-                if name is not None:
-                    queue.append((new_prefix + (name,), child))
-                else:
-                    queue.append((new_prefix, child))
-        return tuple(sorted(results, key=lambda x: x, reverse=True))
+        if not prefix_node.has_children():
+            return tuple()
+        children = [(prefix_node, list(prefix))]
+        sequences = []
+        while children:
+            current_node, sequence = children.pop(0)
+            if not current_node.has_children():
+                sequences.append(tuple(sequence))
+            for children_node in current_node.get_children():
+                children.append([children_node, sequence + [children_node.get_name()]])
+        return tuple(sequences)
 
     def _insert(self, sequence: NGramType) -> None:
         """
