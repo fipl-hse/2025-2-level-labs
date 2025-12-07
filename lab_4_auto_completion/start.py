@@ -36,8 +36,8 @@ def main() -> None:
     suggestion = trie.suggest((2,))
     if suggestion:
         storage = getattr(processor, '_storage', {})
-        decoded = [word for token_id in suggestion[0] 
-                  for word, word_id in storage.items() 
+        decoded = [word for token_id in suggestion[0]
+                  for word, word_id in storage.items()
                   if word_id == token_id]
         print(f"\n1. Decoded result: {' '.join(decoded)}")
     model = NGramTrieLanguageModel(hp_encoded, 5)
