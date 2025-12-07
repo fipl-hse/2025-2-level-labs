@@ -3,7 +3,10 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-
+from lab_4_auto_completion.main import (
+    PrefixTrie,
+    WordProcessor,
+)
 
 def main() -> None:
     """
@@ -16,6 +19,15 @@ def main() -> None:
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
     result = None
+    processor = WordProcessor('<EOS>')
+    encoded_sentences = processor.encode_sentences(hp_letters)
+    prefix_trie = PrefixTrie()
+    prefix_trie.fill(encoded_sentences)
+    suggestions = prefix_trie.suggest((2,))
+    if suggestions:
+        decoded = processor.decode(suggestions[0])
+        print(decoded.replace("<EOS>", "").strip())
+    result = decoded 
     assert result, "Result is None"
 
 
