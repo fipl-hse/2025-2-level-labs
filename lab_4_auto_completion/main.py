@@ -359,18 +359,20 @@ class PrefixTrie:
         try:
             prefix_node = self.get_prefix(prefix)
         except TriePrefixNotFoundError:
-            return []
+            return tuple()
         sequences = []
-        queue = [(prefix_node, list(prefix))]
+        initial_seq = tuple(prefix)
+        queue = [(prefix_node, initial_seq)]
         while queue:
             current_node, current_sequence = queue.pop()
             if current_node.has_children():
                 children = list(current_node.get_children())
                 for child in children[::-1]:
-                    if child.get_name() is None:
+                    child_name = child.get_name()
+                    if child_name is None:
                         continue
-                    new_sequence = current_sequence + [child.get_name()]
-                    sequences.append(tuple(new_sequence))
+                    new_sequence = current_sequence + (child_name,)
+                    sequences.append(new_sequence)
                     queue.append((child, new_sequence))
         return tuple(sequences[::-1])
 
@@ -873,7 +875,6 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
     stack = [(trie._root, data['children'])]
     while stack:
         current_node, parent_children_list = stack.pop()
-        children = list(current_node.get_children())
         children = current_node.get_children()
         for child in children:
             child_dict = {
