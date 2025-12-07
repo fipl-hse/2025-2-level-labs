@@ -796,21 +796,17 @@ class DynamicBackOffGenerator(BackOffGenerator):
             or len(sequence_to_continue) == 0
         ):
             return None
-        max_size = self._dynamic_trie._max_ngram_size
+        max_size = self._dynamic_trie.get_n_gram_size()
+        ngram_sizes = list(range(max_size, 1, -1))
         seq_len = len(sequence_to_continue)
-        for n in range(max_size, 1, -1):
-            if seq_len >= n - 1:
-                context_size = n - 1
-                context = sequence_to_continue[-context_size:]
-                self._dynamic_trie.set_current_ngram_size(n)
-                tokens = self._dynamic_trie.generate_next_token(context)
-                if tokens:
-                    return tokens
-        for n in range(max_size, 1, -1):
-            self._dynamic_trie.set_current_ngram_size(n)
-            tokens = self._dynamic_trie.generate_next_token(sequence_to_continue)
-            if tokens:
-                return tokens
+        for ngram in ngram_sizes:
+            try:
+                self._dynamic_trie.set_current_ngram_size(ngram)
+                next_tokens = self._dynamic_trie.generate_next_token(sequence_to_continue)
+                if next_tokens:
+                    return next_tokens
+            except:
+                continue
         return None
 
     def run(self, seq_len: int, prompt: str) -> str | None:
@@ -830,22 +826,34 @@ class DynamicBackOffGenerator(BackOffGenerator):
             or len(prompt) == 0
         ):
             return None
-        encoded_seq = self._text_processor.encode(prompt)
+        try:
+            encoded_seq = self._text_processor.encode(prompt)
+        except EncodingError:
+            return None
         if not encoded_seq:
             return None
         tokens = list(encoded_seq)
+        eos_token_id = getattr(self._text_processor, '_end_of_word_token', None)
+        if eos_token_id is None:
+            eos_token_id = self._text_processor.get_end_of_word_token()
+        if tokens and tokens[-1] == eos_token_id:
+            tokens.pop()
         for _ in range(seq_len):
             next_tokens = self.get_next_token(tuple(tokens))
             if not next_tokens:
                 break
-            best = max(next_tokens.items(), key=lambda x: x[1])[0]
-            tokens.append(best)
-        decoded = {value: key for key, value in self._text_processor._storage.items()}
-        words = [decoded[token] for token in tokens if token in decoded]
-        ending = self._text_processor._end_of_word_token
-        if words and words[-1] != ending:
-            words.append(ending)
-        return self._text_processor._postprocess_decoded_text(tuple(words))
+            best_token = max(next_tokens.items(), key=lambda x: (x[1], x[0]))[0]
+            tokens.append(best_token)
+        words = []
+        for token_id in tokens:
+            for word, word_id in self._text_processor._storage.items():
+                if word_id == token_id:
+                    words.append(word)
+                    break
+        postprocess_method = getattr(self._text_processor, '_postprocess_decoded_text', None)
+        if postprocess_method:
+            return str(postprocess_method(tuple(words)))
+        return ' '.join(words)
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
