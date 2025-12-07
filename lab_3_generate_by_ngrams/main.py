@@ -10,6 +10,7 @@ import json
 import math
 import string
 
+
 class TextProcessor:
     """
     Handle text tokenization, encoding and decoding.
