@@ -38,14 +38,12 @@ def main() -> None:
     model.build()
 
     print(f"\n2. Greedy result before: {GreedyTextGenerator(model, processor).run(52, 'Dear')}")
-    beam_result = BeamSearchTextGenerator(model, processor, 3).run('Dear', 52)
-    print(f"Beam result before: {beam_result}")
+    print(f"Beam result before: {BeamSearchTextGenerator(model, processor, 3).run('Dear', 52)}")
 
     encoded_ussr = processor.encode_sentences(ussr_letters)
     model.update(encoded_ussr)
 
-    greedy_updated = GreedyTextGenerator(model, processor).run(52, 'Dear')
-    print(f"\n3. Greedy result after: {greedy_updated}")
+    print(f"\n3. Greedy result after: {GreedyTextGenerator(model, processor).run(52, 'Dear')}")
     beam_updated = BeamSearchTextGenerator(model, processor, 3).run('Dear', 52)
     print(f"Beam result before: {beam_updated}")
 
