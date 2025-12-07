@@ -3,6 +3,7 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
+from lab_4_auto_completion.main import PrefixTrie, WordProcessor
 
 
 def main() -> None:
@@ -15,9 +16,21 @@ def main() -> None:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
-    result = None
+    word_processor = WordProcessor(".")
+    prefix_trie = PrefixTrie()
+    encoded_letters = word_processor.encode_sentences(ussr_letters)
+    prefix_trie.fill(encoded_letters)
+    suggestion = prefix_trie.suggest((2,))
+    first_suggestion = suggestion[0]
+    words_list = []
+    for element in first_suggestion:
+        token = word_processor.get_token(element)
+        if token is not None:
+            words_list.append(token)
+    decoded = word_processor.postprocess_decoded_text(tuple(words_list))
+    print(decoded)
+    result = decoded
     assert result, "Result is None"
-
 
 if __name__ == "__main__":
     main()
