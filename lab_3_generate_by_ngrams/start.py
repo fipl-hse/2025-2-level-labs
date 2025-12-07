@@ -23,6 +23,8 @@ def main() -> None:
     text_processor =  TextProcessor(end_of_word_token = '_')
     encoded_text = text_processor.encode(text)
     print(encoded_text)
+    if encoded_text is None or None in encoded_text:
+        return None
     decoded_text = text_processor.decode(encoded_text)
     print(decoded_text)
     n_gram_model = NGramLanguageModel(encoded_text, 7)
