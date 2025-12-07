@@ -546,7 +546,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
                 child_name = child.get_name()
                 if child_name is not None:
                     new_sequence = tuple(current_seq + (child_name,))
-                stack.append((child, new_sequence))
+                    stack.append((child, new_sequence))
 
         return tuple(proper_children)
 
