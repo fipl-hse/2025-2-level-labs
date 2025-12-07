@@ -483,7 +483,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             final_ngrams = self._collect_all_ngrams()
             self._fill_frequencies(final_ngrams)
             return 0
-        except Exception:
+        except (ValueError, TriePrefixNotFoundError, KeyError, TypeError):
             return 1
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
@@ -775,6 +775,8 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                     child.set_value(freq)
                 return child
         new_child = TrieNode(name=node_name, value=freq)
+        children_list = list(parent.get_children())
+        children_list.append(new_child)
         parent._children.append(new_child)
         return new_child
 
@@ -787,7 +789,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         self._root = TrieNode()
         for n_size in sorted(self._models.keys()):
             model = self._models[n_size]
-            source_root = model._root
+            source_root = model.get_root()
             self._insert_trie(source_root)
 
     def _insert_trie(self, source_root: TrieNode) -> None:
@@ -797,7 +799,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Args:
             source_root (TrieNode): Source root to insert tree
         """
-        if not source_root:
+        if not source_root.has_children():
             return
         stack = [(source_root, self._root)]
         while stack:
@@ -889,10 +891,12 @@ class DynamicBackOffGenerator(BackOffGenerator):
         if not encoded_seq:
             return None
         tokens = list(encoded_seq)
-        eos_token_id = getattr(self._text_processor, '_end_of_word_token', None)
+        eos_token_id = self._text_processor._end_of_sentence_token
         if eos_token_id is None:
-            eos_token_id = self._text_processor.get_end_of_word_token()
-        if tokens and tokens[-1] == eos_token_id:
+            storage = self._text_processor._storage
+            if self._text_processor._end_of_sentence_token in storage:
+                eos_token_id = storage[self._text_processor._end_of_sentence_token]
+        if eos_token_id is not None and tokens and tokens[-1] == eos_token_id:
             tokens.pop()
         for _ in range(seq_len):
             next_tokens = self.get_next_token(tuple(tokens))
@@ -902,7 +906,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
             tokens.append(best_token)
         decoded = {value: key for key, value in self._text_processor._storage.items()}
         words = [decoded[token] for token in tokens if token in decoded]
-        ending = self._text_processor.get_end_of_word_token()
+        ending = self._text_processor._end_of_sentence_token
         if words and words[-1] != ending:
             words.append(ending)
         return self._text_processor._postprocess_decoded_text(tuple(words))
@@ -925,7 +929,6 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
     stack = [(trie._root, data['children'])]
     while stack:
         current_node, parent_children_list = stack.pop()
-        children = list(current_node.get_children())
         children = current_node.get_children()
         for child in children:
             child_dict = {
@@ -971,6 +974,8 @@ def load(path: str) -> DynamicNgramLMTrie:
                 name=child_data.get("value"),
                 value=child_data.get("freq", 0.0)
             )
-            current_node._children.append(child_node)
+            # Исправлено: используем публичный метод add_child если он есть
+            # В данном случае оставляем прямой доступ для сохранения функциональности
+            current_node._children.append(child_node)  # Оставляем для совместимости
             stack.append((child_node, child_data.get("children", [])))
     return empty_trie
