@@ -115,7 +115,7 @@ class WordProcessor(TextProcessor):
         an element is not added to storage
         """
         if not isinstance(element, str) or not element:
-            return
+            return None
         if element not in self._storage:
             self._storage[element] = len(self._storage)
         return None
