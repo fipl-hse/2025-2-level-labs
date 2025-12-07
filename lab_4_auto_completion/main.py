@@ -77,35 +77,20 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
-        if not isinstance(text, str) or not text:
-            return tuple()
-        raw_sentences = []
+        if not isinstance(text, str) or not text.strip():
+            raise EncodingError('Invalid input: text must be a non-empty string')
+        tokens = self._tokenize(text)
+        encoded_sentences = []
         current_sentence = []
-        for char in text:
-            current_sentence.append(char)
-            if char in '.!?':
-                sentence = ''.join(current_sentence).strip()
-                raw_sentences.append(sentence)
+        for token in tokens:
+            self._put(token)
+            current_sentence.append(self._storage[token])
+            if token == self._end_of_sentence_token:
+                if current_sentence:
+                    encoded_sentences.append(tuple(current_sentence))
                 current_sentence = []
         if current_sentence:
-            sentence = ''.join(current_sentence).strip()
-            raw_sentences.append(sentence)
-        clean_sentences = []
-        for sentence in raw_sentences:
-            clean_sentence = sentence.strip().lower()
-            clean_sentences.append(clean_sentence)
-        encoded_sentences = []
-        for clean_sentence in clean_sentences:
-            tokens = self._tokenize(clean_sentence)
-            encoded_sentence = []
-            for token in tokens:
-                if token == self._end_of_sentence_token:
-                    continue
-                self._put(token)
-                word_id = self._storage.get(token)
-                if word_id is not None:
-                    encoded_sentence.append(word_id)
-            encoded_sentences.append(tuple(encoded_sentence) + (0,))
+            encoded_sentences.append(tuple(current_sentence))
         return tuple(encoded_sentences)
 
     def _put(self, element: str) -> None:
@@ -517,11 +502,9 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Args:
             new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
-        if not isinstance(new_corpus, tuple) or not new_corpus:
-            return None
         if not self._encoded_corpus:
             self._encoded_corpus = new_corpus
-        return self.build()
+        self.build()
 
     def _collect_all_ngrams(self) -> tuple[NGramType, ...]:
         """
@@ -729,6 +712,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 if freq != 0.0:
                     child.set_value(freq)
                 return child
+        return None
 
     def _merge(self) -> None:
         """
