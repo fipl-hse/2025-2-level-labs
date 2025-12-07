@@ -151,7 +151,7 @@ class WordProcessor(TextProcessor):
         """
         if not isinstance(text, str) or not text:
             raise EncodingError('Invalid input: text must be a non-empty string')
-        eos_token = self._end_of_sentence_token
+        eos = self._end_of_sentence_token
         sentences = []
         sentence = []
         index = 0
@@ -178,9 +178,9 @@ class WordProcessor(TextProcessor):
                 word = ''.join(x for x in word.lower() if x.isalpha() or x == "'")
                 if word:
                     tokens.append(word)
-            tokens.append(eos_token)
+            tokens.append(eos)
         text_clean = text.strip() and text.strip()[-1] in '.!?'
-        if not text_clean and tokens and tokens[-1] == eos_token:
+        if not text_clean and tokens and tokens[-1] == eos:
             tokens = tokens[:-1]
         if not tokens:
             raise EncodingError("Tokenization resulted in empty output")
@@ -672,7 +672,6 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             return frequencies
         except TriePrefixNotFoundError:
             return {}
-
     def _assign_child(self, parent: TrieNode, node_name: int, freq: float = 0.0) -> TrieNode:
         """
         Return an existing child with name of node or create a new one.
@@ -685,17 +684,21 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Returns:
             TrieNode: Existing or new TrieNode.
         """
-        if not isinstance(node_name, int) or node_name < 0:
-            raise ValueError("Node name must be a non-negative integer")
+        if (
+            node_name is None or not isinstance(node_name, int) or node_name < 0):
+            raise ValueError('Node name must be non-negative integer')
         for child in parent.get_children():
             if child.get_name() == node_name:
-                if freq > 0:
+                if freq != 0.0:
                     child.set_value(freq)
                 return child
-        new_child = TrieNode(node_name, freq)
-        if hasattr(parent, '_children'):
-            parent._children.append(new_child)
-        return new_child
+        parent.add_child(node_name)
+        for child in parent.get_children():
+            if child.get_name() == node_name:
+                if freq != 0.0:
+                    child.set_value(freq)
+                return child
+        return child
 
     def _merge(self) -> None:
         """
@@ -724,14 +727,9 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 source_child_name = source_child.get_name()
                 if source_child.get_name() is not None:
                     source_child_name = source_child.get_name()
-                    if source_child_name is not None:
-                        target_child = self._assign_child(
-                            target_node,
-                            source_child_name,
-                            source_child.get_value()
-                        )
-                        if source_child.has_children():
-                            stack.append((source_child, target_child))
+                    target_child = self._assign_child(target_node, source_child_name, source_child.get_value())
+                    if source_child.has_children():
+                        stack.append((source_child, target_child))
 
 
 class DynamicBackOffGenerator(BackOffGenerator):
