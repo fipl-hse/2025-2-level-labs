@@ -3,7 +3,7 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import GreedyTextGenerator, BeamSearchTextGenerator
+from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, GreedyTextGenerator
 from lab_4_auto_completion.main import NGramTrieLanguageModel, PrefixTrie, WordProcessor
 
 
