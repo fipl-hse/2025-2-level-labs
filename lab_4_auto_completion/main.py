@@ -885,32 +885,26 @@ class DynamicBackOffGenerator(BackOffGenerator):
             dict[int, float] | None: Next tokens for sequence continuation
         """
         if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
-            return None
+            return {}
 
-        if len(sequence_to_continue) >= self._dynamic_trie._max_ngram_size:
-            max_search_size = self._dynamic_trie._max_ngram_size
-        else:
-            max_search_size = len(sequence_to_continue)
+        if len(sequence_to_continue) < self._n_gram_size - 1:
+            return {}
 
-        available_sizes = sorted(self._dynamic_trie._models.keys(), reverse=True)
+        context = sequence_to_continue[-(self._n_gram_size - 1) :]
 
-        if not available_sizes:
-            return None
+        result = {}
+    
+        try:
+            node = self.get_node_by_prefix(context)
+        except TriePrefixNotFoundError:
+            return result
 
-        for n_size in available_sizes:
-            if n_size > max_search_size + 1:
-                continue
+        for child in node.get_children():
+            token = child.get_name()
+            if token is not None:
+                result[token] = child.get_value()
 
-            self._dynamic_trie.set_current_ngram_size(n_size)
-
-            next_tokens = self._dynamic_trie.generate_next_token(sequence_to_continue)
-
-            if next_tokens is None:
-                continue
-            if next_tokens:
-                return next_tokens
-
-        return None
+        return result
 
     def run(self, seq_len: int, prompt: str) -> str | None:
         """
