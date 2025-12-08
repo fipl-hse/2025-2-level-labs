@@ -7,9 +7,9 @@ from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
     load,
+    NGramTrieLanguageModel,
     save,
     WordProcessor,
-    NGramTrieLanguageModel
 )
 
 
