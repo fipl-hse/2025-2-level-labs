@@ -44,7 +44,7 @@ def main() -> None:
     model.update(encoded_ussr)
     print(f"\n3. Greedy result after: {GreedyTextGenerator(model, processor).run(52, 'Dear')}")
     beam_updated = BeamSearchTextGenerator(model, processor, 3).run('Dear', 52)
-    print(f"Beam result before: {beam_updated}")
+    print(f"Beam result after: {beam_updated}")
     dynamic = DynamicNgramLMTrie(encoded_hp, 5)
     dynamic.build()
     save(dynamic, "./saved_dynamic_trie.json")
