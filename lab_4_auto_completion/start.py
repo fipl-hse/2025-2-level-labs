@@ -37,12 +37,16 @@ def main() -> None:
     model.build()
 
     print(f"\n Before: Greedy:{GreedyTextGenerator(model, word_processor).run(40, "Dear")}")
-    print(f"\n Before: BeamSearch:{BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 40)}")
+    print(
+        f"\n Before: BeamSearch:{BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 40)}"
+        )
 
     model.update(word_processor.encode_sentences(ussr_letters))
 
     print(f"\n After: Greedy:{GreedyTextGenerator(model, word_processor).run(40, "Dear")}")
-    print(f"\n After: BeamSearch:{BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 40)}")
+    print(
+        f"\n After: BeamSearch:{BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 40)}"
+        )
     result = suggestions[0]
     assert result, "Result is None"
 
