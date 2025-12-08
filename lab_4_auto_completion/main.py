@@ -367,7 +367,7 @@ class NGramLanguageModel:
             n_gram = encoded_corpus[i:i + self._n_gram_size]
             result.append(tuple(n_gram))
         return tuple(result)
-    
+
 class BackOffGenerator:
     """
     Language model for back-off based text generation.
@@ -448,7 +448,7 @@ class BackOffGenerator:
                 return candidates
         return None
 
-    
+
 NGramType = tuple[int, ...]
 "Type alias for NGram."
 
@@ -570,7 +570,8 @@ class WordProcessor(TextProcessor):
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             raise DecodingError("Invalid input: decoded_corpus must be a non-empty tuple")
-        filtered_corpus = [token for token in decoded_corpus if token != self._end_of_sentence_token]
+        filtered_corpus = [token for token in decoded_corpus
+                           if token != self._end_of_sentence_token]
         if not filtered_corpus:
             raise DecodingError("Postprocessing resulted in empty output")
         sentences = []
@@ -589,13 +590,14 @@ class WordProcessor(TextProcessor):
         processed_sentences = []
         for sentence in sentences:
             if sentence:
-                processed = sentence[0].upper() + sentence[1:] if len(sentence) > 1 else sentence.upper()
+                processed = (sentence[0].upper() + sentence[1:]
+                             if len(sentence) > 1 else sentence.upper())
                 processed_sentences.append(processed)
         result = ". ".join(processed_sentences)
         if not result.endswith('.'):
             result += '.'
         return result
-    
+
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
         Tokenize text into words, separating sentences with special token.
@@ -692,7 +694,7 @@ class TrieNode:
             if child.get_name() == item:
                 return (child,)
         return tuple()
-        
+
     def get_name(self) -> int | None:
         """
         Get the data stored in the node.
