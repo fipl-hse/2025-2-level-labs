@@ -71,11 +71,11 @@ class WordProcessor(TextProcessor):
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
         if not isinstance(text, str) or not text:
-            return None
+            raise EncodingError('Invalid input: text must be a non-empty string')
         encoded_text = []
         encoded_sentence = []
-        text = self._tokenize(text)
-        for token in text:
+        tokenized_text = self._tokenize(text)
+        for token in tokenized_text:
             if token == self._end_of_sentence_token:
                 encoded_sentence.append(self._storage.get(self._end_of_sentence_token))
                 encoded_text.append(tuple(encoded_sentence))
@@ -95,13 +95,14 @@ class WordProcessor(TextProcessor):
 
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
-        """            
+        """
         if (not isinstance(element, str) or
             not element or
             element in self._storage or
             not element.isalpha()):
             return None
         self._storage[element] = len(self._storage)
+        return None
 
 
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
@@ -226,7 +227,7 @@ class TrieNode:
         """
         if item is None:
             return tuple(self._children)
-        return tuple([child for child in self._children if child.get_name() == item])
+        return tuple(child for child in self._children if child.get_name() == item)
 
     def get_name(self) -> int | None:
         """
@@ -253,9 +254,9 @@ class TrieNode:
         Args:
             new_value (float): New value to store.
         """
-        if not isinstance(new_value, float) or not new_value:
-            return None
-        self._value = new_value
+        if isinstance(new_value, float) and new_value:
+            self._value = new_value
+        return None
 
     def has_children(self) -> bool:
         """
@@ -299,6 +300,7 @@ class PrefixTrie:
         self.clean()
         for el in encoded_corpus:
             self._insert(el)
+        return None
 
     def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
@@ -342,7 +344,8 @@ class PrefixTrie:
                 sequences.append(tuple(sequence))
             else:
                 for child in node.get_children():
-                    new_sequence = sequence + [child.get_name()]
+                    child_name = child.get_name()
+                    new_sequence = sequence + [child_name]
                     nodes.append((child, new_sequence))
         return tuple(sequences)
 
@@ -362,7 +365,7 @@ class PrefixTrie:
                 root = root.get_children(el)[0]
             else:
                 root = root.get_children(el)[0]
-
+        return None
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
     """
@@ -401,7 +404,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         """
         if not self._encoded_corpus:
             return 1
-        self.clean
+        self._root = TrieNode()
         all_n_grams = []
         for sentence in self._encoded_corpus:
             n_grams = self._extract_n_grams(sentence)
@@ -451,7 +454,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             dict[int, float] | None: Possible next tokens with their probabilities,
                                      or None if input is invalid or context is too short
         """
-        if (not isinstance(sequence, tuple) 
+        if (not isinstance(sequence, tuple)
             or not sequence
             or len(sequence) < (self._n_gram_size-1)):
             return None
