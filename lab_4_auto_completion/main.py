@@ -885,9 +885,8 @@ class DynamicBackOffGenerator(BackOffGenerator):
             dict[int, float] | None: Next tokens for sequence continuation
         """
         if not isinstance(sequence_to_continue, tuple) or not sequence_to_continue:
-            return {}
-
-        if len(sequence_to_continue) < self._n_gram_size - 1:
+            return None
+        if len(sequence_to_continue) < self._dynamic_trie._max_ngram_size - 1:
             return {}
 
         context = sequence_to_continue[-(self._n_gram_size - 1) :]
