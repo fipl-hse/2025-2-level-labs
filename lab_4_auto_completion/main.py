@@ -732,7 +732,6 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 if freq != 0.0:
                     child.set_value(freq)
                 return child
-        return None
 
     def _merge(self) -> None:
         """
