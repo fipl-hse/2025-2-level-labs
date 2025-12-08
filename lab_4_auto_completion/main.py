@@ -128,7 +128,7 @@ class WordProcessor(TextProcessor):
         for token in decoded_corpus:
             if token == self._end_of_sentence_token:
                 if sentence:
-                    postprocessed_text.append(" ".join(sentence).capitalize())
+                    postprocessed_text.append("".join(sentence).capitalize())
                     sentence.clear()
             else:
                 sentence.append(token)

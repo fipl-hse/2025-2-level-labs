@@ -17,49 +17,6 @@ from lab_4_auto_completion.main import (
     NGramTrieLanguageModel
 )
 
-# def secret() -> None:
-#     """
-#     Launches secret solving algorithm.
-
-#     In any case returns, None is returned
-#     """
-#     with open("./assets/secrets/secret_4.txt", "r", encoding="utf-8") as secret_file:
-#         secret_letter = secret_file.read()
-#     with open("./assets/Harry_Potter.txt", "r", encoding="utf-8") as harry_book_file:
-#         harry_book_text = harry_book_file.read()
-#     with open("./assets/hp_letters.txt", "r", encoding="utf-8") as harry_letters_file:
-#         harry_letters_text = harry_letters_file.read()
-
-#     n_gram_size = 2
-#     beam_width = 7
-#     seq_len = 10
-
-#     processor = WordProcessor(end_of_sentence_token="<EoS>")
-#     encoded_corpus = processor.encode_sentences(harry_book_text)
-
-#     language_model = DynamicNgramLMTrie(encoded_corpus, n_gram_size)
-
-#     language_model.clean()
-#     language_model.update(encoded_corpus)
-
-#     encoded_corpus = processor.encode_sentences(harry_letters_text)
-
-#     language_model.update(encoded_corpus)
-
-#     letter_parts = secret_letter.split("<BURNED>")
-#     first_part = letter_parts[0].strip()
-#     # second_part = letter_parts[1]
-
-#     beam_generator = BeamSearchTextGenerator(language_model, processor, beam_width)
-#     backoff_generator = DynamicBackOffGenerator(language_model, processor)
-
-#     prompt = "".join(first_part.split()[-n_gram_size:])
-
-#     output = beam_generator.run(prompt, seq_len)
-#     print(f"beam secret: {output}")
-#     output = backoff_generator.run(seq_len, prompt)
-#     print(f"backoff: {output}")
-
 
 def main() -> None:
     """
@@ -67,7 +24,6 @@ def main() -> None:
 
     In any case returns, None is returned
     """
-
     with open("./assets/hp_letters.txt", "r", encoding="utf-8") as letters_file:
         hp_letters = letters_file.read()
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
