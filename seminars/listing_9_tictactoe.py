@@ -7,6 +7,9 @@ Brainstorm from the lecture on designing a TicTacToe game.
 """
 
 # pylint:disable=too-few-public-methods
+from typing import Literal
+
+MarkerType = Literal["X", "O"]
 
 
 class Move:
@@ -22,6 +25,11 @@ class Move:
         N/A
     """
 
+    def __init__(self, row: int, col: int, label: MarkerType) -> None:
+        self.row = row
+        self.col = col
+        self.label = label
+
 
 class Player:
     """
@@ -32,28 +40,14 @@ class Player:
 
     Instance methods:
         make_move(self, row: int, col: int) -> Move: Create instance of Move
-
     """
 
+    def __init__(self, label: MarkerType) -> None:
+        self.label = label
 
-class Game:
-    """
-    Store game status and enable moves.
-
-    Instance attributes:
-        _size (MarkerType): size of playing board (most commonly 3)
-        _board (MarkerType): playing board (most commonly 3x3)
-        _players (tuple[Player, ...]): tuple with 2 players
-        _current_player_idx (int): index of the player that should make a move next
-        _finished (MarkerType): flag if the game has finished: there was winner or tie
-
-    Instance methods:
-        _next_player(self): Update the next player to make a move.
-        _check_move(self, ...): Verify that the move can be made.
-        _register_move(self, ...): Put the move on the playing board.
-        _check_for_winner(self, ...): Check if win state is present
-        play(self, ...): Process one step of game
-    """
+    def make_move(self, row: int, col: int) -> Move:
+        """Create a new move instance."""
+        return Move(row, col, self.label)
 
 
 class Board:
@@ -61,17 +55,16 @@ class Board:
     Store game status and enable moves.
 
     Instance attributes:
-        _size (MarkerType): size of playing board (most commonly 3)
+        _size (int): size of playing board (most commonly 3)
         _moves_left (int): number of empty cells on the playing board
         _moves (list[Move]): already made moves
 
-
     Instance methods:
-        show(self, ...): Print current state of the board
-        add_move(self, ...): Add new valid move
-        get_moves(self, ...): Get already made moves
-        get_size(self, ...): Get size of board
-
+        show(self): Print current state of the board
+        add_move(self, move: Move) -> bool: Add new valid move
+        get_moves(self) -> list[Move]: Get already made moves
+        get_size(self) -> int: Get size of board
+        get_moves_left(self) -> int: Get number of moves left
     """
 
 
@@ -79,20 +72,16 @@ def main() -> None:
     """
     Launch tic-tac-toe game.
     """
-    # 1. Create players
     print("Created players")
 
-    # 2. Create game
-    print("Created game")
+    print("Making moves...")
 
-    # 3. Make move
-    print("Made move")
+    moves = [(0, 0), (1, 1), (0, 1), (2, 2), (0, 2)]
 
-    # 4. Register move
-    print("Registered move")
+    for move_row, move_col in moves:
+        print(f"Playing at row {move_row}, column {move_col}")
 
-    # 5. Show current state
-    print("Showed current state")
+    print("Game finished!")
 
 
 if __name__ == "__main__":

@@ -39,8 +39,7 @@ def main() -> None:
     tokens_not_in_vocab = find_out_of_vocab_words(tokens_without_stopwords, tokens_vocab) or []
     print(tokens_not_in_vocab)
 
-    jaccard_distance = calculate_distance("кот", {"кот": 0.5, "пёс": 0.5},
-                                                 method = "jaccard") or {}
+    jaccard_distance = calculate_distance("кот", {"кот": 0.5, "пёс": 0.5}, method="jaccard") or {}
     print(jaccard_distance)
 
     alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
