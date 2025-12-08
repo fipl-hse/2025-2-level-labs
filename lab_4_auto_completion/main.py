@@ -54,8 +54,7 @@ class WordProcessor(TextProcessor):
     """
     Handle text tokenization, encoding and decoding at word level.
 
-    Inherits from TextProcessor but reworks logic to work
-    with words instead of letters.
+    Inherits from TextProcessor but reworks logic to work with words instead of letters.
     """
 
     #: Special token to separate sentences
@@ -76,8 +75,7 @@ class WordProcessor(TextProcessor):
         """
         Encode text and split into sentences.
 
-        Encodes text and returns a tuple of sentence sequences,
-        where each sentence
+        Encodes text and returns a tuple of sentence sequences, where each sentence
         is represented as a tuple of word IDs. Sentences are separated by the
         end_of_sentence_token in the encoded text.
 
@@ -121,16 +119,12 @@ class WordProcessor(TextProcessor):
             self._storage[element] = len(self._storage)
         return None
 
-    def _postprocess_decoded_text(
-            self,
-            decoded_corpus: tuple[str, ...]
-    ) -> str:
+    def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
         Convert decoded sentence into the string sequence.
 
         Special symbols (end_of_sentence_token) separate sentences.
-        The first letter is capitalized, resulting sequence
-        must end with a full stop.
+        The first letter is capitalized, resulting sequence must end with a full stop.
 
         Args:
             decoded_corpus (tuple[str, ...]): A tuple of decoded words
@@ -330,9 +324,7 @@ class PrefixTrie:
         for element in encoded_corpus:
             self._insert(element)
 
-    def get_prefix(
-        self, prefix: NGramType
-    ) -> TrieNode:
+    def get_prefix(self, prefix: NGramType) -> TrieNode:
         """
         Find the node corresponding to a prefix.
 
@@ -364,8 +356,7 @@ class PrefixTrie:
             prefix (NGramType): Prefix to search for.
 
         Returns:
-            tuple: Tuple of all token sequences that begin
-            with the given prefix.
+            tuple: Tuple of all token sequences that begin with the given prefix.
                                    Empty tuple if prefix not found.
         """
         try:
@@ -406,8 +397,7 @@ class PrefixTrie:
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
     """
-    Trie specialized for storing and updating
-    n-grams with frequency information.
+    Trie specialized for storing and updating n-grams with frequency information.
     """
 
     #: N-gram window size used for building the trie
@@ -459,8 +449,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
         """
-        Get all possible next tokens and their
-        relative frequencies for a given prefix.
+        Get all possible next tokens and their relative frequencies for a given prefix.
 
         Args:
             start_sequence (NGramType): The prefix sequence.
@@ -481,23 +470,17 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         """
         return self._root
 
-    def generate_next_token(
-            self, sequence: NGramType
-    ) -> dict[int, float] | None:
+    def generate_next_token(self, sequence: NGramType) -> dict[int, float] | None:
         """
-        Retrieve tokens that can continue the given
-        sequence along with their probabilities.
+        Retrieve tokens that can continue the given sequence along with their probabilities.
 
-        Uses the last (n_gram_size - 1) tokens as context
-        to predict the next token.
+        Uses the last (n_gram_size - 1) tokens as context to predict the next token.
 
         Args:
-            sequence (NGramType): A sequence to match beginning
-            of NGrams for continuation
+            sequence (NGramType): A sequence to match beginning of NGrams for continuation
 
         Returns:
-            dict[int, float] | None: Possible next tokens
-            with their probabilities,
+            dict[int, float] | None: Possible next tokens with their probabilities,
                                      or None if input is
                                      invalid or context is too short
         """
@@ -540,8 +523,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Update the trie with additional data and refresh frequency values.
 
         Args:
-            new_corpus (tuple[NGramType]): Additional corpus
-            represented as token sequences.
+            new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
         if not self._encoded_corpus:
             self._encoded_corpus = new_corpus
@@ -549,8 +531,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
 
     def _collect_all_ngrams(self) -> tuple[NGramType, ...]:
         """
-        Collect all n-grams from the trie by traversing
-        all paths of length n_gram_size.
+        Collect all n-grams from the trie by traversing all paths of length n_gram_size.
 
         Returns:
             tuple[NGramType, ...]: Tuple of all n-grams stored in the trie.
@@ -592,16 +573,13 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
 
     def _fill_frequencies(self, encoded_corpus: tuple[NGramType, ...]) -> None:
         """
-        Calculate and assign frequencies for nodes
-        in the trie based on corpus statistics.
+        Calculate and assign frequencies for nodes in the trie based on corpus statistics.
 
-        Counts occurrences of each n-gram and stores the
-        relative frequency on the last node
+        Counts occurrences of each n-gram and stores the relative frequency on the last node
         of each n-gram sequence.
 
         Args:
-            encoded_corpus (tuple[NGramType, ...]): Tuple of n-grams
-            extracted from the corpus.
+            encoded_corpus (tuple[NGramType, ...]): Tuple of n-grams extracted from the corpus.
         """
         total_ngrams = len(encoded_corpus)
         ngram_count = {}
@@ -632,9 +610,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
     #: Encoded corpus to generate text
     _encoded_corpus: tuple[NGramType, ...]
 
-    def __init__(
-            self, encoded_corpus: tuple[NGramType, ...], n_gram_size: int = 3
-    ) -> None:
+    def __init__(self, encoded_corpus: tuple[NGramType, ...], n_gram_size: int = 3) -> None:
         """
         Initialize an DynamicNgramLMTrie.
 
@@ -681,8 +657,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Set the active N-gram size used for generation.
 
         Args:
-            current_n_gram_size (int | None): Current N-gram
-            size for generation.
+            current_n_gram_size (int | None): Current N-gram size for generation.
         """
         if (
             not check_positive_int(current_n_gram_size)
@@ -693,20 +668,15 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             raise IncorrectNgramError('Error! Incorrect input data')
         self._current_n_gram_size = current_n_gram_size
 
-    def generate_next_token(
-            self, sequence: tuple[int, ...]
-    ) -> dict[int, float] | None:
+    def generate_next_token(self, sequence: tuple[int, ...]) -> dict[int, float] | None:
         """
-        Retrieve tokens that can continue the given
-        sequence along with their probabilities.
+        Retrieve tokens that can continue the given sequence along with their probabilities.
 
         Args:
-            sequence (tuple[int, ...]): A sequence to match beginning
-            of N-grams for continuation.
+            sequence (tuple[int, ...]): A sequence to match beginning of N-grams for continuation.
 
         Returns:
-            dict[int, float] | None: Possible next tokens
-            with their probabilities.
+            dict[int, float] | None: Possible next tokens with their probabilities.
         """
         if not (isinstance(sequence, tuple) and sequence):
             return None
@@ -736,15 +706,12 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         except TriePrefixNotFoundError:
             return {}
 
-    def _assign_child(
-            self, parent: TrieNode, node_name: int, freq: float = 0.0
-    ) -> TrieNode:
+    def _assign_child(self, parent: TrieNode, node_name: int, freq: float = 0.0) -> TrieNode:
         """
         Return an existing child with name of node or create a new one.
 
         Args:
-            parent (TrieNode): A sequence to match beginning
-            of N-grams for continuation.
+            parent (TrieNode): A sequence to match beginning of N-grams for continuation.
             node_name (int): Name of TrieNode to find a child.
             freq (float, optional): Frequency of child TrieNode.
 
@@ -812,24 +779,18 @@ class DynamicBackOffGenerator(BackOffGenerator):
     #: Dynamic trie for text generation
     _dynamic_trie: DynamicNgramLMTrie
 
-    def __init__(
-            self, dynamic_trie: DynamicNgramLMTrie, processor: WordProcessor
-    ) -> None:
+    def __init__(self, dynamic_trie: DynamicNgramLMTrie, processor: WordProcessor) -> None:
         """
         Initialize an DynamicNgramLMTrie.
 
         Args:
-            dynamic_trie (DynamicNgramLMTrie): Dynamic trie
-            to use for text generation.
-            processor (WordProcessor): A WordProcessor instance
-            to handle text processing.
+            dynamic_trie (DynamicNgramLMTrie): Dynamic trie to use for text generation.
+            processor (WordProcessor): A WordProcessor instance to handle text processing.
         """
         BackOffGenerator.__init__(self, (dynamic_trie,), processor)
         self._dynamic_trie = dynamic_trie
 
-    def get_next_token(
-            self, sequence_to_continue: tuple[int, ...]
-    ) -> dict[int, float] | None:
+    def get_next_token(self, sequence_to_continue: tuple[int, ...]) -> dict[int, float] | None:
         """
         Retrieve next tokens for sequence continuation.
 
