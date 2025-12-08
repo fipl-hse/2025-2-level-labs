@@ -346,8 +346,9 @@ class PrefixTrie:
             else:
                 for child in node.get_children():
                     child_name = child.get_name()
-                    new_sequence = sequence + [child_name]
-                    nodes.append((child, new_sequence))
+                    if child_name:
+                        new_sequence = sequence + [child_name]
+                        nodes.append((child, new_sequence + [child_name]))
         return tuple(sequences)
 
     def _insert(self, sequence: NGramType) -> None:

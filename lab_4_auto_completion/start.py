@@ -28,9 +28,10 @@ def main() -> None:
     if suggestions:
         for word in suggestions[0]:
             decoded_corpus.append(word_processor.get_token(word))
-        sentences = " ".join(decoded_corpus).split(".")
-        result_sentences = [sentence.strip().capitalize() for sentence in sentences if sentence]
-        print(". ".join(result_sentences) + ".")
+        if decoded_corpus is not None:
+            sentences = " ".join(decoded_corpus).split(".")
+            result_sentences = [sentence.strip().capitalize() for sentence in sentences if sentence]
+            print(". ".join(result_sentences) + ".")
     else:
         print("No suggestions")
     model = NGramTrieLanguageModel(encoded_hp_letters, 5)
