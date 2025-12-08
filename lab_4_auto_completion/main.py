@@ -134,7 +134,7 @@ class WordProcessor(TextProcessor):
                 sentence.append(token)
 
         if sentence:
-            postprocessed_text.append(" ".join(sentence).capitalize())
+            postprocessed_text.append("".join(sentence).capitalize())
 
         if not postprocessed_text:
             raise DecodingError("Postprocessing resulted in empty output")
