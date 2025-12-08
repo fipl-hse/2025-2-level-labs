@@ -732,6 +732,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 if freq != 0.0:
                     child.set_value(freq)
                 return child
+        raise RuntimeError(f"Failed to create or find child with name {node_name}")
 
     def _merge(self) -> None:
         """
