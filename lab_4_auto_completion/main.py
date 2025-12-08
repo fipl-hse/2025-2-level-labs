@@ -83,7 +83,7 @@ class WordProcessor(TextProcessor):
         for token in token_sequence:
             if token == self._end_of_sentence_token:
                 if current_encoded_sentence:
-                    eos_id = self.get_id(self._end_of_sentence_token)
+                    eos_id = self._end_of_sentence_token
                     current_encoded_sentence.append(eos_id)
                     encoded_sentences.append(tuple(current_encoded_sentence))
                     current_encoded_sentence = []
@@ -316,18 +316,13 @@ class PrefixTrie:
         Returns:
             TrieNode: Found TrieNode by prefix
         """
-        current_node = self._root
-        for item in prefix:
-            children_nodes = current_node.get_children(item)
-            if not children_nodes:
-                raise TriePrefixNotFoundError("Such prefix not found")
-            for next_node in children_nodes:
-                if next_node.get_name() == item:
-                    current_node = next_node
-                    break
-            if next_node != current_node:
-                raise TriePrefixNotFoundError("Such prefix not found")
-        return current_node
+        root = self._root
+        for el in prefix:
+            sequence_children = root.get_children(el)
+            if not sequence_children:
+                raise TriePrefixNotFoundError()
+            root = sequence_children[0]
+        return root
 
     def suggest(self, prefix: NGramType) -> tuple:
         """
