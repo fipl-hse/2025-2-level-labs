@@ -25,10 +25,8 @@ def main() -> None:
     prefix_trie.fill(encoded_hp_letters)
     suggestions = prefix_trie.suggest((2,))
     if suggestions:
-        decoded_corpus = []
-        for word in suggestions[0]:
-            if word_processor.get_token(word) is not None:
-                decoded_corpus.append(word_processor.get_token(word))
+        decoded_corpus = [word_processor.get_token(word) for word in suggestions[0]]
+        decoded_corpus = [word for word in decoded_corpus if word is not None]
         sentences = " ".join(decoded_corpus).split(".")
         result_sentences = [sentence.strip().capitalize() for sentence in sentences if sentence]
         print(". ".join(result_sentences) + ".")
