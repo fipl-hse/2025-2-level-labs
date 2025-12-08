@@ -83,7 +83,7 @@ class WordProcessor(TextProcessor):
         for token in token_sequence:
             if token == self._end_of_sentence_token:
                 if current_encoded_sentence:
-                    eos_id = self._end_of_sentence_token
+                    eos_id = self.get_id(self._end_of_sentence_token)
                     current_encoded_sentence.append(eos_id)
                     encoded_sentences.append(tuple(current_encoded_sentence))
                     current_encoded_sentence = []
