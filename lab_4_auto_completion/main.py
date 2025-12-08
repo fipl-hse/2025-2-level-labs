@@ -2,9 +2,10 @@
 Lab 4
 """
 
-# pylint: disable=unused-argument, super-init-not-called, unused-private-member, duplicate-code, unused-import
+
 import string
-import json
+
+# pylint: disable=unused-argument, super-init-not-called, unused-private-member, duplicate-code, unused-import
 
 
 #from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, TextProcessor
@@ -686,11 +687,10 @@ class TrieNode:
         """
         if item is None:
             return tuple(self._children)
-        else:
-            for child in self._children:
-                if child.get_name() == item:
-                    return (child,)
-            return tuple()
+        for child in self._children:
+            if child.get_name() == item:
+                return (child,)
+        return tuple()
         
     def get_name(self) -> int | None:
         """
@@ -892,10 +892,9 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Returns:
             dict[int, float]: Mapping of token → relative frequency.
         """
-        try:
-            node = self.get_prefix(start_sequence)
-        except TriePrefixNotFoundError:
-            raise
+        node = self.get_prefix(start_sequence)
+        if not node.has_children():
+            return {}
         return self._collect_frequencies(node)
 
     def get_root(self) -> TrieNode:
