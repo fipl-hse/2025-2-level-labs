@@ -422,7 +422,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             n_gram_size (int): A size of n-grams to use for language modelling
         """
         NGramLanguageModel.__init__(self, encoded_corpus, n_gram_size)
-        self._root = TrieNode()
+        PrefixTrie.__init__(self)
 
     def __str__(self) -> str:
         """
