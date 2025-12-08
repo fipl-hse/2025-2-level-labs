@@ -70,32 +70,21 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple: Tuple of encoded sentences, each as a tuple of word IDs
         """
-        if not isinstance(text, str):
-            raise EncodingError("Invalid input: text must be a string")
-        if not text.strip():
-            raise EncodingError("Invalid input: text must be a non-empty string")
-        token_sequence = self._tokenize(text)
-        for token in token_sequence:
-            if token != self._end_of_sentence_token:
-                self._put(token)
-        encoded_sentences = []
-        current_encoded_sentence = []
-        for token in token_sequence:
+        encoded = []
+        tokens = self._tokenize(text)
+        current_sentence = []
+        for token in tokens:
             if token == self._end_of_sentence_token:
-                if current_encoded_sentence:
-                    eos_id = self.get_id(self._end_of_sentence_token)
-                    current_encoded_sentence.append(eos_id)
-                    encoded_sentences.append(tuple(current_encoded_sentence))
-                    current_encoded_sentence = []
+                end_of_s_id = self._storage.get(self._end_of_sentence_token, 0)
+                current_sentence.append(end_of_s_id)
+                encoded.append(tuple(current_sentence))
+                current_sentence = []
             else:
-                word_id = self.get_id(token)
-                current_encoded_sentence.append(word_id)
-        if current_encoded_sentence:
-            eos_id = self.get_id(self._end_of_sentence_token)
-            current_encoded_sentence.append(eos_id)
-            encoded_sentence = tuple(current_encoded_sentence)
-            encoded_sentences.append(encoded_sentence)
-        return tuple(encoded_sentences)
+                self._put(token)
+                if token in self._storage:
+                    word_id = self._storage[token]
+                    current_sentence.append(word_id)
+        return tuple(encoded)
     
     def _put(self, element: str) -> None:
         """
