@@ -416,10 +416,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             for i in range(len(sentence) - self._n_gram_size + 1):
                 ngram = tuple(sentence[i:i + self._n_gram_size])
                 all_ngrams.append(ngram)
+        for ngram in all_ngrams:
+            self._insert(ngram)
+        final_ngrams = self._collect_all_ngrams()
         try:
-            for ngram in all_ngrams:
-                self._insert(ngram)
-            final_ngrams = self._collect_all_ngrams()
             self._fill_frequencies(final_ngrams)
             return 0
         except TriePrefixNotFoundError:
@@ -566,9 +566,9 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             relative_freq = count / total_ngrams
             try:
                 node = self.get_prefix(ngram)
-                node.set_value(relative_freq)
             except TriePrefixNotFoundError:
                 continue
+            node.set_value(relative_freq)
 
 
 class DynamicNgramLMTrie(NGramTrieLanguageModel):
@@ -674,14 +674,14 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         context = sequence[-context_size:]
         try:
             prefix_node = self.get_prefix(context)
-            result = {}
-            for child in prefix_node.get_children():
-                child_name = child.get_name()
-                if child_name is not None:
-                    result[child_name] = child.get_value()
-            return result
         except TriePrefixNotFoundError:
             return {}
+        result = {}
+        for child in prefix_node.get_children():
+            child_name = child.get_name()
+            if child_name is not None:
+                result[child_name] = child.get_value()
+        return result
 
     def _assign_child(self, parent: TrieNode, node_name: int, freq: float = 0.0) -> TrieNode:
         """
