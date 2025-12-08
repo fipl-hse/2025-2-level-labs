@@ -18,13 +18,12 @@ def main() -> None:
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
     processor = WordProcessor('<EOS>')
-    #encoded_sentences = processor.encode_sentences(hp_letters)
     prefix_trie = PrefixTrie()
     prefix_trie.fill(processor.encode_sentences(hp_letters))
     suggestions = prefix_trie.suggest((2,))
     if suggestions:
         processor.decode(suggestions[0])
-        print(f"Первое продолжение для префикса 2: {processor.decode(suggestions[0])}")
+        print(f"Result for prefix 2: {processor.decode(suggestions[0])}")
 
     model = NGramTrieLanguageModel(processor.encode_sentences(hp_letters), 5)
     model.build()
@@ -32,23 +31,23 @@ def main() -> None:
     greedy_generator = GreedyTextGenerator(model, processor)
     beam_generator = BeamSearchTextGenerator(model, processor, 5)
 
-    print("Жадный алгоритм до обновления:")
+    print("Greedy generator before:")
     greedy_result_before = greedy_generator.run(15, "Harry Potter")
-    print(f"Результат: {greedy_result_before}")
+    print(f"Result: {greedy_result_before}")
 
-    print("Beam Search до обновления:")
+    print("Beam Search before:")
     beam_result_before = beam_generator.run("Harry Potter", 15)
-    print(f"Результат: {beam_result_before}")
+    print(f"Result: {beam_result_before}")
 
     model.update(processor.encode_sentences(ussr_letters))
 
-    print("Жадный алгоритм после обновления:")
+    print("Greedy generator after update:")
     greedy_result_after = greedy_generator.run(15, "Harry Potter")
     print(greedy_result_after)
 
-    print("Beam Search (beam_width=5) (после обновления):")
+    print("Beam Search after update:")
     beam_result_after = beam_generator.run("Harry Potter", 15)
-    print(f"Результат: {beam_result_after}")
+    print(beam_result_after)
 
     result = greedy_result_before
 

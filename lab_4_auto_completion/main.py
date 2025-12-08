@@ -57,8 +57,9 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
-        self._end_of_sentence_token = end_of_sentence_token
         super().__init__(end_of_word_token=end_of_sentence_token)
+        self._end_of_sentence_token = end_of_sentence_token
+        self._storage = {'<EOS>': 0}
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -364,10 +365,6 @@ class PrefixTrie:
                 if child_name is not None:
                     new_path = current_path + [child_name]
                     queue.append((child, new_path))
-        try:
-            results.sort()
-        except TypeError:
-            pass
         return tuple(results)
 
     def _insert(self, sequence: NGramType) -> None:
@@ -477,11 +474,9 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             dict[int, float] | None: Possible next tokens with their probabilities,
                                      or None if input is invalid or context is too short
         """
-        if not isinstance(sequence, tuple):
-            return None
-        if not sequence:
-            return None
-        if len(sequence) < self._n_gram_size - 1:
+        if (not isinstance(sequence, tuple)
+            or not sequence
+            or len(sequence) < self._n_gram_size - 1):
             return None
         context = sequence[-(self._n_gram_size - 1):]
         try:
