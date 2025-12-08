@@ -26,28 +26,24 @@ def main() -> None:
     suggestions = prefix_trie.suggest((2,))
     decoded_corpus = []
     if suggestions:
-        main_suggestion = suggestions[0]
-        for word in main_suggestion:
+        for word in suggestions[0]:
             decoded_corpus.append(word_processor.get_token(word))
-        sentences = " ".join(decoded_corpus).split(word_processor._end_of_sentence_token)
+        sentences = " ".join(decoded_corpus).split(".")
         result_sentences = [sentence.strip().capitalize() for sentence in sentences if sentence]
-        text = ". ".join(result_sentences)
-        print(text + ".")
+        print(". ".join(result_sentences) + ".")
     else:
         print("No suggestions")
-    ngram_model = NGramTrieLanguageModel(encoded_hp_letters, 5)
-    greedy_generator = GreedyTextGenerator(ngram_model, word_processor)
-    beam_searcher = BeamSearchTextGenerator(ngram_model, word_processor, 3)
+    model = NGramTrieLanguageModel(encoded_hp_letters, 5)
+    model.build()
 
-    print(f"\n Before merge: Greedy Text:{greedy_generator.run(40, "Dear")}")
-    print(f"\n Before merge: Beam Search Text:{beam_searcher.run("Dear", 40)}")
+    print(f"\n Before: Greedy:{GreedyTextGenerator(model, word_processor).run(40, "Dear")}")
+    print(f"\n Before: BeamSearch:{BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 40)}")
 
-    encoded_ussr_letters = word_processor.encode_sentences(ussr_letters)
-    ngram_model.update(encoded_ussr_letters)
+    model.update(word_processor.encode_sentences(ussr_letters))
 
-    print(f"\n Before merge: Greedy Text:{greedy_generator.run(40, "Dear")}")
-    print(f"\n Before merge: Beam Search Text:{beam_searcher.run("Dear", 40)}")
-    result = main_suggestion
+    print(f"\n After: Greedy:{GreedyTextGenerator(model, word_processor).run(40, "Dear")}")
+    print(f"\n After: BeamSearch:{BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 40)}")
+    result = suggestions[0]
     assert result, "Result is None"
 
 

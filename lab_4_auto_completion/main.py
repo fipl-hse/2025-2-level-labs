@@ -254,8 +254,9 @@ class TrieNode:
         Args:
             new_value (float): New value to store.
         """
-        if isinstance(new_value, float) and new_value:
-            self._value = new_value
+        if not isinstance(new_value, float) or not new_value:
+            return None
+        self._value = new_value
         return None
 
     def has_children(self) -> bool:
