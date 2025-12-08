@@ -345,9 +345,8 @@ class PrefixTrie:
                 sequences.append(tuple(sequence))
             else:
                 for child in node.get_children():
-                    child_name = child.get_name()
-                    if child_name:
-                        new_sequence = sequence + [child_name]
+                    if child.get_name() is not None:
+                        new_sequence = sequence + [child.get_name()]
                         nodes.append((child, new_sequence))
         return tuple(sequences)
 
