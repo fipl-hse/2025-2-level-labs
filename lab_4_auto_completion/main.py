@@ -358,19 +358,28 @@ class PrefixTrie:
                                    Empty tuple if prefix not found.
         """
         try:
-            current_node = self.get_prefix(prefix)
+            parent = self.get_prefix(prefix)
         except TriePrefixNotFoundError:
             return ()
-        token_sequences = []
-        for child in current_node.get_children():
-            new_prefix = list(prefix)
-            child_name = child.get_name()
-            if not child_name:
-                continue
-            new_prefix.append(child_name)
-            if not child.has_children():
-                token_sequences.append(tuple(new_prefix))
-        return tuple(token_sequences)
+        final_sequences = []
+        current_sequences = [prefix] #хранит недоделанные но пока не определённые последовательности
+        new_sequence = list(prefix)
+        while len(current_sequences) > 0: #изменяю cur_seq
+            for current_prefix in current_sequences: 
+                current_sequences.remove(current_prefix) #the problem is here but i don;t know what it is (start.py)
+                parent = self.get_prefix(current_prefix)
+                children = parent.get_children()
+                for child in children:
+                    if not isinstance(child.get_name(), int) or not isinstance(child.get_value(), float):
+                        continue
+                    new_sequence.append(child.get_name())
+                    if child.has_children():
+                        current_sequences.append(tuple(new_sequence))
+                    else:
+                        final_sequences.append(tuple(new_sequence))
+                    new_sequence = new_sequence[:-1]
+        return tuple(final_sequences)
+    #generally i think the algorithm is correct but that is not guaranteed
 
 
     def _insert(self, sequence: NGramType) -> None:
