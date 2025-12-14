@@ -695,29 +695,20 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
             return None
         if self._current_n_gram_size is None or self._current_n_gram_size < 2:
             return {}
-        context_length = min(self._current_n_gram_size - 1, len(sequence))
-        if len(sequence) < self._current_n_gram_size - 1:
-                if self._root is not None:
-                    return self._collect_frequencies(self._root)
-                else:
-                    return {}
-        current_node = self._root
-        if context_length > 0:
-            context = sequence[-context_length:]
-            for element in context:
-                found_child = None
-                for child in current_node.get_children():
-                    if child.get_name() == element:
-                        found_child = child
-                        break
-                if found_child is None:
-                    return {}
-                current_node = found_child
+        context_length = self._current_n_gram_size - 1
+        if len(sequence) < context_length:
+                context = sequence
+        else:
+                context = sequence[-context_length:]
+        try:
+            prefix_node = self.get_prefix(tuple(context))
+        except TriePrefixNotFoundError:
+            return {}
         next_tokens = {}
-        for child in current_node.get_children():
+        for child in prefix_node.get_children():
             name = child.get_name()
             value = child.get_value()
-            if name is not None and value is not None:
+            if name is not None:
                 next_tokens[name] = value
         return next_tokens
 
@@ -860,8 +851,8 @@ class DynamicBackOffGenerator(BackOffGenerator):
         if not encoded_result:
             return None
         token_list = list(encoded_result)
-        eos_marker = getattr(self._text_processor, '_end_of_word_token',
-                            self._text_processor.get_end_of_word_token())
+        eos_token_str = self._text_processor._end_of_sentence_token
+        eos_marker = self._text_processor.get_id(eos_token_str)
         if token_list and token_list[-1] == eos_marker:
             token_list = token_list[:-1]
         for _ in range(seq_len):
@@ -898,6 +889,7 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
     root_dictionary = None
     while stack:
         current_node, parent_dictionary = stack.pop()
+        node_dict = {}
         if not parent_dictionary:
             node_dictionary = {
                 "value": None,
