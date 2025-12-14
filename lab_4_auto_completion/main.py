@@ -163,7 +163,6 @@ class WordProcessor(TextProcessor):
             raise EncodingError("Invalid input: text must be a non-empty string")
         sentences = []
         current_sentence_chars = []
-        
         for character in text:
             if character in '.!?':
                 complete_sentence = ''.join(current_sentence_chars).strip()
@@ -172,12 +171,10 @@ class WordProcessor(TextProcessor):
                 current_sentence_chars = []
             else:
                 current_sentence_chars.append(character)
-        
         if current_sentence_chars:
             final_sentence = ''.join(current_sentence_chars).strip()
             if final_sentence:
                 sentences.append(final_sentence)
-        
         processed_tokens = []
         for sentence in sentences:
             words = sentence.lower().split()
@@ -186,11 +183,9 @@ class WordProcessor(TextProcessor):
                 cleaned_word = ''.join(symbol for symbol in word if symbol.isalpha())
                 if cleaned_word:
                     clean_words.append(cleaned_word)
-            
             if clean_words:
                 processed_tokens.extend(clean_words)
                 processed_tokens.append(self._end_of_sentence_token)
-        
         if not processed_tokens:
             raise EncodingError("Tokenization resulted in empty output")
         return tuple(processed_tokens)
