@@ -4,10 +4,7 @@ Auto-completion start
 
 # pylint:disable=unused-variable
 
-from lab_3_generate_by_ngrams.main import (
-    BeamSearchTextGenerator,
-    GreedyTextGenerator
-)
+from lab_3_generate_by_ngrams.main import BeamSearchTextGenerator, GreedyTextGenerator
 from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
@@ -37,29 +34,27 @@ def main() -> None:
     trie = PrefixTrie()
     trie.fill(hp_encoded)
     suggestion = trie.suggest((2,))[0]
-    print(f" \n1. Decoded result: {processor.decode(suggestion)}")
+    print(f" \n1.Decoded result: {processor.decode(suggestion)}")
 
     lm = NGramTrieLanguageModel(hp_encoded, 5)
     lm.build()
 
-    print(f"\n2. Greedy result before merging: {GreedyTextGenerator(lm, processor).run(52, 'Dear')}")
+    print(f"\n2.Greedy result before merging: {GreedyTextGenerator(lm, processor).run(52, 'Dear')}")
     print(f"Beam result before merging: {BeamSearchTextGenerator(lm, processor, 3).run('Dear', 52)}")
 
     print("\nMerging corpuses...")
     encoded_ussr = processor.encode_sentences(ussr_letters)
     lm.update(encoded_ussr)
 
-    print(f"\n3. Greedy result after merging: {GreedyTextGenerator(lm, processor).run(52, 'Dear')}")
+    print(f"\n3.Greedy result after merging: {GreedyTextGenerator(lm, processor).run(52, 'Dear')}")
     beam_updated = BeamSearchTextGenerator(lm, processor, 3).run('Dear', 52)
     print(f"Beam result after merging: {beam_updated}")
 
     dynamic_trie = DynamicNgramLMTrie(hp_encoded, 5)
     dynamic_trie.build()
 
-    path = r"./assets/dynamic_trie.json"
-
-    save(dynamic_trie, path)
-    loaded_trie = load(path)
+    save(dynamic_trie, r"./assets/dynamic_trie.json")
+    loaded_trie = load(r"./assets/dynamic_trie.json")
 
     dynamic_generator = DynamicBackOffGenerator(loaded_trie, processor)
     print(f"\n4. Dynamic result before merging: {dynamic_generator.run(50, 'Ivanov')}")
