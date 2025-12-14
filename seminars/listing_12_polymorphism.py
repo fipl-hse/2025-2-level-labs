@@ -64,13 +64,3 @@ Polymorphism.
 # for animal in animals:
 #     animal.eat('meat')
 
-
-def main() -> None:
-    """
-    Launch listing.
-    """
-
-
-if __name__ == "__main__":
-    main()
-
