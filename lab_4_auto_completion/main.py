@@ -690,26 +690,33 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
         Returns:
             dict[int, float] | None: Possible next tokens with their probabilities.
         """
-        if not isinstance(sequence, tuple) or not sequence:
+        if not (isinstance(sequence, tuple) and sequence):
             return None
-        if self._current_n_gram_size is None or self._current_n_gram_size < 2:
+        if not 2 <= self._current_n_gram_size <= self._max_ngram_size:
+            self._current_n_gram_size = self._max_ngram_size
+        if self._current_n_gram_size not in self._models:
+            for n in range(self._max_ngram_size, 1, -1):
+                if n in self._models:
+                    self._current_n_gram_size = n
+                    break
+            else:
+                return {}
+        model = self._models[self._current_n_gram_size]
+        ngram_size = model.get_n_gram_size()
+        if len(sequence) < ngram_size - 1:
             return {}
-        context_length = self._current_n_gram_size - 1
-        if len(sequence) < context_length:
-                context = sequence
-        else:
-                context = sequence[-context_length:]
+        context_size = min(self._current_n_gram_size - 1, len(sequence))
+        context = sequence[-context_size:]
         try:
-            prefix_node = self.get_prefix(tuple(context))
+            prefix_node = self.get_prefix(context)
+            result = {}
+            for child in prefix_node.get_children():
+                child_name = child.get_name()
+                if child_name is not None:
+                    result[child_name] = child.get_value()
+            return result
         except TriePrefixNotFoundError:
             return {}
-        next_tokens = {}
-        for child in prefix_node.get_children():
-            name = child.get_name()
-            value = child.get_value()
-            if name is not None:
-                next_tokens[name] = value
-        return next_tokens
 
     def _assign_child(self, parent: TrieNode, node_name: int, freq: float = 0.0) -> TrieNode:
         """
@@ -839,7 +846,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
         Returns:
             str | None: Generated sequence
         """
-        if (not isinstance(seq_len, int) or seq_len <= 0 or 
+        if (not isinstance(seq_len, int) or seq_len <= 0 or
             not isinstance(prompt, str) or not prompt.strip()):
             return None
         try:
