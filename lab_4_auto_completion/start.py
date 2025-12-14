@@ -3,7 +3,7 @@ Auto-completion start
 """
 
 # pylint:disable=unused-variable
-from lab_3_generate_by_ngrams.main import BackOffGenerator, BeamSearchTextGenerator, GreedyTextGenerator
+
 from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
@@ -30,8 +30,7 @@ def main() -> None:
     lm = DynamicNgramLMTrie(encoded_corpus, 5)
     lm.build()
 
-    path = r"C:\Users\harperentity\Desktop\University\2nd_year\Module_1\Programming_for_linguists\Fork\2025-2-level-labs\lab_4_auto_completion\assets\dynamic_trie.json"
-
+    path = r"./assets/dynamic_trie.json"
     save(lm, path)
     loaded_model = load(path)
 
