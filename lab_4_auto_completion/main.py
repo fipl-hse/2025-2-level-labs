@@ -377,14 +377,20 @@ class PrefixTrie:
         if not prefix_node.has_children():
             return tuple()
         all_children_nodes = [(prefix_node, list(prefix))]
-        all_sequences = []
+        all_sequences_with_freq = []
         while all_children_nodes:
-            current_node, current_sequence = all_children_nodes.pop(0)
+            current_node, current_sequence = all_children_nodes.pop()
             if not current_node.has_children():
-                all_sequences.append(tuple(current_sequence))
-            
+                all_sequences_with_freq.append((tuple(current_sequence), current_node.get_value()))
             for children_node in current_node.get_children():
-                all_children_nodes.append([children_node, current_sequence + [children_node.get_name()]])
+                child_name = children_node.get_name()
+                if child_name is not None:
+                    all_children_nodes.append((children_node, current_sequence + [child_name]))
+        all_sequences_with_freq.sort(key=lambda x: x[1], reverse=True)
+        all_sequences = []
+        for item in all_sequences_with_freq:
+            seq, freq = item
+            all_sequences.append(seq)
         return tuple(all_sequences)
 
     def _insert(self, sequence: NGramType) -> None:
