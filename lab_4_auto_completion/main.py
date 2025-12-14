@@ -161,40 +161,41 @@ class WordProcessor(TextProcessor):
             raise EncodingError("Invalid input: text must be a string")
         if not text.strip():
             raise EncodingError("Invalid input: text must be a non-empty string")
-        processed_tokens = []
+        sentences = []
         current_sentence_chars = []
-        extracted_sentences = []
+        
         for character in text:
             if character in '.!?':
                 complete_sentence = ''.join(current_sentence_chars).strip()
                 if complete_sentence:
-                    extracted_sentences.append(complete_sentence)
+                    sentences.append(complete_sentence)
                 current_sentence_chars = []
             else:
                 current_sentence_chars.append(character)
+        
         if current_sentence_chars:
             final_sentence = ''.join(current_sentence_chars).strip()
             if final_sentence:
-                extracted_sentences.append(final_sentence)
-        for sentence in extracted_sentences:
+                sentences.append(final_sentence)
+        
+        processed_tokens = []
+        for sentence in sentences:
             words = sentence.lower().split()
             clean_words = []
             for word in words:
-                cleaned_word = ''
-                for symbol in word:
-                    if symbol.isalpha():
-                        cleaned_word = cleaned_word + symbol
+                cleaned_word = ''.join(symbol for symbol in word if symbol.isalpha())
                 if cleaned_word:
                     clean_words.append(cleaned_word)
+            
             if clean_words:
-                for clean_word in clean_words:
-                    processed_tokens.append(clean_word)
+                processed_tokens.extend(clean_words)
                 processed_tokens.append(self._end_of_sentence_token)
+        
         if not processed_tokens:
             raise EncodingError("Tokenization resulted in empty output")
         return tuple(processed_tokens)
-            
-        
+
+
 
 
 class TrieNode:
@@ -371,27 +372,24 @@ class PrefixTrie:
                                    Empty tuple if prefix not found.
         """
         try:
-            prefix_node = self.get_prefix(prefix)
+            parent = self.get_prefix(prefix)
         except TriePrefixNotFoundError:
-            return tuple()
-        if not prefix_node.has_children():
-            return tuple()
-        all_children_nodes = [(prefix_node, list(prefix))]
-        all_sequences_with_freq = []
-        while all_children_nodes:
-            current_node, current_sequence = all_children_nodes.pop()
+            return ()
+        final_sequences = []
+        stack = [(parent, list(prefix))]
+        while stack:
+            current_node, current_sequence = stack.pop()
             if not current_node.has_children():
-                all_sequences_with_freq.append((tuple(current_sequence), current_node.get_value()))
-            for children_node in current_node.get_children():
-                child_name = children_node.get_name()
+                if len(current_sequence) > len(prefix):
+                    final_sequences.append((tuple(current_sequence), current_node.get_value()))
+            for child in current_node.get_children():
+                child_name = child.get_name()
                 if child_name is not None:
-                    all_children_nodes.append((children_node, current_sequence + [child_name]))
-        all_sequences_with_freq.sort(key=lambda x: x[1], reverse=True)
-        all_sequences = []
-        for item in all_sequences_with_freq:
-            seq, freq = item
-            all_sequences.append(seq)
-        return tuple(all_sequences)
+                    new_sequence = current_sequence.copy()
+                    new_sequence.append(child_name)
+                    stack.append((child, new_sequence))
+        final_sequences.sort(key=lambda x: x[1], reverse=True)
+        return tuple(seq for seq, _ in final_sequences)
 
     def _insert(self, sequence: NGramType) -> None:
         """
