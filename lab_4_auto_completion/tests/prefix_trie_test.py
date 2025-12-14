@@ -159,4 +159,4 @@ class PrefixTrieTest(unittest.TestCase):
         self.trie.fill(self.encoded_corpus)
 
         with mock.patch.object(self.trie._root, "get_name", return_value=None):
-            self.assertEqual(((1, 2, 4), (1, 2, 3)), self.trie.suggest((1, 2)))
+            self.assertEqual(((1, 2, 3), (1, 2, 4)), self.trie.suggest((1, 2)))
