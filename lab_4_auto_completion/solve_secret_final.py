@@ -2,7 +2,7 @@
 Solution for the secret task.
 """
 
-import json
+"""import json
 import math
 import os
 import sys
@@ -162,4 +162,4 @@ def solve_secret() -> str:
 
 if __name__ == "__main__":
     completed = solve_secret()
-    print(completed)
+    print(completed)"""
