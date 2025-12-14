@@ -102,7 +102,6 @@ class WordProcessor(TextProcessor):
             self._storage[element] = len(self._storage)
         return None
 
-
     def _postprocess_decoded_text(self, decoded_corpus: tuple[str, ...]) -> str:
         """
         Convert decoded sentence into the string sequence.
@@ -118,7 +117,7 @@ class WordProcessor(TextProcessor):
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             raise DecodingError("Invalid input: decoded_corpus must be a non-empty tuple")
-    
+
         filtered_corpus = []
         i = 0
         while i < len(decoded_corpus):
@@ -130,13 +129,13 @@ class WordProcessor(TextProcessor):
             else:
                 filtered_corpus.append(decoded_corpus[i])
                 i += 1
-    
+
         if not filtered_corpus:
             raise DecodingError("Postprocessing resulted in empty output")
-    
+
         sentences = []
         current_sentence = []
-    
+
         for word in filtered_corpus:
             if word == self._end_of_sentence_token:
                 if current_sentence:
@@ -146,22 +145,22 @@ class WordProcessor(TextProcessor):
                     current_sentence.clear()
             else:
                 current_sentence.append(word)
-    
+
         if current_sentence:
             sentence_str = " ".join(current_sentence)
             if sentence_str.strip():
                 sentences.append(sentence_str)
-    
+
         if not sentences:
             raise DecodingError("Postprocessing resulted in empty output")
-    
+
         processed_sentences = []
         for sentence in sentences:
             sentence = sentence.strip()
             if sentence:
                 capitalized = sentence[0].upper() + sentence[1:] if sentence else ""
                 processed_sentences.append(capitalized + ".")
-    
+
         result = " ".join(processed_sentences)
         return result
 
@@ -179,19 +178,18 @@ class WordProcessor(TextProcessor):
             tuple[str, ...]: Tokenized text as words
         """
         if not isinstance(text, str) or not text:
-            raise EncodingError('Invalid input: text must be a non-empty string')
+            raise EncodingError("Invalid input: text must be a non-empty string")
         words = text.lower().split()
         tokens = []
         for word in words:
-            letters = ''.join(letter for letter in word if letter.isalpha() or letter == '-')
+            letters = "".join(letter for letter in word if letter.isalpha() or letter == "-")
             if letters:
                 tokens.append(letters)
-                if word and word[-1] in '!?.':
+                if word and word[-1] in "!?.":
                     tokens.append(self._end_of_sentence_token)
         if not tokens:
-            raise EncodingError('Tokenization resulted in empty output')
+            raise EncodingError("Tokenization resulted in empty output")
         return tuple(tokens)
-
 
 
 class TrieNode:
@@ -415,7 +413,6 @@ class PrefixTrie:
 
 
 class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
-
     """
     Trie specialized for storing and updating n-grams with frequency information.
     """
@@ -482,7 +479,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         if not child_node.has_children():
             return {}
         return self._collect_frequencies(child_node)
-        
+
     def get_root(self) -> TrieNode:
         """
         Get the root.
@@ -806,7 +803,7 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
 
                     if child.has_children():
                         stack.append((child, target_child))
-                
+
                     if child.is_end:
                         target_child.is_end = True
 
@@ -839,10 +836,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
         Returns:
             dict[int, float] | None: Next tokens for sequence continuation
         """
-        if (
-            not isinstance(sequence_to_continue, tuple)
-            or len(sequence_to_continue) == 0
-        ):
+        if not isinstance(sequence_to_continue, tuple) or len(sequence_to_continue) == 0:
             return None
         max_ngram_size = self._dynamic_trie.get_n_gram_size()
         start_size = max_ngram_size
@@ -880,7 +874,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
         if not encoded_seq:
             return None
         tokens = list(encoded_seq)
-        eos_token_id = getattr(self._text_processor, '_end_of_word_token', None)
+        eos_token_id = getattr(self._text_processor, "_end_of_word_token", None)
         if eos_token_id is None:
             eos_token_id = self._text_processor.get_end_of_word_token()
         if tokens and tokens[-1] == eos_token_id:
@@ -892,47 +886,41 @@ class DynamicBackOffGenerator(BackOffGenerator):
             best_token = max(next_tokens.items(), key=lambda x: (x[1], x[0]))[0]
             tokens.append(best_token)
         words = []
-        storage = getattr(self._text_processor, '_storage', None)
+        storage = getattr(self._text_processor, "_storage", None)
         for token_id in tokens:
             for word, word_id in storage.items():
                 if word_id == token_id:
                     words.append(word)
                     break
-        postprocess_method = getattr(self._text_processor, '_postprocess_decoded_text', None)
+        postprocess_method = getattr(self._text_processor, "_postprocess_decoded_text", None)
         if postprocess_method:
             return str(postprocess_method(tuple(words)))
-        return ' '.join(words)
+        return " ".join(words)
 
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
     """
     Save DynamicNgramLMTrie.
-    
+
     """
     if not isinstance(path, str) or not path:
-        raise ValueError('Invalid path')
+        raise ValueError("Invalid path")
     data = {
-    'value': trie.get_root().get_name(),
-    'freq': trie.get_root().get_value(),
-    'children': []
+        "value": trie.get_root().get_name(),
+        "freq": trie.get_root().get_value(),
+        "children": [],
     }
-    stack = [(trie.get_root(), data['children'])]
+    stack = [(trie.get_root(), data["children"])]
     while stack:
         current_node, parent_children_list = stack.pop()
         children = current_node.get_children()
         for child in children:
-            child_dict = {
-                'value': child.get_name(),
-                'freq': child.get_value(),
-                'children': []
-            }
+            child_dict = {"value": child.get_name(), "freq": child.get_value(), "children": []}
             parent_children_list.append(child_dict)
-            stack.append((child, child_dict['children']))
-    trie_data = {'trie': data}
-    with open(path, 'w', encoding='utf-8') as file:
+            stack.append((child, child_dict["children"]))
+    trie_data = {"trie": data}
+    with open(path, "w", encoding="utf-8") as file:
         json.dump(trie_data, file, indent=2)
-
-    
 
 
 def load(path: str) -> DynamicNgramLMTrie:
