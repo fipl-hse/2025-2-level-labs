@@ -258,7 +258,7 @@ class TrieNode:
         """
         if item is None:
             return tuple(self._children)
-        return tuple([child for child in self._children if child.get_name() == item])
+        return tuple(child for child in self._children if child.get_name() == item)
 
     def get_name(self) -> int | None:
         """
@@ -340,10 +340,14 @@ class PrefixTrie:
         """
         current_node = self._root
         for element in prefix:
-            current_child = current_node.get_children(element)
-            if current_child == ():
+            correct_child = None
+            for child in current_node.get_children():
+                if child.get_name() == element:
+                    correct_child = child
+                    break
+            if correct_child is None:
                 raise TriePrefixNotFoundError()
-            current_node = current_child[0]
+            current_node = correct_child
         return current_node
 
     def suggest(self, prefix: NGramType) -> tuple:
@@ -362,25 +366,23 @@ class PrefixTrie:
         except TriePrefixNotFoundError:
             return ()
         final_sequences = []
-        current_sequences = [prefix] #хранит недоделанные но пока не определённые последовательности
-        new_sequence = list(prefix)
-        while len(current_sequences) > 0: #изменяю cur_seq
-            for current_prefix in current_sequences: 
-                current_sequences.remove(current_prefix) #the problem is here but i don;t know what it is (start.py)
-                parent = self.get_prefix(current_prefix)
-                children = parent.get_children()
-                for child in children:
-                    if not isinstance(child.get_name(), int) or not isinstance(child.get_value(), float):
-                        continue
-                    new_sequence.append(child.get_name())
-                    if child.has_children():
-                        current_sequences.append(tuple(new_sequence))
-                    else:
-                        final_sequences.append(tuple(new_sequence))
-                    new_sequence = new_sequence[:-1]
+        current_sequences = [prefix] #stores unfinished sequences
+        iteration_number = 0
+        while iteration_number < len(current_sequences):
+            current_prefix = current_sequences[iteration_number]
+            iteration_number += 1
+            parent = self.get_prefix(current_prefix)
+            children = parent.get_children()
+            for child in children:
+                if not isinstance(child.get_name(), int) or not isinstance(child.get_value(), float):
+                    continue
+                new_sequence = list(current_prefix)
+                new_sequence.append(child.get_name())
+                if child.has_children():
+                    current_sequences.append(tuple(new_sequence))
+                else:
+                    final_sequences.append(tuple(new_sequence))
         return tuple(final_sequences)
-    #generally i think the algorithm is correct but that is not guaranteed
-
 
     def _insert(self, sequence: NGramType) -> None:
         """
