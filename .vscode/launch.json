@@ -5,7 +5,231 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "[GITHUB] Update forks",
+            "name": "[LAB 1] Start",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "start.py",
+            "cwd": "${workspaceFolder}/lab_1_keywords_tfidf",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[LAB 2] Start",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "start.py",
+            "cwd": "${workspaceFolder}/lab_2_spellcheck",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[LAB 3] Start",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "start.py",
+            "cwd": "${workspaceFolder}/lab_3_generate_by_ngrams",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[LAB 4] Start",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "start.py",
+            "cwd": "${workspaceFolder}/lab_4_auto_completion",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 1] Learn debug",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_1_run_debug.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 2] Learn conditions",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_2_conditions.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 3] Learn numbers",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_3_integers.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 4] Learn strings",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_4_strings.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 5] Learn lists and tuples",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_5_lists.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 6] Learn dicts",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_6_dicts.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 7] Learn functions",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_7_functions.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 8] Learn classes",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_8_classes.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 9] Tic tac toe",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_9_tictactoe.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 10] Learn encapsulation",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_10_encapsulation.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 11] Learn inheritance",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_11_inheritance.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 12] Learn polymorphism",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_12_polymorphism.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[SEMINAR 13] Learn exceptions",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_13_exceptions.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Run tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/run_tests.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "args":[
+                "--pr-name", "test",
+                "--pr-author", "test"
+            ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Run spelling",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/spellcheck/check_spelling.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "args":[],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Sort spelling dictionaries",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/spellcheck/sort_wordlist.py",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "args":[],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Check coverage",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "config/collect_coverage/coverage_analyzer.py",
+            "args": [],
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "[ADMIN] Update forks",
             "type": "debugpy",
             "request": "launch",
             "program": "config/github/update_forks.py",
@@ -18,52 +242,11 @@
             }
         },
         {
-            "name": "Launch seminar 1",
+            "name": "[ADMIN] [LAB 4] Helpers",
             "type": "debugpy",
             "request": "launch",
-            "program": "seminars/practice_1_run_debug.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Launch seminar 2",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "seminars/practice_2_integers.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Launch seminar 3",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "seminars/practice_3_conditions.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Launch LAB 1 start",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "lab_1_keywords_tfidf/start.py",
-            "cwd": "${workspaceFolder}/lab_1_keywords_tfidf",
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Launch LAB 1 main",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "lab_1_keywords_tfidf/main.py",
-            "cwd": "${workspaceFolder}/lab_1_keywords_tfidf",
+            "program": "helpers.py",
+            "cwd": "${workspaceFolder}/lab_4_auto_completion",
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
