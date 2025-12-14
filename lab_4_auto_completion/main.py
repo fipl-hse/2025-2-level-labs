@@ -397,7 +397,7 @@ class PrefixTrie:
                 if child.has_children():
                     stack.append((child, new_path))
 
-            return tuple(sorted(suggestions))
+        return tuple(sorted(suggestions))
 
     def _insert(self, sequence: NGramType) -> None:
         """
