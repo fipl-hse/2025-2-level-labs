@@ -885,28 +885,24 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         path (str): Path for saving
     """
     root_node = trie.get_root()
-    stack = [(root_node, {})]
-    root_dictionary = None
+    root_dictionary = {
+        "value": None,
+        "freq": 0.0,
+        "children": []
+    }
+    stack = [(root_node, None, root_dictionary)]
     while stack:
-        current_node, parent_dictionary = stack.pop()
-        node_dict = {}
-        if not parent_dictionary:
-            node_dictionary = {
-                "value": None,
-                "freq": 0.0,
-                "children": []
-            }
-            root_dictionary = node_dictionary
-        else:
-            node_dict = {
-                "value": current_node.get_name(),
-                "freq": current_node.get_value(),
-                "children": []
-            }
-            parent_dictionary["children"].append(node_dict)
+        current_node, parent_dict, current_dict = stack.pop()
+        if parent_dict is not None:
+            parent_dict["children"].append(current_dict)
         children = current_node.get_children()
-        for i in range(len(children) - 1, -1, -1):
-            stack.append((children[i], node_dict))
+        for child_node in reversed(children):
+            child_dict = {
+                "value": child_node.get_name(),
+                "freq": child_node.get_value(),
+                "children": []
+            }
+            stack.append((child_node, current_dict, child_dict))
     trie_data = {"trie": root_dictionary}
     with open(path, 'w', encoding = 'utf-8') as file:
         json.dump(trie_data, file, indent = 2)
@@ -922,8 +918,8 @@ def load(path: str) -> DynamicNgramLMTrie:
     Returns:
         DynamicNgramLMTrie: Trie from file.
     """
-    with open(path, 'r', encoding='utf-8') as f:
-        evidence = json.load(f)
+    with open(path, 'r', encoding='utf-8') as file:
+        evidence = json.load(file)
     encoded_corpus = tuple(evidence.get('encoded_corpus', ()))
     max_ngram_size = evidence.get('max_ngram_size', 3)
     load_file = DynamicNgramLMTrie(encoded_corpus, max_ngram_size)
