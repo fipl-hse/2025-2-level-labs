@@ -117,52 +117,21 @@ class WordProcessor(TextProcessor):
         """
         if not isinstance(decoded_corpus, tuple) or not decoded_corpus:
             raise DecodingError("Invalid input: decoded_corpus must be a non-empty tuple")
-
-        filtered_corpus = []
-        i = 0
-        while i < len(decoded_corpus):
-            if decoded_corpus[i] == self._end_of_sentence_token:
-                while i < len(decoded_corpus) and decoded_corpus[i] == self._end_of_sentence_token:
-                    i += 1
-                if i < len(decoded_corpus):
-                    filtered_corpus.append(self._end_of_sentence_token)
-            else:
-                filtered_corpus.append(decoded_corpus[i])
-                i += 1
-
-        if not filtered_corpus:
+        if len(decoded_corpus) == decoded_corpus.count(self._end_of_sentence_token):
             raise DecodingError("Postprocessing resulted in empty output")
-
-        sentences = []
-        current_sentence = []
-
-        for word in filtered_corpus:
-            if word == self._end_of_sentence_token:
-                if current_sentence:
-                    sentence_str = " ".join(current_sentence)
-                    if sentence_str.strip():
-                        sentences.append(sentence_str)
-                    current_sentence.clear()
-            else:
-                current_sentence.append(word)
-
-        if current_sentence:
-            sentence_str = " ".join(current_sentence)
-            if sentence_str.strip():
-                sentences.append(sentence_str)
-
-        if not sentences:
-            raise DecodingError("Postprocessing resulted in empty output")
-
-        processed_sentences = []
-        for sentence in sentences:
-            sentence = sentence.strip()
-            if sentence:
-                capitalized = sentence[0].upper() + sentence[1:] if sentence else ""
-                processed_sentences.append(capitalized + ".")
-
-        result = " ".join(processed_sentences)
-        return result
+        decoded_list = []
+        decoded_str = ' '.join(decoded_corpus)
+        decoded_str = decoded_str.replace(f' {self._end_of_sentence_token} ', '.')
+        decoded_list.extend(decoded_str.split('.'))
+        sentence_index = 0
+        if decoded_list[-1] == '':
+            decoded_list = decoded_list[:-1]
+        for sentence in decoded_list:
+            capitalized_sentence = sentence.capitalize()
+            decoded_list[sentence_index] = capitalized_sentence
+            sentence_index += 1
+        decoded_text = ". ".join(decoded_list) + "."
+        return decoded_text
 
     def _tokenize(self, text: str) -> tuple[str, ...]:
         """
