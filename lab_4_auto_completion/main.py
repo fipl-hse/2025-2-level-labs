@@ -829,8 +829,13 @@ class DynamicBackOffGenerator(BackOffGenerator):
         Returns:
             str | None: Generated sequence
         """
-        if (not isinstance(seq_len, int) or seq_len <= 0 or
-            not isinstance(prompt, str) or not prompt.strip()):
+        if (
+            not seq_len
+            or not isinstance(seq_len, int)
+            or seq_len <= 0
+            or not isinstance(prompt, str)
+            or len(prompt) == 0
+        ):
             return None
         try:
             encoded_seq = self._text_processor.encode(prompt)
@@ -839,10 +844,9 @@ class DynamicBackOffGenerator(BackOffGenerator):
         if not encoded_seq:
             return None
         tokens = list(encoded_seq)
-        eos_token_str = getattr(self._text_processor, '_end_of_sentence_token', None)
-        if eos_token_str is None:
-            eos_token_str = getattr(self._text_processor, '_end_of_word_token', '<EoW>')
-        eos_token_id = self._text_processor.get_id(eos_token_str)
+        eos_token_id = getattr(self._text_processor, '_end_of_word_token', None)
+        if eos_token_id is None:
+            eos_token_id = self._text_processor.get_end_of_word_token()
         if tokens and tokens[-1] == eos_token_id:
             tokens.pop()
         for _ in range(seq_len):
@@ -852,7 +856,7 @@ class DynamicBackOffGenerator(BackOffGenerator):
             best_token = max(next_tokens.items(), key=lambda x: (x[1], x[0]))[0]
             tokens.append(best_token)
         words = []
-        storage = getattr(self._text_processor, '_storage', {})
+        storage = getattr(self._text_processor, '_storage', None)
         for token_id in tokens:
             for word, word_id in storage.items():
                 if word_id == token_id:
