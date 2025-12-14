@@ -189,9 +189,6 @@ class WordProcessor(TextProcessor):
         if not processed_tokens:
             raise EncodingError("Tokenization resulted in empty output")
         return tuple(processed_tokens)
-    
-    def get_end_of_sentence_token(self) -> str:
-        return self._end_of_sentence_token
 
 
 
@@ -842,38 +839,39 @@ class DynamicBackOffGenerator(BackOffGenerator):
         Returns:
             str | None: Generated sequence
         """
-        if (
-            not isinstance(seq_len, int)
-            or seq_len <= 0
-            or not isinstance(prompt, str)
-            or not prompt
-        ):
+        if (not isinstance(seq_len, int) or seq_len <= 0 or 
+            not isinstance(prompt, str) or not prompt.strip()):
             return None
-        encoded_result = self._text_processor.encode(prompt)
-        if not encoded_result:
+        try:
+            encoded_seq = self._text_processor.encode(prompt)
+        except EncodingError:
             return None
-        tokens = list(encoded_result)
-        eos = self._text_processor.get_id(self._text_processor.get_end_of_sentence_token())
-        if tokens and tokens[-1] == eos:
+        if not encoded_seq:
+            return None
+        tokens = list(encoded_seq)
+        eos_token_str = getattr(self._text_processor, '_end_of_sentence_token', None)
+        if eos_token_str is None:
+            eos_token_str = getattr(self._text_processor, '_end_of_word_token', '<EoW>')
+        eos_token_id = self._text_processor.get_id(eos_token_str)
+        if tokens and tokens[-1] == eos_token_id:
             tokens.pop()
         for _ in range(seq_len):
-            candidates = self.get_next_token(tuple(tokens))
-            if not candidates:
+            next_tokens = self.get_next_token(tuple(tokens))
+            if not next_tokens:
                 break
-            tokens.append(max(candidates.items(), key=lambda x: (x[1], x[0]))[0])
-        word_list = []
+            best_token = max(next_tokens.items(), key=lambda x: (x[1], x[0]))[0]
+            tokens.append(best_token)
+        words = []
         storage = getattr(self._text_processor, '_storage', {})
-        storage = self._text_processor._storage
         for token_id in tokens:
             for word, word_id in storage.items():
                 if word_id == token_id:
-                    word_list.append(word)
+                    words.append(word)
                     break
-        text_processor = getattr(self._text_processor, '_postprocess_decoded_text', None)
-        if text_processor:
-            processed_output = text_processor(tuple(word_list))
-            return str(processed_output)
-        return ' '.join(word_list)
+        postprocess_method = getattr(self._text_processor, '_postprocess_decoded_text', None)
+        if postprocess_method:
+            return str(postprocess_method(tuple(words)))
+        return ' '.join(words)
 
 
 def save(trie: DynamicNgramLMTrie, path: str) -> None:
@@ -884,28 +882,28 @@ def save(trie: DynamicNgramLMTrie, path: str) -> None:
         trie (DynamicNgramLMTrie): Trie for saving
         path (str): Path for saving
     """
-    root_node = trie.get_root()
-    root_dictionary = {
-        "value": None,
-        "freq": 0.0,
-        "children": []
+    if not isinstance(path, str) or not path:
+        raise ValueError('Invalid path')
+    data = {
+    'value': trie.get_root().get_name(),
+    'freq': trie.get_root().get_value(),
+    'children': []
     }
-    stack = [(root_node, None, root_dictionary)]
+    stack = [(trie.get_root(), data['children'])]
     while stack:
-        current_node, parent_dict, current_dict = stack.pop()
-        if parent_dict is not None:
-            parent_dict["children"].append(current_dict)
+        current_node, parent_children_list = stack.pop()
         children = current_node.get_children()
-        for child_node in reversed(children):
+        for child in children:
             child_dict = {
-                "value": child_node.get_name(),
-                "freq": child_node.get_value(),
-                "children": []
+                'value': child.get_name(),
+                'freq': child.get_value(),
+                'children': []
             }
-            stack.append((child_node, current_dict, child_dict))
-    trie_data = {"trie": root_dictionary}
-    with open(path, 'w', encoding = 'utf-8') as file:
-        json.dump(trie_data, file, indent = 2)
+            parent_children_list.append(child_dict)
+            stack.append((child, child_dict['children']))
+    trie_data = {'trie': data}
+    with open(path, 'w', encoding='utf-8') as file:
+        json.dump(trie_data, file, indent=2)
 
 
 def load(path: str) -> DynamicNgramLMTrie:
