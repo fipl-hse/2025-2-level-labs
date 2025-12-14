@@ -157,38 +157,19 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
-        if not isinstance(text, str):
-            raise EncodingError("Invalid input: text must be a string")
-        if not text.strip():
-            raise EncodingError("Invalid input: text must be a non-empty string")
-        sentences = []
-        current_sentence_chars = []
-        for character in text:
-            if character in '.!?':
-                complete_sentence = ''.join(current_sentence_chars).strip()
-                if complete_sentence:
-                    sentences.append(complete_sentence)
-                current_sentence_chars = []
-            else:
-                current_sentence_chars.append(character)
-        if current_sentence_chars:
-            final_sentence = ''.join(current_sentence_chars).strip()
-            if final_sentence:
-                sentences.append(final_sentence)
-        processed_tokens = []
-        for sentence in sentences:
-            words = sentence.lower().split()
-            clean_words = []
-            for word in words:
-                cleaned_word = ''.join(symbol for symbol in word if symbol.isalpha())
-                if cleaned_word:
-                    clean_words.append(cleaned_word)
-            if clean_words:
-                processed_tokens.extend(clean_words)
-                processed_tokens.append(self._end_of_sentence_token)
-        if not processed_tokens:
-            raise EncodingError("Tokenization resulted in empty output")
-        return tuple(processed_tokens)
+        if not isinstance(text, str) or not text:
+            raise EncodingError('Invalid input: text must be a non-empty string')
+        words = text.lower().split()
+        tokens = []
+        for word in words:
+            letters = ''.join(letter for letter in word if letter.isalpha() or letter == '-')
+            if letters:
+                tokens.append(letters)
+                if word and word[-1] in '!?.':
+                    tokens.append(self._end_of_sentence_token)
+        if not tokens:
+            raise EncodingError('Tokenization resulted in empty output')
+        return tuple(tokens)
 
 
 
@@ -452,7 +433,7 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             final_ngrams = self._collect_all_ngrams()
             self._fill_frequencies(final_ngrams)
             return 0
-        except:
+        except TriePrefixNotFoundError:
             return 1
 
     def get_next_tokens(self, start_sequence: NGramType) -> dict[int, float]:
@@ -532,8 +513,6 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Args:
             new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
-        if not isinstance(new_corpus, tuple) or not new_corpus:
-            return None
         if not self._encoded_corpus:
             self._encoded_corpus = new_corpus
         self.build()
@@ -741,9 +720,13 @@ class DynamicNgramLMTrie(NGramTrieLanguageModel):
                 if freq != 0.0:
                     child.set_value(freq)
                 return child
-        new_node = TrieNode(name = node_name, value = freq)
-        parent._children.append(new_node)
-        return new_node
+        parent.add_child(node_name)
+        for child in parent.get_children():
+            if child.get_name() == node_name:
+                if freq != 0.0:
+                    child.set_value(freq)
+                return child
+        raise RuntimeError(f"Failed to create or find child with name {node_name}")
 
     def _merge(self) -> None:
         """
