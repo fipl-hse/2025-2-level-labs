@@ -189,6 +189,9 @@ class WordProcessor(TextProcessor):
         if not processed_tokens:
             raise EncodingError("Tokenization resulted in empty output")
         return tuple(processed_tokens)
+    
+    def get_end_of_sentence_token(self) -> str:
+        return self._end_of_sentence_token
 
 
 
@@ -849,24 +852,22 @@ class DynamicBackOffGenerator(BackOffGenerator):
         encoded_result = self._text_processor.encode(prompt)
         if not encoded_result:
             return None
-        token_list = list(encoded_result)
-        eos_token_str = self._text_processor._end_of_sentence_token
-        eos_marker = self._text_processor.get_id(eos_token_str)
-        if token_list and token_list[-1] == eos_marker:
-            token_list = token_list[:-1]
+        tokens = list(encoded_result)
+        eos = self._text_processor.get_id(self._text_processor.get_end_of_sentence_token())
+        if tokens and tokens[-1] == eos:
+            tokens.pop()
         for _ in range(seq_len):
-            candidates = self.get_next_token(tuple(token_list))
-            if candidates is None or len(candidates) == 0:
+            candidates = self.get_next_token(tuple(tokens))
+            if not candidates:
                 break
-            selected_token, _ = max(candidates.items(),
-                                key=lambda x: (x[1], x[0]))
-            token_list.append(selected_token)
+            tokens.append(max(candidates.items(), key=lambda x: (x[1], x[0]))[0])
         word_list = []
-        token_storage = getattr(self._text_processor, '_storage', {})
-        for current_token_id in token_list:
-            for vocab_word, vocab_id in token_storage.items():
-                if vocab_id == current_token_id:
-                    word_list.append(vocab_word)
+        storage = getattr(self._text_processor, '_storage', {})
+        storage = self._text_processor._storage
+        for token_id in tokens:
+            for word, word_id in storage.items():
+                if word_id == token_id:
+                    word_list.append(word)
                     break
         text_processor = getattr(self._text_processor, '_postprocess_decoded_text', None)
         if text_processor:
