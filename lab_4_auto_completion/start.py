@@ -36,17 +36,14 @@ def main() -> None:
     model = NGramTrieLanguageModel(encoded_hp, 5)
     model.build()
 
-    print(f'Greedy generator result: {GreedyTextGenerator(model, word_processor).run(52, "Dear")}')
-    beam_generator = BeamSearchTextGenerator(model, word_processor, 3)
-    print(f'BeamSearch generator result: {beam_generator.run("Dear", 52)}')
+    print(f'Greedy generator: {GreedyTextGenerator(model, word_processor).run(52, "Dear")}')
+    print(f'BeamSearch generator: {BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 52)}')
 
     encoded = word_processor.encode_sentences(ussr_letters)
     model.update(encoded)
 
-    greedy_generator_updated = GreedyTextGenerator(model, word_processor)
-    print(f'Greedy generator updated result: {greedy_generator_updated.run(52, "Dear")}')
-    beam_generator_updated = BeamSearchTextGenerator(model, word_processor, 3)
-    print(f'BeamSearch generator updated result: {beam_generator_updated.run("Dear", 52)}')
+    print(f'Greedy updated: {GreedyTextGenerator(model, word_processor).run(52, "Dear")}')
+    print(f'BeamSearch updated: {BeamSearchTextGenerator(model, word_processor, 3).run("Dear", 52)}')
 
     dynamic_model = DynamicNgramLMTrie(encoded_hp, 5)
     dynamic_model.build()
