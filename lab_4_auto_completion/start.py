@@ -4,10 +4,17 @@ Auto-completion start
 
 # pylint:disable=unused-variable
 
+from lab_3_generate_by_ngrams.main import (
+    BeamSearchTextGenerator,
+    GreedyTextGenerator
+)
 from lab_4_auto_completion.main import (
     DynamicBackOffGenerator,
     DynamicNgramLMTrie,
+    IncorrectNgramError,
     load,
+    NGramTrieLanguageModel,
+    PrefixTrie,
     save,
     WordProcessor,
 )
@@ -24,31 +31,50 @@ def main() -> None:
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
 
-    processor = WordProcessor("<EoS>")
-    encoded_corpus = processor.encode_sentences(hp_letters)
+    processor = WordProcessor('<EoS>')
+    hp_encoded = processor.encode_sentences(hp_letters)
 
-    lm = DynamicNgramLMTrie(encoded_corpus, 5)
+    trie = PrefixTrie()
+    trie.fill(hp_encoded)
+    suggestion = trie.suggest((2,))[0]
+    print(f" \n1. Decoded result: {processor.decode(suggestion)}")
+
+    lm = NGramTrieLanguageModel(hp_encoded, 5)
     lm.build()
 
+    print(f"\n2. Greedy result before merging: {GreedyTextGenerator(lm, processor).run(52, 'Dear')}")
+    print(f"Beam result before merging: {BeamSearchTextGenerator(lm, processor, 3).run('Dear', 52)}")
+
+    print("\nMerging corpuses...")
+    encoded_ussr = processor.encode_sentences(ussr_letters)
+    lm.update(encoded_ussr)
+
+    print(f"\n3. Greedy result after merging: {GreedyTextGenerator(lm, processor).run(52, 'Dear')}")
+    beam_updated = BeamSearchTextGenerator(lm, processor, 3).run('Dear', 52)
+    print(f"Beam result after merging: {beam_updated}")
+
+    dynamic_trie = DynamicNgramLMTrie(hp_encoded, 5)
+    dynamic_trie.build()
+
     path = r"./assets/dynamic_trie.json"
-    save(lm, path)
-    loaded_model = load(path)
 
-    generator = DynamicBackOffGenerator(loaded_model, processor)
+    save(dynamic_trie, path)
+    loaded_trie = load(path)
 
-    seq_len = 50
-    prompt = "Ivanov"
+    dynamic_generator = DynamicBackOffGenerator(loaded_trie, processor)
+    print(f"\n4. Dynamic result before merging: {dynamic_generator.run(50, 'Ivanov')}")
 
-    print(f" \nBefore merging corpuses: {generator.run(seq_len, prompt)}")
+    loaded_trie.update(encoded_ussr)
+    loaded_trie.set_current_ngram_size(3)
+    try:
+        loaded_trie.set_current_ngram_size(3)
+    except IncorrectNgramError:
+        loaded_trie.set_current_ngram_size(None)
 
-    print("Merging corpuses...")
-    encoded_corpus = processor.encode_sentences(ussr_letters)
-    loaded_model.update(encoded_corpus)
+    print(f"Dynamic result after merging: {dynamic_generator.run(50, 'Ivanov')}\n")
 
-    print(f"After merging corpuses: {generator.run(seq_len, prompt)}")
-
-    result = loaded_model
-    assert result
+    result = dynamic_generator
+    assert result, "Result is None"
 
 if __name__ == "__main__":
     main()
