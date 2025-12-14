@@ -348,24 +348,24 @@ class PrefixTrie:
                                    Empty tuple if prefix not found.
         """
         try:
-            parent = self.get_prefix(prefix)
+            prefix_node = self.get_prefix(prefix)
         except TriePrefixNotFoundError:
-            return ()
-        final_sequences = []
-        stack = [(parent, list(prefix))]
-        while stack:
-            current_node, current_sequence = stack.pop()
-            if not current_node.has_children():
-                if len(current_sequence) > len(prefix):
-                    final_sequences.append((tuple(current_sequence), current_node.get_value()))
-            for child in current_node.get_children():
-                child_name = child.get_name()
-                if child_name is not None:
-                    new_sequence = current_sequence.copy()
-                    new_sequence.append(child_name)
-                    stack.append((child, new_sequence))
-        final_sequences.sort(key=lambda x: x[1], reverse=True)
-        return tuple(seq for seq, _ in final_sequences)
+            return tuple()
+        sequences = []
+        initial_seq = tuple(prefix)
+        queue = [(prefix_node, initial_seq)]
+        while queue:
+            current_node, current_sequence = queue.pop()
+            if current_node.has_children():
+                children = list(current_node.get_children())
+                for child in children[::-1]:
+                    child_name = child.get_name()
+                    if child_name is None:
+                        continue
+                    new_sequence = current_sequence + (child_name,)
+                    sequences.append(new_sequence)
+                    queue.append((child, new_sequence))
+        return tuple(sequences[::-1])
 
     def _insert(self, sequence: NGramType) -> None:
         """
