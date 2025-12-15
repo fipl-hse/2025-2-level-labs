@@ -48,8 +48,9 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
         return False
     if not user_input:
         return can_be_empty
-    return (all(isinstance(key, key_type) for key in user_input) and all(isinstance(value, value_type) for value in user_input.values()))
-
+    key_check = all(isinstance(key, key_type) for key in user_input)
+    value_check = all(isinstance(value, value_type) for value in user_input.values())
+    return key_check and value_check
 
 def check_positive_int(user_input: Any) -> bool:
     """
@@ -277,4 +278,3 @@ def extract_significant_words(
         return None
     return {token: value for token, value in chi_values.items()
                           if chi_values[token] > criterion[alpha]}
-
