@@ -179,10 +179,20 @@
             }
         },
         {
+            "name": "[SEMINAR 14] Learn LEGB",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "seminars/listing_14_legb.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
             "name": "[ADMIN] Run tests",
             "type": "debugpy",
             "request": "launch",
-            "program": "config/run_tests.py",
+            "module": "quality_control.run_tests",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "args":[
@@ -197,7 +207,7 @@
             "name": "[ADMIN] Run spelling",
             "type": "debugpy",
             "request": "launch",
-            "program": "config/spellcheck/check_spelling.py",
+            "module": "quality_control.spellcheck.check_spelling",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "args":[],
@@ -209,7 +219,7 @@
             "name": "[ADMIN] Sort spelling dictionaries",
             "type": "debugpy",
             "request": "launch",
-            "program": "config/spellcheck/sort_wordlist.py",
+            "module": "quality_control.spellcheck.sort_wordlist",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "args":[],
@@ -221,7 +231,7 @@
             "name": "[ADMIN] Check coverage",
             "type": "debugpy",
             "request": "launch",
-            "program": "config/collect_coverage/coverage_analyzer.py",
+            "module": "quality_control.collect_coverage.coverage_analyzer",
             "args": [],
             "console": "integratedTerminal",
             "env": {

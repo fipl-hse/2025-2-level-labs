@@ -96,6 +96,36 @@ Running tests in command-line
             requirements properly, you can use `pytest` without calling
             `python -m` first.
 
+Running tests with the start button
+-----------------------------------
+
+As well as running tests in command-line, you can run them with
+the triangle-shaped start button. For that, go to the
+abovementioned Testing tab on the side bar of Visual Studio Code.
+The button appears at the right side of the laboratory work's name when the
+cursor is hovered over it.
+
+.. image:: ../images/tests/cursor_over_the_start_button.jpg
+
+Initially, when pressing the button, all tests in that laboratory
+work are run, regardless of their mark.
+To do that for the particular mark (and the particular laboratory work),
+go to the ``.vscode\settings.json`` and change the value of the
+**python.testing.pytestArgs** key. By default, ``"."`` is set.
+Instead of it, you should place the laboratory work's name,
+``"-m"`` flag and the desired mark in the list. See the example below:
+
+.. code:: python
+
+   {
+    "python.testing.pytestArgs": [
+        "lab_4_auto_completion",
+        "-m", "mark10"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+   }
+
 Running tests in CI
 -------------------
 
