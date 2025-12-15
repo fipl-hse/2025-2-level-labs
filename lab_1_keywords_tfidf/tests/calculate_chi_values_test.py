@@ -16,7 +16,7 @@ class CalculateChiValuesTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_ideal(self):
+    def test_calculate_chi_values_ideal(self) -> None:
         """
         Ideal calculate chi values scenario
         """
@@ -31,7 +31,7 @@ class CalculateChiValuesTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_no_tf_doc(self):
+    def test_calculate_chi_values_no_tf_doc(self) -> None:
         """
         calculate chi values, empty expected
         """
@@ -46,7 +46,7 @@ class CalculateChiValuesTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_no_tf_corpus(self):
+    def test_calculate_chi_values_no_tf_corpus(self) -> None:
         """
         calculate chi values, empty observed
         """
@@ -61,7 +61,7 @@ class CalculateChiValuesTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_bad_input(self):
+    def test_calculate_chi_values_bad_input(self) -> None:
         """
         calculate chi values invalid input
         """
@@ -77,42 +77,35 @@ class CalculateChiValuesTest(unittest.TestCase):
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_expected_containing_bad_input(self):
+    def test_calculate_chi_values_expected_containing_bad_input(self) -> None:
         """
         calculate chi values scenario with expected containing bad input
         """
-        expected_frequencies = {"this": 0.1, "is": 0.4, "example": 0.2, None: 0.1}
+        expected_frequencies = [
+            {"this": 0.1, "is": 0.4, "example": 0.2, None: 0.1},
+            {"this": 0.1, "is": 0.4, "example": 0.2, "abc": [0.1]},
+            {"this": 0.1, "is": 0.4, "example": 0.2, "abc": True},
+        ]
 
         observed_frequencies = {"this": 1, "is": 4, "example": 2}
 
-        expected = None
-
-        actual = calculate_chi_values(expected_frequencies, observed_frequencies)
-        self.assertEqual(expected, actual)
-
-        expected_frequencies = {"this": 0.1, "is": 0.4, "example": 0.2, "abc": [0.1]}
-        actual = calculate_chi_values(expected_frequencies, observed_frequencies)
-        self.assertEqual(expected, actual)
-
-        expected_frequencies = {"this": 0.1, "is": 0.4, "example": 0.2, "abc": True}
-        actual = calculate_chi_values(expected_frequencies, observed_frequencies)
-        self.assertEqual(expected, actual)
+        for expected in expected_frequencies:
+            actual = calculate_chi_values(expected, observed_frequencies)
+            self.assertIsNone(actual)
 
     @pytest.mark.lab_1_keywords_tfidf
     @pytest.mark.mark10
-    def test_calculate_chi_values_observed_containing_bad_input(self):
+    def test_calculate_chi_values_observed_containing_bad_input(self) -> None:
         """
         calculate chi values scenario with observed containing bad input
         """
         expected_frequencies = {"this": 0.1, "is": 0.4, "example": 0.2}
 
-        observed_frequencies = {"this": 1, "is": 4, "example": 2, None: 123}
+        observed_frequencies = [
+            {"this": 1, "is": 4, "example": 2, None: 123},
+            {"this": 1, "is": 4, "example": 2, "abc": [0.2]},
+        ]
 
-        expected = None
-
-        actual = calculate_chi_values(expected_frequencies, observed_frequencies)
-        self.assertEqual(expected, actual)
-
-        observed_frequencies = {"this": 1, "is": 4, "example": 2, "abc": [0.2]}
-        actual = calculate_chi_values(expected_frequencies, observed_frequencies)
-        self.assertEqual(expected, actual)
+        for observed in observed_frequencies:
+            actual = calculate_chi_values(expected_frequencies, observed)
+            self.assertIsNone(actual)

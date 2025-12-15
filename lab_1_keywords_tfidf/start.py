@@ -17,6 +17,18 @@ from lab_1_keywords_tfidf.main import (
     remove_stop_words,
 )
 
+from lab_1_keywords_tfidf.main import (
+    calculate_chi_values,
+    calculate_expected_frequency,
+    calculate_frequencies,
+    calculate_tf,
+    calculate_tfidf,
+    clean_and_tokenize,
+    extract_significant_words,
+    get_top_n,
+    remove_stop_words,
+)
+
 
 def main() -> None:
     """

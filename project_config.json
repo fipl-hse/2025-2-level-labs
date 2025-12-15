@@ -2,6 +2,33 @@
     "labs": [
         {
             "name": "lab_1_keywords_tfidf",
+            "coverage": 100,
+            "settings": {
+                "ignore": [
+                    "lab_4_auto_completion"
+                ]
+            }
+        },
+        {
+            "name": "lab_2_spellcheck",
+            "coverage": 100,
+            "settings": {
+                "ignore": [
+                    "lab_4_auto_completion"
+                ]
+            }
+        },
+        {
+            "name": "lab_3_generate_by_ngrams",
+            "coverage": 99,
+            "settings": {
+                "ignore": [
+                    "lab_4_auto_completion"
+                ]
+            }
+        },
+        {
+            "name": "lab_4_auto_completion",
             "coverage": 99
         }
     ],
@@ -20,10 +47,10 @@
         "admins": [
             "demid5111",
             "EIzharikov",
+            "NovIrina",
             "Vasilisa-Blyudova",
             "sofianurtdinova",
             "AnPruch",
-            "Niko-Zvar",
             "QuietHellsPage",
             "Evgraff2005"
         ],

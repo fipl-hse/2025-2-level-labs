@@ -1,0 +1,19 @@
+{
+    "parser": "google",
+    "include_paths": [
+        "**/*.py"
+    ],
+    "exclude_paths": [
+        "seminars/**/*.py",
+        "seminars\\**\\*.py",
+        "config/**/*.py",
+        "config\\**\\*.py",
+        "venv/**/*.py",
+        "venv\\**\\*.py",
+        "**/.*/**/*.py"
+    ],
+    "fail_on_missing_docstring": true,
+    "fail_on_missing_summary": true,
+    "fail_on_raises_section": false,
+    "verbosity": 1
+}
