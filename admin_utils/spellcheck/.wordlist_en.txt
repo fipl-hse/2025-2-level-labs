@@ -1,4 +1,5 @@
 -
+abovementioned
 adaptivegreedytextgenerator
 addons
 advancedprefixtrie
@@ -103,6 +104,7 @@ pylint
 pyproject
 pyspelling
 pytest
+pytestargs
 pythonpath
 redhat
 remotebranches
@@ -136,6 +138,7 @@ uml
 unigrams
 utils
 venv
+vscode
 winkler
 wordlist
 wordprefixtrie
